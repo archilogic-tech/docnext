@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controller="jp.archilogic.documentmanager.controller.*"
+                xmlns:ui="jp.archilogic.documentmanager.ui.*" paddingTop="0" paddingBottom="0" paddingLeft="0"
+                paddingRight="0" preloader="jp.archilogic.documentmanager.ui.CustomPreloader"
+                addedToStage="addToStageHandler(event)" xmlns:code="http://code.google.com/p/flexlib/">
+    <mx:Script>
+        <![CDATA[
+            import jp.archilogic.documentmanager.resource.ResourceCommon;
+            import jp.archilogic.documentmanager.resource.ResourceUpload;
+            import jp.archilogic.util.DebugHelper;
+            import org.libspark.ui.SWFWheel;
+
+            private function addToStageHandler( event : Event ) : void {
+                SWFWheel.initialize( stage );
+                DebugHelper.load( stage , this , true );
+            }
+        ]]>
+    </mx:Script>
+    <controller:UploadController id="c" />
+
+    <ui:Header width="100%" height="60" />
+    <mx:Box width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+        <mx:Box id="mainBox" width="620" height="450" backgroundColor="0x526d9a" cornerRadius="10" borderStyle="solid"
+                horizontalAlign="center" verticalGap="0" paddingTop="10" paddingBottom="10" paddingLeft="10"
+                paddingRight="10">
+            <mx:filters>
+                <mx:BevelFilter highlightAlpha="0.8" shadowAlpha="0.8" />
+            </mx:filters>
+
+            <mx:Box width="100%" height="100%" backgroundColor="0xffffff" paddingTop="10" paddingBottom="2"
+                    paddingLeft="5" paddingRight="5">
+                <mx:Image source="{ResourceUpload.TEXT_FILE_UPLOAD}" />
+                <code:PromptingTextInput id="nameTextInput" width="100%" prompt="タイトル" />
+                <mx:Box label="書類・書籍・文章" width="100%" height="100%">
+                    <mx:HBox width="100%">
+                        <mx:Label text="ファイル名" />
+                        <mx:Label id="fileNameLabel" width="100%" />
+                    </mx:HBox>
+                    <mx:HBox width="100%" horizontalAlign="right">
+                        <ui:ButtonBox id="browseButton" direction="horizontal" verticalAlign="middle">
+                            <mx:Image source="{ResourceUpload.ICON_BROWSE}" />
+                            <mx:Image source="{ResourceUpload.TEXT_BROWSE}" />
+                        </ui:ButtonBox>
+                        <ui:ButtonBox id="uploadButton" direction="horizontal" verticalAlign="middle">
+                            <mx:Image source="{ResourceUpload.ICON_UPLOAD}" />
+                            <mx:Image source="{ResourceUpload.TEXT_UPLOAD}" />
+                        </ui:ButtonBox>
+                    </mx:HBox>
+                    <mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle">
+                        <mx:Label text="対応フォーマット" fontSize="12" />
+                        <mx:Image source="{ResourceCommon.ICON_XLS}" />
+                        <mx:Label text="xls, xlsx, ods" color="0x000000" fontSize="12" />
+                        <mx:Image source="{ResourceCommon.ICON_PPT}" />
+                        <mx:Label text="ppt, pptx, odp" color="0x000000" fontSize="12" />
+                        <mx:Image source="{ResourceCommon.ICON_DOC}" />
+                        <mx:Label text="doc, docx, odt" color="0x000000" fontSize="12" />
+                        <mx:Image source="{ResourceCommon.ICON_PDF}" />
+                        <mx:Label text="pdf" color="0x000000" fontSize="12" />
+                    </mx:HBox>
+                </mx:Box>
+            </mx:Box>
+        </mx:Box>
+    </mx:Box>
+</mx:Application>
