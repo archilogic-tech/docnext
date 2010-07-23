@@ -1,0 +1,24 @@
+#summary Install instruction for docnext server
+
+= Required external tools =
+
+Server needs some command-line tools described bellow
+ * xpdf
+ * xpdf-japanese
+ * openoffice.org
+ * imagematick
+
+You should run openoffice.org as a daemon, (performance reason) so, you should run shell-script on startup like bellow
+{{{
+unset DISPLAY
+/usr/lib/openoffice/program/soffice "-accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" -nologo -headless -nofirststartwizard
+
+}}}
+
+Of cource, you need to install application server like tomcat.
+
+= Server setting =
+
+You should specify server's parameter (DB, command-line tool's location, etc...) in config/config.(username).properties.
+
+See the sample, config/config.tomcat6.properties 
