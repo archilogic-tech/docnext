@@ -62,8 +62,8 @@
 #pragma mark -
 #pragma mark UISearchBarDelegate
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    NSLog(@"search");
+- (void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar {
+    [searchBar resignFirstResponder];
     
     [pages release];
     pages = [[NSMutableArray arrayWithCapacity:0] retain];
