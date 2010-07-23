@@ -13,8 +13,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* MapDocViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */; };
-		720FB46A11F965A70060A032 /* ImageSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 720FB46811F965A70060A032 /* ImageSearchViewController.m */; };
-		720FB46B11F965A70060A032 /* ImageSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 720FB46911F965A70060A032 /* ImageSearchViewController.xib */; };
 		72105FFA11E41E1300CA671C /* BookmarkViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72105FF811E41E1300CA671C /* BookmarkViewController-iPad-land.xib */; };
 		72105FFB11E41E1300CA671C /* BookmarkViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72105FF911E41E1300CA671C /* BookmarkViewController-iPad.xib */; };
 		7210600311E41E4D00CA671C /* BookmarkObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7210600011E41E4D00CA671C /* BookmarkObject.m */; };
@@ -31,14 +29,18 @@
 		722E6DF111F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */; };
 		722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */; };
 		7232D62C11F9980B00BC966B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7232D62B11F9980B00BC966B /* icon.png */; };
-		72479AFB11DB1600005EF63A /* FileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 72479AFA11DB1600005EF63A /* FileUtil.m */; };
 		72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 72479B3A11DB1D4A005EF63A /* ZipArchive.mm */; };
 		72479B4911DB1D58005EF63A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4111DB1D58005EF63A /* ioapi.c */; };
 		72479B4A11DB1D58005EF63A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4311DB1D58005EF63A /* mztools.c */; };
 		72479B4B11DB1D58005EF63A /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4511DB1D58005EF63A /* unzip.c */; };
 		72479B4C11DB1D58005EF63A /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4711DB1D58005EF63A /* zip.c */; };
-		7264A58911F80FEB0093FD0C /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A58811F80FEB0093FD0C /* Region.m */; };
-		7264A58C11F813EA0093FD0C /* PageTextInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A58B11F813EA0093FD0C /* PageTextInfo.m */; };
+		7251520011F99FA500A89BA6 /* ImageSearchViewController-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 725151FE11F99FA500A89BA6 /* ImageSearchViewController-land.xib */; };
+		7251520111F99FA500A89BA6 /* ImageSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */; };
+		7251520611F99FE700A89BA6 /* ImageSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520311F99FE700A89BA6 /* ImageSearchViewController.m */; };
+		7251520711F99FE700A89BA6 /* SearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520511F99FE700A89BA6 /* SearchResult.m */; };
+		7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520911F9A00D00A89BA6 /* FileUtil.m */; };
+		7251520F11F9A04200A89BA6 /* PageTextInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520C11F9A04200A89BA6 /* PageTextInfo.m */; };
+		7251521011F9A04200A89BA6 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520E11F9A04200A89BA6 /* Region.m */; };
 		7264A62A11F83C3F0093FD0C /* NSString+Search.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A62911F83C3F0093FD0C /* NSString+Search.m */; };
 		7264A63311F83DC10093FD0C /* RangeObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A63211F83DC10093FD0C /* RangeObject.m */; };
 		7272C5B711F6D3430084A45D /* BookshelfTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7272C5B611F6D3430084A45D /* BookshelfTableViewCell.m */; };
@@ -48,7 +50,6 @@
 		727D173711E33407007B32CD /* ThumbnailViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727D173611E33407007B32CD /* ThumbnailViewController-iPhone-land.xib */; };
 		727D173A11E33448007B32CD /* BookmarkViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727D173911E33448007B32CD /* BookmarkViewController-iPhone-land.xib */; };
 		727D173D11E334DC007B32CD /* TextViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 727D173C11E334DC007B32CD /* TextViewController-iPhone-land.xib */; };
-		728F91B211F9831800E1EA90 /* SearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 728F91B111F9831800E1EA90 /* SearchResult.m */; };
 		7295944211D2124A00C4B72F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7295944111D2124A00C4B72F /* QuartzCore.framework */; };
 		72A2588311F028F40091AC3F /* BrowserViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */; };
 		72B01A4511F59F630041346E /* BookshelfViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */; };
@@ -122,9 +123,6 @@
 		28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapDocViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* MapDoc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDoc_Prefix.pch; sourceTree = "<group>"; };
-		720FB46711F965A70060A032 /* ImageSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSearchViewController.h; sourceTree = "<group>"; };
-		720FB46811F965A70060A032 /* ImageSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageSearchViewController.m; sourceTree = "<group>"; };
-		720FB46911F965A70060A032 /* ImageSearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageSearchViewController.xib; sourceTree = "<group>"; };
 		72105FF811E41E1300CA671C /* BookmarkViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPad-land.xib"; path = "Resources-iPad/BookmarkViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		72105FF911E41E1300CA671C /* BookmarkViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPad.xib"; path = "Resources-iPad/BookmarkViewController-iPad.xib"; sourceTree = "<group>"; };
 		72105FFF11E41E4D00CA671C /* BookmarkObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookmarkObject.h; path = Bookmark/BookmarkObject.h; sourceTree = "<group>"; };
@@ -148,8 +146,6 @@
 		722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		7232D62B11F9980B00BC966B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		72479AF911DB1600005EF63A /* FileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtil.h; sourceTree = "<group>"; };
-		72479AFA11DB1600005EF63A /* FileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtil.m; sourceTree = "<group>"; };
 		72479B3911DB1D4A005EF63A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZipArchive.h; path = Library/ZipArchive/ZipArchive.h; sourceTree = "<group>"; };
 		72479B3A11DB1D4A005EF63A /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ZipArchive.mm; path = Library/ZipArchive/ZipArchive.mm; sourceTree = "<group>"; };
 		72479B4011DB1D58005EF63A /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = Library/ZipArchive/minizip/crypt.h; sourceTree = "<group>"; };
@@ -161,10 +157,18 @@
 		72479B4611DB1D58005EF63A /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = Library/ZipArchive/minizip/unzip.h; sourceTree = "<group>"; };
 		72479B4711DB1D58005EF63A /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zip.c; path = Library/ZipArchive/minizip/zip.c; sourceTree = "<group>"; };
 		72479B4811DB1D58005EF63A /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = Library/ZipArchive/minizip/zip.h; sourceTree = "<group>"; };
-		7264A58711F80FEB0093FD0C /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Region.h; sourceTree = "<group>"; };
-		7264A58811F80FEB0093FD0C /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Region.m; sourceTree = "<group>"; };
-		7264A58A11F813EA0093FD0C /* PageTextInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageTextInfo.h; sourceTree = "<group>"; };
-		7264A58B11F813EA0093FD0C /* PageTextInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageTextInfo.m; sourceTree = "<group>"; };
+		725151FE11F99FA500A89BA6 /* ImageSearchViewController-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ImageSearchViewController-land.xib"; path = "Resources-iPad/ImageSearchViewController-land.xib"; sourceTree = "<group>"; };
+		725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ImageSearchViewController.xib; path = "Resources-iPad/ImageSearchViewController.xib"; sourceTree = "<group>"; };
+		7251520211F99FE700A89BA6 /* ImageSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSearchViewController.h; path = Image/Search/ImageSearchViewController.h; sourceTree = "<group>"; };
+		7251520311F99FE700A89BA6 /* ImageSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImageSearchViewController.m; path = Image/Search/ImageSearchViewController.m; sourceTree = "<group>"; };
+		7251520411F99FE700A89BA6 /* SearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchResult.h; path = Image/Search/SearchResult.h; sourceTree = "<group>"; };
+		7251520511F99FE700A89BA6 /* SearchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchResult.m; path = Image/Search/SearchResult.m; sourceTree = "<group>"; };
+		7251520811F9A00D00A89BA6 /* FileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileUtil.h; path = Util/FileUtil.h; sourceTree = "<group>"; };
+		7251520911F9A00D00A89BA6 /* FileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileUtil.m; path = Util/FileUtil.m; sourceTree = "<group>"; };
+		7251520B11F9A04200A89BA6 /* PageTextInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PageTextInfo.h; path = Image/PageTextInfo.h; sourceTree = "<group>"; };
+		7251520C11F9A04200A89BA6 /* PageTextInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PageTextInfo.m; path = Image/PageTextInfo.m; sourceTree = "<group>"; };
+		7251520D11F9A04200A89BA6 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = Image/Region.h; sourceTree = "<group>"; };
+		7251520E11F9A04200A89BA6 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = Image/Region.m; sourceTree = "<group>"; };
 		7264A62811F83C3F0093FD0C /* NSString+Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Search.h"; sourceTree = "<group>"; };
 		7264A62911F83C3F0093FD0C /* NSString+Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Search.m"; sourceTree = "<group>"; };
 		7264A63111F83DC10093FD0C /* RangeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeObject.h; sourceTree = "<group>"; };
@@ -177,8 +181,6 @@
 		727D173611E33407007B32CD /* ThumbnailViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ThumbnailViewController-iPhone-land.xib"; path = "Resources-iPhone/ThumbnailViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		727D173911E33448007B32CD /* BookmarkViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPhone-land.xib"; path = "Resources-iPhone/BookmarkViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		727D173C11E334DC007B32CD /* TextViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "TextViewController-iPhone-land.xib"; path = "Resources-iPhone/TextViewController-iPhone-land.xib"; sourceTree = "<group>"; };
-		728F91B011F9831800E1EA90 /* SearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchResult.h; sourceTree = "<group>"; };
-		728F91B111F9831800E1EA90 /* SearchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchResult.m; sourceTree = "<group>"; };
 		7295944111D2124A00C4B72F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BrowserViewController-iPad.xib"; path = "Resources-iPad/BrowserViewController-iPad.xib"; sourceTree = "<group>"; };
 		72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone.xib"; sourceTree = "<group>"; };
@@ -378,6 +380,8 @@
 				7272C5B811F6D3610084A45D /* BookshelfTableViewCell.xib */,
 				72ECD7CD11E41BE400F872D1 /* ImageViewController-iPad.xib */,
 				72ECD7CC11E41BE400F872D1 /* ImageViewController-iPad-land.xib */,
+				725151FE11F99FA500A89BA6 /* ImageSearchViewController-land.xib */,
+				725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */,
 				72ECD7D511E41BE400F872D1 /* TOCViewController-iPad.xib */,
 				72ECD7D411E41BE400F872D1 /* TOCViewController-iPad-land.xib */,
 				72ECD7D311E41BE400F872D1 /* ThumbnailViewController-iPad.xib */,
@@ -409,11 +413,10 @@
 		720FB46611F965990060A032 /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				720FB46711F965A70060A032 /* ImageSearchViewController.h */,
-				720FB46811F965A70060A032 /* ImageSearchViewController.m */,
-				720FB46911F965A70060A032 /* ImageSearchViewController.xib */,
-				728F91B011F9831800E1EA90 /* SearchResult.h */,
-				728F91B111F9831800E1EA90 /* SearchResult.m */,
+				7251520211F99FE700A89BA6 /* ImageSearchViewController.h */,
+				7251520311F99FE700A89BA6 /* ImageSearchViewController.m */,
+				7251520411F99FE700A89BA6 /* SearchResult.h */,
+				7251520511F99FE700A89BA6 /* SearchResult.m */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -456,8 +459,8 @@
 		72479AF811DB15E7005EF63A /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				72479AF911DB1600005EF63A /* FileUtil.h */,
-				72479AFA11DB1600005EF63A /* FileUtil.m */,
+				7251520811F9A00D00A89BA6 /* FileUtil.h */,
+				7251520911F9A00D00A89BA6 /* FileUtil.m */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -551,10 +554,10 @@
 				72EF9C4811DAD7FC00E8E5E7 /* TiledScrollView.m */,
 				72EF9C4911DAD7FC00E8E5E7 /* UIRemoteImageView.h */,
 				72EF9C4A11DAD7FC00E8E5E7 /* UIRemoteImageView.m */,
-				7264A58711F80FEB0093FD0C /* Region.h */,
-				7264A58811F80FEB0093FD0C /* Region.m */,
-				7264A58A11F813EA0093FD0C /* PageTextInfo.h */,
-				7264A58B11F813EA0093FD0C /* PageTextInfo.m */,
+				7251520B11F9A04200A89BA6 /* PageTextInfo.h */,
+				7251520C11F9A04200A89BA6 /* PageTextInfo.m */,
+				7251520D11F9A04200A89BA6 /* Region.h */,
+				7251520E11F9A04200A89BA6 /* Region.m */,
 			);
 			name = Image;
 			sourceTree = "<group>";
@@ -728,8 +731,9 @@
 				722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */,
 				72C8256511F5AEE900F75566 /* BookshelfViewController-iPad.xib in Resources */,
 				7272C5B911F6D3610084A45D /* BookshelfTableViewCell.xib in Resources */,
-				720FB46B11F965A70060A032 /* ImageSearchViewController.xib in Resources */,
 				7232D62C11F9980B00BC966B /* icon.png in Resources */,
+				7251520011F99FA500A89BA6 /* ImageSearchViewController-land.xib in Resources */,
+				7251520111F99FA500A89BA6 /* ImageSearchViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -774,7 +778,6 @@
 				72EF9C6D11DAD86600E8E5E7 /* TOCObject.m in Sources */,
 				72EF9C6E11DAD86600E8E5E7 /* TOCViewController.m in Sources */,
 				72EF9C7111DAD88300E8E5E7 /* ThumbnailViewController.m in Sources */,
-				72479AFB11DB1600005EF63A /* FileUtil.m in Sources */,
 				72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */,
 				72479B4911DB1D58005EF63A /* ioapi.c in Sources */,
 				72479B4A11DB1D58005EF63A /* mztools.c in Sources */,
@@ -792,12 +795,13 @@
 				72C8257111F5AF6400F75566 /* DownloadManager.m in Sources */,
 				72C8257211F5AF6400F75566 /* DownloadStatusObject.m in Sources */,
 				7272C5B711F6D3430084A45D /* BookshelfTableViewCell.m in Sources */,
-				7264A58911F80FEB0093FD0C /* Region.m in Sources */,
-				7264A58C11F813EA0093FD0C /* PageTextInfo.m in Sources */,
 				7264A62A11F83C3F0093FD0C /* NSString+Search.m in Sources */,
 				7264A63311F83DC10093FD0C /* RangeObject.m in Sources */,
-				720FB46A11F965A70060A032 /* ImageSearchViewController.m in Sources */,
-				728F91B211F9831800E1EA90 /* SearchResult.m in Sources */,
+				7251520611F99FE700A89BA6 /* ImageSearchViewController.m in Sources */,
+				7251520711F99FE700A89BA6 /* SearchResult.m in Sources */,
+				7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */,
+				7251520F11F9A04200A89BA6 /* PageTextInfo.m in Sources */,
+				7251521011F9A04200A89BA6 /* Region.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

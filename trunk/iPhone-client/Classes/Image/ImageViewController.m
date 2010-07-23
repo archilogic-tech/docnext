@@ -70,28 +70,16 @@
 }
 
 - (IBAction)searchButtonClick:(id)sender {
-    /*
-    NSMutableArray *regions = [NSMutableArray arrayWithCapacity:0];
-    PageTextInfo *info = [self loadPageTextInfo];
-    
-    for ( RangeObject *range in [info.text search:self.searchTextField.text] ) {
-        for ( int index = 0 ; index < range.length ; index++ ) {
-            [regions addObject:[info.regions objectAtIndex:(range.location + index)]];
-        }
-    }
-    
-    [self.tiledScrollView drawMarker:regions ratio:[self loadRatio]];
-
-    [self.searchTextField resignFirstResponder];
-    [self toggleConfigView];
-     */
-    searchViewController = [[ImageSearchViewController alloc] init];
+    BOOL isLand = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+    NSString *orientation = isLand ? @"-land" : @"";
+    searchViewController = [[ImageSearchViewController alloc]
+                            initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
     searchViewController.parent = self;
     searchViewController.docId = documentId;
     
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
         popover = [[UIPopoverController alloc] initWithContentViewController:searchViewController];
-        popover.popoverContentSize = CGSizeMake(320, 480);
+        popover.popoverContentSize = isLand ? CGSizeMake(480, 320) : CGSizeMake(320, 480);
         [popover presentPopoverFromRect:((UIView *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     } else {
         [self.view addSubview:searchViewController.view];
@@ -123,8 +111,9 @@
 - (void)selectSearchResult:(int)page range:(NSRange)range {
     int next = [self calcIndexByPage:page];
     if ( next != currentIndex ) {
+        BOOL isLeft = next > currentIndex;
         currentIndex = next;
-        [self movePageToCurrent:(next < currentIndex)];
+        [self movePageToCurrent:isLeft];
     }
     
     NSMutableArray *regions = [NSMutableArray arrayWithCapacity:0];
