@@ -8,7 +8,7 @@ Server needs some command-line tools described bellow
  * openoffice.org
  * imagematick
 
-You should run openoffice.org as a daemon, (performance reason) so, you should run shell-script on startup like bellow
+You should run openoffice.org as a daemon (performance reason), so, you should run shell-script on startup, like bellow
 {{{
 unset DISPLAY
 /usr/lib/openoffice/program/soffice "-accept=socket,host=localhost,port=8100;urp;StarOffice.ServiceManager" -nologo -headless -nofirststartwizard
