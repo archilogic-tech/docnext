@@ -11,16 +11,19 @@
 #import "TiledScrollView.h"
 #import "TapDetectingView.h"
 
+@class ImageSearchViewController;
+
 @interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectingViewDelegate> {
     UIView *configView;
     UILabel *titleLabel;
     UIView *tiledScrollViewContainer;
-    UITextField *searchTextField;
     
     int documentId;
 
     TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
+    UIPopoverController *popover;
+    ImageSearchViewController *searchViewController;
     int currentIndex;
     int totalPage;
     NSArray *singlePageInfo;
@@ -32,7 +35,6 @@
 @property(nonatomic,retain) IBOutlet UIView *configView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
-@property(nonatomic,retain) IBOutlet UITextField *searchTextField;
 @property(nonatomic) int documentId;
 @property(nonatomic,retain) TiledScrollView *tiledScrollView;
 
@@ -46,5 +48,6 @@
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
 - (void)setIndexByPage:(int)page;
+- (void)selectSearchResult:(int)page range:(NSRange)range;
 
 @end

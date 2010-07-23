@@ -16,13 +16,15 @@
 #import "PageTextInfo.h"
 #import "NSString+Search.h"
 #import "RangeObject.h"
+#import "ImageSearchViewController.h"
 
 @interface ImageViewController ()
 - (void)buildPageHeads;
 - (void)toggleConfigView;
+- (void)movePageToCurrent:(BOOL)isLeft;
 - (void)loadSinglePageInfo;
 - (PageTextInfo *)loadPageTextInfo;
-- (double_t)loadRatio;
+- (double)loadRatio;
 @end
 
 @implementation ImageViewController
@@ -30,7 +32,6 @@
 @synthesize configView;
 @synthesize titleLabel;
 @synthesize tiledScrollViewContainer;
-@synthesize searchTextField;
 @synthesize documentId;
 @synthesize tiledScrollView;
 
@@ -69,6 +70,7 @@
 }
 
 - (IBAction)searchButtonClick:(id)sender {
+    /*
     NSMutableArray *regions = [NSMutableArray arrayWithCapacity:0];
     PageTextInfo *info = [self loadPageTextInfo];
     
@@ -82,6 +84,32 @@
 
     [self.searchTextField resignFirstResponder];
     [self toggleConfigView];
+     */
+    searchViewController = [[ImageSearchViewController alloc] init];
+    searchViewController.parent = self;
+    searchViewController.docId = documentId;
+    
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
+        popover = [[UIPopoverController alloc] initWithContentViewController:searchViewController];
+        popover.popoverContentSize = CGSizeMake(320, 480);
+        [popover presentPopoverFromRect:((UIView *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        [self.view addSubview:searchViewController.view];
+    }
+}
+
+- (int)calcIndexByPage:(int)page {
+    for ( int index = 0 ; index < [pageHeads count] ; index++ ) {
+        int head = [[pageHeads objectAtIndex:index] intValue];
+        if ( head == page ) {
+            return index;
+        }
+        if ( head > page ) {
+            return index - 1;
+        }
+    }
+    
+    return [pageHeads count] - 1;
 }
 
 - (void)setIndexByPage:(int)page {
@@ -89,19 +117,37 @@
     [self loadSinglePageInfo];
     [self buildPageHeads];
     
-    for ( int index = 0 ; index < [pageHeads count] ; index++ ) {
-        int head = [[pageHeads objectAtIndex:index] intValue];
-        if ( head == page ) {
-            currentIndex = index;
-            return;
-        }
-        if ( head > page ) {
-            currentIndex = index - 1;
-            return;
-        }
+    currentIndex = [self calcIndexByPage:page];
+}
+
+- (void)selectSearchResult:(int)page range:(NSRange)range {
+    int next = [self calcIndexByPage:page];
+    if ( next != currentIndex ) {
+        currentIndex = next;
+        [self movePageToCurrent:(next < currentIndex)];
     }
     
-    currentIndex = [pageHeads count] - 1;
+    NSMutableArray *regions = [NSMutableArray arrayWithCapacity:0];
+    PageTextInfo *info = [self loadPageTextInfo];
+    
+    for ( int index = 0 ; index < range.length ; index++ ) {
+        [regions addObject:[info.regions objectAtIndex:(range.location + index)]];
+    }
+    
+    [self.tiledScrollView drawMarker:regions ratio:[self loadRatio]];
+
+    [self toggleConfigView];
+    
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
+        [popover dismissPopoverAnimated:YES];
+        [popover release];
+        popover = nil;
+    } else {
+        [searchViewController.view removeFromSuperview];
+    }
+    
+    [searchViewController release];
+    searchViewController = nil;
 }
 
 - (IUIViewController *)createViewController {
@@ -178,7 +224,6 @@
     [configView release];
     [tiledScrollView release];
     [prevTiledScrollView release];
-    [searchTextField release];
     [singlePageInfo release];
     [pageHeads release];
     [isSinglePage release];
@@ -289,14 +334,7 @@
     nRequestTile = 0;
 }
 
-- (void)movePage:(BOOL)isLeft {
-    int delta = isLeft ? 1 : -1;
-    
-    if ( currentIndex + delta < 0 || currentIndex + delta >= [pageHeads count] ) {
-        return;
-    }
-    
-    currentIndex += delta;
+- (void)movePageToCurrent:(BOOL)isLeft {
     self.titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
     
     prevTiledScrollView = [[tiledScrollView retain] autorelease];
@@ -315,6 +353,18 @@
     [self.view.layer addAnimation:animation forKey:nil];
     
     [self saveHistory];
+}
+
+- (void)movePage:(BOOL)isLeft {
+    int delta = isLeft ? 1 : -1;
+    
+    if ( currentIndex + delta < 0 || currentIndex + delta >= [pageHeads count] ) {
+        return;
+    }
+    
+    currentIndex += delta;
+    
+    [self movePageToCurrent:isLeft];
 }
 
 - (void)beginDragging {
