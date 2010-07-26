@@ -13,7 +13,6 @@
 #import "FileUtil.h"
 #import "NSString+Data.h"
 #import "JSON.h"
-#import "PageTextInfo.h"
 #import "NSString+Search.h"
 #import "RangeObject.h"
 #import "ImageSearchViewController.h"
@@ -23,7 +22,6 @@
 - (void)toggleConfigView;
 - (void)movePageToCurrent:(BOOL)isLeft;
 - (void)loadSinglePageInfo;
-- (PageTextInfo *)loadPageTextInfo;
 - (double)loadRatio;
 @end
 
@@ -116,14 +114,14 @@
         [self movePageToCurrent:isLeft];
     }
     
-    NSMutableArray *regions = [NSMutableArray arrayWithCapacity:0];
-    PageTextInfo *info = [self loadPageTextInfo];
+    NSMutableArray *selectRegions = [NSMutableArray arrayWithCapacity:0];
+    NSArray *regions = [FileUtil regions:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
     
     for ( int index = 0 ; index < range.length ; index++ ) {
-        [regions addObject:[info.regions objectAtIndex:(range.location + index)]];
+        [selectRegions addObject:[regions objectAtIndex:(range.location + index)]];
     }
     
-    [self.tiledScrollView drawMarker:regions ratio:[self loadRatio]];
+    [self.tiledScrollView drawMarker:selectRegions ratio:[self loadRatio]];
 
     [self toggleConfigView];
     
@@ -266,13 +264,6 @@
 
 - (void)loadSinglePageInfo {
     singlePageInfo = [[[NSString stringWithData:[FileUtil read:[NSString stringWithFormat:@"%d/singlePageInfo.json" , documentId]]] JSONValue] retain];
-}
-
-- (PageTextInfo *)loadPageTextInfo {
-    return [PageTextInfo objectWithDictionary:
-            [[NSString stringWithData:
-              [FileUtil read:
-               [NSString stringWithFormat:@"%d/texts/%d.info" , documentId, [[pageHeads objectAtIndex:currentIndex] intValue]]]] JSONValue]];
 }
 
 - (double)loadRatio {

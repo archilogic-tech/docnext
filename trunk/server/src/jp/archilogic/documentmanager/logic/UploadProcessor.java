@@ -4,10 +4,10 @@ import java.io.File;
 
 import jp.archilogic.documentmanager.bean.PropBean;
 import jp.archilogic.documentmanager.dao.DocumentDao;
-import jp.archilogic.documentmanager.dto.PageTextInfo;
 import jp.archilogic.documentmanager.dto.TOCElem;
 import jp.archilogic.documentmanager.entity.Document;
 import jp.archilogic.documentmanager.exception.UnsupportedFormatException;
+import jp.archilogic.documentmanager.logic.PDFTextParser.PageTextInfo;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -53,7 +53,8 @@ public class UploadProcessor {
                 int page = 0;
                 for ( PageTextInfo pageTextInfo : pdfTextParser.parse( tempPdfPath ) ) {
                     packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
-                    packManager.writeTextInfo( doc.id , page , pageTextInfo );
+                    packManager.writeImageText( doc.id , page , pageTextInfo.text );
+                    packManager.writeRegions( doc.id , page , pageTextInfo.regions );
 
                     page++;
                 }
