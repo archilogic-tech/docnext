@@ -48,6 +48,7 @@
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
 - (void)setIndexByPage:(int)page;
-- (void)selectSearchResult:(int)page range:(NSRange)range;
+- (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
+- (void)cancelSearch;
 
 @end

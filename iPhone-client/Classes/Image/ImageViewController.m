@@ -106,7 +106,7 @@
     currentIndex = [self calcIndexByPage:page];
 }
 
-- (void)selectSearchResult:(int)page range:(NSRange)range {
+- (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
     int next = [self calcIndexByPage:page];
     if ( next != currentIndex ) {
         BOOL isLeft = next > currentIndex;
@@ -114,17 +114,24 @@
         [self movePageToCurrent:isLeft];
     }
     
-    NSMutableArray *selectRegions = [NSMutableArray arrayWithCapacity:0];
     NSArray *regions = [FileUtil regions:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
     
-    for ( int index = 0 ; index < range.length ; index++ ) {
-        [selectRegions addObject:[regions objectAtIndex:(range.location + index)]];
+    [self.tiledScrollView clearMarker];
+    for ( int index = 0 ; index < ranges.count ; index++ ) {
+        RangeObject *range = [ranges objectAtIndex:index];
+        for ( int delta = 0 ; delta < range.length ; delta++ ) {
+            UIColor *color = index == selectedIndex ? [UIColor redColor] : [UIColor yellowColor];
+            [self.tiledScrollView drawMarker:[regions objectAtIndex:(range.location + delta)] ratio:[self loadRatio]
+                                       color:[color colorWithAlphaComponent:0.5]];
+        }
     }
-    
-    [self.tiledScrollView drawMarker:selectRegions ratio:[self loadRatio]];
 
     [self toggleConfigView];
-    
+
+    [self cancelSearch];
+}
+
+- (void)cancelSearch {
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
         [popover dismissPopoverAnimated:YES];
         [popover release];
