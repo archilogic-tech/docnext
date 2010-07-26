@@ -12,7 +12,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import jp.archilogic.documentmanager.bean.PropBean;
-import jp.archilogic.documentmanager.dto.PageTextInfo;
+import jp.archilogic.documentmanager.dto.Region;
 import jp.archilogic.documentmanager.dto.TOCElem;
 import net.arnx.jsonic.JSON;
 
@@ -159,6 +159,16 @@ public class PackManager {
         }
     }
 
+    public void writeImageText( long documentId , int page , String text ) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/texts/%d.image.txt" , prop.repository , documentId , page ) ) ,
+                    text );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     private void writeInfo( long documentId , Info info ) {
         try {
             FileUtils.writeStringToFile(
@@ -187,6 +197,17 @@ public class PackManager {
         writeInfo( documentId , info );
     }
 
+    public void writeRegions( long documentId , int page , List< Region > regions ) {
+        try {
+            FileUtils
+                    .writeStringToFile(
+                            new File( String.format( "%s/pack/%d/texts/%d.regions.json" , prop.repository , documentId ,
+                                    page ) ) , JSON.encode( regions ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     public void writeSinglePageInfo( long documentId , List< Integer > singlePageInfo ) {
         try {
             FileUtils.writeStringToFile(
@@ -201,16 +222,6 @@ public class PackManager {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/texts/%d" , prop.repository , documentId , page ) ) , text );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    public void writeTextInfo( long documentId , int page , PageTextInfo info ) {
-        try {
-            FileUtils.writeStringToFile(
-                    new File( String.format( "%s/pack/%d/texts/%d.info" , prop.repository , documentId , page ) ) ,
-                    JSON.encode( info ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }

@@ -3,7 +3,7 @@ package jp.archilogic.documentmanager.logic;
 import java.io.IOException;
 import java.util.List;
 
-import jp.archilogic.documentmanager.dto.PageTextInfo;
+import jp.archilogic.documentmanager.dto.Region;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
@@ -16,6 +16,16 @@ import com.google.common.collect.Lists;
 
 @Component
 public class PDFTextParser {
+    class PageTextInfo {
+        String text;
+        List< Region > regions;
+
+        PageTextInfo( String text , List< Region > regions ) {
+            this.text = text;
+            this.regions = regions;
+        }
+    }
+
     public List< PageTextInfo > parse( String path ) {
         try {
             PDDocument document = PDDocument.load( path );

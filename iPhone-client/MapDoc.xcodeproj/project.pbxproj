@@ -39,7 +39,6 @@
 		7251520611F99FE700A89BA6 /* ImageSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520311F99FE700A89BA6 /* ImageSearchViewController.m */; };
 		7251520711F99FE700A89BA6 /* SearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520511F99FE700A89BA6 /* SearchResult.m */; };
 		7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520911F9A00D00A89BA6 /* FileUtil.m */; };
-		7251520F11F9A04200A89BA6 /* PageTextInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520C11F9A04200A89BA6 /* PageTextInfo.m */; };
 		7251521011F9A04200A89BA6 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520E11F9A04200A89BA6 /* Region.m */; };
 		7264A62A11F83C3F0093FD0C /* NSString+Search.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A62911F83C3F0093FD0C /* NSString+Search.m */; };
 		7264A63311F83DC10093FD0C /* RangeObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A63211F83DC10093FD0C /* RangeObject.m */; };
@@ -165,8 +164,6 @@
 		7251520511F99FE700A89BA6 /* SearchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchResult.m; path = Image/Search/SearchResult.m; sourceTree = "<group>"; };
 		7251520811F9A00D00A89BA6 /* FileUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileUtil.h; path = Util/FileUtil.h; sourceTree = "<group>"; };
 		7251520911F9A00D00A89BA6 /* FileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileUtil.m; path = Util/FileUtil.m; sourceTree = "<group>"; };
-		7251520B11F9A04200A89BA6 /* PageTextInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PageTextInfo.h; path = Image/PageTextInfo.h; sourceTree = "<group>"; };
-		7251520C11F9A04200A89BA6 /* PageTextInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PageTextInfo.m; path = Image/PageTextInfo.m; sourceTree = "<group>"; };
 		7251520D11F9A04200A89BA6 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = Image/Region.h; sourceTree = "<group>"; };
 		7251520E11F9A04200A89BA6 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = Image/Region.m; sourceTree = "<group>"; };
 		7264A62811F83C3F0093FD0C /* NSString+Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Search.h"; sourceTree = "<group>"; };
@@ -554,8 +551,6 @@
 				72EF9C4811DAD7FC00E8E5E7 /* TiledScrollView.m */,
 				72EF9C4911DAD7FC00E8E5E7 /* UIRemoteImageView.h */,
 				72EF9C4A11DAD7FC00E8E5E7 /* UIRemoteImageView.m */,
-				7251520B11F9A04200A89BA6 /* PageTextInfo.h */,
-				7251520C11F9A04200A89BA6 /* PageTextInfo.m */,
 				7251520D11F9A04200A89BA6 /* Region.h */,
 				7251520E11F9A04200A89BA6 /* Region.m */,
 			);
@@ -800,7 +795,6 @@
 				7251520611F99FE700A89BA6 /* ImageSearchViewController.m in Sources */,
 				7251520711F99FE700A89BA6 /* SearchResult.m in Sources */,
 				7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */,
-				7251520F11F9A04200A89BA6 /* PageTextInfo.m in Sources */,
 				7251521011F9A04200A89BA6 /* Region.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

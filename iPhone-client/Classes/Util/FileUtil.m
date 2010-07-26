@@ -10,6 +10,7 @@
 #import "NSString+Data.h"
 #import "JSON.h"
 #import "BookmarkObject.h"
+#import "Region.h"
 
 @implementation FileUtil
 
@@ -139,6 +140,22 @@
         }
     }
     [FileUtil saveDownloadedIds:downloadedIds];
+}
+
++ (NSString *)imageText:(int)docId page:(int)page {
+    return [NSString stringWithData:[FileUtil read:[NSString stringWithFormat:@"%d/texts/%d.image.txt" , docId, page]]];
+}
+
++ (NSArray *)regions:(int)docId page:(int)page {
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
+    
+    NSArray *arr = [[NSString stringWithData:
+                     [FileUtil read:[NSString stringWithFormat:@"%d/texts/%d.regions.json" , docId, page]]] JSONValue];
+    for ( NSDictionary *dic in arr ) {
+        [ret addObject:[Region objectWithDictionary:dic]];
+    }
+    
+    return ret;
 }
 
 @end

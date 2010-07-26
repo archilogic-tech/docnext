@@ -7,7 +7,6 @@
 //
 
 #import "ImageSearchViewController.h"
-#import "PageTextInfo.h"
 #import "FileUtil.h"
 #import "NSString+Data.h"
 #import "JSON.h"
@@ -21,12 +20,6 @@
 @synthesize tableView;
 @synthesize parent;
 @synthesize docId;
-
-- (PageTextInfo *)loadPageTextInfo:(int)page {
-    return [PageTextInfo objectWithDictionary:
-            [[NSString stringWithData:
-              [FileUtil read:[NSString stringWithFormat:@"%d/texts/%d.info" , docId, page]]] JSONValue]];
-}
 
 - (NSArray *)buildRangesElem:(NSArray *)hitRanges text:(NSString *)text {
     NSMutableArray *rangesElem = [NSMutableArray arrayWithCapacity:0];
@@ -46,23 +39,37 @@
 }
 
 - (void)doSearch {
+    NSDate *t = [NSDate date];
+    double tLoadPageTextInfo = 0.0;
+    double tSearch = 0.0;
+    
     int _pages = [FileUtil pages:docId];
     for ( int page = 0 ; page < _pages ; page++ ) {
-        NSString *text = [self loadPageTextInfo:page].text;
+        NSDate *ttt = [NSDate date];
+        NSString *text = [FileUtil imageText:docId page:page];
+        tLoadPageTextInfo += [ttt timeIntervalSinceNow];
         
+        NSDate *tt = [NSDate date];
         NSArray *res = [text search:searchBar.text];
+        tSearch += [tt timeIntervalSinceNow];
         if ( res.count > 0 ) {
             [pages addObject:[NSNumber numberWithInt:page]];
             
             [ranges addObject:[self buildRangesElem:res text:text]];
         }
     }
+    
+    NSLog(@"loadPageTextInfo: %f",tLoadPageTextInfo);
+    NSLog(@"NSString.search: %f",tSearch);
+    NSLog(@"doSearch: %f",[t timeIntervalSinceNow]);
 }
 
 #pragma mark -
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar {
+    NSDate *t = [NSDate date];
+    
     [searchBar resignFirstResponder];
     
     [pages release];
@@ -73,6 +80,8 @@
     [self doSearch];
     
     [tableView reloadData];
+    
+    NSLog(@"searchBarSearchButtonClicked: %f",[t timeIntervalSinceNow]);
 }
 
 #pragma mark -

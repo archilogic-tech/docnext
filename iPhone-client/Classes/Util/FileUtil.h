@@ -35,5 +35,7 @@
 + (NSArray *)downloadedIds;
 + (void)saveDownloadedIds:(NSArray *)downloadedIds;
 + (void)deleteCache:(int)docId;
-
++ (NSString *)imageText:(int)docId page:(int)page;
++ (NSArray *)regions:(int)docId page:(int)page;
+    
 @end
