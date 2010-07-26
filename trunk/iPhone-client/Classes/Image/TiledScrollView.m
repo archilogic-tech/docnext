@@ -10,7 +10,6 @@
 #import "TiledScrollView.h"
 #import "TapDetectingView.h"
 #import "UIRemoteImageView.h"
-#import "Region.h"
 
 @interface TiledScrollView ()
 - (void)updateResolution;
@@ -113,7 +112,7 @@
     NSLog(@"releasePending");
     
     for ( UIView *view in pendingTiles ) {
-        if ( view.tag != 1 && view.tag != 2 ) {
+        if ( view.tag != 1 ) {
             [view removeFromSuperview];
         }
     }
@@ -121,11 +120,35 @@
     [pendingTiles removeAllObjects];
 }
 
-- (void)drawMarker:(NSArray *)regions ratio:(double)ratio {
+- (void)clearMarker {
     for ( UIView *view in [markerContainerView subviews] ) {
         [view removeFromSuperview];
     }
+}
+
+- (void)drawMarker:(Region *)region ratio:(double)ratio color:(UIColor *)color {
+    float w = self.frame.size.width;
+    float h = self.frame.size.height;
+    float left = 0.0;
+    float top = 0.0;
     
+    if ( w < h * ratio ) {
+        // fit to width
+        top = (h - w / ratio) / 2.0;
+        h = w / ratio;
+    } else {
+        // fit to height
+        left = (w - h * ratio) / 2.0;
+        w = h * ratio;
+    }
+    
+    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(left + region.x * w, top + region.y * h, region.width * w, region.height * h)] autorelease];
+    view.backgroundColor = color;
+    [markerContainerView addSubview:view];
+}
+
+/*
+- (void)drawMarker:(NSArray *)regions ratio:(double)ratio color:(UIColor *)color {
     float w = self.frame.size.width;
     float h = self.frame.size.height;
     float left = 0.0;
@@ -143,11 +166,11 @@
     
     for ( Region *region in regions ) {
         UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(left + region.x * w, top + region.y * h, region.width * w, region.height * h)] autorelease];
-        view.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.5];
-        view.tag = 2;
+        view.backgroundColor = color;
         [markerContainerView addSubview:view];
     }
 }
+ */
 
 /***********************************************************************************/
 /* Most of the work of tiling is done in layoutSubviews, which we override here.   */

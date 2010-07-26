@@ -84,6 +84,10 @@
     NSLog(@"searchBarSearchButtonClicked: %f",[t timeIntervalSinceNow]);
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [parent cancelSearch];
+}
+
 #pragma mark -
 #pragma mark Table view data source
 
@@ -119,14 +123,20 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [parent selectSearchResult:[[pages objectAtIndex:indexPath.section] intValue]
-                         range:[((SearchResult *)[[ranges objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]).range range]];
+    NSMutableArray *_ranges = [NSMutableArray arrayWithCapacity:0];
+    for ( SearchResult *res in [ranges objectAtIndex:indexPath.section] ) {
+        [_ranges addObject:res.range];
+    }
+    
+    [parent selectSearchResult:[[pages objectAtIndex:indexPath.section] intValue] ranges:_ranges selectedIndex:indexPath.row];
 }
 
 - (void)viewDidLoad {
     searchBar.delegate = self;
     tableView.dataSource = self;
     tableView.delegate = self;
+    
+    [searchBar becomeFirstResponder];
 }
 
 - (void)dealloc {

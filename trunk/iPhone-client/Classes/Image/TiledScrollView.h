@@ -6,6 +6,8 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
+#import "Region.h"
+
 @class TapDetectingView;
 
 @protocol TiledScrollViewDataSource;
@@ -39,7 +41,9 @@
 
 - (void)reloadDataWithNewContentSize:(CGSize)size;
 - (void)releasePending;
-- (void)drawMarker:(NSArray *)regions ratio:(double)ratio;
+- (void)clearMarker;
+- (void)drawMarker:(Region *)regions ratio:(double)ratio color:(UIColor *)color;
+//- (void)drawMarker:(NSArray *)region ratio:(double)ratio color:(UIColor *)color;
 @end
 
 
