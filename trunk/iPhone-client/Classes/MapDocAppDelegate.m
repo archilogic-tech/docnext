@@ -55,6 +55,10 @@
     [[[[UIAlertView alloc] initWithTitle:@"Cache deleted" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
 }
 
+- (void)downloaded {
+    [viewController showBookshelf:YES];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     // Override point for customization after app launch
     [window addSubview:viewController.view];
@@ -70,8 +74,8 @@
         [self view:[self parseId:url]];
     } else if ( [host compare:@"continue"] == NSOrderedSame ) {
         [self continueView];
-    } else if ( [host compare:@"deleteCache" ] == NSOrderedSame ) {
-        [self deleteCache:[self parseId:url]];
+    } else if ( [host compare:@"downloaded"] == NSOrderedSame ) {
+        [self downloaded];
     }
 
     return YES;

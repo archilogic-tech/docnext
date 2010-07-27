@@ -10,6 +10,7 @@
 #import "TiledScrollView.h"
 #import "TapDetectingView.h"
 #import "UIRemoteImageView.h"
+#import "UIBalloon.h"
 
 @interface TiledScrollView ()
 - (void)updateResolution;
@@ -41,6 +42,9 @@
         [tileContainerView addSubview:imageContainerView];
         markerContainerView = [[UIView alloc] initWithFrame:CGRectZero];
         [tileContainerView addSubview:markerContainerView];
+        balloonContainerView = [[UIView alloc] initWithFrame:CGRectZero];
+        balloonContainerView.userInteractionEnabled = NO;
+        [self addSubview:balloonContainerView];
 
         // no rows or columns are visible at first; note this by making the firsts very high and the lasts very low
         firstVisibleRow = firstVisibleColumn = NSIntegerMax;
@@ -60,6 +64,7 @@
     [tileContainerView release];
     [imageContainerView release];
     [markerContainerView release];
+    [balloonContainerView release];
 
     [super dealloc];
 }
@@ -104,6 +109,7 @@
     self.tileContainerView.frame = CGRectMake( 0 , 0 , size.width , size.height );
     imageContainerView.frame = CGRectMake( 0 , 0 , size.width , size.height );
     markerContainerView.frame = CGRectMake( 0 , 0 , size.width , size.height );
+    balloonContainerView.frame = CGRectMake( 0 , 0 , size.width , size.height );
     
     [self reloadData];
 }
@@ -126,51 +132,39 @@
     }
 }
 
-- (void)drawMarker:(Region *)region ratio:(double)ratio color:(UIColor *)color {
-    float w = self.frame.size.width;
-    float h = self.frame.size.height;
-    float left = 0.0;
-    float top = 0.0;
+- (CGRect)calcActualRect:(double)ratio {
+    CGRect ret = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     
-    if ( w < h * ratio ) {
+    if ( ret.size.width < ret.size.height * ratio ) {
         // fit to width
-        top = (h - w / ratio) / 2.0;
-        h = w / ratio;
+        ret.origin.y = (ret.size.height - ret.size.width / ratio) / 2.0;
+        ret.size.height = ret.size.width / ratio;
     } else {
         // fit to height
-        left = (w - h * ratio) / 2.0;
-        w = h * ratio;
+        ret.origin.x = (ret.size.width - ret.size.height * ratio) / 2.0;
+        ret.size.width = ret.size.height * ratio;
     }
-    
-    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(left + region.x * w, top + region.y * h, region.width * w, region.height * h)] autorelease];
+
+    return ret;
+}
+
+- (void)drawMarker:(Region *)region ratio:(double)ratio color:(UIColor *)color {
+    CGRect rect = [self calcActualRect:ratio];
+    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
+                                                             rect.origin.y + region.y * rect.size.height,
+                                                             region.width * rect.size.width,
+                                                             region.height * rect.size.height)] autorelease];
     view.backgroundColor = color;
     [markerContainerView addSubview:view];
 }
 
-/*
-- (void)drawMarker:(NSArray *)regions ratio:(double)ratio color:(UIColor *)color {
-    float w = self.frame.size.width;
-    float h = self.frame.size.height;
-    float left = 0.0;
-    float top = 0.0;
-    
-    if ( w < h * ratio ) {
-        // fit to width
-        top = (h - w / ratio) / 2.0;
-        h = w / ratio;
-    } else {
-        // fit to height
-        left = (w - h * ratio) / 2.0;
-        w = h * ratio;
-    }
-    
-    for ( Region *region in regions ) {
-        UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(left + region.x * w, top + region.y * h, region.width * w, region.height * h)] autorelease];
-        view.backgroundColor = color;
-        [markerContainerView addSubview:view];
-    }
+- (void)addBalloon:(NSString *)text tip:(CGPoint)tip ratio:(double)ratio {
+    CGRect rect = [self calcActualRect:ratio];
+    [balloonContainerView addSubview:
+     [[[UIBalloon alloc] initWithText:text
+                                  tip:CGPointMake(rect.origin.x + tip.x * rect.size.width,
+                                                  rect.origin.y + tip.y * rect.size.height)] autorelease]];
 }
- */
 
 /***********************************************************************************/
 /* Most of the work of tiling is done in layoutSubviews, which we override here.   */
@@ -179,6 +173,10 @@
 /***********************************************************************************/
 - (void)layoutSubviews {
     if ( isZoomChanging ) {
+        for ( UIView *view in balloonContainerView.subviews ) {
+            [(UIBalloon *)view adjustForTip:self.zoomScale];
+        }
+        
         return;
     }
     
@@ -231,7 +229,7 @@
             }
         }
     }
-
+    
     // update our record of which rows/cols are visible
     firstVisibleRow = firstNeededRow;
     firstVisibleColumn = firstNeededCol;
@@ -253,7 +251,6 @@
     int newResolution = MAX( MIN( ceil( log( self.zoomScale * self.baseScale ) / log( 2 ) ) , maximumResolution ) , minimumResolution );
 
     if ( newResolution != resolution ) {
-        NSLog(@"res: %d",newResolution);
         resolution = newResolution;
         
         [self reloadData];

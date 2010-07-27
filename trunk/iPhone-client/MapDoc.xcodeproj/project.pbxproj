@@ -40,6 +40,7 @@
 		7251520711F99FE700A89BA6 /* SearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520511F99FE700A89BA6 /* SearchResult.m */; };
 		7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520911F9A00D00A89BA6 /* FileUtil.m */; };
 		7251521011F9A04200A89BA6 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520E11F9A04200A89BA6 /* Region.m */; };
+		72562C2111FE99C800DC4528 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 72562C2011FE99C800DC4528 /* UIBalloon.m */; };
 		7264A62A11F83C3F0093FD0C /* NSString+Search.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A62911F83C3F0093FD0C /* NSString+Search.m */; };
 		7264A63311F83DC10093FD0C /* RangeObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A63211F83DC10093FD0C /* RangeObject.m */; };
 		7272C5B711F6D3430084A45D /* BookshelfTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7272C5B611F6D3430084A45D /* BookshelfTableViewCell.m */; };
@@ -166,6 +167,8 @@
 		7251520911F9A00D00A89BA6 /* FileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileUtil.m; path = Util/FileUtil.m; sourceTree = "<group>"; };
 		7251520D11F9A04200A89BA6 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = Image/Region.h; sourceTree = "<group>"; };
 		7251520E11F9A04200A89BA6 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = Image/Region.m; sourceTree = "<group>"; };
+		72562C1F11FE99C800DC4528 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBalloon.h; sourceTree = "<group>"; };
+		72562C2011FE99C800DC4528 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBalloon.m; sourceTree = "<group>"; };
 		7264A62811F83C3F0093FD0C /* NSString+Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Search.h"; sourceTree = "<group>"; };
 		7264A62911F83C3F0093FD0C /* NSString+Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Search.m"; sourceTree = "<group>"; };
 		7264A63111F83DC10093FD0C /* RangeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeObject.h; sourceTree = "<group>"; };
@@ -488,6 +491,15 @@
 			name = minizip;
 			sourceTree = "<group>";
 		};
+		72562C1E11FE99B300DC4528 /* Balloon */ = {
+			isa = PBXGroup;
+			children = (
+				72562C1F11FE99C800DC4528 /* UIBalloon.h */,
+				72562C2011FE99C800DC4528 /* UIBalloon.m */,
+			);
+			name = Balloon;
+			sourceTree = "<group>";
+		};
 		728866C811DC7C3C00C017B5 /* Bookmark */ = {
 			isa = PBXGroup;
 			children = (
@@ -544,6 +556,7 @@
 		72E8A6E411D447D600651F27 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				72562C1E11FE99B300DC4528 /* Balloon */,
 				720FB46611F965990060A032 /* Search */,
 				72EF9C4511DAD7FC00E8E5E7 /* ImageViewController.h */,
 				72EF9C4611DAD7FC00E8E5E7 /* ImageViewController.m */,
@@ -796,6 +809,7 @@
 				7251520711F99FE700A89BA6 /* SearchResult.m in Sources */,
 				7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */,
 				7251521011F9A04200A89BA6 /* Region.m in Sources */,
+				72562C2111FE99C800DC4528 /* UIBalloon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -39,37 +39,23 @@
 }
 
 - (void)doSearch {
-    NSDate *t = [NSDate date];
-    double tLoadPageTextInfo = 0.0;
-    double tSearch = 0.0;
-    
     int _pages = [FileUtil pages:docId];
     for ( int page = 0 ; page < _pages ; page++ ) {
-        NSDate *ttt = [NSDate date];
         NSString *text = [FileUtil imageText:docId page:page];
-        tLoadPageTextInfo += [ttt timeIntervalSinceNow];
         
-        NSDate *tt = [NSDate date];
         NSArray *res = [text search:searchBar.text];
-        tSearch += [tt timeIntervalSinceNow];
         if ( res.count > 0 ) {
             [pages addObject:[NSNumber numberWithInt:page]];
             
             [ranges addObject:[self buildRangesElem:res text:text]];
         }
     }
-    
-    NSLog(@"loadPageTextInfo: %f",tLoadPageTextInfo);
-    NSLog(@"NSString.search: %f",tSearch);
-    NSLog(@"doSearch: %f",[t timeIntervalSinceNow]);
 }
 
 #pragma mark -
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar {
-    NSDate *t = [NSDate date];
-    
     [searchBar resignFirstResponder];
     
     [pages release];
@@ -80,8 +66,6 @@
     [self doSearch];
     
     [tableView reloadData];
-    
-    NSLog(@"searchBarSearchButtonClicked: %f",[t timeIntervalSinceNow]);
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {

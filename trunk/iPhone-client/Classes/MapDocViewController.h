@@ -18,6 +18,7 @@
 
 @property(nonatomic,retain) IUIViewController *current;
 
+- (void)showBookshelf:(BOOL)animated;
 - (void)showHome:(BOOL)animated;
 - (void)showImage:(int)documentId page:(int)page;
 - (void)showTOC:(int)documentId prevPage:(int)prevPage;

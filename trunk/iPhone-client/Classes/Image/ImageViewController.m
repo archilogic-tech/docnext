@@ -16,6 +16,7 @@
 #import "NSString+Search.h"
 #import "RangeObject.h"
 #import "ImageSearchViewController.h"
+#import "UIBalloon.h"
 
 @interface ImageViewController ()
 - (void)buildPageHeads;
@@ -123,6 +124,11 @@
             UIColor *color = index == selectedIndex ? [UIColor redColor] : [UIColor yellowColor];
             [self.tiledScrollView drawMarker:[regions objectAtIndex:(range.location + delta)] ratio:[self loadRatio]
                                        color:[color colorWithAlphaComponent:0.5]];
+            
+            if ( index == selectedIndex && delta == range.length / 2 ) {
+                Region *region = [regions objectAtIndex:(range.location + delta)];
+                [tiledScrollView addBalloon:@"Selected" tip:CGPointMake(region.x, region.y) ratio:[self loadRatio]];
+            }
         }
     }
 
