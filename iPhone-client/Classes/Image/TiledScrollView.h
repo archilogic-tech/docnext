@@ -18,6 +18,7 @@
     TapDetectingView *tileContainerView;
     UIView *imageContainerView;
     UIView *markerContainerView;
+    UIView *balloonContainerView;
     NSMutableSet *pendingTiles;
 
     int resolution;
@@ -43,7 +44,7 @@
 - (void)releasePending;
 - (void)clearMarker;
 - (void)drawMarker:(Region *)regions ratio:(double)ratio color:(UIColor *)color;
-//- (void)drawMarker:(NSArray *)region ratio:(double)ratio color:(UIColor *)color;
+- (void)addBalloon:(NSString *)text tip:(CGPoint)tip ratio:(double)ratio;
 @end
 
 

@@ -106,13 +106,11 @@
             
             for ( RubyMarker *ruby in rubys ) {
                 if ( ruby.range.location == index ) {
-                    NSLog(@"ruby begin: %@",cs);
                     rubyRanges = [NSMutableArray arrayWithCapacity:0];
                     // TODO rubyHeight / 5
                     [rubyRanges addObject:[RubyRangeObject objectWithData:(y - rubyHeight + rubyHeight / 5) begin:x end:0]];
                 }
                 if ( ruby.range.location + ruby.range.length - 1 == index ) {
-                    NSLog(@"ruby end: %@",cs);
                     ((RubyRangeObject *)[rubyRanges lastObject]).end = x + delta;
                     
                     [HTextView procRuby:ruby.text rubyRanges:rubyRanges font:rubyFont];
