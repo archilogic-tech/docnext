@@ -29,6 +29,12 @@
 		722E6DF111F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */; };
 		722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */; };
 		7232D62C11F9980B00BC966B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7232D62B11F9980B00BC966B /* icon.png */; };
+		723DE22F11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */; };
+		723DE23411FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */; };
+		723DE24511FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */; };
+		723DE24E11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24D11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib */; };
+		723DE2B011FFF13A00344B47 /* BookshelfDeletionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */; };
+		723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2B211FFF17200344B47 /* UIBalloon.m */; };
 		72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 72479B3A11DB1D4A005EF63A /* ZipArchive.mm */; };
 		72479B4911DB1D58005EF63A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4111DB1D58005EF63A /* ioapi.c */; };
 		72479B4A11DB1D58005EF63A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4311DB1D58005EF63A /* mztools.c */; };
@@ -40,7 +46,6 @@
 		7251520711F99FE700A89BA6 /* SearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520511F99FE700A89BA6 /* SearchResult.m */; };
 		7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520911F9A00D00A89BA6 /* FileUtil.m */; };
 		7251521011F9A04200A89BA6 /* Region.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520E11F9A04200A89BA6 /* Region.m */; };
-		72562C2111FE99C800DC4528 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 72562C2011FE99C800DC4528 /* UIBalloon.m */; };
 		7264A62A11F83C3F0093FD0C /* NSString+Search.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A62911F83C3F0093FD0C /* NSString+Search.m */; };
 		7264A63311F83DC10093FD0C /* RangeObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7264A63211F83DC10093FD0C /* RangeObject.m */; };
 		7272C5B711F6D3430084A45D /* BookshelfTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7272C5B611F6D3430084A45D /* BookshelfTableViewCell.m */; };
@@ -146,6 +151,14 @@
 		722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		7232D62B11F9980B00BC966B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad.xib"; sourceTree = "<group>"; };
+		723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad-land.xib"; sourceTree = "<group>"; };
+		723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfDeletionViewController-iPhone.xib"; sourceTree = "<group>"; };
+		723DE24D11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfDeletionViewController-iPhone-land.xib"; sourceTree = "<group>"; };
+		723DE2AE11FFF13A00344B47 /* BookshelfDeletionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookshelfDeletionViewController.h; path = Bookshelf/Deletion/BookshelfDeletionViewController.h; sourceTree = "<group>"; };
+		723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookshelfDeletionViewController.m; path = Bookshelf/Deletion/BookshelfDeletionViewController.m; sourceTree = "<group>"; };
+		723DE2B111FFF17200344B47 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIBalloon.h; path = Image/Balloon/UIBalloon.h; sourceTree = "<group>"; };
+		723DE2B211FFF17200344B47 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIBalloon.m; path = Image/Balloon/UIBalloon.m; sourceTree = "<group>"; };
 		72479B3911DB1D4A005EF63A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZipArchive.h; path = Library/ZipArchive/ZipArchive.h; sourceTree = "<group>"; };
 		72479B3A11DB1D4A005EF63A /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ZipArchive.mm; path = Library/ZipArchive/ZipArchive.mm; sourceTree = "<group>"; };
 		72479B4011DB1D58005EF63A /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = Library/ZipArchive/minizip/crypt.h; sourceTree = "<group>"; };
@@ -167,8 +180,6 @@
 		7251520911F9A00D00A89BA6 /* FileUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileUtil.m; path = Util/FileUtil.m; sourceTree = "<group>"; };
 		7251520D11F9A04200A89BA6 /* Region.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Region.h; path = Image/Region.h; sourceTree = "<group>"; };
 		7251520E11F9A04200A89BA6 /* Region.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Region.m; path = Image/Region.m; sourceTree = "<group>"; };
-		72562C1F11FE99C800DC4528 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBalloon.h; sourceTree = "<group>"; };
-		72562C2011FE99C800DC4528 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBalloon.m; sourceTree = "<group>"; };
 		7264A62811F83C3F0093FD0C /* NSString+Search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Search.h"; sourceTree = "<group>"; };
 		7264A62911F83C3F0093FD0C /* NSString+Search.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Search.m"; sourceTree = "<group>"; };
 		7264A63111F83DC10093FD0C /* RangeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeObject.h; sourceTree = "<group>"; };
@@ -378,6 +389,8 @@
 				72C8256411F5AEE900F75566 /* BookshelfViewController-iPad.xib */,
 				722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */,
 				7272C5B811F6D3610084A45D /* BookshelfTableViewCell.xib */,
+				723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */,
+				723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */,
 				72ECD7CD11E41BE400F872D1 /* ImageViewController-iPad.xib */,
 				72ECD7CC11E41BE400F872D1 /* ImageViewController-iPad-land.xib */,
 				725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */,
@@ -456,6 +469,15 @@
 			name = ASIHTTPRequest;
 			sourceTree = "<group>";
 		};
+		723DE21511FFD69700344B47 /* Deletion */ = {
+			isa = PBXGroup;
+			children = (
+				723DE2AE11FFF13A00344B47 /* BookshelfDeletionViewController.h */,
+				723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */,
+			);
+			name = Deletion;
+			sourceTree = "<group>";
+		};
 		72479AF811DB15E7005EF63A /* Util */ = {
 			isa = PBXGroup;
 			children = (
@@ -494,8 +516,8 @@
 		72562C1E11FE99B300DC4528 /* Balloon */ = {
 			isa = PBXGroup;
 			children = (
-				72562C1F11FE99C800DC4528 /* UIBalloon.h */,
-				72562C2011FE99C800DC4528 /* UIBalloon.m */,
+				723DE2B111FFF17200344B47 /* UIBalloon.h */,
+				723DE2B211FFF17200344B47 /* UIBalloon.m */,
 			);
 			name = Balloon;
 			sourceTree = "<group>";
@@ -514,6 +536,7 @@
 		72B019DF11F594800041346E /* Bookshelf */ = {
 			isa = PBXGroup;
 			children = (
+				723DE21511FFD69700344B47 /* Deletion */,
 				7272C5B511F6D3430084A45D /* BookshelfTableViewCell.h */,
 				7272C5B611F6D3430084A45D /* BookshelfTableViewCell.m */,
 				72C8256611F5AF1B00F75566 /* BookshelfViewController.h */,
@@ -610,6 +633,8 @@
 				72F1DE1011F022BF008223FB /* BrowserViewController-iPhone-land.xib */,
 				72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */,
 				722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */,
+				723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */,
+				723DE24D11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib */,
 				72EC0D8911E2C81A006116C1 /* ImageViewController-iPhone.xib */,
 				727D172F11E3338D007B32CD /* ImageViewController-iPhone-land.xib */,
 				72EC0DA311E2CC90006116C1 /* TOCViewController-iPhone.xib */,
@@ -742,6 +767,10 @@
 				7232D62C11F9980B00BC966B /* icon.png in Resources */,
 				7251520011F99FA500A89BA6 /* ImageSearchViewController-land.xib in Resources */,
 				7251520111F99FA500A89BA6 /* ImageSearchViewController.xib in Resources */,
+				723DE22F11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib in Resources */,
+				723DE23411FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib in Resources */,
+				723DE24511FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib in Resources */,
+				723DE24E11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -809,7 +838,8 @@
 				7251520711F99FE700A89BA6 /* SearchResult.m in Sources */,
 				7251520A11F9A00D00A89BA6 /* FileUtil.m in Sources */,
 				7251521011F9A04200A89BA6 /* Region.m in Sources */,
-				72562C2111FE99C800DC4528 /* UIBalloon.m in Sources */,
+				723DE2B011FFF13A00344B47 /* BookshelfDeletionViewController.m in Sources */,
+				723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -859,12 +889,13 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=*]" = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=iphoneos*]" = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: yuji noguchi (4QDW9RSP3G)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6263CF7C-BA74-4462-B06B-A0506AA6C546";
 				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;

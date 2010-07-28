@@ -13,6 +13,7 @@
 #import "BookmarkViewController.h"
 #import "BrowserViewController.h"
 #import "BookshelfViewController.h"
+#import "BookshelfDeletionViewController.h"
 #import "Const.h"
 #import "ASIHTTPRequest.h"
 #import "FileUtil.h"
@@ -54,6 +55,16 @@
     } else {
         [self showBookshelf:animated];
     }
+}
+
+- (void)showBookshelfDeletion {
+    [self.current.view removeFromSuperview];
+    
+    self.current = [BookshelfDeletionViewController createViewController];
+    self.current.parent = self;
+    [DownloadManager instance].delegate = self.current;
+    
+    [self addSubview:YES];
 }
 
 - (void)showImage:(int)documentId page:(int)page {
