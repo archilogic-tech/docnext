@@ -56,7 +56,7 @@
 }
 
 - (void)downloaded {
-    [viewController showBookshelf:YES];
+    [viewController showBookshelfDeletion];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
