@@ -59,7 +59,7 @@ public class ThumbnailCreator {
     }
 
     /**
-     * @return width : height ratio
+     * @return width / height ratio
      */
     public double create( String outDir , String pdfPath , String prefix ) {
         LOGGER.info( "Begin create thumbanil" );
@@ -164,6 +164,16 @@ public class ThumbnailCreator {
     }
 
     private String getPpmPath( String prefix , int page ) {
-        return String.format( "%s-%06d.ppm" , prefix , page + 1 );
+        String path = String.format( "%s-%06d.ppm" , prefix , page + 1 );
+        if ( new File( path ).exists() ) {
+            return path;
+        }
+
+        path = String.format( "%s-%d.ppm" , prefix , page + 1 );
+        if ( new File( path ).exists() ) {
+            return path;
+        }
+
+        throw new RuntimeException( "Could not find ppm file" );
     }
 }

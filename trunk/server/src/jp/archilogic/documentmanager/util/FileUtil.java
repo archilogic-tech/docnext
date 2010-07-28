@@ -8,9 +8,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.common.collect.Lists;
 
 public class FileUtil {
+    public static String createSameDirPath( String baseFile , String filename ) {
+        return FilenameUtils.getFullPathNoEndSeparator( baseFile ) + File.separator + filename;
+    }
+
     public static void safeDelete( String path ) {
         File f = new File( path );
         if ( f.exists() ) {
@@ -45,9 +51,14 @@ public class FileUtil {
 
     public static void toFile( byte[] data , String path ) {
         try {
-            FileOutputStream out = new FileOutputStream( path );
-            out.write( data );
-            out.flush();
+            File outFile = new File( path );
+            if ( outFile.getParentFile().mkdirs() ) {
+                FileOutputStream out = new FileOutputStream( path );
+                out.write( data );
+                out.flush();
+            } else {
+                throw new RuntimeException( "Cannot create directory : " + outFile.getParent() );
+            }
         } catch ( FileNotFoundException e ) {
             e.printStackTrace();
             throw new RuntimeException( e );
