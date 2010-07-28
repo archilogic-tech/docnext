@@ -22,4 +22,7 @@ public class PropBean {
 
     @Value( "${path.pdfinfo}" )
     public String pdfInfo;
+
+    @Value( "${path.tmp}" )
+    public String tmp;
 }

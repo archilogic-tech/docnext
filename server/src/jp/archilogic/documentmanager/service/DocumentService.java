@@ -1,7 +1,9 @@
 package jp.archilogic.documentmanager.service;
 
+import java.io.File;
 import java.util.List;
 
+import jp.archilogic.documentmanager.bean.PropBean;
 import jp.archilogic.documentmanager.converter.DocumentConverter;
 import jp.archilogic.documentmanager.converter.ListConverter;
 import jp.archilogic.documentmanager.dao.DocumentDao;
@@ -29,6 +31,8 @@ public class DocumentService {
     private DocumentConverter documentConverter;
     @Autowired
     private PackManager packManager;
+    @Autowired
+    private PropBean prop;
 
     public List< DocumentResDto > findAll() {
         return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
@@ -50,6 +54,14 @@ public class DocumentService {
 
     public List< Integer > getSinglePageInfo( long id ) {
         return packManager.readSinglePageInfo( id );
+    }
+
+    private String getTempPath() {
+        String path = prop.tmp;
+        if ( path == null || path.isEmpty() ) {
+            path = System.getProperty( "java.io.tmpdir" );
+        }
+        return path;
     }
 
     public String getText( long id , int page ) {
@@ -96,9 +108,10 @@ public class DocumentService {
         documentDao.create( document );
 
         String path = "uploaded" + document.id + "." + FilenameUtils.getExtension( fileName );
-        FileUtil.toFile( data , path );
+        String uploadPath = getTempPath() + File.separator + document.id + File.separator + path;
+        FileUtil.toFile( data , uploadPath );
 
-        uploadProcessor.proc( path , document );
+        uploadProcessor.proc( uploadPath , document );
 
         return document.id;
     }

@@ -8,6 +8,7 @@ import jp.archilogic.documentmanager.dto.TOCElem;
 import jp.archilogic.documentmanager.entity.Document;
 import jp.archilogic.documentmanager.exception.UnsupportedFormatException;
 import jp.archilogic.documentmanager.logic.PDFTextParser.PageTextInfo;
+import jp.archilogic.documentmanager.util.FileUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -36,9 +37,10 @@ public class UploadProcessor {
                 FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
 
                 String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
+                String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
                 double ratio =
-                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , tempPdfPath , "ppm"
+                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , tempPdfPath , ppmPath
                                 + doc.id );
 
                 int pages = thumbnailCreator.getPages( tempPdfPath );
@@ -73,7 +75,8 @@ public class UploadProcessor {
                 if ( FilenameUtils.getExtension( path ).equals( "pdf" ) ) {
                     return tempPath;
                 } else {
-                    String tempPdfPath = "temp" + documentId + ".pdf";
+                    String tempDir = FilenameUtils.getFullPathNoEndSeparator( tempPath );
+                    String tempPdfPath = tempDir + File.separator + "temp" + documentId + ".pdf";
                     converter.convert( new File( tempPath ) , new File( tempPdfPath ) );
                     return tempPdfPath;
                 }
