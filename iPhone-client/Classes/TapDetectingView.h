@@ -27,5 +27,6 @@
 - (void)tapDetectingView:(TapDetectingView *)view gotSingleTapAtPoint:(CGPoint)tapPoint;
 - (void)tapDetectingView:(TapDetectingView *)view gotDoubleTapAtPoint:(CGPoint)tapPoint;
 - (void)tapDetectingView:(TapDetectingView *)view gotTwoFingerTapAtPoint:(CGPoint)tapPoint;
+- (void)tapDetectingView:(TapDetectingView *)view gotSingleLongTapAtPoint:(CGPoint)tapPoint;
 
 @end

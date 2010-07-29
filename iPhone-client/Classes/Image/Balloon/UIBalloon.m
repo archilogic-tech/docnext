@@ -73,16 +73,6 @@
     [self drawRoundRect:CGRectMake( x, y, w, h ) radius:5 context:c];
 }
 
-- (id)initWithFrame:(CGRect)frame {
-    if ( ( self = [super initWithFrame:frame] ) ) {
-        self.backgroundColor = [UIColor clearColor];
-        //self.alpha = 0.5;
-
-    }
-    
-    return self;
-}
-
 - (id)initWithText:(NSString *)text tip:(CGPoint)_tip {
     tip = _tip;
     
