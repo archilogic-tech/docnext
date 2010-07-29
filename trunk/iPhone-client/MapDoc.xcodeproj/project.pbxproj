@@ -35,6 +35,8 @@
 		723DE24E11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24D11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib */; };
 		723DE2B011FFF13A00344B47 /* BookshelfDeletionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */; };
 		723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2B211FFF17200344B47 /* UIBalloon.m */; };
+		7246787312011087005F80D6 /* UIScaleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246787212011087005F80D6 /* UIScaleButton.m */; };
+		724679CE12015DF9005F80D6 /* RegionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 724679CD12015DF9005F80D6 /* RegionInfo.m */; };
 		72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 72479B3A11DB1D4A005EF63A /* ZipArchive.mm */; };
 		72479B4911DB1D58005EF63A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4111DB1D58005EF63A /* ioapi.c */; };
 		72479B4A11DB1D58005EF63A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4311DB1D58005EF63A /* mztools.c */; };
@@ -159,6 +161,11 @@
 		723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookshelfDeletionViewController.m; path = Bookshelf/Deletion/BookshelfDeletionViewController.m; sourceTree = "<group>"; };
 		723DE2B111FFF17200344B47 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIBalloon.h; path = Image/Balloon/UIBalloon.h; sourceTree = "<group>"; };
 		723DE2B211FFF17200344B47 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIBalloon.m; path = Image/Balloon/UIBalloon.m; sourceTree = "<group>"; };
+		7246787112011087005F80D6 /* UIScaleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScaleButton.h; sourceTree = "<group>"; };
+		7246787212011087005F80D6 /* UIScaleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIScaleButton.m; sourceTree = "<group>"; };
+		7246788012011519005F80D6 /* IScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IScale.h; sourceTree = "<group>"; };
+		724679CC12015DF9005F80D6 /* RegionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionInfo.h; sourceTree = "<group>"; };
+		724679CD12015DF9005F80D6 /* RegionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionInfo.m; sourceTree = "<group>"; };
 		72479B3911DB1D4A005EF63A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZipArchive.h; path = Library/ZipArchive/ZipArchive.h; sourceTree = "<group>"; };
 		72479B3A11DB1D4A005EF63A /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ZipArchive.mm; path = Library/ZipArchive/ZipArchive.mm; sourceTree = "<group>"; };
 		72479B4011DB1D58005EF63A /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = Library/ZipArchive/minizip/crypt.h; sourceTree = "<group>"; };
@@ -589,6 +596,11 @@
 				72EF9C4A11DAD7FC00E8E5E7 /* UIRemoteImageView.m */,
 				7251520D11F9A04200A89BA6 /* Region.h */,
 				7251520E11F9A04200A89BA6 /* Region.m */,
+				7246787112011087005F80D6 /* UIScaleButton.h */,
+				7246787212011087005F80D6 /* UIScaleButton.m */,
+				7246788012011519005F80D6 /* IScale.h */,
+				724679CC12015DF9005F80D6 /* RegionInfo.h */,
+				724679CD12015DF9005F80D6 /* RegionInfo.m */,
 			);
 			name = Image;
 			sourceTree = "<group>";
@@ -840,6 +852,8 @@
 				7251521011F9A04200A89BA6 /* Region.m in Sources */,
 				723DE2B011FFF13A00344B47 /* BookshelfDeletionViewController.m in Sources */,
 				723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */,
+				7246787312011087005F80D6 /* UIScaleButton.m in Sources */,
+				724679CE12015DF9005F80D6 /* RegionInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

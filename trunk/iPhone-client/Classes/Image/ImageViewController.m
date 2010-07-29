@@ -17,6 +17,7 @@
 #import "RangeObject.h"
 #import "ImageSearchViewController.h"
 #import "UIBalloon.h"
+#import "RegionInfo.h"
 
 @interface ImageViewController ()
 - (void)buildPageHeads;
@@ -24,6 +25,7 @@
 - (void)movePageToCurrent:(BOOL)isLeft;
 - (void)loadSinglePageInfo;
 - (double)loadRatio;
+- (void)loadRegions;
 @end
 
 @implementation ImageViewController
@@ -115,13 +117,14 @@
         [self movePageToCurrent:isLeft];
     }
     
-    NSArray *regions = [FileUtil regions:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
-    
     [self.tiledScrollView clearMarker];
     for ( int index = 0 ; index < ranges.count ; index++ ) {
         RangeObject *range = [ranges objectAtIndex:index];
         for ( int delta = 0 ; delta < range.length ; delta++ ) {
             UIColor *color = index == selectedIndex ? [UIColor redColor] : [UIColor yellowColor];
+            if ( regions == nil ) {
+                [self loadRegions];
+            }
             [self.tiledScrollView drawMarker:[regions objectAtIndex:(range.location + delta)] ratio:[self loadRatio]
                                        color:[color colorWithAlphaComponent:0.5]];
             
@@ -209,6 +212,13 @@
     [FileUtil saveHistory:history];
 }
 
+- (void)selectNearest:(CGPoint)point {
+    RegionInfo *nearest = [self getNearestRegion:point];
+    NSArray *selectedRegions = [NSArray arrayWithObject:nearest.region];
+    [self.tiledScrollView drawMarkerForSelect:selectedRegions ratio:[self loadRatio]
+                                        color:[[UIColor blueColor] colorWithAlphaComponent:0.5] index:nearest.index];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -227,6 +237,7 @@
     [singlePageInfo release];
     [pageHeads release];
     [isSinglePage release];
+    [regions release];
     
     [super dealloc];
 }
@@ -283,6 +294,10 @@
     return [[[[NSString stringWithData:
                [FileUtil read:
                 [NSString stringWithFormat:@"%d/info.json" , documentId]]] JSONValue] objectForKey:@"ratio"] doubleValue];
+}
+
+- (void)loadRegions {
+    regions = [[FileUtil regions:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]] retain];
 }
 
 #pragma mark TiledScrollViewDataSource method
@@ -346,6 +361,9 @@
     [self.view.layer addAnimation:animation forKey:nil];
     
     [self saveHistory];
+    
+    [regions release];
+    regions = nil;
 }
 
 - (void)movePage:(BOOL)isLeft {
@@ -373,6 +391,44 @@
     }
 }
 
+- (RegionInfo *)getNearestRegion:(CGPoint)point {
+    CGRect actual = [self.tiledScrollView calcActualRect:[self loadRatio]];
+    
+    double minDist = DBL_MAX;
+    double minIndex = -1;
+    if ( regions == nil ) {
+        [self loadRegions];
+    }
+    for ( int index = 0 ; index < regions.count ; index++ ) {
+        Region *region = [regions objectAtIndex:index];
+        
+        double dx = pow(actual.origin.x + (region.x + region.width / 2) * actual.size.width - point.x, 2);
+        double dy = pow(actual.origin.y + (region.y + region.height / 2) * actual.size.height- point.y , 2);
+        double dist = dx + dy;
+        if ( dist < minDist ) {
+            minDist = dist;
+            minIndex = index;
+        }
+    }
+    
+    RegionInfo *ret = [[RegionInfo new] autorelease];
+    ret.region = [regions objectAtIndex:minIndex];
+    ret.index = minIndex;
+    
+    return ret;
+}
+
+- (double)ratio {
+    return [self loadRatio];
+}
+
+- (Region *)getRegion:(int)index {
+    if ( regions == nil ) {
+        [self loadRegions];
+    }
+    return [regions objectAtIndex:index];
+}
+
 #pragma mark CAAnimationDelegate
 
 - (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag {
@@ -395,10 +451,57 @@
     [self toggleConfigView];
 }
 
+- (void)performAnimation:(NSDictionary *)info {
+    int counter = [[info objectForKey:@"counter"] intValue];
+    float fromScale = [[info objectForKey:@"fromScale"] floatValue];
+    float toScale = [[info objectForKey:@"toScale"] floatValue];
+    float fromOffsetX = [[info objectForKey:@"fromOffsetX"] floatValue];
+    float toOffsetX = [[info objectForKey:@"toOffsetX"] floatValue];
+    float fromOffsetY = [[info objectForKey:@"fromOffsetY"] floatValue];
+    float toOffsetY = [[info objectForKey:@"toOffsetY"] floatValue];
+    
+    if ( counter > 10 ) {
+        return;
+    }
+    
+    float progress = counter / 10.0;
+    self.tiledScrollView.zoomScale = fromScale + (toScale - fromScale) * progress;
+    self.tiledScrollView.contentOffset = CGPointMake(fromOffsetX + (toOffsetX - fromOffsetX) * progress, fromOffsetY + (toOffsetY - fromOffsetY) * progress);
+    
+    [info setValue:[NSNumber numberWithInt:(counter + 1)] forKey:@"counter"];
+    [self performSelector:@selector(performAnimation:) withObject:info afterDelay:0.02];
+}
+
 - (void)tapDetectingView:(TapDetectingView *)view gotDoubleTapAtPoint:(CGPoint)tapPoint {
+    float scale = self.tiledScrollView.zoomScale;
+    float toScale;
+    if ( scale < self.tiledScrollView.maximumZoomScale ) {
+        toScale = MIN( scale * 2 , self.tiledScrollView.maximumZoomScale );
+    } else {
+        toScale = 1;
+    }
+
+    CGSize boundsSize = self.tiledScrollView.bounds.size;
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:0];
+    [dict setObject:[NSNumber numberWithInt:0] forKey:@"counter"];
+    [dict setObject:[NSNumber numberWithFloat:scale] forKey:@"fromScale"];
+    [dict setObject:[NSNumber numberWithFloat:toScale] forKey:@"toScale"];
+    [dict setObject:[NSNumber numberWithFloat:self.tiledScrollView.contentOffset.x] forKey:@"fromOffsetX"];
+    [dict setObject:[NSNumber numberWithFloat:(MAX(MIN(tapPoint.x * toScale - boundsSize.width / 2 ,
+                                                       boundsSize.width * (toScale - 1)) , 0))] forKey:@"toOffsetX"];
+    [dict setObject:[NSNumber numberWithFloat:self.tiledScrollView.contentOffset.y] forKey:@"fromOffsetY"];
+    [dict setObject:[NSNumber numberWithFloat:(MAX(MIN(tapPoint.y * toScale - boundsSize.height / 2 ,
+                                                       boundsSize.height * (toScale - 1)) , 0))] forKey:@"toOffsetY"];
+    
+    [self performAnimation:dict];
 }
 
 - (void)tapDetectingView:(TapDetectingView *)view gotTwoFingerTapAtPoint:(CGPoint)tapPoint {
+}
+
+- (void)tapDetectingView:(TapDetectingView *)view gotSingleLongTapAtPoint:(CGPoint)tapPoint {
+    [self selectNearest:tapPoint];
 }
 
 @end

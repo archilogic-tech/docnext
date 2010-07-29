@@ -7,6 +7,7 @@
 //
 
 #import "Region.h"
+#import "RegionInfo.h"
 
 @class TapDetectingView;
 
@@ -30,6 +31,13 @@
 
     BOOL isZoomChanging;
     float baseScale;
+    
+    float fromScale;
+    float toScale;
+    
+    NSMutableSet *selectionMarkers;
+    int selectionMinIndex;
+    int selectionMaxIndex;
 }
 
 @property(nonatomic,assign) id <TiledScrollViewDataSource> dataSource;
@@ -43,7 +51,9 @@
 - (void)reloadDataWithNewContentSize:(CGSize)size;
 - (void)releasePending;
 - (void)clearMarker;
-- (void)drawMarker:(Region *)regions ratio:(double)ratio color:(UIColor *)color;
+- (CGRect)calcActualRect:(double)ratio;
+- (void)drawMarker:(Region *)region ratio:(double)ratio color:(UIColor *)color;
+- (void)drawMarkerForSelect:(NSArray *)regions ratio:(double)ratio color:(UIColor *)color index:(int)index;
 - (void)addBalloon:(NSString *)text tip:(CGPoint)tip ratio:(double)ratio;
 @end
 
@@ -53,6 +63,7 @@
 - (void)resetLoad;
 - (void)movePage:(BOOL)isLeft;
 - (void)beginDragging;
+- (RegionInfo *)getNearestRegion:(CGPoint)point;
+- (double)ratio;
+- (Region *)getRegion:(int)index;
 @end
-
-

@@ -11,6 +11,7 @@
 #import "TapDetectingView.h"
 #import "UIRemoteImageView.h"
 #import "UIBalloon.h"
+#import "UIScaleButton.h"
 
 @interface TiledScrollView ()
 - (void)updateResolution;
@@ -54,6 +55,8 @@
         // We need to return our tileContainerView as the view for zooming, and we also need to receive
         // the scrollViewDidEndZooming: delegate callback so we can update our resolution.
         super.delegate = self;
+        
+        selectionMarkers = [[NSMutableSet setWithCapacity:0] retain];
     }
     
     return self;
@@ -65,6 +68,7 @@
     [imageContainerView release];
     [markerContainerView release];
     [balloonContainerView release];
+    [selectionMarkers release];
 
     [super dealloc];
 }
@@ -158,6 +162,77 @@
     [markerContainerView addSubview:view];
 }
 
+- (IBAction)touchDragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
+    CGPoint point = [[[event touchesForView:sender] anyObject] locationInView:markerContainerView];
+    RegionInfo *info = [dataSource getNearestRegion:point];
+
+    if (sender.isLeft ?
+        (info.index != selectionMinIndex && info.index <= selectionMaxIndex) :
+        (info.index != selectionMaxIndex && info.index >= selectionMinIndex) ) {
+        CGRect rect = [self calcActualRect:[dataSource ratio]];
+        [sender moveToTip:CGPointMake(rect.origin.x + (info.region.x + (sender.isLeft ? 0 : info.region.width)) * rect.size.width,
+                                      rect.origin.y + (info.region.y + info.region.height / 2) * rect.size.height) scale:self.zoomScale];
+        if ( sender.isLeft ) {
+            selectionMinIndex = info.index;
+        } else {
+            selectionMaxIndex = info.index;
+        }
+        
+        for ( UIView *view in selectionMarkers ) {
+            if ( ![view isKindOfClass:[UIScaleButton class]] ) {
+                [view removeFromSuperview];
+            }
+        }
+        
+        for ( int index = selectionMinIndex ; index <= selectionMaxIndex ; index++ ) {
+            Region *region = [dataSource getRegion:index];
+            UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
+                                                                     rect.origin.y + region.y * rect.size.height,
+                                                                     region.width * rect.size.width,
+                                                                     region.height * rect.size.height)] autorelease];
+            view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
+            [markerContainerView addSubview:view];
+            [selectionMarkers addObject:view];
+        }
+    }
+}
+
+- (void)drawMarkerForSelect:(NSArray *)regions ratio:(double)ratio color:(UIColor *)color index:(int)index {
+    for ( UIView *view in selectionMarkers ) {
+        [view removeFromSuperview];
+    }
+    [selectionMarkers removeAllObjects];
+    
+    CGRect rect = [self calcActualRect:ratio];
+    for ( Region *region in regions ) {
+        UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
+                                                                 rect.origin.y + region.y * rect.size.height,
+                                                                 region.width * rect.size.width,
+                                                                 region.height * rect.size.height)] autorelease];
+        view.backgroundColor = color;
+        [markerContainerView addSubview:view];
+        [selectionMarkers addObject:view];
+    }
+    
+    Region *leftRegion = [regions objectAtIndex:0];
+    UIScaleButton *left = [[[UIScaleButton alloc] initWithTip:
+                            CGPointMake(rect.origin.x + leftRegion.x * rect.size.width,
+                                        rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height) isLeft:YES scale:self.zoomScale] autorelease];
+    [left addTarget:self action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [self addSubview:left];
+    [selectionMarkers addObject:left];
+    
+    UIScaleButton *right = [[[UIScaleButton alloc] initWithTip:
+                            CGPointMake(rect.origin.x + (leftRegion.x + leftRegion.width) * rect.size.width,
+                                        rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height) isLeft:NO scale:self.zoomScale] autorelease];
+    [right addTarget:self action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [self addSubview:right];
+    [selectionMarkers addObject:right];
+    
+    selectionMinIndex = index;
+    selectionMaxIndex = index;
+}
+
 - (void)addBalloon:(NSString *)text tip:(CGPoint)tip ratio:(double)ratio {
     CGRect rect = [self calcActualRect:ratio];
     [balloonContainerView addSubview:
@@ -173,10 +248,6 @@
 /***********************************************************************************/
 - (void)layoutSubviews {
     if ( isZoomChanging ) {
-        for ( UIView *view in balloonContainerView.subviews ) {
-            [(UIBalloon *)view adjustForTip:self.zoomScale];
-        }
-        
         return;
     }
     
@@ -238,6 +309,15 @@
     
     // +1 for horizontal dragging
     self.contentSize = CGSizeMake( self.tileContainerView.frame.size.width + 1 , self.tileContainerView.frame.size.height );
+
+    for ( UIView *view in balloonContainerView.subviews ) {
+        [(id<IScale>)view adjustForTip:self.zoomScale];
+    }
+    for ( UIView *view in self.subviews ) {
+        if ( [view respondsToSelector:@selector(adjustForTip:)] ) {
+            [(id<IScale>)view adjustForTip:self.zoomScale];
+        }
+    }
 }
 
 

@@ -7,14 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IScale.h"
 
-
-@interface UIBalloon : UIView {
+@interface UIBalloon : UIView <IScale> {
     CGPoint tip;
     CGPoint tipOffset;
 }
 
 - (id)initWithText:(NSString *)text tip:(CGPoint)tip;
-- (void)adjustForTip:(float)scale;
 
 @end

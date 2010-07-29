@@ -8,7 +8,8 @@
 
 #import "TapDetectingView.h"
 
-#define DOUBLE_TAP_DELAY 0.35
+#define DOUBLE_TAP_DELAY 0.5
+#define LONG_TAP_DELAY 1.5
 
 CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
 
@@ -16,6 +17,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
 - (void)handleSingleTap;
 - (void)handleDoubleTap;
 - (void)handleTwoFingerTap;
+- (void)handleSingleLongTap;
 @end
 
 @implementation TapDetectingView
@@ -36,6 +38,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
     // cancel any pending handleSingleTap messages 
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleSingleTap) object:nil];
     
+    NSLog(@"touchesForView.count: %d",[[event touchesForView:self] count]);
     // update our touch state
     if ( [[event touchesForView:self] count] > 1 ) {
         multipleTouches = YES;
@@ -43,18 +46,23 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
     if ( [[event touchesForView:self] count] > 2 ) {
         twoFingerTapIsPossible = NO;
     }
-    
+    if ( [[event touchesForView:self] count] == 0 ) {
+        tapLocation = [[touches anyObject] locationInView:self];
+        [self performSelector:@selector(handleSingleLongTap) withObject:nil afterDelay:LONG_TAP_DELAY];
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     BOOL allTouchesEnded = ([touches count] == [[event touchesForView:self] count]);
+    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleSingleLongTap) object:nil];
     
     if ( !multipleTouches ) {
         // first check for plain single/double tap, which is only possible if we haven't seen multiple touches
 
         UITouch *touch = [touches anyObject];
         tapLocation = [touch locationInView:self];
-        
+
         if ( [touch tapCount] == 1 ) {
             [self performSelector:@selector(handleSingleTap) withObject:nil afterDelay:DOUBLE_TAP_DELAY];
         } else if( [touch tapCount] == 2 ) {
@@ -131,6 +139,12 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
     }
 }
     
+- (void)handleSingleLongTap {
+    if ( [delegate respondsToSelector:@selector(tapDetectingView:gotSingleLongTapAtPoint:)] ) {
+        [delegate tapDetectingView:self gotSingleLongTapAtPoint:tapLocation];
+    }
+}
+
 @end
 
 CGPoint midpointBetweenPoints(CGPoint a, CGPoint b) {

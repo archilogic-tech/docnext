@@ -30,6 +30,7 @@
     NSArray *pageHeads;
     NSArray *isSinglePage;
     int nRequestTile;
+    NSArray *regions;
 }
 
 @property(nonatomic,retain) IBOutlet UIView *configView;
