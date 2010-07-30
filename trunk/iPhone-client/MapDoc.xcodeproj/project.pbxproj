@@ -29,9 +29,6 @@
 		722E6DF111F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */; };
 		722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */; };
 		7232D62C11F9980B00BC966B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7232D62B11F9980B00BC966B /* icon.png */; };
-		72397E461202A15C00A9CF64 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */; };
-		72397E751202AF6100A9CF64 /* SeparationHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E741202AF6100A9CF64 /* SeparationHolder.m */; };
-		72397E7E1202B32A00A9CF64 /* IntDoublePair.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E7D1202B32A00A9CF64 /* IntDoublePair.m */; };
 		723DE22F11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */; };
 		723DE23411FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */; };
 		723DE24511FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */; };
@@ -40,6 +37,9 @@
 		723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2B211FFF17200344B47 /* UIBalloon.m */; };
 		7246787312011087005F80D6 /* UIScaleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246787212011087005F80D6 /* UIScaleButton.m */; };
 		724679CE12015DF9005F80D6 /* RegionInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 724679CD12015DF9005F80D6 /* RegionInfo.m */; };
+		7246FDB51202D0780051C2D6 /* IntDoublePair.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246FDB21202D0780051C2D6 /* IntDoublePair.m */; };
+		7246FDB61202D0780051C2D6 /* SeparationHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246FDB41202D0780051C2D6 /* SeparationHolder.m */; };
+		7246FDB91202D0900051C2D6 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246FDB81202D0900051C2D6 /* VolonoiDiagramBuilder.m */; };
 		72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 72479B3A11DB1D4A005EF63A /* ZipArchive.mm */; };
 		72479B4911DB1D58005EF63A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4111DB1D58005EF63A /* ioapi.c */; };
 		72479B4A11DB1D58005EF63A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4311DB1D58005EF63A /* mztools.c */; };
@@ -156,12 +156,6 @@
 		722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		7232D62B11F9980B00BC966B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
-		72397E441202A15C00A9CF64 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
-		72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
-		72397E731202AF6100A9CF64 /* SeparationHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeparationHolder.h; sourceTree = "<group>"; };
-		72397E741202AF6100A9CF64 /* SeparationHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeparationHolder.m; sourceTree = "<group>"; };
-		72397E7C1202B32A00A9CF64 /* IntDoublePair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntDoublePair.h; sourceTree = "<group>"; };
-		72397E7D1202B32A00A9CF64 /* IntDoublePair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntDoublePair.m; sourceTree = "<group>"; };
 		723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad.xib"; sourceTree = "<group>"; };
 		723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfDeletionViewController-iPhone.xib"; sourceTree = "<group>"; };
@@ -175,6 +169,12 @@
 		7246788012011519005F80D6 /* IScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IScale.h; sourceTree = "<group>"; };
 		724679CC12015DF9005F80D6 /* RegionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegionInfo.h; sourceTree = "<group>"; };
 		724679CD12015DF9005F80D6 /* RegionInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegionInfo.m; sourceTree = "<group>"; };
+		7246FDB11202D0780051C2D6 /* IntDoublePair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntDoublePair.h; path = Image/Separation/IntDoublePair.h; sourceTree = "<group>"; };
+		7246FDB21202D0780051C2D6 /* IntDoublePair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IntDoublePair.m; path = Image/Separation/IntDoublePair.m; sourceTree = "<group>"; };
+		7246FDB31202D0780051C2D6 /* SeparationHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SeparationHolder.h; path = Image/Separation/SeparationHolder.h; sourceTree = "<group>"; };
+		7246FDB41202D0780051C2D6 /* SeparationHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SeparationHolder.m; path = Image/Separation/SeparationHolder.m; sourceTree = "<group>"; };
+		7246FDB71202D0900051C2D6 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VolonoiDiagramBuilder.h; path = Image/VolonoiDiagram/VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
+		7246FDB81202D0900051C2D6 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VolonoiDiagramBuilder.m; path = Image/VolonoiDiagram/VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
 		72479B3911DB1D4A005EF63A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZipArchive.h; path = Library/ZipArchive/ZipArchive.h; sourceTree = "<group>"; };
 		72479B3A11DB1D4A005EF63A /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ZipArchive.mm; path = Library/ZipArchive/ZipArchive.mm; sourceTree = "<group>"; };
 		72479B4011DB1D58005EF63A /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = Library/ZipArchive/minizip/crypt.h; sourceTree = "<group>"; };
@@ -488,8 +488,8 @@
 		72397E431202A13100A9CF64 /* VolonoiDiagram */ = {
 			isa = PBXGroup;
 			children = (
-				72397E441202A15C00A9CF64 /* VolonoiDiagramBuilder.h */,
-				72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */,
+				7246FDB71202D0900051C2D6 /* VolonoiDiagramBuilder.h */,
+				7246FDB81202D0900051C2D6 /* VolonoiDiagramBuilder.m */,
 			);
 			name = VolonoiDiagram;
 			sourceTree = "<group>";
@@ -497,10 +497,10 @@
 		72397E6B1202AE7000A9CF64 /* Separation */ = {
 			isa = PBXGroup;
 			children = (
-				72397E731202AF6100A9CF64 /* SeparationHolder.h */,
-				72397E741202AF6100A9CF64 /* SeparationHolder.m */,
-				72397E7C1202B32A00A9CF64 /* IntDoublePair.h */,
-				72397E7D1202B32A00A9CF64 /* IntDoublePair.m */,
+				7246FDB11202D0780051C2D6 /* IntDoublePair.h */,
+				7246FDB21202D0780051C2D6 /* IntDoublePair.m */,
+				7246FDB31202D0780051C2D6 /* SeparationHolder.h */,
+				7246FDB41202D0780051C2D6 /* SeparationHolder.m */,
 			);
 			name = Separation;
 			sourceTree = "<group>";
@@ -885,9 +885,9 @@
 				723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */,
 				7246787312011087005F80D6 /* UIScaleButton.m in Sources */,
 				724679CE12015DF9005F80D6 /* RegionInfo.m in Sources */,
-				72397E461202A15C00A9CF64 /* VolonoiDiagramBuilder.m in Sources */,
-				72397E751202AF6100A9CF64 /* SeparationHolder.m in Sources */,
-				72397E7E1202B32A00A9CF64 /* IntDoublePair.m in Sources */,
+				7246FDB51202D0780051C2D6 /* IntDoublePair.m in Sources */,
+				7246FDB61202D0780051C2D6 /* SeparationHolder.m in Sources */,
+				7246FDB91202D0900051C2D6 /* VolonoiDiagramBuilder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -162,81 +162,55 @@
     [markerContainerView addSubview:view];
 }
 
+- (void)addSelectionMarker:(int)count regionBase:(int)regionBase markarBase:(int)markarBase actual:(CGRect)actual {
+    for ( int delta = 0 ; delta < count ; delta++ ) {
+        Region *region = [dataSource getRegion:(regionBase + delta)];
+        UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(actual.origin.x + region.x * actual.size.width,
+                                                                 actual.origin.y + region.y * actual.size.height,
+                                                                 region.width * actual.size.width,
+                                                                 region.height * actual.size.height)] autorelease];
+        view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
+        [markerContainerView addSubview:view];
+        [selectionMarkers insertObject:view atIndex:(markarBase + delta)];
+    }
+}
+
+- (void)removeSelectionMarker:(int)count markerIndex:(int)markerIndex {
+    for ( int delta = 0 ; delta < count ; delta++ ) {
+        [[selectionMarkers objectAtIndex:markerIndex] removeFromSuperview];
+        [selectionMarkers removeObjectAtIndex:markerIndex];
+    }
+}
+
 - (IBAction)touchDragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
     CGPoint point = [[[event touchesForView:sender] anyObject] locationInView:markerContainerView];
-    NSDate *t = [NSDate date];
     RegionInfo *info = [dataSource getNearestRegion:point];
-    double d0 = [t timeIntervalSinceNow];
 
     if (sender.isLeft ?
         (info.index != selectionMinIndex && info.index <= selectionMaxIndex) :
         (info.index != selectionMaxIndex && info.index >= selectionMinIndex) ) {
-        CGRect rect = [self calcActualRect:[dataSource ratio]];
-        [sender moveToTip:CGPointMake(rect.origin.x + (info.region.x + (sender.isLeft ? 0 : info.region.width)) * rect.size.width,
-                                      rect.origin.y + (info.region.y + info.region.height / 2) * rect.size.height) scale:self.zoomScale];
-        t = [NSDate date];
+        CGRect actual = [self calcActualRect:[dataSource ratio]];
+        
+        [sender moveToTip:CGPointMake(actual.origin.x + (info.region.x + (sender.isLeft ? 0 : info.region.width)) * actual.size.width,
+                                      actual.origin.y + (info.region.y + info.region.height / 2) * actual.size.height) scale:self.zoomScale];
+
         if ( sender.isLeft ) {
             if ( info.index < selectionMinIndex ) {
-                for ( int delta = 0 ; delta < (selectionMinIndex - info.index) ; delta++ ) {
-                    Region *region = [dataSource getRegion:(info.index + delta)];
-                    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
-                                                                             rect.origin.y + region.y * rect.size.height,
-                                                                             region.width * rect.size.width,
-                                                                             region.height * rect.size.height)] autorelease];
-                    view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
-                    [markerContainerView addSubview:view];
-                    [selectionMarkers insertObject:view atIndex:delta];
-                }
+                [self addSelectionMarker:(selectionMinIndex - info.index) regionBase:info.index markarBase:0 actual:actual];
             } else {
-                for ( int delta = 0 ; delta < (info.index - selectionMinIndex) ; delta++ ) {
-                    [[selectionMarkers objectAtIndex:0] removeFromSuperview];
-                    [selectionMarkers removeObjectAtIndex:0];
-                }
+                [self removeSelectionMarker:(info.index - selectionMinIndex) markerIndex:0];
             }
             
             selectionMinIndex = info.index;
         } else {
             if ( info.index > selectionMaxIndex ) {
-                for ( int delta = 0 ; delta < (info.index - selectionMaxIndex) ; delta++ ) {
-                    Region *region = [dataSource getRegion:(selectionMaxIndex + 1 + delta)];
-                    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
-                                                                             rect.origin.y + region.y * rect.size.height,
-                                                                             region.width * rect.size.width,
-                                                                             region.height * rect.size.height)] autorelease];
-                    view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
-                    [markerContainerView addSubview:view];
-                    [selectionMarkers insertObject:view atIndex:([selectionMarkers count] - 2)];
-                }
+                [self addSelectionMarker:(info.index - selectionMaxIndex) regionBase:(selectionMaxIndex + 1) markarBase:([selectionMarkers count] - 2) actual:actual];
             } else {
-                for ( int delta = 0 ; delta < (selectionMaxIndex - info.index) ; delta++ ) {
-                    [[selectionMarkers objectAtIndex:([selectionMarkers count] - 1 - 2)] removeFromSuperview];
-                    [selectionMarkers removeObjectAtIndex:([selectionMarkers count] - 1 - 2)];
-                }
+                [self removeSelectionMarker:(selectionMaxIndex - info.index) markerIndex:([selectionMarkers count] - 2 - (selectionMaxIndex - info.index))];
             }
             
             selectionMaxIndex = info.index;
         }
-        
-        /*
-        for ( UIView *view in selectionMarkers ) {
-            if ( ![view isKindOfClass:[UIScaleButton class]] ) {
-                [view removeFromSuperview];
-            }
-        }
-        
-        for ( int index = selectionMinIndex ; index <= selectionMaxIndex ; index++ ) {
-            Region *region = [dataSource getRegion:index];
-            UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
-                                                                     rect.origin.y + region.y * rect.size.height,
-                                                                     region.width * rect.size.width,
-                                                                     region.height * rect.size.height)] autorelease];
-            view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
-            [markerContainerView addSubview:view];
-            [selectionMarkers addObject:view];
-        }*/
-        double d1 = [t timeIntervalSinceNow];
-        
-        NSLog(@"tooks: %f %f",d0,d1);
     }
 }
 
