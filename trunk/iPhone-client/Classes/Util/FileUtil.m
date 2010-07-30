@@ -147,12 +147,27 @@
 }
 
 + (NSArray *)regions:(int)docId page:(int)page {
+    static int SIZEOF_DOUBLE = 8;
+    static int N_REGION_FIELDS = 4;
+    
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
     
-    NSArray *arr = [[NSString stringWithData:
-                     [FileUtil read:[NSString stringWithFormat:@"%d/texts/%d.regions.json" , docId, page]]] JSONValue];
-    for ( NSDictionary *dic in arr ) {
-        [ret addObject:[Region objectWithDictionary:dic]];
+    NSData *data = [FileUtil read:[NSString stringWithFormat:@"%d/texts/%d.regions" , docId, page]];
+    int len = data.length;
+    for ( int pos = 0 ; pos < len ; pos += SIZEOF_DOUBLE * N_REGION_FIELDS ) {
+        Region *region = [[Region new] autorelease];
+        
+        double value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 0, SIZEOF_DOUBLE)];
+        region.x = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 1, SIZEOF_DOUBLE)];
+        region.y = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 2, SIZEOF_DOUBLE)];
+        region.width = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 3, SIZEOF_DOUBLE)];
+        region.height = value;
+        
+        [ret addObject:region];
     }
     
     return ret;

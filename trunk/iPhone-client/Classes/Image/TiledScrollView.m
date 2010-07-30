@@ -56,7 +56,7 @@
         // the scrollViewDidEndZooming: delegate callback so we can update our resolution.
         super.delegate = self;
         
-        selectionMarkers = [[NSMutableSet setWithCapacity:0] retain];
+        selectionMarkers = [[NSMutableArray arrayWithCapacity:0] retain];
     }
     
     return self;
@@ -164,7 +164,9 @@
 
 - (IBAction)touchDragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
     CGPoint point = [[[event touchesForView:sender] anyObject] locationInView:markerContainerView];
+    NSDate *t = [NSDate date];
     RegionInfo *info = [dataSource getNearestRegion:point];
+    double d0 = [t timeIntervalSinceNow];
 
     if (sender.isLeft ?
         (info.index != selectionMinIndex && info.index <= selectionMaxIndex) :
@@ -172,12 +174,50 @@
         CGRect rect = [self calcActualRect:[dataSource ratio]];
         [sender moveToTip:CGPointMake(rect.origin.x + (info.region.x + (sender.isLeft ? 0 : info.region.width)) * rect.size.width,
                                       rect.origin.y + (info.region.y + info.region.height / 2) * rect.size.height) scale:self.zoomScale];
+        t = [NSDate date];
         if ( sender.isLeft ) {
+            if ( info.index < selectionMinIndex ) {
+                for ( int delta = 0 ; delta < (selectionMinIndex - info.index) ; delta++ ) {
+                    Region *region = [dataSource getRegion:(info.index + delta)];
+                    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
+                                                                             rect.origin.y + region.y * rect.size.height,
+                                                                             region.width * rect.size.width,
+                                                                             region.height * rect.size.height)] autorelease];
+                    view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
+                    [markerContainerView addSubview:view];
+                    [selectionMarkers insertObject:view atIndex:delta];
+                }
+            } else {
+                for ( int delta = 0 ; delta < (info.index - selectionMinIndex) ; delta++ ) {
+                    [[selectionMarkers objectAtIndex:0] removeFromSuperview];
+                    [selectionMarkers removeObjectAtIndex:0];
+                }
+            }
+            
             selectionMinIndex = info.index;
         } else {
+            if ( info.index > selectionMaxIndex ) {
+                for ( int delta = 0 ; delta < (info.index - selectionMaxIndex) ; delta++ ) {
+                    Region *region = [dataSource getRegion:(selectionMaxIndex + 1 + delta)];
+                    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x + region.x * rect.size.width,
+                                                                             rect.origin.y + region.y * rect.size.height,
+                                                                             region.width * rect.size.width,
+                                                                             region.height * rect.size.height)] autorelease];
+                    view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
+                    [markerContainerView addSubview:view];
+                    [selectionMarkers insertObject:view atIndex:([selectionMarkers count] - 2)];
+                }
+            } else {
+                for ( int delta = 0 ; delta < (selectionMaxIndex - info.index) ; delta++ ) {
+                    [[selectionMarkers objectAtIndex:([selectionMarkers count] - 1 - 2)] removeFromSuperview];
+                    [selectionMarkers removeObjectAtIndex:([selectionMarkers count] - 1 - 2)];
+                }
+            }
+            
             selectionMaxIndex = info.index;
         }
         
+        /*
         for ( UIView *view in selectionMarkers ) {
             if ( ![view isKindOfClass:[UIScaleButton class]] ) {
                 [view removeFromSuperview];
@@ -193,7 +233,10 @@
             view.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.5];
             [markerContainerView addSubview:view];
             [selectionMarkers addObject:view];
-        }
+        }*/
+        double d1 = [t timeIntervalSinceNow];
+        
+        NSLog(@"tooks: %f %f",d0,d1);
     }
 }
 
@@ -215,17 +258,19 @@
     }
     
     Region *leftRegion = [regions objectAtIndex:0];
-    UIScaleButton *left = [[[UIScaleButton alloc] initWithTip:
-                            CGPointMake(rect.origin.x + leftRegion.x * rect.size.width,
-                                        rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height) isLeft:YES scale:self.zoomScale] autorelease];
-    [left addTarget:self action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    UIScaleButton *left = [[[UIScaleButton alloc] initWithTip:CGPointMake(rect.origin.x + leftRegion.x * rect.size.width,
+                                                                          rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height)
+                                                       isLeft:YES scale:self.zoomScale] autorelease];
+    [left addTarget:self
+             action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
     [self addSubview:left];
     [selectionMarkers addObject:left];
     
-    UIScaleButton *right = [[[UIScaleButton alloc] initWithTip:
-                            CGPointMake(rect.origin.x + (leftRegion.x + leftRegion.width) * rect.size.width,
-                                        rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height) isLeft:NO scale:self.zoomScale] autorelease];
-    [right addTarget:self action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    UIScaleButton *right = [[[UIScaleButton alloc] initWithTip:CGPointMake(rect.origin.x + (leftRegion.x + leftRegion.width) * rect.size.width,
+                                                                           rect.origin.y + (leftRegion.y + leftRegion.height / 2) * rect.size.height)
+                                                        isLeft:NO scale:self.zoomScale] autorelease];
+    [right addTarget:self
+              action:@selector(touchDragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
     [self addSubview:right];
     [selectionMarkers addObject:right];
     
@@ -241,6 +286,18 @@
                                                   rect.origin.y + tip.y * rect.size.height)] autorelease]];
 }
 
+- (void)applyScaleView {
+    for ( UIView *view in balloonContainerView.subviews ) {
+        [(id<IScale>)view adjustForTip:self.zoomScale];
+    }
+    
+    for ( UIView *view in self.subviews ) {
+        if ( [view respondsToSelector:@selector(adjustForTip:)] ) {
+            [(id<IScale>)view adjustForTip:self.zoomScale];
+        }
+    }
+}
+
 /***********************************************************************************/
 /* Most of the work of tiling is done in layoutSubviews, which we override here.   */
 /* We recycle the tiles that are no longer in the visible bounds of the scrollView */
@@ -248,6 +305,8 @@
 /***********************************************************************************/
 - (void)layoutSubviews {
     if ( isZoomChanging ) {
+        [self applyScaleView];
+        
         return;
     }
     
@@ -309,15 +368,6 @@
     
     // +1 for horizontal dragging
     self.contentSize = CGSizeMake( self.tileContainerView.frame.size.width + 1 , self.tileContainerView.frame.size.height );
-
-    for ( UIView *view in balloonContainerView.subviews ) {
-        [(id<IScale>)view adjustForTip:self.zoomScale];
-    }
-    for ( UIView *view in self.subviews ) {
-        if ( [view respondsToSelector:@selector(adjustForTip:)] ) {
-            [(id<IScale>)view adjustForTip:self.zoomScale];
-        }
-    }
 }
 
 

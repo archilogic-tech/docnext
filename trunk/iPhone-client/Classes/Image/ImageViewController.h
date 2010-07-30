@@ -10,6 +10,7 @@
 #import "MapDocViewController.h"
 #import "TiledScrollView.h"
 #import "TapDetectingView.h"
+#import "SeparationHolder.h"
 
 @class ImageSearchViewController;
 
@@ -31,6 +32,7 @@
     NSArray *isSinglePage;
     int nRequestTile;
     NSArray *regions;
+    SeparationHolder *separationHolder;
 }
 
 @property(nonatomic,retain) IBOutlet UIView *configView;

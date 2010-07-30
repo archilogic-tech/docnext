@@ -119,16 +119,16 @@
 
 - (void)addSubview:(BOOL)animated {
     if ( animated ) {
-    [UIView beginAnimations:nil context:nil];
-	[UIView setAnimationDuration:1];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:1];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+        [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
     }
 	
 	[self.view addSubview:self.current.view];
     
     if ( animated ) {
-	[UIView commitAnimations];
+        [UIView commitAnimations];
     }
 }
 
@@ -171,19 +171,11 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    //[self.current.view removeFromSuperview];
-    
-    //self.current = [self.current createViewController];
-    //self.current.parent = self;
-
-    //[self addSubviewAnimated];
     [self addSubviewFade];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    NSLog(@"scale: %f",[[UIScreen mainScreen] scale]);
     
     [self showHome:NO];
 }
