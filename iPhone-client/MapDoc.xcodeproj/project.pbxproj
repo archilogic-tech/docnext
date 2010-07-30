@@ -29,6 +29,9 @@
 		722E6DF111F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */; };
 		722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */; };
 		7232D62C11F9980B00BC966B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7232D62B11F9980B00BC966B /* icon.png */; };
+		72397E461202A15C00A9CF64 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */; };
+		72397E751202AF6100A9CF64 /* SeparationHolder.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E741202AF6100A9CF64 /* SeparationHolder.m */; };
+		72397E7E1202B32A00A9CF64 /* IntDoublePair.m in Sources */ = {isa = PBXBuildFile; fileRef = 72397E7D1202B32A00A9CF64 /* IntDoublePair.m */; };
 		723DE22F11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */; };
 		723DE23411FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */; };
 		723DE24511FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */; };
@@ -153,6 +156,12 @@
 		722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		7232D62B11F9980B00BC966B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		72397E441202A15C00A9CF64 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
+		72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
+		72397E731202AF6100A9CF64 /* SeparationHolder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SeparationHolder.h; sourceTree = "<group>"; };
+		72397E741202AF6100A9CF64 /* SeparationHolder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SeparationHolder.m; sourceTree = "<group>"; };
+		72397E7C1202B32A00A9CF64 /* IntDoublePair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntDoublePair.h; sourceTree = "<group>"; };
+		72397E7D1202B32A00A9CF64 /* IntDoublePair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntDoublePair.m; sourceTree = "<group>"; };
 		723DE22E11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad.xib"; sourceTree = "<group>"; };
 		723DE23311FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfDeletionViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		723DE24411FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfDeletionViewController-iPhone.xib"; sourceTree = "<group>"; };
@@ -476,6 +485,26 @@
 			name = ASIHTTPRequest;
 			sourceTree = "<group>";
 		};
+		72397E431202A13100A9CF64 /* VolonoiDiagram */ = {
+			isa = PBXGroup;
+			children = (
+				72397E441202A15C00A9CF64 /* VolonoiDiagramBuilder.h */,
+				72397E451202A15C00A9CF64 /* VolonoiDiagramBuilder.m */,
+			);
+			name = VolonoiDiagram;
+			sourceTree = "<group>";
+		};
+		72397E6B1202AE7000A9CF64 /* Separation */ = {
+			isa = PBXGroup;
+			children = (
+				72397E731202AF6100A9CF64 /* SeparationHolder.h */,
+				72397E741202AF6100A9CF64 /* SeparationHolder.m */,
+				72397E7C1202B32A00A9CF64 /* IntDoublePair.h */,
+				72397E7D1202B32A00A9CF64 /* IntDoublePair.m */,
+			);
+			name = Separation;
+			sourceTree = "<group>";
+		};
 		723DE21511FFD69700344B47 /* Deletion */ = {
 			isa = PBXGroup;
 			children = (
@@ -586,6 +615,8 @@
 		72E8A6E411D447D600651F27 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				72397E6B1202AE7000A9CF64 /* Separation */,
+				72397E431202A13100A9CF64 /* VolonoiDiagram */,
 				72562C1E11FE99B300DC4528 /* Balloon */,
 				720FB46611F965990060A032 /* Search */,
 				72EF9C4511DAD7FC00E8E5E7 /* ImageViewController.h */,
@@ -854,6 +885,9 @@
 				723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */,
 				7246787312011087005F80D6 /* UIScaleButton.m in Sources */,
 				724679CE12015DF9005F80D6 /* RegionInfo.m in Sources */,
+				72397E461202A15C00A9CF64 /* VolonoiDiagramBuilder.m in Sources */,
+				72397E751202AF6100A9CF64 /* SeparationHolder.m in Sources */,
+				72397E7E1202B32A00A9CF64 /* IntDoublePair.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

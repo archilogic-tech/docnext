@@ -35,7 +35,7 @@
     float fromScale;
     float toScale;
     
-    NSMutableSet *selectionMarkers;
+    NSMutableArray *selectionMarkers;
     int selectionMinIndex;
     int selectionMaxIndex;
 }
@@ -55,6 +55,7 @@
 - (void)drawMarker:(Region *)region ratio:(double)ratio color:(UIColor *)color;
 - (void)drawMarkerForSelect:(NSArray *)regions ratio:(double)ratio color:(UIColor *)color index:(int)index;
 - (void)addBalloon:(NSString *)text tip:(CGPoint)tip ratio:(double)ratio;
+- (void)applyScaleView;
 @end
 
 

@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -198,11 +200,21 @@ public class PackManager {
     }
 
     public void writeRegions( long documentId , int page , List< Region > regions ) {
+        final int SIZEOF_DOUBLE = 8;
+        final int N_REGION_FIELDS = 4;
+
         try {
-            FileUtils
-                    .writeStringToFile(
-                            new File( String.format( "%s/pack/%d/texts/%d.regions.json" , prop.repository , documentId ,
-                                    page ) ) , JSON.encode( regions ) );
+            ByteBuffer buffer = ByteBuffer.allocate( regions.size() * N_REGION_FIELDS * SIZEOF_DOUBLE );
+            buffer.order( ByteOrder.LITTLE_ENDIAN );
+            for ( Region region : regions ) {
+                buffer.putDouble( region.x );
+                buffer.putDouble( region.y );
+                buffer.putDouble( region.width );
+                buffer.putDouble( region.height );
+            }
+            FileUtils.writeByteArrayToFile(
+                    new File( String.format( "%s/pack/%d/texts/%d.regions" , prop.repository , documentId , page ) ) ,
+                    buffer.array() );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }

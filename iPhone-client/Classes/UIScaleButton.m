@@ -21,7 +21,7 @@
     
     if ( ( self = [super initWithFrame:CGRectZero] ) ) {
         [self adjustForTip:scale];
-        self.backgroundColor = [UIColor redColor];
+        self.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5];
     }
     
     return self;

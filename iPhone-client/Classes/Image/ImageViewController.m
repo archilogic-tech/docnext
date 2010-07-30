@@ -18,6 +18,7 @@
 #import "ImageSearchViewController.h"
 #import "UIBalloon.h"
 #import "RegionInfo.h"
+#import "SeparationHolder.h"
 
 @interface ImageViewController ()
 - (void)buildPageHeads;
@@ -238,6 +239,7 @@
     [pageHeads release];
     [isSinglePage release];
     [regions release];
+    [separationHolder release];
     
     [super dealloc];
 }
@@ -364,6 +366,8 @@
     
     [regions release];
     regions = nil;
+    [separationHolder release];
+    separationHolder = nil;
 }
 
 - (void)movePage:(BOOL)isLeft {
@@ -394,7 +398,7 @@
 - (RegionInfo *)getNearestRegion:(CGPoint)point {
     CGRect actual = [self.tiledScrollView calcActualRect:[self loadRatio]];
     
-    double minDist = DBL_MAX;
+    /*double minDist = DBL_MAX;
     double minIndex = -1;
     if ( regions == nil ) {
         [self loadRegions];
@@ -414,6 +418,22 @@
     RegionInfo *ret = [[RegionInfo new] autorelease];
     ret.region = [regions objectAtIndex:minIndex];
     ret.index = minIndex;
+    
+    return ret;*/
+    
+    if ( regions == nil ) {
+        [self loadRegions];
+    }
+    if ( separationHolder == nil ) {
+        separationHolder = [[SeparationHolder alloc] initWithRegions:regions];
+    }
+    
+    double x = MAX(MIN((point.x - actual.origin.x) / actual.size.width , 1) , 0);
+    double y = MAX(MIN((point.y - actual.origin.y) / actual.size.height , 1) , 0);
+    
+    RegionInfo *ret = [[RegionInfo new] autorelease];
+    ret.index = [separationHolder nearestIndex:CGPointMake(x , y)];
+    ret.region = [regions objectAtIndex:ret.index];
     
     return ret;
 }
@@ -483,18 +503,20 @@
 
     CGSize boundsSize = self.tiledScrollView.bounds.size;
     
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:0];
-    [dict setObject:[NSNumber numberWithInt:0] forKey:@"counter"];
-    [dict setObject:[NSNumber numberWithFloat:scale] forKey:@"fromScale"];
-    [dict setObject:[NSNumber numberWithFloat:toScale] forKey:@"toScale"];
-    [dict setObject:[NSNumber numberWithFloat:self.tiledScrollView.contentOffset.x] forKey:@"fromOffsetX"];
-    [dict setObject:[NSNumber numberWithFloat:(MAX(MIN(tapPoint.x * toScale - boundsSize.width / 2 ,
-                                                       boundsSize.width * (toScale - 1)) , 0))] forKey:@"toOffsetX"];
-    [dict setObject:[NSNumber numberWithFloat:self.tiledScrollView.contentOffset.y] forKey:@"fromOffsetY"];
-    [dict setObject:[NSNumber numberWithFloat:(MAX(MIN(tapPoint.y * toScale - boundsSize.height / 2 ,
-                                                       boundsSize.height * (toScale - 1)) , 0))] forKey:@"toOffsetY"];
-    
-    [self performAnimation:dict];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+	[UIView setAnimationDuration:0.3];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+	[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:self.tiledScrollView cache:YES];
+
+    self.tiledScrollView.zoomScale = toScale;
+    self.tiledScrollView.contentOffset = CGPointMake(MAX(MIN(tapPoint.x * toScale - boundsSize.width / 2 ,
+                                                             boundsSize.width * (toScale - 1)) , 0),
+                                                     MAX(MIN(tapPoint.y * toScale - boundsSize.height / 2 ,
+                                                             boundsSize.height * (toScale - 1)) , 0));
+    [self.tiledScrollView applyScaleView];
+
+    [UIView commitAnimations];
 }
 
 - (void)tapDetectingView:(TapDetectingView *)view gotTwoFingerTapAtPoint:(CGPoint)tapPoint {
