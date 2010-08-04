@@ -93,7 +93,8 @@
     for (UIView *tile in [tileContainerView subviews]) {
         CGRect scaledTileFrame = [tileContainerView convertRect:tile.frame toView:self];
 
-        if ( !CGRectIntersectsRect(scaledTileFrame , visibleBounds) ) {
+        // second condition for landscape view
+        if ( !CGRectIntersectsRect(scaledTileFrame , visibleBounds) && tile.tag != TiledScrollViewTileLocal ) {
             [tile removeFromSuperview];
         }
     }

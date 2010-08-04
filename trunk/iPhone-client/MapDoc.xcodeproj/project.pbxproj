@@ -13,6 +13,13 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* MapDocViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */; };
+		720E8047120939CB0046DD1D /* button_bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8041120939CB0046DD1D /* button_bookmark.png */; };
+		720E8048120939CB0046DD1D /* button_home.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8042120939CB0046DD1D /* button_home.png */; };
+		720E8049120939CB0046DD1D /* button_search.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8043120939CB0046DD1D /* button_search.png */; };
+		720E804A120939CB0046DD1D /* button_text.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8044120939CB0046DD1D /* button_text.png */; };
+		720E804B120939CB0046DD1D /* button_thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8045120939CB0046DD1D /* button_thumbnail.png */; };
+		720E804C120939CB0046DD1D /* button_toc.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E8046120939CB0046DD1D /* button_toc.png */; };
+		720E804E120939F50046DD1D /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 720E804D120939F50046DD1D /* icon.png */; };
 		72105FFA11E41E1300CA671C /* BookmarkViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72105FF811E41E1300CA671C /* BookmarkViewController-iPad-land.xib */; };
 		72105FFB11E41E1300CA671C /* BookmarkViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72105FF911E41E1300CA671C /* BookmarkViewController-iPad.xib */; };
 		7210600311E41E4D00CA671C /* BookmarkObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 7210600011E41E4D00CA671C /* BookmarkObject.m */; };
@@ -28,7 +35,6 @@
 		722A8CB611D0B57600807C6B /* libz.1.2.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 722A8CB511D0B57600807C6B /* libz.1.2.3.dylib */; };
 		722E6DF111F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */; };
 		722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */; };
-		7232D62C11F9980B00BC966B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7232D62B11F9980B00BC966B /* icon.png */; };
 		7235B3901209173500D50B96 /* UIScaleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 7235B38F1209173500D50B96 /* UIScaleButton.m */; };
 		7235B3931209176500D50B96 /* OverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7235B3921209176500D50B96 /* OverlayManager.m */; };
 		7235B3961209178D00D50B96 /* MarkerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7235B3951209178D00D50B96 /* MarkerView.m */; };
@@ -136,6 +142,13 @@
 		28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapDocViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* MapDoc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDoc_Prefix.pch; sourceTree = "<group>"; };
+		720E8041120939CB0046DD1D /* button_bookmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_bookmark.png; path = "Resources-asset/button_bookmark.png"; sourceTree = "<group>"; };
+		720E8042120939CB0046DD1D /* button_home.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_home.png; path = "Resources-asset/button_home.png"; sourceTree = "<group>"; };
+		720E8043120939CB0046DD1D /* button_search.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_search.png; path = "Resources-asset/button_search.png"; sourceTree = "<group>"; };
+		720E8044120939CB0046DD1D /* button_text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_text.png; path = "Resources-asset/button_text.png"; sourceTree = "<group>"; };
+		720E8045120939CB0046DD1D /* button_thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_thumbnail.png; path = "Resources-asset/button_thumbnail.png"; sourceTree = "<group>"; };
+		720E8046120939CB0046DD1D /* button_toc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = button_toc.png; path = "Resources-asset/button_toc.png"; sourceTree = "<group>"; };
+		720E804D120939F50046DD1D /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "Resources-asset/icon.png"; sourceTree = "<group>"; };
 		72105FF811E41E1300CA671C /* BookmarkViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPad-land.xib"; path = "Resources-iPad/BookmarkViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		72105FF911E41E1300CA671C /* BookmarkViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPad.xib"; path = "Resources-iPad/BookmarkViewController-iPad.xib"; sourceTree = "<group>"; };
 		72105FFF11E41E4D00CA671C /* BookmarkObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookmarkObject.h; path = Bookmark/BookmarkObject.h; sourceTree = "<group>"; };
@@ -158,7 +171,6 @@
 		722A8CB511D0B57600807C6B /* libz.1.2.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.3.dylib; path = usr/lib/libz.1.2.3.dylib; sourceTree = SDKROOT; };
 		722E6DF011F5AC6400A047AC /* BookshelfViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone-land.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		722E6DF411F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad-land.xib"; path = "Resources-iPad/BookshelfViewController-iPad-land.xib"; sourceTree = "<group>"; };
-		7232D62B11F9980B00BC966B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		7235B38E1209173500D50B96 /* UIScaleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIScaleButton.h; path = Image/UIScaleButton.h; sourceTree = "<group>"; };
 		7235B38F1209173500D50B96 /* UIScaleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIScaleButton.m; path = Image/UIScaleButton.m; sourceTree = "<group>"; };
 		7235B3911209176500D50B96 /* OverlayManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OverlayManager.h; path = Image/OverlayManager/OverlayManager.h; sourceTree = "<group>"; };
@@ -389,6 +401,7 @@
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources-iPad */,
 				72EC0D5F11E2C33D006116C1 /* Resources-iPhone */,
+				720E7FDA120924170046DD1D /* Resources-asset */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
@@ -398,7 +411,6 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				7232D62B11F9980B00BC966B /* icon.png */,
 				8D1107310486CEB800E47090 /* MapDoc-Info.plist */,
 				32CA4F630368D1EE00C91783 /* MapDoc_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
@@ -448,6 +460,20 @@
 				72C77E6E11D9FD3A00316C0D /* OpenGLES.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		720E7FDA120924170046DD1D /* Resources-asset */ = {
+			isa = PBXGroup;
+			children = (
+				720E804D120939F50046DD1D /* icon.png */,
+				720E8041120939CB0046DD1D /* button_bookmark.png */,
+				720E8042120939CB0046DD1D /* button_home.png */,
+				720E8043120939CB0046DD1D /* button_search.png */,
+				720E8044120939CB0046DD1D /* button_text.png */,
+				720E8045120939CB0046DD1D /* button_thumbnail.png */,
+				720E8046120939CB0046DD1D /* button_toc.png */,
+			);
+			name = "Resources-asset";
 			sourceTree = "<group>";
 		};
 		720FB46611F965990060A032 /* Search */ = {
@@ -846,13 +872,19 @@
 				722E6DF511F5ACCE00A047AC /* BookshelfViewController-iPad-land.xib in Resources */,
 				72C8256511F5AEE900F75566 /* BookshelfViewController-iPad.xib in Resources */,
 				7272C5B911F6D3610084A45D /* BookshelfTableViewCell.xib in Resources */,
-				7232D62C11F9980B00BC966B /* icon.png in Resources */,
 				7251520011F99FA500A89BA6 /* ImageSearchViewController-land.xib in Resources */,
 				7251520111F99FA500A89BA6 /* ImageSearchViewController.xib in Resources */,
 				723DE22F11FFD81F00344B47 /* BookshelfDeletionViewController-iPad.xib in Resources */,
 				723DE23411FFD8D400344B47 /* BookshelfDeletionViewController-iPad-land.xib in Resources */,
 				723DE24511FFD96800344B47 /* BookshelfDeletionViewController-iPhone.xib in Resources */,
 				723DE24E11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib in Resources */,
+				720E8047120939CB0046DD1D /* button_bookmark.png in Resources */,
+				720E8048120939CB0046DD1D /* button_home.png in Resources */,
+				720E8049120939CB0046DD1D /* button_search.png in Resources */,
+				720E804A120939CB0046DD1D /* button_text.png in Resources */,
+				720E804B120939CB0046DD1D /* button_thumbnail.png in Resources */,
+				720E804C120939CB0046DD1D /* button_toc.png in Resources */,
+				720E804E120939F50046DD1D /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

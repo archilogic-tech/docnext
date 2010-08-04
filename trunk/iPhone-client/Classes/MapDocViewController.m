@@ -71,10 +71,9 @@
 - (void)showImage:(int)documentId page:(int)page {
     [self.current.view removeFromSuperview];
     
-    self.current = [ImageViewController createViewController:documentId page:page];
+    self.current = [ImageViewController createViewController:documentId page:page window:window];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
-    ((ImageViewController *)self.current).window = window;
     
     [self addSubview:YES];
 }
