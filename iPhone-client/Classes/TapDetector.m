@@ -10,7 +10,7 @@
 
 #define DOUBLE_TAP_DELAY 0.5
 #define LONG_TAP_DELAY 1.5
-#define LONG_TAP_THRESHOLD 10
+#define LONG_TAP_THRESHOLD 5
 
 CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
 
