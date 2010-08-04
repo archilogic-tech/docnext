@@ -28,6 +28,7 @@
 @implementation MapDocViewController
 
 @synthesize current;
+@synthesize window;
 
 - (void)showBrowser:(BOOL)animated {
     [self.current.view removeFromSuperview];
@@ -73,6 +74,7 @@
     self.current = [ImageViewController createViewController:documentId page:page];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
+    ((ImageViewController *)self.current).window = window;
     
     [self addSubview:YES];
 }
@@ -164,7 +166,6 @@
     
 	[UIView commitAnimations];
 }
-
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;

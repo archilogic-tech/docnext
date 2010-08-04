@@ -8,15 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "TiledScrollView.h"
-#import "TapDetectingView.h"
 #import "IUIViewController.h"
+#import "UITouchAwareWindow.h"
 //@class IUIViewController;
 
 @interface MapDocViewController : UIViewController {
     IUIViewController *current;
+    UITouchAwareWindow *window;
 }
 
 @property(nonatomic,retain) IUIViewController *current;
+@property(nonatomic,assign) UITouchAwareWindow *window;
 
 - (void)showHome:(BOOL)animated;
 - (void)showBookshelfDeletion;
