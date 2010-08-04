@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class AdminController {
@@ -24,18 +25,31 @@ public class AdminController {
     @Autowired
     private UploadProcessor uploadProcessor;
 
-    @RequestMapping( "/admin/pseudo_upload" )
-    public void upload( @RequestParam( "path" ) String fileName , @RequestParam( "name" ) String name )
+    private String getTempPath() {
+        String path = prop.tmp;
+
+        if ( path == null || path.isEmpty() ) {
+            path = System.getProperty( "java.io.tmpdir" );
+        }
+
+        return path;
+    }
+
+    @RequestMapping( "/admin/upload" )
+    public String upload( @RequestParam( "name" ) String name , @RequestParam( "file" ) MultipartFile file )
             throws IOException {
         Document document = new Document();
         document.name = name;
-        document.fileName = fileName;
+        document.fileName = file.getOriginalFilename();
         document.processing = true;
         documentDao.create( document );
 
-        String path = "uploaded" + document.id + "." + FilenameUtils.getExtension( fileName );
-        FileUtils.moveFile( new File( prop.repository + fileName ) , new File( path ) );
+        String path = "uploaded" + document.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
+        String uploadPath = getTempPath() + File.separator + document.id + File.separator + path;
+        FileUtils.writeByteArrayToFile( new File( uploadPath ) , file.getBytes() );
 
-        uploadProcessor.proc( path , document );
+        uploadProcessor.proc( uploadPath , document );
+
+        return "redirect:/";
     }
 }
