@@ -9,9 +9,8 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="Index.mxml"/>
-    <application path="Upload.mxml"/>
     <application path="Editor.mxml"/>
+    <application path="Index.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

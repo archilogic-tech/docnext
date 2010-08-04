@@ -59,9 +59,5 @@ package jp.archilogic.documentmanager.service {
         public static function setTitle( id : Number , title : String , result : Function ) : void {
             ServiceUtil.callHelper( service.setTitle( id , title ) , result );
         }
-
-        public static function upload( data : ByteArray , fileName : String , name : String , result : Function ) : void {
-            ServiceUtil.callHelper( service.upload( data , fileName , name ) , result );
-        }
     }
 }
