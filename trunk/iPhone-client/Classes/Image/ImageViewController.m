@@ -120,6 +120,14 @@
 
 - (IBAction)searchButtonClick:(id)sender {
     BOOL isLand = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+    
+    if ( isLand ) {
+        [[[[UIAlertView alloc] initWithTitle:@"Search function is disabled currently on landscape orientation"
+                                     message:nil delegate:nil cancelButtonTitle:@"OK"
+                           otherButtonTitles:nil] autorelease] show];
+        return;
+    }
+    
     NSString *orientation = isLand ? @"-land" : @"";
     searchViewController = [[ImageSearchViewController alloc]
                             initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
@@ -422,6 +430,15 @@
 }
 
 - (void)tapDetectorGotSingleLongTapAtPoint:(CGPoint)tapPoint {
+    BOOL isLand = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+    
+    if ( isLand ) {
+        [[[[UIAlertView alloc] initWithTitle:@"Selecting function is disabled currently on landscape orientation"
+                                     message:nil delegate:nil cancelButtonTitle:@"OK"
+                           otherButtonTitles:nil] autorelease] show];
+        return;
+    }
+
     [overlayManager selectNearest:tapPoint];
 }
 

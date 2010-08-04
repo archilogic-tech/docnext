@@ -171,6 +171,18 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    // code to research half-baked orientation :-(
+    switch ( fromInterfaceOrientation ) {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+            NSLog(@"from portrait");
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+            NSLog(@"from landscape");
+            break;
+    }
+    
     [self addSubviewFade];
 }
 
