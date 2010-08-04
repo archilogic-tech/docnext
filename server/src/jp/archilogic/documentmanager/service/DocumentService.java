@@ -1,9 +1,7 @@
 package jp.archilogic.documentmanager.service;
 
-import java.io.File;
 import java.util.List;
 
-import jp.archilogic.documentmanager.bean.PropBean;
 import jp.archilogic.documentmanager.converter.DocumentConverter;
 import jp.archilogic.documentmanager.converter.ListConverter;
 import jp.archilogic.documentmanager.dao.DocumentDao;
@@ -12,10 +10,7 @@ import jp.archilogic.documentmanager.dto.TOCElem;
 import jp.archilogic.documentmanager.entity.Document;
 import jp.archilogic.documentmanager.exception.NotFoundException;
 import jp.archilogic.documentmanager.logic.PackManager;
-import jp.archilogic.documentmanager.logic.UploadProcessor;
-import jp.archilogic.documentmanager.util.FileUtil;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.stereotype.Component;
@@ -26,13 +21,9 @@ public class DocumentService {
     @Autowired
     private DocumentDao documentDao;
     @Autowired
-    private UploadProcessor uploadProcessor;
-    @Autowired
     private DocumentConverter documentConverter;
     @Autowired
     private PackManager packManager;
-    @Autowired
-    private PropBean prop;
 
     public List< DocumentResDto > findAll() {
         return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
@@ -54,14 +45,6 @@ public class DocumentService {
 
     public List< Integer > getSinglePageInfo( long id ) {
         return packManager.readSinglePageInfo( id );
-    }
-
-    private String getTempPath() {
-        String path = prop.tmp;
-        if ( path == null || path.isEmpty() ) {
-            path = System.getProperty( "java.io.tmpdir" );
-        }
-        return path;
     }
 
     public String getText( long id , int page ) {
@@ -98,21 +81,5 @@ public class DocumentService {
 
     public void setTOC( long id , List< TOCElem > toc ) {
         packManager.writeTOC( id , toc );
-    }
-
-    public long upload( byte[] data , String fileName , String name ) {
-        Document document = new Document();
-        document.name = name;
-        document.fileName = fileName;
-        document.processing = true;
-        documentDao.create( document );
-
-        String path = "uploaded" + document.id + "." + FilenameUtils.getExtension( fileName );
-        String uploadPath = getTempPath() + File.separator + document.id + File.separator + path;
-        FileUtil.toFile( data , uploadPath );
-
-        uploadProcessor.proc( uploadPath , document );
-
-        return document.id;
     }
 }
