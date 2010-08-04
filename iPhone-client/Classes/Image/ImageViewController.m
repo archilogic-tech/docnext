@@ -63,6 +63,8 @@
 }
 
 - (void)dealloc {
+    window.touchesObserver = nil;
+    
     [configView release];
     [tiledScrollView release];
     [tiledScrollViewContainer release];
@@ -81,11 +83,12 @@
 
 #pragma mark public
 
-+ (ImageViewController *)createViewController:(int)documentId page:(int)page {
++ (ImageViewController *)createViewController:(int)documentId page:(int)page window:(UITouchAwareWindow *)window {
     ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Image"] bundle:nil] autorelease];
     [ret setLandspace];
     ret.documentId = documentId;
     [ret setIndexByPage:page];
+    ret.window = window;
     return ret;
 }
 
@@ -161,7 +164,7 @@
 }
 
 - (IUIViewController *)createViewController {
-    return [ImageViewController createViewController:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+    return [ImageViewController createViewController:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] window:window];
 }
 
 #pragma mark private

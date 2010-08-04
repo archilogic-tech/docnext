@@ -52,7 +52,7 @@
 @property(nonatomic,assign) UITouchAwareWindow *window;
 @property(nonatomic) int documentId;
 
-+ (ImageViewController *)createViewController:(int)documentId page:(int)page;
++ (ImageViewController *)createViewController:(int)documentId page:(int)page window:(UITouchAwareWindow *)window;
 
 - (IBAction)homeButtonClick:(id)sender;
 - (IBAction)tocViewButtonClick:(id)sender;

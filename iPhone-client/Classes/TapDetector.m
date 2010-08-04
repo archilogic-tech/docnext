@@ -10,6 +10,7 @@
 
 #define DOUBLE_TAP_DELAY 0.5
 #define LONG_TAP_DELAY 1.5
+#define LONG_TAP_THRESHOLD 10
 
 CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
 
@@ -48,17 +49,25 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
     if ( [[event touchesForView:basisView] count] == 0 ) {
         tapLocation = [[touches anyObject] locationInView:basisView];
         [self performSelector:@selector(handleSingleLongTap) withObject:nil afterDelay:LONG_TAP_DELAY];
+        checkingLongTap = YES;
     }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleSingleLongTap) object:nil];
+    if ( checkingLongTap ) {
+        CGPoint point = [[touches anyObject] locationInView:basisView];
+        if ( pow(point.x - tapLocation.x , 2) + pow(point.y - tapLocation.y , 2) > pow( LONG_TAP_THRESHOLD , 2 ) ) {
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleSingleLongTap) object:nil];
+            checkingLongTap = NO;
+        }
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     BOOL allTouchesEnded = ([touches count] == [[event touchesForView:basisView] count]);
     
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(handleSingleLongTap) object:nil];
+    checkingLongTap = NO;
     
     if ( !multipleTouches ) {
         // first check for plain single/double tap, which is only possible if we haven't seen multiple touches
@@ -143,6 +152,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
 }
     
 - (void)handleSingleLongTap {
+    checkingLongTap = NO;
     if ( [delegate respondsToSelector:@selector(tapDetectorGotSingleLongTapAtPoint:)] ) {
         [delegate tapDetectorGotSingleLongTapAtPoint:tapLocation];
     }
