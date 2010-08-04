@@ -8,17 +8,18 @@
 
 #import <UIKit/UIKit.h>
 #import "DownloadManager.h"
+#import "UITouchAwareWindow.h"
 
 @class MapDocViewController;
 
 @interface MapDocAppDelegate : NSObject <UIApplicationDelegate , DownloadManagerDelegate> {
-    UIWindow *window;
+    UITouchAwareWindow *window;
     MapDocViewController *viewController;
     
     UIAlertView *loading;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain) IBOutlet UITouchAwareWindow *window;
 @property (nonatomic, retain) IBOutlet MapDocViewController *viewController;
 
 @end

@@ -31,8 +31,6 @@
 }
 
 - (IBAction)pageSliderChanged:(id)sender {
-    NSLog(@"slider %f" , self.pageSlider.value);
-    
     int cover = floor( self.pageSlider.value + 0.5 );
 
     if ( cover != self.flowCoverView.offset ) {
@@ -99,15 +97,6 @@
     self.pageSlider.value = page;
 
     [self setLabels:page];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    NSLog(@"viewDidDisappear");
-   // [timer invalidate];
-}
-
-- (void)viewDidUnload {
-    NSLog(@"viewDidUnload");
 }
 
 - (void)dealloc {

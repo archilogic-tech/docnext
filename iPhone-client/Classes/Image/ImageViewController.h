@@ -9,37 +9,48 @@
 #import <UIKit/UIKit.h>
 #import "MapDocViewController.h"
 #import "TiledScrollView.h"
-#import "TapDetectingView.h"
 #import "SeparationHolder.h"
+#import "UITouchAwareWindow.h"
+#import "MarkerView.h"
+#import "TapDetector.h"
+#import "UIScaleButton.h"
+#import "OverlayManager.h"
 
 @class ImageSearchViewController;
 
-@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectingViewDelegate> {
+@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate> {
     UIView *configView;
     UILabel *titleLabel;
     UIView *tiledScrollViewContainer;
     
-    int documentId;
-
     TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
+
+    MarkerView *markerView;
+    UIView *balloonContainerView;
+    UITouchAwareWindow *window;
+
     UIPopoverController *popover;
     ImageSearchViewController *searchViewController;
+
+    TapDetector *tapDetector;
+    OverlayManager *overlayManager;
+    
+    int documentId;
     int currentIndex;
     int totalPage;
     NSArray *singlePageInfo;
     NSArray *pageHeads;
     NSArray *isSinglePage;
-    int nRequestTile;
-    NSArray *regions;
-    SeparationHolder *separationHolder;
+
+    NSOperationQueue *imageFetchQueue;    
 }
 
 @property(nonatomic,retain) IBOutlet UIView *configView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
+@property(nonatomic,assign) UITouchAwareWindow *window;
 @property(nonatomic) int documentId;
-@property(nonatomic,retain) TiledScrollView *tiledScrollView;
 
 + (ImageViewController *)createViewController:(int)documentId page:(int)page;
 
