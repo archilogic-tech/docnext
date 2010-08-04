@@ -32,7 +32,7 @@ package jp.archilogic.documentmanager.controller {
         }
 
         private function uploadButtonClickHandler( event : MouseEvent ) : void {
-            navigateToURL( new URLRequest( 'Upload.swf' ) , '_self' );
+            navigateToURL( new URLRequest( 'upload.html' ) , '_self' );
         }
     }
 }
