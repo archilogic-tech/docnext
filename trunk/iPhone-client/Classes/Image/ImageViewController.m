@@ -83,9 +83,11 @@
 
 #pragma mark public
 
-+ (ImageViewController *)createViewController:(int)documentId page:(int)page window:(UITouchAwareWindow *)window {
-    ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Image"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (ImageViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page
+                                       window:(UITouchAwareWindow *)window {
+    ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:
+                                 [IUIViewController buildNibName:@"Image" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     ret.documentId = documentId;
     [ret setIndexByPage:page];
     ret.window = window;
@@ -119,7 +121,7 @@
 }
 
 - (IBAction)searchButtonClick:(id)sender {
-    BOOL isLand = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+    BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
     
     if ( isLand ) {
         [[[[UIAlertView alloc] initWithTitle:@"Search function is disabled currently on landscape orientation"
@@ -171,8 +173,9 @@
     searchViewController = nil;
 }
 
-- (IUIViewController *)createViewController {
-    return [ImageViewController createViewController:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] window:window];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [ImageViewController createViewController:orientation docId:documentId
+                                                page:[[pageHeads objectAtIndex:currentIndex] intValue] window:window];
 }
 
 #pragma mark private
@@ -430,7 +433,7 @@
 }
 
 - (void)tapDetectorGotSingleLongTapAtPoint:(CGPoint)tapPoint {
-    BOOL isLand = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+    BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
     
     if ( isLand ) {
         [[[[UIAlertView alloc] initWithTitle:@"Selecting function is disabled currently on landscape orientation"

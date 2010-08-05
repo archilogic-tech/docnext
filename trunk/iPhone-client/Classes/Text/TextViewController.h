@@ -36,7 +36,7 @@
 @property(nonatomic,retain) UIScrollView *prev;
 @property(nonatomic) int currentPage;
 
-+ (TextViewController *)createViewController:(int)documentId page:(int)page;
++ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page;
 
 - (IBAction)imageViewButtonClick:(id)sender;
 - (IBAction)toggleConfigViewButtonClick:(id)sender;

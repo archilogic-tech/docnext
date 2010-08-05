@@ -22,9 +22,10 @@
 @synthesize documentId;
 @synthesize page;
 
-+ (ThumbnailViewController *)createViewController:(int)documentId page:(int)page {
-    ThumbnailViewController *ret = [[[ThumbnailViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Thumbnail"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (ThumbnailViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page {
+    ThumbnailViewController *ret = [[[ThumbnailViewController alloc] initWithNibName:
+                                     [IUIViewController buildNibName:@"Thumbnail" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     ret.documentId = documentId;
     ret.page = page;
     return ret;
@@ -42,8 +43,8 @@
     }
 }
 
-- (IUIViewController *)createViewController {
-    return [ThumbnailViewController createViewController:self.documentId page:self.page];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [ThumbnailViewController createViewController:orientation docId:self.documentId page:self.page];
 }
 
 #pragma mark FlowCoverViewDelegate

@@ -21,9 +21,10 @@
 @synthesize prevPage;
 @synthesize tocs;
 
-+ (TOCViewController *)createViewController:(int)documentId prevPage:(int)prevPage {
-    TOCViewController *ret = [[[TOCViewController alloc] initWithNibName:[IUIViewController buildNibName:@"TOC"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (TOCViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId prevPage:(int)prevPage {
+    TOCViewController *ret = [[[TOCViewController alloc] initWithNibName:
+                               [IUIViewController buildNibName:@"TOC" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     ret.documentId = documentId;
     ret.prevPage = prevPage;
     return ret;
@@ -33,8 +34,8 @@
     [parent showImage:self.documentId page:self.prevPage];
 }
 
-- (IUIViewController *)createViewController {
-    return [TOCViewController createViewController:self.documentId prevPage:self.prevPage];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [TOCViewController createViewController:orientation docId:self.documentId prevPage:self.prevPage];
 }
 
 #pragma mark -

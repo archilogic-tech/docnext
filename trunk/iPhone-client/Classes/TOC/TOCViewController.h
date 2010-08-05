@@ -22,7 +22,7 @@
 @property(nonatomic) int prevPage;
 @property(nonatomic,retain) NSArray *tocs;
 
-+ (TOCViewController *)createViewController:(int)documentId prevPage:(int)prevPage;
++ (TOCViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId prevPage:(int)prevPage;
 
 - (IBAction)backButtonClick:(id)sender;
 

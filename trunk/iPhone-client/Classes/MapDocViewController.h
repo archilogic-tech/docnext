@@ -15,6 +15,8 @@
 @interface MapDocViewController : UIViewController {
     IUIViewController *current;
     UITouchAwareWindow *window;
+    
+    UIInterfaceOrientation willInterfaceOrientation;
 }
 
 @property(nonatomic,retain) IUIViewController *current;

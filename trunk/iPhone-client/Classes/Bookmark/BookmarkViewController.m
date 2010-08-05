@@ -24,9 +24,10 @@
 @synthesize currentPage;
 @synthesize currentTitle;
 
-+ (BookmarkViewController *)createViewController:(int)documentId page:(int)page title:(NSString *)title {
-    BookmarkViewController *ret = [[[BookmarkViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Bookmark"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (BookmarkViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page title:(NSString *)title {
+    BookmarkViewController *ret = [[[BookmarkViewController alloc] initWithNibName:
+                                    [IUIViewController buildNibName:@"Bookmark" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     ret.currentDocumentId = documentId;
     ret.currentPage = page;
     ret.currentTitle = title;
@@ -58,8 +59,8 @@
     [self.tableView reloadData];
 }
 
-- (IUIViewController *)createViewController {
-    return [BookmarkViewController createViewController:self.currentDocumentId page:self.currentPage title:self.currentTitle];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [BookmarkViewController createViewController:orientation docId:self.currentDocumentId page:self.currentPage title:self.currentTitle];
 }
 
 #pragma mark load

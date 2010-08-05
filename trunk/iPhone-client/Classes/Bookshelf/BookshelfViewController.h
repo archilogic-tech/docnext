@@ -17,7 +17,7 @@
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 
-+ (BookshelfViewController *)createViewController;
++ (BookshelfViewController *)createViewController:(UIInterfaceOrientation)orientation;
 
 - (IBAction)continueReadingClick:(id)sender;
 

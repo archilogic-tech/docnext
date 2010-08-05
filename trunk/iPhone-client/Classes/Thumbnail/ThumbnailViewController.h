@@ -28,7 +28,7 @@
 @property(nonatomic) int documentId;
 @property(nonatomic) int page;
 
-+ (ThumbnailViewController *)createViewController:(int)documentId page:(int)page;
++ (ThumbnailViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page;
 
 - (IBAction)pageSliderChanged:(id)sender;
 
