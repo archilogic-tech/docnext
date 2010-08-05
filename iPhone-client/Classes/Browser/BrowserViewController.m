@@ -13,14 +13,15 @@
 
 @synthesize webView;
 
-+ (BrowserViewController *)createViewController {
-    BrowserViewController *ret = [[[BrowserViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Browser"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (BrowserViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    BrowserViewController *ret = [[[BrowserViewController alloc] initWithNibName:
+                                   [IUIViewController buildNibName:@"Browser" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     return ret;
 }
 
-- (IUIViewController *)createViewController {
-    return [BrowserViewController createViewController];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [BrowserViewController createViewController:orientation];
 }
 
 - (void)viewDidLoad {

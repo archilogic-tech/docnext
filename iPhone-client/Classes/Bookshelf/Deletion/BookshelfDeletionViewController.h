@@ -7,18 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import "IUIViewController.h"
 
 @interface BookshelfDeletionViewController : IUIViewController <UITableViewDataSource , UITableViewDelegate> {
     UITableView *tableView;
     
     NSMutableArray *downloadedIds;
+    
+    MPMoviePlayerController *movie;
 }
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 
-+ (BookshelfDeletionViewController *)createViewController;
++ (BookshelfDeletionViewController *)createViewController:(UIInterfaceOrientation)orientation;
 
 - (IBAction)backButtonClick:(id)sender;
+- (IBAction)movieButtonClick:(id)sender;
 
 @end

@@ -15,18 +15,30 @@
 
 @synthesize tableView;
 
-+ (BookshelfDeletionViewController *)createViewController {
-    BookshelfDeletionViewController *ret = [[[BookshelfDeletionViewController alloc] initWithNibName:[IUIViewController buildNibName:@"BookshelfDeletion"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (BookshelfDeletionViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    BookshelfDeletionViewController *ret = [[[BookshelfDeletionViewController alloc] initWithNibName:
+                                             [IUIViewController buildNibName:@"BookshelfDeletion" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     return ret;
 }
 
-- (IUIViewController *)createViewController {
-    return [BookshelfDeletionViewController createViewController];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [BookshelfDeletionViewController createViewController:orientation];
 }
 
 - (IBAction)backButtonClick:(id)sender {
     [parent showHome:YES];
+}
+
+- (IBAction)movieButtonClick:(id)sender {
+    movie = [[MPMoviePlayerController alloc] initWithContentURL:
+             [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video" ofType:@"m4v"]]];
+
+    movie.controlStyle = MPMovieControlStyleFullscreen;
+    movie.view.frame = self.view.frame;
+    [self.view addSubview:movie.view];
+    
+    [movie play];
 }
 
 #pragma mark -
@@ -90,8 +102,11 @@
 }
 
 - (void)dealloc {
+    [movie stop];
+    
     [tableView release];
     [downloadedIds release];
+    [movie release];
     
     [super dealloc];
 }

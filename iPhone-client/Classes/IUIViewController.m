@@ -13,19 +13,19 @@
 @synthesize progressView;
 @synthesize parent;
 
-+ (NSString *)buildNibName:(NSString *)prefix {
++ (NSString *)buildNibName:(NSString *)prefix orientation:(UIInterfaceOrientation)orientation {
     NSString *target = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"-iPad" : @"-iPhone";
-    NSString *orientation = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation ) ? @"-land" : @"";
-    return [NSString stringWithFormat:@"%@ViewController%@%@" , prefix , target , orientation];
+    NSString *orient = UIInterfaceOrientationIsLandscape( orientation ) ? @"-land" : @"";
+    return [NSString stringWithFormat:@"%@ViewController%@%@" , prefix , target , orient];
 }
 
-- (IUIViewController *)createViewController {
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
     [NSException raise:NSInternalInconsistencyException format:@"Sholud override IUIViewController.viewControllerWithOrientation"];
     return nil;
 }
 
-- (void)setLandspace {
-    isLandscape = UIDeviceOrientationIsLandscape( [UIDevice currentDevice].orientation );
+- (void)setLandspace:(UIInterfaceOrientation)orientation {
+    isLandscape = UIInterfaceOrientationIsLandscape( orientation );
 }
 
 - (void)viewDidLoad {

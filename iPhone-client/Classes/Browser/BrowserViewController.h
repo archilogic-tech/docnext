@@ -15,6 +15,6 @@
 
 @property(nonatomic,retain) IBOutlet UIWebView *webView;
 
-+ (BrowserViewController *)createViewController;
++ (BrowserViewController *)createViewController:(UIInterfaceOrientation)orientation;
 
 @end

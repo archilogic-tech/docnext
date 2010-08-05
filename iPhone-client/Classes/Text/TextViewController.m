@@ -39,9 +39,10 @@
 
 #pragma mark public
 
-+ (TextViewController *)createViewController:(int)documentId page:(int)page {
-    TextViewController *ret = [[[TextViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Text"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId page:(int)page {
+    TextViewController *ret = [[[TextViewController alloc] initWithNibName:
+                                [IUIViewController buildNibName:@"Text" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     ret.documentId = documentId;
     ret.currentPage = page;
     return ret;
@@ -69,8 +70,8 @@
     [self toggleConfigViewButtonClick:nil];
 }
 
-- (IUIViewController *)createViewController {
-    return [TextViewController createViewController:self.documentId page:self.currentPage];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [TextViewController createViewController:orientation docId:self.documentId page:self.currentPage];
 }
 
 #pragma mark private

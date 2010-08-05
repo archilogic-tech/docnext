@@ -33,7 +33,7 @@
 - (void)showBrowser:(BOOL)animated {
     [self.current.view removeFromSuperview];
     
-    self.current = [BrowserViewController createViewController];
+    self.current = [BrowserViewController createViewController:self.interfaceOrientation];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -43,7 +43,7 @@
 - (void)showBookshelf:(BOOL)animated {
     [self.current.view removeFromSuperview];
     
-    self.current = [BookshelfViewController createViewController];
+    self.current = [BookshelfViewController createViewController:self.interfaceOrientation];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -61,7 +61,7 @@
 - (void)showBookshelfDeletion {
     [self.current.view removeFromSuperview];
     
-    self.current = [BookshelfDeletionViewController createViewController];
+    self.current = [BookshelfDeletionViewController createViewController:self.interfaceOrientation];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -71,7 +71,7 @@
 - (void)showImage:(int)documentId page:(int)page {
     [self.current.view removeFromSuperview];
     
-    self.current = [ImageViewController createViewController:documentId page:page window:window];
+    self.current = [ImageViewController createViewController:self.interfaceOrientation docId:documentId page:page window:window];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -81,7 +81,7 @@
 - (void)showTOC:(int)documentId prevPage:(int)prevPage {
     [self.current.view removeFromSuperview];
     
-    self.current = [TOCViewController createViewController:documentId prevPage:prevPage];
+    self.current = [TOCViewController createViewController:self.interfaceOrientation docId:documentId prevPage:prevPage];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -91,7 +91,7 @@
 - (void)showThumbnail:(int)documentId page:(int)page {
     [self.current.view removeFromSuperview];
     
-    self.current = [ThumbnailViewController createViewController:documentId page:page];
+    self.current = [ThumbnailViewController createViewController:self.interfaceOrientation docId:documentId page:page];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -101,7 +101,8 @@
 - (void)showBookmark:(int)documentId page:(int)page {
     [self.current.view removeFromSuperview];
     
-    self.current = [BookmarkViewController createViewController:documentId page:page title:[FileUtil toc:documentId page:page].text];
+    self.current = [BookmarkViewController createViewController:self.interfaceOrientation docId:documentId page:page
+                                                          title:[FileUtil toc:documentId page:page].text];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -111,7 +112,7 @@
 - (void)showText:(int)documentId page:(int)page {
     [self.current.view removeFromSuperview];
     
-    self.current = [TextViewController createViewController:documentId page:page];
+    self.current = [TextViewController createViewController:self.interfaceOrientation docId:documentId page:page];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -149,7 +150,7 @@
 - (void)fadeOutAnimationDidStop:(NSString *)animationId finished:(NSNumber *)finished context:(void *)context {
     [self.current.view removeFromSuperview];
     
-    self.current = [self.current createViewController];
+    self.current = [self.current createViewController:willInterfaceOrientation];
     self.current.parent = self;
     [DownloadManager instance].delegate = self.current;
     
@@ -170,19 +171,11 @@
     return YES;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    willInterfaceOrientation = toInterfaceOrientation;
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    // code to research half-baked orientation :-(
-    switch ( fromInterfaceOrientation ) {
-        case UIInterfaceOrientationPortrait:
-        case UIInterfaceOrientationPortraitUpsideDown:
-            NSLog(@"from portrait");
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight:
-            NSLog(@"from landscape");
-            break;
-    }
-    
     [self addSubviewFade];
 }
 

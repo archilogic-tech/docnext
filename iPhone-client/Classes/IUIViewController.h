@@ -21,8 +21,8 @@
 @property(nonatomic,retain) IBOutlet UIProgressView *progressView;
 @property(nonatomic,assign) MapDocViewController *parent;
 
-+ (NSString *)buildNibName:(NSString *)prefix;
-- (IUIViewController *)createViewController;
-- (void)setLandspace;
++ (NSString *)buildNibName:(NSString *)prefix orientation:(UIInterfaceOrientation)orientation;
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation;
+- (void)setLandspace:(UIInterfaceOrientation)orientation;
 
 @end

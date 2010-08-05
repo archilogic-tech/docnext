@@ -18,14 +18,15 @@
 
 @synthesize tableView;
 
-+ (BookshelfViewController *)createViewController {
-    BookshelfViewController *ret = [[[BookshelfViewController alloc] initWithNibName:[IUIViewController buildNibName:@"Bookshelf"] bundle:nil] autorelease];
-    [ret setLandspace];
++ (BookshelfViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    BookshelfViewController *ret = [[[BookshelfViewController alloc] initWithNibName:
+                                     [IUIViewController buildNibName:@"Bookshelf" orientation:orientation] bundle:nil] autorelease];
+    [ret setLandspace:orientation];
     return ret;
 }
 
-- (IUIViewController *)createViewController {
-    return [BookshelfViewController createViewController];
+- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+    return [BookshelfViewController createViewController:orientation];
 }
 
 - (IBAction)continueReadingClick:(id)sender {

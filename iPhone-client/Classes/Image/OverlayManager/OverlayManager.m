@@ -95,9 +95,14 @@
     }
 }
 
-- (IBAction)dragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
+- (IBAction)touchDownSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
+    [sender setTouchOffset:[[[event touchesForView:sender] anyObject] locationInView:sender]];
+}
+
+- (IBAction)touchDragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
     CGPoint point = [[[event touchesForView:sender] anyObject] locationInView:markerView];
-    int index = [self getNearestIndex:point];
+    CGPoint offset = [sender getTouchOffset];
+    int index = [self getNearestIndex:CGPointMake(point.x - offset.x / scrollView.zoomScale, point.y - offset.y / scrollView.zoomScale)];
     
     if (sender.isLeft ?
         (index != selectionMinIndex && index <= selectionMaxIndex) :
@@ -106,7 +111,7 @@
         Region *nearest = [self region:index];
         [sender moveToTip:[self convertToStagePoint:
                            CGPointMake(nearest.x + (sender.isLeft ? 0 : nearest.width),
-                                       nearest.y + nearest.height / 2)] scale:scrollView.zoomScale];
+                                       nearest.y + (sender.isLeft ? 0 : nearest.height))] scale:scrollView.zoomScale];
         
         if ( sender.isLeft ) {
             if ( index < selectionMinIndex ) {
@@ -139,19 +144,21 @@
         [markerView addSelectionMarker:[self convertToStageRect:[regions objectAtIndex:index]] atIndex:(index - minIndex)];
     }
     
-    Region *leftRegion = [regions objectAtIndex:minIndex];
+    Region *region = [regions objectAtIndex:minIndex];
     selectionLeft = [[UIScaleButton alloc] initWithTip:
-                     [self convertToStagePoint:CGPointMake(leftRegion.x, leftRegion.y + leftRegion.height / 2)]
+                     [self convertToStagePoint:CGPointMake(region.x, region.y)]
                                                 isLeft:YES scale:scrollView.zoomScale];
-    [selectionLeft addTarget:self
-                      action:@selector(dragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [selectionLeft addTarget:self action:@selector(touchDownSelection:andEvent:) forControlEvents:UIControlEventTouchDown];
+    [selectionLeft addTarget:self action:@selector(touchDragSelection:andEvent:)
+            forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
     [scrollView addSubview:selectionLeft];
     
     selectionRight = [[UIScaleButton alloc] initWithTip:
-                      [self convertToStagePoint:CGPointMake(leftRegion.x + leftRegion.width, leftRegion.y + leftRegion.height / 2)]
+                      [self convertToStagePoint:CGPointMake(region.x + region.width, region.y + region.height)]
                                                  isLeft:NO scale:scrollView.zoomScale];
-    [selectionRight addTarget:self
-                       action:@selector(dragSelection:andEvent:) forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [selectionRight addTarget:self action:@selector(touchDownSelection:andEvent:) forControlEvents:UIControlEventTouchDown];
+    [selectionRight addTarget:self action:@selector(touchDragSelection:andEvent:)
+             forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
     [scrollView addSubview:selectionRight];
     
     selectionMinIndex = minIndex;

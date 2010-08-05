@@ -25,7 +25,8 @@
 @property(nonatomic) int currentPage;
 @property(nonatomic,retain) NSString *currentTitle;
 
-+ (BookmarkViewController *)createViewController:(int)documentId page:(int)page title:(NSString *)title;
++ (BookmarkViewController *)createViewController:(UIInterfaceOrientation)orientation docId:(int)documentId
+                                            page:(int)page title:(NSString *)title;
 
 - (IBAction)backButtonClick:(id)sender;
 - (IBAction)addButtonClick:(id)sender;

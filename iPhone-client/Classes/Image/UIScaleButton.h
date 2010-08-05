@@ -12,11 +12,14 @@
 @interface UIScaleButton : UIButton <IScale> {
     CGPoint tip;
     BOOL isLeft;
+    CGPoint touchOffset;
 }
 
 @property(nonatomic) BOOL isLeft;
 
-- (id)initWithTip:(CGPoint)_tip isLeft:(BOOL)_isLeft scale:(float)scale;
-- (void)moveToTip:(CGPoint)_tip scale:(float)scale;
+- (id)initWithTip:(CGPoint)tip isLeft:(BOOL)isLeft scale:(float)scale;
+- (void)moveToTip:(CGPoint)tip scale:(float)scale;
+- (void)setTouchOffset:(CGPoint)point;
+- (CGPoint)getTouchOffset;
 
 @end
