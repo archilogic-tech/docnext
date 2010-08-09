@@ -32,7 +32,7 @@
 
 - (IBAction)movieButtonClick:(id)sender {
     movie = [[MPMoviePlayerController alloc] initWithContentURL:
-             [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"video" ofType:@"m4v"]]];
+             [NSURL URLWithString:@"http://ustdoc.com/docman_optimage/video/prog_index.m3u8"]];
 
     movie.controlStyle = MPMovieControlStyleFullscreen;
     movie.view.frame = self.view.frame;
