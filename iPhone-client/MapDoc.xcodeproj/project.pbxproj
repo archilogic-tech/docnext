@@ -74,7 +74,6 @@
 		729E794F12066DF900D98CA1 /* UITouchAwareWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 729E794E12066DF900D98CA1 /* UITouchAwareWindow.m */; };
 		72A2588311F028F40091AC3F /* BrowserViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */; };
 		72AD852112096D9800C18C38 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AD852012096D9800C18C38 /* MediaPlayer.framework */; };
-		72AD858B1209758900C18C38 /* video.m4v in Resources */ = {isa = PBXBuildFile; fileRef = 72AD858A1209758900C18C38 /* video.m4v */; };
 		72B01A4511F59F630041346E /* BookshelfViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */; };
 		72C77E6F11D9FD3A00316C0D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72C77E6E11D9FD3A00316C0D /* OpenGLES.framework */; };
 		72C8256511F5AEE900F75566 /* BookshelfViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72C8256411F5AEE900F75566 /* BookshelfViewController-iPad.xib */; };
@@ -238,7 +237,6 @@
 		729E794E12066DF900D98CA1 /* UITouchAwareWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITouchAwareWindow.m; sourceTree = "<group>"; };
 		72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BrowserViewController-iPad.xib"; path = "Resources-iPad/BrowserViewController-iPad.xib"; sourceTree = "<group>"; };
 		72AD852012096D9800C18C38 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		72AD858A1209758900C18C38 /* video.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; name = video.m4v; path = "Resources-asset/video.m4v"; sourceTree = "<group>"; };
 		72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone.xib"; sourceTree = "<group>"; };
 		72C77E6E11D9FD3A00316C0D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		72C8256411F5AEE900F75566 /* BookshelfViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPad.xib"; path = "Resources-iPad/BookshelfViewController-iPad.xib"; sourceTree = "<group>"; };
@@ -473,7 +471,6 @@
 		720E7FDA120924170046DD1D /* Resources-asset */ = {
 			isa = PBXGroup;
 			children = (
-				72AD858A1209758900C18C38 /* video.m4v */,
 				723A4647120A51D90043327F /* image_selection_indicator.png */,
 				720E804D120939F50046DD1D /* icon.png */,
 				720E8041120939CB0046DD1D /* button_bookmark.png */,
@@ -895,7 +892,6 @@
 				720E804B120939CB0046DD1D /* button_thumbnail.png in Resources */,
 				720E804C120939CB0046DD1D /* button_toc.png in Resources */,
 				720E804E120939F50046DD1D /* icon.png in Resources */,
-				72AD858B1209758900C18C38 /* video.m4v in Resources */,
 				723A4648120A51D90043327F /* image_selection_indicator.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
