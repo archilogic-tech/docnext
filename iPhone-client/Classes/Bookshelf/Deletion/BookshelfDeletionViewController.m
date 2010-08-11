@@ -34,11 +34,88 @@
     movie = [[MPMoviePlayerController alloc] initWithContentURL:
              [NSURL URLWithString:@"http://ustdoc.com/docman_optimage/video/prog_index.m3u8"]];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieDuratoinAvailable:) name:MPMovieDurationAvailableNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieMediaTypesAvailable:) name:MPMovieMediaTypesAvailableNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieNaturalSizeAvailable:) name:MPMovieNaturalSizeAvailableNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerDidEnterFullscreen:) name:MPMoviePlayerDidEnterFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerDidExitFullscreen:) name:MPMoviePlayerDidExitFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerLoadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerNowPlayingMovieDidChange:) name:MPMoviePlayerNowPlayingMovieDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerPlaybackDidFinish:) name:MPMoviePlayerPlaybackDidFinishNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerPlaybackStateDidChange:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerThumbnailImageRequestDidFinish:) name:MPMoviePlayerThumbnailImageRequestDidFinishNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullscreen:) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillExitFullscreen:) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieSourceTypeAvailable:) name:MPMovieSourceTypeAvailableNotification object:nil];
+    
     movie.controlStyle = MPMovieControlStyleFullscreen;
     movie.view.frame = self.view.frame;
     [self.view addSubview:movie.view];
     
     [movie play];
+}
+
+#pragma mark MPMovieNotificatoin
+
+- (void)movieDuratoinAvailable:(NSNotification *)notification {
+    NSLog(@"MovieDurationAvaiable");
+}
+
+- (void)movieMediaTypesAvailable:(NSNotification *)notification {
+    NSLog(@"MovieMediaTypesAvaiable");
+}
+
+- (void)movieNaturalSizeAvailable:(NSNotification *)notification {
+    NSLog(@"MovieNaturalSizeAvaiable");
+}
+
+- (void)moviePlayerDidEnterFullscreen:(NSNotification *)notification {
+    NSLog(@"MoviePlayerDidEnterFullscreen");
+}
+
+- (void)moviePlayerDidExitFullscreen:(NSNotification *)notification {
+    NSLog(@"MoviePlayerDidExitFullscreen");
+}
+
+- (void)moviePlayerLoadStateDidChange:(NSNotification *)notification {
+    NSLog(@"MoviePlayerLoadStateDidChange");
+}
+
+- (void)moviePlayerNowPlayingMovieDidChange:(NSNotification *)notification {
+    NSLog(@"MoviePlayerNowPlayingMovieDidChange");
+}
+
+- (void)moviePlayerPlaybackDidFinish:(NSNotification *)notification {
+    NSLog(@"MoviePlayerPlaybackDidFinish");
+    
+    [movie.view removeFromSuperview];
+    [movie stop];
+    [movie release];
+    movie = nil;
+}
+
+- (void)moviePlayerPlaybackStateDidChange:(NSNotification *)notification {
+    NSLog(@"MoviePlayerPlaybackStateDidChange: playbackState: %d , object: %@ , userInfo: %@" , movie.playbackState , notification.object , notification.userInfo);
+}
+
+- (void)moviePlayerScalingModeDidChange:(NSNotification *)notification {
+    NSLog(@"MoviePlayerScalingModeDidChange");
+}
+
+- (void)moviePlayerThumbnailImageRequestDidFinish:(NSNotification *)notification {
+    NSLog(@"MoviePlayerThumbnailImageRequesteDidFinish");
+}
+
+- (void)moviePlayerWillEnterFullscreen:(NSNotification *)notification {
+    NSLog(@"MoviePlayerWillEnterFullscreen");
+}
+
+- (void)moviePlayerWillExitFullscreen:(NSNotification *)notification {
+    NSLog(@"MoviePlayerWillExitFullscreen");
+}
+
+- (void)movieSourceTypeAvailable:(NSNotification *)notification {
+    NSLog(@"MovieSourceTypeAvailable");
 }
 
 #pragma mark -

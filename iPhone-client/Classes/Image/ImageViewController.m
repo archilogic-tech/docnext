@@ -309,7 +309,7 @@
 
 - (void)movePageToCurrent:(BOOL)isLeft {
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
-    
+
     prevTiledScrollView = tiledScrollView;
     [tiledScrollView removeFromSuperview];
     
@@ -395,8 +395,8 @@
 #pragma mark CAAnimationDelegate
 
 - (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag {
-    prevTiledScrollView = nil;
     [prevTiledScrollView release];
+    prevTiledScrollView = nil;
 }
 
 #pragma mark TapDetectorDelegate 
