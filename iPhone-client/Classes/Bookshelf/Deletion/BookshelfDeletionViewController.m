@@ -31,9 +31,6 @@
 }
 
 - (IBAction)movieButtonClick:(id)sender {
-    movie = [[MPMoviePlayerController alloc] initWithContentURL:
-             [NSURL URLWithString:@"http://ustdoc.com/docman_optimage/video/prog_index.m3u8"]];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieDuratoinAvailable:) name:MPMovieDurationAvailableNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieMediaTypesAvailable:) name:MPMovieMediaTypesAvailableNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieNaturalSizeAvailable:) name:MPMovieNaturalSizeAvailableNotification object:nil];
@@ -48,11 +45,20 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillExitFullscreen:) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieSourceTypeAvailable:) name:MPMovieSourceTypeAvailableNotification object:nil];
     
-    movie.controlStyle = MPMovieControlStyleFullscreen;
-    movie.view.frame = self.view.frame;
-    [self.view addSubview:movie.view];
+    _movie = [[MPMoviePlayerController alloc] initWithContentURL:
+              [NSURL URLWithString:@"http://ustdoc.com/docman_optimage/video/prog_index.m3u8"]];
     
-    [movie play];
+    _movie.controlStyle = MPMovieControlStyleFullscreen;
+    _movie.view.frame = self.view.frame;
+    [self.view addSubview:_movie.view];
+    
+    [_movie play];
+    /*
+    MPMoviePlayerViewController *mov = [[MPMoviePlayerViewController alloc] initWithContentURL:
+                                        [NSURL URLWithString:@"http://ustdoc.com/docman_optimage/video/prog_index.m3u8"]];
+    [self presentMoviePlayerViewControllerAnimated:mov];
+    [mov.moviePlayer play];
+     */
 }
 
 #pragma mark MPMovieNotificatoin
@@ -88,13 +94,14 @@
 - (void)moviePlayerPlaybackDidFinish:(NSNotification *)notification {
     NSLog(@"MoviePlayerPlaybackDidFinish");
     
-    [movie.view removeFromSuperview];
-    [movie stop];
-    [movie release];
-    movie = nil;
+    [_movie.view removeFromSuperview];
+    [_movie stop];
+    [_movie release];
+    _movie = nil;
 }
 
 - (void)moviePlayerPlaybackStateDidChange:(NSNotification *)notification {
+    MPMoviePlayerController *movie = notification.object;
     NSLog(@"MoviePlayerPlaybackStateDidChange: playbackState: %d , object: %@ , userInfo: %@" , movie.playbackState , notification.object , notification.userInfo);
 }
 
@@ -179,11 +186,8 @@
 }
 
 - (void)dealloc {
-    [movie stop];
-    
     [tableView release];
     [downloadedIds release];
-    [movie release];
     
     [super dealloc];
 }

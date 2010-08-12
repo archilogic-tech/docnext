@@ -15,7 +15,7 @@
     
     NSMutableArray *downloadedIds;
     
-    MPMoviePlayerController *movie;
+    MPMoviePlayerController *_movie;
 }
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
