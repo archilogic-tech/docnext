@@ -26,11 +26,7 @@ public class DocumentService {
     private PackManager packManager;
 
     public List< DocumentResDto > findAll() {
-        List< Document > retr = documentDao.findAlmostAll();
-        System.err.println( retr.size() );
-        List< DocumentResDto > ret = ListConverter.toDtos( retr , documentConverter );
-        System.err.println( ret.size() );
-        return ret;
+        return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
     }
 
     public DocumentResDto findById( long id ) {
