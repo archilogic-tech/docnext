@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controller="jp.archilogic.documentmanager.controller.*"
-                xmlns:view="jp.archilogic.documentmanager.view.*" xmlns:ui="jp.archilogic.documentmanager.ui.*"
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controller="jp.archilogic.docnext.controller.*"
+                xmlns:view="jp.archilogic.docnext.view.*" xmlns:ui="jp.archilogic.docnext.ui.*"
                 addedToStage="addToStageHandler(event)" verticalGap="0" paddingTop="0" paddingBottom="0" paddingLeft="0"
-                paddingRight="0" preloader="jp.archilogic.documentmanager.ui.CustomPreloader">
+                paddingRight="0" preloader="jp.archilogic.docnext.ui.CustomPreloader">
     <mx:Script>
         <![CDATA[
             import jp.archilogic.documentmanager.resource.ResourceCommon;

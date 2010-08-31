@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.ui {
+package jp.archilogic.docnext.ui {
     import com.asual.swfaddress.SWFAddress;
     import flash.events.MouseEvent;
     import flash.net.URLRequest;

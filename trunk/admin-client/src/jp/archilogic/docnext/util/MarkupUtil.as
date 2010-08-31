@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.util {
+package jp.archilogic.docnext.util {
 
     public class MarkupUtil {
         public static function insertAnchor( text : String , blank : Boolean = true ) : String {

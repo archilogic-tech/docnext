@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.ui {
+package jp.archilogic.docnext.ui {
     import flash.display.GradientType;
     import flash.geom.Matrix;
     import mx.containers.Box;
