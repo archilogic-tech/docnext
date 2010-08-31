@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.util {
+package jp.archilogic.docnext.util {
 
     public class ConstUtil {
         public static const TITLE_VIEWER_PREFIX : String = TITLE + ' >> Viewer >> ';

@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.util {
+package jp.archilogic.docnext.util {
 
     public class RadixUtil {
         private static const SEQ : String = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

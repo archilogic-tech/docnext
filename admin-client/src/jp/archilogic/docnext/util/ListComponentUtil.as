@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.util {
+package jp.archilogic.docnext.util {
     import mx.controls.ComboBox;
 
     public class ListComponentUtil {

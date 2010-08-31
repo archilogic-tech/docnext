@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.type {
+package jp.archilogic.docnext.type {
 
     public class PublicType {
         public static const PUBLIC : uint = 0;

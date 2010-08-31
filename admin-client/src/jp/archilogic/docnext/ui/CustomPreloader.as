@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.ui {
+package jp.archilogic.docnext.ui {
     import flash.display.Bitmap;
     import flash.display.BitmapData;
     import flash.display.Sprite;
@@ -9,10 +9,12 @@ package jp.archilogic.documentmanager.ui {
     import flash.geom.Rectangle;
     import flash.utils.Timer;
     import flash.utils.getTimer;
+    
+    import jp.archilogic.documentmanager.resource.ResourceCommon;
+    
     import mx.core.BitmapAsset;
     import mx.events.FlexEvent;
     import mx.preloaders.IPreloaderDisplay;
-    import jp.archilogic.documentmanager.resource.ResourceCommon;
 
     public class CustomPreloader extends Sprite implements IPreloaderDisplay {
         private static const FADE_DURATION : Number = 500;

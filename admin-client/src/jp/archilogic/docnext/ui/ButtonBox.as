@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.ui {
+package jp.archilogic.docnext.ui {
     import flash.events.MouseEvent;
     import mx.containers.Box;
     import mx.core.ScrollPolicy;

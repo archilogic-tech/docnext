@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.service {
+package jp.archilogic.docnext.service {
     import flash.utils.ByteArray;
     import mx.collections.ArrayCollection;
     import jp.archilogic.Service;

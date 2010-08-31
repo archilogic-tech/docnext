@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.controller {
+package jp.archilogic.docnext.controller {
     import flash.events.MouseEvent;
     import flash.net.URLRequest;
     import flash.net.navigateToURL;
@@ -6,10 +6,10 @@ package jp.archilogic.documentmanager.controller {
     import mx.controls.Button;
     import mx.utils.ObjectUtil;
     import jp.archilogic.Delegate;
-    import jp.archilogic.documentmanager.dto.DocumentResDto;
-    import jp.archilogic.documentmanager.dto.TOCElem;
-    import jp.archilogic.documentmanager.service.DocumentService;
-    import jp.archilogic.documentmanager.util.RadixUtil;
+    import jp.archilogic.docnext.dto.DocumentResDto;
+    import jp.archilogic.docnext.dto.TOCElem;
+    import jp.archilogic.docnext.service.DocumentService;
+    import jp.archilogic.docnext.util.RadixUtil;
 
     public class IndexController extends Delegate {
         public var view : Index;

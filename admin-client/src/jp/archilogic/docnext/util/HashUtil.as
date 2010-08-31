@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.util {
+package jp.archilogic.docnext.util {
     import flash.utils.ByteArray;
     import mx.utils.SHA256;
 

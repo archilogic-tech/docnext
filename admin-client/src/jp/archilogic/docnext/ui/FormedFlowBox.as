@@ -1,4 +1,4 @@
-package jp.archilogic.documentmanager.ui {
+package jp.archilogic.docnext.ui {
     import flash.display.DisplayObject;
     import mx.events.FlexEvent;
     import flexlib.containers.FlowBox;
