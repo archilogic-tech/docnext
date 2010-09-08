@@ -18,10 +18,11 @@
 
 @class ImageSearchViewController;
 
-@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate> {
+@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate, OverlayManagerDelegate> {
     UIView *configView;
     UILabel *titleLabel;
     UIView *tiledScrollViewContainer;
+    UIView *selectionMenuView;
     
     TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
@@ -43,12 +44,13 @@
     NSArray *pageHeads;
     NSArray *isSinglePage;
 
-    NSOperationQueue *imageFetchQueue;    
+    NSOperationQueue *imageFetchQueue;
 }
 
 @property(nonatomic,retain) IBOutlet UIView *configView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
+@property(nonatomic,retain) IBOutlet UIView *selectionMenuView;
 @property(nonatomic,assign) UITouchAwareWindow *window;
 @property(nonatomic) int documentId;
 

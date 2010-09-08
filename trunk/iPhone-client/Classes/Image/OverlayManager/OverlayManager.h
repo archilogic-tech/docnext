@@ -12,6 +12,13 @@
 #import "UIScaleButton.h"
 #import "MarkerView.h"
 
+@protocol OverlayManagerDelegate
+
+- (void)didBeginSelect;
+- (void)didEndSelect;
+
+@end
+
 @interface OverlayManager : NSObject {
     int docId;
     int page;
@@ -21,6 +28,7 @@
     SeparationHolder *separationHolder;
     CGRect actual;
     
+    id<OverlayManagerDelegate> delegate;
     int selectionMinIndex;
     int selectionMaxIndex;
     UIScaleButton *selectionLeft;
@@ -30,10 +38,12 @@
     UIScrollView *scrollView;
     MarkerView *markerView;
     UIView *balloonContainerView;
+
 }
 
-@property(nonatomic,assign) MarkerView *markerView;
+@property(nonatomic,assign) id<OverlayManagerDelegate> delegate;
 @property(nonatomic,assign) UIScrollView *scrollView;
+@property(nonatomic,assign) MarkerView *markerView;
 @property(nonatomic,assign) UIView *balloonContainerView;
 
 - (void)setParam:(int)docId page:(int)page size:(CGSize)size;
@@ -41,5 +51,7 @@
 - (void)addBalloon:(NSString *)text tip:(CGPoint)tip;
 - (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
 - (void)applyScaleView:(float)scale;
+- (BOOL)hasSelection;
+- (void)clearSelection;
 
 @end

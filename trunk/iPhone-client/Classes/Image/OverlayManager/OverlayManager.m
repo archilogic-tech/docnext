@@ -15,11 +15,20 @@
 
 @implementation OverlayManager
 
-@synthesize markerView;
+@synthesize delegate;
 @synthesize scrollView;
+@synthesize markerView;
 @synthesize balloonContainerView;
 
 #pragma mark lifecycle
+
+- (id)init {
+    if ( self = [super init] ) {
+        [self clearSelection];
+    }
+    
+    return self;
+}
 
 - (void)dealloc {
     [regions release];
@@ -96,7 +105,13 @@
 }
 
 - (IBAction)touchDownSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
+    [delegate didBeginSelect];
+    
     [sender setTouchOffset:[[[event touchesForView:sender] anyObject] locationInView:sender]];
+}
+
+- (IBAction)touchUpSelection:(id)sender {
+    [delegate didEndSelect];
 }
 
 - (IBAction)touchDragSelection:(UIScaleButton *)sender andEvent:(UIEvent *)event {
@@ -151,6 +166,8 @@
     [selectionLeft addTarget:self action:@selector(touchDownSelection:andEvent:) forControlEvents:UIControlEventTouchDown];
     [selectionLeft addTarget:self action:@selector(touchDragSelection:andEvent:)
             forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [selectionLeft addTarget:self action:@selector(touchUpSelection:)
+            forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside)];
     [scrollView addSubview:selectionLeft];
     
     selectionRight = [[UIScaleButton alloc] initWithTip:
@@ -159,10 +176,14 @@
     [selectionRight addTarget:self action:@selector(touchDownSelection:andEvent:) forControlEvents:UIControlEventTouchDown];
     [selectionRight addTarget:self action:@selector(touchDragSelection:andEvent:)
              forControlEvents:(UIControlEventTouchDragInside | UIControlEventTouchDragOutside)];
+    [selectionRight addTarget:self action:@selector(touchUpSelection:)
+            forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside)];
     [scrollView addSubview:selectionRight];
     
     selectionMinIndex = minIndex;
     selectionMaxIndex = maxIndex;
+    
+    [delegate didEndSelect];
 }
 
 #pragma mark public
@@ -189,6 +210,15 @@
 - (void)selectNearest:(CGPoint)point {
     int index = [self getNearestIndex:point];
     [self showSelectionMarkerForMin:index max:index];
+}
+
+- (BOOL)hasSelection {
+    return selectionMinIndex != -1 || selectionMaxIndex != -1;
+}
+
+- (void)clearSelection {
+    selectionMinIndex = -1;
+    selectionMaxIndex = -1;
 }
 
 #pragma mark Balloon

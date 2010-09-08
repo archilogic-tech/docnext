@@ -34,6 +34,7 @@
 @synthesize configView;
 @synthesize titleLabel;
 @synthesize tiledScrollViewContainer;
+@synthesize selectionMenuView;
 @synthesize window;
 @synthesize documentId;
 
@@ -46,6 +47,7 @@
     tapDetector.delegate = self;
     
     overlayManager = [OverlayManager new];
+    overlayManager.delegate = self;
     
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
     
@@ -303,6 +305,9 @@
     [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
     
     configView.alpha = dst;
+    if ( [overlayManager hasSelection] ) {
+        selectionMenuView.alpha = dst;
+    }
     
     [UIView commitAnimations];
 }
@@ -328,6 +333,7 @@
     [self saveHistory];
     
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
+    [overlayManager clearSelection];
 }
 
 #pragma mark load
@@ -466,6 +472,20 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
         [tapDetector touchesEnded:touches withEvent:event];
+    }
+}
+
+#pragma mark OverlayManagerDelegate
+
+- (void)didBeginSelect {
+    if ( configView.alpha > 0 ) {
+        [self toggleConfigView];
+    }
+}
+
+- (void)didEndSelect {
+    if ( configView.alpha == 0 ) {
+        [self toggleConfigView];
     }
 }
 
