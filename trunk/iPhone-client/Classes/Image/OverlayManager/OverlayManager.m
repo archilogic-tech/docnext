@@ -216,7 +216,24 @@
     return selectionMinIndex != -1 || selectionMaxIndex != -1;
 }
 
+- (NSRange)selection {
+    if ( ![self hasSelection] ) {
+        return NSMakeRange(NSNotFound, 0);
+    }
+    
+    return NSMakeRange(selectionMinIndex, selectionMaxIndex - selectionMinIndex + 1);
+}
+
 - (void)clearSelection {
+    [markerView clearSelectionMarker];
+    [selectionLeft removeFromSuperview];
+    [selectionRight removeFromSuperview];
+    
+    [selectionLeft release];
+    selectionLeft = nil;
+    [selectionRight release];
+    selectionRight = nil;
+    
     selectionMinIndex = -1;
     selectionMaxIndex = -1;
 }

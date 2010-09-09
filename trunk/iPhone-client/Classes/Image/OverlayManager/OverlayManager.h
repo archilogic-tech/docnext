@@ -52,6 +52,7 @@
 - (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
 - (void)applyScaleView:(float)scale;
 - (BOOL)hasSelection;
+- (NSRange)selection;
 - (void)clearSelection;
 
 @end

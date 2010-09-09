@@ -147,6 +147,14 @@
     }
 }
 
+- (IBAction)copyButtonClick {
+    NSString *text = [FileUtil imageText:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+    [[UIPasteboard generalPasteboard] setString:[text substringWithRange:[overlayManager selection]]];
+    
+    [self toggleConfigView];
+    [overlayManager clearSelection];
+}
+
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
     int next = [self calcIndexByPage:page];
     if ( next != currentIndex ) {
@@ -315,6 +323,8 @@
 - (void)movePageToCurrent:(BOOL)isLeft {
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
 
+    [overlayManager clearSelection];
+
     prevTiledScrollView = tiledScrollView;
     [tiledScrollView removeFromSuperview];
     
@@ -333,7 +343,6 @@
     [self saveHistory];
     
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
-    [overlayManager clearSelection];
 }
 
 #pragma mark load
