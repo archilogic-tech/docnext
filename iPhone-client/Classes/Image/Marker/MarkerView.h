@@ -11,13 +11,19 @@
 @interface MarkerView : UIView {
     NSMutableSet *searchResults;
     NSMutableArray *selections;
+    NSMutableDictionary *highlights;
 }
 
-- (void)addSearchResultMarker:(CGRect)rect selected:(BOOL)selected;
 // Take care atIndex is different from removal
 - (void)addSelectionMarker:(CGRect)rect atIndex:(int)atIndex;
 - (void)removeSelectionMarker:(int)atIndex;
-- (void)clearSearchResultMarker;
 - (void)clearSelectionMarker;
+- (void)addSearchResultMarker:(CGRect)rect selected:(BOOL)selected;
+- (void)clearSearchResultMarker;
+- (UIControl *)addHighlightMarker:(CGRect)rect color:(UIColor *)color serial:(int)serial;
+- (int)getHighlightNextSerial;
+- (void)setHighlightSelected:(int)serial;
+- (void)changeHighlightColor:(int)serial color:(UIColor *)color;
+- (void)deleteHighlight:(int)serial;
 
 @end

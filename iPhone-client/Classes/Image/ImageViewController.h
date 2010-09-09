@@ -23,6 +23,7 @@
     UILabel *titleLabel;
     UIView *tiledScrollViewContainer;
     UIView *selectionMenuView;
+    UIView *highlightMenuView;
     
     TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
@@ -36,6 +37,7 @@
 
     TapDetector *tapDetector;
     OverlayManager *overlayManager;
+    BOOL isSelectingHighlight;
     
     int documentId;
     int currentIndex;
@@ -51,6 +53,7 @@
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
 @property(nonatomic,retain) IBOutlet UIView *selectionMenuView;
+@property(nonatomic,retain) IBOutlet UIView *highlightMenuView;
 @property(nonatomic,assign) UITouchAwareWindow *window;
 @property(nonatomic) int documentId;
 
@@ -65,6 +68,9 @@
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
 - (IBAction)copyButtonClick;
+- (IBAction)highlightButtonClick;
+- (IBAction)highlightChangeColorClick:(UIButton *)sender;
+- (IBAction)highlightDeleteClick;
 - (void)setIndexByPage:(int)page;
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
 - (void)cancelSearch;

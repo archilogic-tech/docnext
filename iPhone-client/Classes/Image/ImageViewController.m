@@ -25,6 +25,7 @@
 - (int)calcIndexByPage:(int)page;
 - (void)buildPageHeads;
 - (void)toggleConfigView;
+- (void)toggleHighlightMenu;
 - (void)movePageToCurrent:(BOOL)isLeft;
 - (void)loadSinglePageInfo;
 @end
@@ -35,6 +36,7 @@
 @synthesize titleLabel;
 @synthesize tiledScrollViewContainer;
 @synthesize selectionMenuView;
+@synthesize highlightMenuView;
 @synthesize window;
 @synthesize documentId;
 
@@ -153,6 +155,33 @@
     
     [self toggleConfigView];
     [overlayManager clearSelection];
+}
+
+- (IBAction)highlightButtonClick {
+    [overlayManager showHighlight:[overlayManager selection] color:[[UIColor redColor] colorWithAlphaComponent:0.5] selecting:YES];
+    
+    [self toggleConfigView];
+    [overlayManager clearSelection];
+    
+    [self toggleHighlightMenu];
+}
+
+- (IBAction)highlightChangeColorClick:(UIButton *)sender {
+    static int COLORS[] = {0xff0000 , 0x00ff00 , 0x0000ff};
+    
+    int color = COLORS[ sender.tag ];
+    
+    [overlayManager changeCurrentHighlightColor:[UIColor colorWithRed:((color >> 16) & 0xff)
+                                                                green:((color >> 8) & 0xff)
+                                                                 blue:(color & 0xff) alpha:0.5]];
+
+    [self toggleHighlightMenu];
+}
+
+- (IBAction)highlightDeleteClick {
+    [overlayManager deleteCurrentHighlight];
+    
+    [self toggleHighlightMenu];
 }
 
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
@@ -316,6 +345,22 @@
     if ( [overlayManager hasSelection] ) {
         selectionMenuView.alpha = dst;
     }
+    if ( highlightMenuView.alpha > 0 ) {
+        highlightMenuView.alpha = 0;
+    }
+    
+    [UIView commitAnimations];
+}
+
+- (void)toggleHighlightMenu {
+    double dst = highlightMenuView.alpha > 0 ? 0 : 1;
+    
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.3];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+    
+    highlightMenuView.alpha = dst;
     
     [UIView commitAnimations];
 }
@@ -417,7 +462,16 @@
 #pragma mark TapDetectorDelegate 
 
 - (void)tapDetectorGotSingleTapAtPoint:(CGPoint)tapPoint {
-    [self toggleConfigView];
+    if ( isSelectingHighlight ) {
+        isSelectingHighlight = NO;
+    } else {
+        if ( highlightMenuView.alpha > 0 ) {
+            [self toggleHighlightMenu];
+            [overlayManager clearHighlightSelection];
+        } else {
+            [self toggleConfigView];
+        }
+    }
 }
 
 - (void)tapDetectorGotDoubleTapAtPoint:(CGPoint)tapPoint {
@@ -495,6 +549,17 @@
 - (void)didEndSelect {
     if ( configView.alpha == 0 ) {
         [self toggleConfigView];
+    }
+}
+
+- (void)didTouchDownHighlight {
+    isSelectingHighlight = YES;
+    
+    if ( configView.alpha > 0 ) {
+        [self toggleConfigView];
+    }
+    if ( highlightMenuView.alpha == 0 ) {
+        [self toggleHighlightMenu];
     }
 }
 
