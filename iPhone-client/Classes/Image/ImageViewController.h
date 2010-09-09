@@ -64,6 +64,7 @@
 - (IBAction)textViewButtonClick:(id)sender;
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
+- (IBAction)copyButtonClick;
 - (void)setIndexByPage:(int)page;
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
 - (void)cancelSearch;
