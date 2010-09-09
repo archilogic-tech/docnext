@@ -186,6 +186,14 @@
     [delegate didEndSelect];
 }
 
+- (void)touchDownHighlight:(UIControl *)sender {
+    currentHighlightSerial = sender.tag;
+    
+    [markerView setHighlightSelected:currentHighlightSerial];
+    
+    [delegate didTouchDownHighlight];
+}
+
 #pragma mark public
 
 - (void)setParam:(int)_docId page:(int)_page size:(CGSize)size {
@@ -260,6 +268,43 @@
             }
         }
     }
+}
+
+#pragma mark Highlight
+
+- (void)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting {
+    int serial = [markerView getHighlightNextSerial];
+
+    for ( int delta = 0 ; delta < range.length ; delta++ ) {
+        Region *region = [self region:(range.location + delta)];
+        
+        UIControl *marker = [markerView addHighlightMarker:[self convertToStageRect:region] color:color serial:serial];
+        marker.tag = serial;
+        
+        [marker addTarget:self action:@selector(touchDownHighlight:) forControlEvents:UIControlEventTouchDown];
+    }
+    
+    if ( selecting ) {
+        currentHighlightSerial = serial;
+        
+        [markerView setHighlightSelected:serial];
+    }
+}
+
+- (void)clearHighlightSelection {
+    [markerView setHighlightSelected:-1];
+    
+    currentHighlightSerial = -1;
+}
+
+- (void)changeCurrentHighlightColor:(UIColor *)color {
+    [markerView changeHighlightColor:currentHighlightSerial color:color];
+}
+
+- (void)deleteCurrentHighlight {
+    [markerView deleteHighlight:currentHighlightSerial];
+    
+    currentHighlightSerial = -1;
 }
 
 #pragma mark etc

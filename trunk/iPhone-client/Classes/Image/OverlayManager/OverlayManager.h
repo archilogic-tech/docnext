@@ -16,6 +16,7 @@
 
 - (void)didBeginSelect;
 - (void)didEndSelect;
+- (void)didTouchDownHighlight;
 
 @end
 
@@ -34,11 +35,12 @@
     UIScaleButton *selectionLeft;
     UIScaleButton *selectionRight;
     
+    int currentHighlightSerial;
+    
     // umm....
     UIScrollView *scrollView;
     MarkerView *markerView;
     UIView *balloonContainerView;
-
 }
 
 @property(nonatomic,assign) id<OverlayManagerDelegate> delegate;
@@ -48,11 +50,15 @@
 
 - (void)setParam:(int)docId page:(int)page size:(CGSize)size;
 - (void)selectNearest:(CGPoint)point;
-- (void)addBalloon:(NSString *)text tip:(CGPoint)tip;
-- (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
-- (void)applyScaleView:(float)scale;
 - (BOOL)hasSelection;
 - (NSRange)selection;
 - (void)clearSelection;
+- (void)addBalloon:(NSString *)text tip:(CGPoint)tip;
+- (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
+- (void)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting;
+- (void)clearHighlightSelection;
+- (void)changeCurrentHighlightColor:(UIColor *)color;
+- (void)deleteCurrentHighlight;
+- (void)applyScaleView:(float)scale;
 
 @end
