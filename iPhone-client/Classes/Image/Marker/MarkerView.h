@@ -25,5 +25,6 @@
 - (void)setHighlightSelected:(int)serial;
 - (void)changeHighlightColor:(int)serial color:(UIColor *)color;
 - (void)deleteHighlight:(int)serial;
+- (CGPoint)calcHighlightTip:(int)serial;
 
 @end

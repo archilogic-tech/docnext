@@ -50,6 +50,7 @@
 		723DE24E11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 723DE24D11FFDA0900344B47 /* BookshelfDeletionViewController-iPhone-land.xib */; };
 		723DE2B011FFF13A00344B47 /* BookshelfDeletionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */; };
 		723DE2B311FFF17200344B47 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 723DE2B211FFF17200344B47 /* UIBalloon.m */; };
+		723E2D64123A356B00EDD2CC /* HighlightObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 723E2D63123A356B00EDD2CC /* HighlightObject.m */; };
 		7246FDB91202D0900051C2D6 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7246FDB81202D0900051C2D6 /* VolonoiDiagramBuilder.m */; };
 		72479B3B11DB1D4A005EF63A /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 72479B3A11DB1D4A005EF63A /* ZipArchive.mm */; };
 		72479B4911DB1D58005EF63A /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4111DB1D58005EF63A /* ioapi.c */; };
@@ -199,6 +200,8 @@
 		723DE2AF11FFF13A00344B47 /* BookshelfDeletionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookshelfDeletionViewController.m; path = Bookshelf/Deletion/BookshelfDeletionViewController.m; sourceTree = "<group>"; };
 		723DE2B111FFF17200344B47 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIBalloon.h; path = Image/Balloon/UIBalloon.h; sourceTree = "<group>"; };
 		723DE2B211FFF17200344B47 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIBalloon.m; path = Image/Balloon/UIBalloon.m; sourceTree = "<group>"; };
+		723E2D62123A356B00EDD2CC /* HighlightObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HighlightObject.h; path = Image/HighlightObject.h; sourceTree = "<group>"; };
+		723E2D63123A356B00EDD2CC /* HighlightObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HighlightObject.m; path = Image/HighlightObject.m; sourceTree = "<group>"; };
 		7246FDB71202D0900051C2D6 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VolonoiDiagramBuilder.h; path = Image/VolonoiDiagram/VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
 		7246FDB81202D0900051C2D6 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VolonoiDiagramBuilder.m; path = Image/VolonoiDiagram/VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
 		72479B3911DB1D4A005EF63A /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZipArchive.h; path = Library/ZipArchive/ZipArchive.h; sourceTree = "<group>"; };
@@ -704,6 +707,8 @@
 				7235B38E1209173500D50B96 /* UIScaleButton.h */,
 				7235B38F1209173500D50B96 /* UIScaleButton.m */,
 				7235B398120917AD00D50B96 /* IScale.h */,
+				723E2D62123A356B00EDD2CC /* HighlightObject.h */,
+				723E2D63123A356B00EDD2CC /* HighlightObject.m */,
 			);
 			name = Image;
 			sourceTree = "<group>";
@@ -977,6 +982,7 @@
 				7235B3A11209182400D50B96 /* Region.m in Sources */,
 				7235B3AD1209186D00D50B96 /* IntDoublePair.m in Sources */,
 				7235B3AE1209186D00D50B96 /* SeparationHolder.m in Sources */,
+				723E2D64123A356B00EDD2CC /* HighlightObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

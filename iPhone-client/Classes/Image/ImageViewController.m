@@ -18,6 +18,7 @@
 #import "ImageSearchViewController.h"
 #import "UIBalloon.h"
 #import "SeparationHolder.h"
+#import "HighlightObject.h"
 
 @interface ImageViewController ()
 - (TiledScrollView *)buildContentView;
@@ -26,8 +27,12 @@
 - (void)buildPageHeads;
 - (void)toggleConfigView;
 - (void)toggleHighlightMenu;
+- (void)toggleHighlightCommentMenu;
 - (void)movePageToCurrent:(BOOL)isLeft;
+- (UIColor *)highlightColor:(int)index;
 - (void)loadSinglePageInfo;
+- (void)loadHighlights;
+- (void)saveHighlights;
 @end
 
 @implementation ImageViewController
@@ -37,6 +42,8 @@
 @synthesize tiledScrollViewContainer;
 @synthesize selectionMenuView;
 @synthesize highlightMenuView;
+@synthesize highlightCommentMenuView;
+@synthesize highlightCommentTextField;
 @synthesize window;
 @synthesize documentId;
 
@@ -51,6 +58,8 @@
     overlayManager = [OverlayManager new];
     overlayManager.delegate = self;
     
+    highlights = [[NSMutableDictionary dictionaryWithCapacity:0] retain];
+    
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
     
     tiledScrollView = [[self buildContentView] retain];
@@ -64,6 +73,8 @@
     [imageFetchQueue setMaxConcurrentOperationCount:1];
 
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
+    
+    [self loadHighlights];
 }
 
 - (void)dealloc {
@@ -72,6 +83,10 @@
     [configView release];
     [tiledScrollView release];
     [tiledScrollViewContainer release];
+    [selectionMenuView release];
+    [highlightMenuView release];
+    [highlightCommentMenuView release];
+    [highlightCommentTextField release];
     [markerView release];
     [balloonContainerView release];
     [tapDetector release];
@@ -80,6 +95,7 @@
     [pageHeads release];
     [isSinglePage release];
     [overlayManager release];
+    [highlights release];
     [imageFetchQueue release];
     
     [super dealloc];
@@ -158,7 +174,17 @@
 }
 
 - (IBAction)highlightButtonClick {
-    [overlayManager showHighlight:[overlayManager selection] color:[[UIColor redColor] colorWithAlphaComponent:0.5] selecting:YES];
+    currentHighlightSerial = [overlayManager showHighlight:[overlayManager selection] color:[self highlightColor:0] selecting:YES];
+    
+    HighlightObject *highlight = [[HighlightObject new] autorelease];
+    highlight.location = [overlayManager selection].location;
+    highlight.length = [overlayManager selection].length;
+    highlight.color = 0;
+    highlight.text = @"";
+    
+    [highlights setObject:highlight forKey:[NSNumber numberWithInt:currentHighlightSerial]];
+    
+    [self saveHighlights];
     
     [self toggleConfigView];
     [overlayManager clearSelection];
@@ -166,22 +192,52 @@
     [self toggleHighlightMenu];
 }
 
-- (IBAction)highlightChangeColorClick:(UIButton *)sender {
-    static int COLORS[] = {0xff0000 , 0x00ff00 , 0x0000ff};
+- (IBAction)highlightCommentButtonClick {
+    HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
+    highlightCommentTextField.text = highlight.text;
     
-    int color = COLORS[ sender.tag ];
-    
-    [overlayManager changeCurrentHighlightColor:[UIColor colorWithRed:((color >> 16) & 0xff)
-                                                                green:((color >> 8) & 0xff)
-                                                                 blue:(color & 0xff) alpha:0.5]];
+    [self toggleHighlightCommentMenu];
+}
 
+- (IBAction)highlightCommentApplyButtonClick {
+    [highlightCommentTextField resignFirstResponder];
+    
+    [overlayManager changeHighlightComment:currentHighlightSerial text:highlightCommentTextField.text];
+    [overlayManager applyScaleView:tiledScrollView.zoomScale];
+    
+    HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
+    highlight.text = highlightCommentTextField.text;
+    [self saveHighlights];
+    
+    [self toggleHighlightCommentMenu];
+}
+
+- (IBAction)highlightChangeColorClick:(UIButton *)sender {
+    [overlayManager changeHighlightColor:currentHighlightSerial color:[self highlightColor:sender.tag]];
+
+    HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
+    highlight.color = sender.tag;
+    [self saveHighlights];
+    
     [self toggleHighlightMenu];
+    if ( highlightCommentMenuView.alpha > 0 ) {
+        [self toggleHighlightCommentMenu];
+    }
 }
 
 - (IBAction)highlightDeleteClick {
-    [overlayManager deleteCurrentHighlight];
+    [overlayManager deleteHighlight:currentHighlightSerial];
+
+    [highlights removeObjectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
+    [self saveHighlights];
+    
+    currentHighlightSerial = -1;
+    
     
     [self toggleHighlightMenu];
+    if ( highlightCommentMenuView.alpha > 0 ) {
+        [self toggleHighlightCommentMenu];
+    }
 }
 
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
@@ -365,6 +421,19 @@
     [UIView commitAnimations];
 }
 
+- (void)toggleHighlightCommentMenu {
+    double dst = highlightCommentMenuView.alpha > 0 ? 0 : 1;
+    
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.3];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+    
+    highlightCommentMenuView.alpha = dst;
+    
+    [UIView commitAnimations];
+}
+
 - (void)movePageToCurrent:(BOOL)isLeft {
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
 
@@ -388,6 +457,17 @@
     [self saveHistory];
     
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
+    [self loadHighlights];
+}
+
+- (UIColor *)highlightColor:(int)index {
+    int COLORS[] = {0xff0000 , 0x00ff00 , 0x0000ff};
+    
+    int color = COLORS[ index ];
+    
+    return [UIColor colorWithRed:((color >> 16) & 0xff)
+                           green:((color >> 8) & 0xff)
+                            blue:(color & 0xff) alpha:0.5];
 }
 
 #pragma mark load
@@ -396,6 +476,29 @@
     singlePageInfo = [[[NSString stringWithData:
                         [FileUtil read:
                          [NSString stringWithFormat:@"%d/singlePageInfo.json" , documentId]]] JSONValue] retain];
+}
+
+- (void)loadHighlights {
+    NSData *data = [FileUtil read:[NSString stringWithFormat:@"%d/%d.highlight.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
+    for ( NSDictionary *dic in [[NSString stringWithData:data] JSONValue] ) {
+        HighlightObject *highlight = [HighlightObject objectWithDictionary:dic];
+        
+        int serial = [overlayManager showHighlight:[highlight range] color:[self highlightColor:highlight.color] selecting:NO];
+        [overlayManager changeHighlightComment:serial text:highlight.text];
+        
+        [highlights setObject:highlight forKey:[NSNumber numberWithInt:serial]];
+    }
+}
+
+- (void)saveHighlights {
+    NSMutableArray *buf = [NSMutableArray arrayWithCapacity:0];
+    
+    for ( NSNumber *key in highlights ) {
+        [buf addObject:[[highlights objectForKey:key] toDictionary]];
+    }
+    
+    [FileUtil write:[[buf JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding] toFile:
+     [NSString stringWithFormat:@"%d/%d.highlight.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
 }
 
 #pragma mark TiledScrollViewDataSource method
@@ -468,6 +571,11 @@
         if ( highlightMenuView.alpha > 0 ) {
             [self toggleHighlightMenu];
             [overlayManager clearHighlightSelection];
+            currentHighlightSerial = -1;
+            
+            if ( highlightCommentMenuView.alpha > 0 ) {
+                [self toggleHighlightCommentMenu];
+            }
         } else {
             [self toggleConfigView];
         }
@@ -529,6 +637,12 @@
         if ( configView.alpha > 0 ) {
             [self toggleConfigView];
         }
+        if ( highlightMenuView.alpha > 0 ) {
+            [self toggleHighlightMenu];
+        }
+        if ( highlightCommentMenuView.alpha > 0 ) {
+            [self toggleHighlightCommentMenu];
+        }
     }
 }
 
@@ -552,7 +666,8 @@
     }
 }
 
-- (void)didTouchDownHighlight {
+- (void)didTouchDownHighlight:(int)serial {
+    currentHighlightSerial = serial;
     isSelectingHighlight = YES;
     
     if ( configView.alpha > 0 ) {

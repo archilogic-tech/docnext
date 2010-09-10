@@ -25,6 +25,8 @@
 - (id)init {
     if ( self = [super init] ) {
         [self clearSelection];
+        
+        highlightBalloons = [[NSMutableDictionary dictionaryWithCapacity:0] retain];
     }
     
     return self;
@@ -187,11 +189,11 @@
 }
 
 - (void)touchDownHighlight:(UIControl *)sender {
-    currentHighlightSerial = sender.tag;
+    int serial = sender.tag;
     
-    [markerView setHighlightSelected:currentHighlightSerial];
+    [markerView setHighlightSelected:serial];
     
-    [delegate didTouchDownHighlight];
+    [delegate didTouchDownHighlight:serial];
 }
 
 #pragma mark public
@@ -248,8 +250,12 @@
 
 #pragma mark Balloon
 
-- (void)addBalloon:(NSString *)text tip:(CGPoint)tip {
-    [balloonContainerView addSubview:[[[UIBalloon alloc] initWithText:text tip:tip] autorelease]];
+- (UIView *)addBalloon:(NSString *)text tip:(CGPoint)tip {
+    UIView *ret = [[[UIBalloon alloc] initWithText:text tip:tip] autorelease];
+    
+    [balloonContainerView addSubview:ret];
+    
+    return ret;
 }
 
 #pragma mark SearchResult
@@ -272,7 +278,7 @@
 
 #pragma mark Highlight
 
-- (void)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting {
+- (int)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting {
     int serial = [markerView getHighlightNextSerial];
 
     for ( int delta = 0 ; delta < range.length ; delta++ ) {
@@ -285,26 +291,41 @@
     }
     
     if ( selecting ) {
-        currentHighlightSerial = serial;
-        
         [markerView setHighlightSelected:serial];
     }
+    
+    return serial;
 }
 
 - (void)clearHighlightSelection {
     [markerView setHighlightSelected:-1];
-    
-    currentHighlightSerial = -1;
 }
 
-- (void)changeCurrentHighlightColor:(UIColor *)color {
-    [markerView changeHighlightColor:currentHighlightSerial color:color];
+- (void)changeHighlightComment:(int)serial text:(NSString *)text {
+    NSNumber *key = [NSNumber numberWithInt:serial];
+    
+    if ( [highlightBalloons objectForKey:key] ) {
+        [[highlightBalloons objectForKey:key] removeFromSuperview];
+        [highlightBalloons removeObjectForKey:key];
+    }
+    
+    if ( [text length] > 0 ) {
+        [highlightBalloons setObject:[self addBalloon:text tip:[markerView calcHighlightTip:serial]] forKey:key];
+    }
 }
 
-- (void)deleteCurrentHighlight {
-    [markerView deleteHighlight:currentHighlightSerial];
-    
-    currentHighlightSerial = -1;
+- (void)changeHighlightColor:(int)serial color:(UIColor *)color {
+    [markerView changeHighlightColor:serial color:color];
+}
+
+- (void)deleteHighlight:(int)serial {
+    [markerView deleteHighlight:serial];
+
+    NSNumber *key = [NSNumber numberWithInt:serial];
+    if ( [highlightBalloons objectForKey:key] ) {
+        [[highlightBalloons objectForKey:key] removeFromSuperview];
+        [highlightBalloons removeObjectForKey:key];
+    }
 }
 
 #pragma mark etc

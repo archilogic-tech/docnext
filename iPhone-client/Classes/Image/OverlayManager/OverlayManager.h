@@ -16,7 +16,7 @@
 
 - (void)didBeginSelect;
 - (void)didEndSelect;
-- (void)didTouchDownHighlight;
+- (void)didTouchDownHighlight:(int)serial;
 
 @end
 
@@ -35,7 +35,7 @@
     UIScaleButton *selectionLeft;
     UIScaleButton *selectionRight;
     
-    int currentHighlightSerial;
+    NSMutableDictionary *highlightBalloons;
     
     // umm....
     UIScrollView *scrollView;
@@ -53,12 +53,13 @@
 - (BOOL)hasSelection;
 - (NSRange)selection;
 - (void)clearSelection;
-- (void)addBalloon:(NSString *)text tip:(CGPoint)tip;
+- (UIView *)addBalloon:(NSString *)text tip:(CGPoint)tip;
 - (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
-- (void)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting;
+- (int)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting;
 - (void)clearHighlightSelection;
-- (void)changeCurrentHighlightColor:(UIColor *)color;
-- (void)deleteCurrentHighlight;
+- (void)changeHighlightComment:(int)serial text:(NSString *)text;
+- (void)changeHighlightColor:(int)serial color:(UIColor *)color;
+- (void)deleteHighlight:(int)serial;
 - (void)applyScaleView:(float)scale;
 
 @end
