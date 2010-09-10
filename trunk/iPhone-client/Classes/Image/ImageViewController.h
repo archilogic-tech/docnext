@@ -24,6 +24,8 @@
     UIView *tiledScrollViewContainer;
     UIView *selectionMenuView;
     UIView *highlightMenuView;
+    UIView *highlightCommentMenuView;
+    UITextField *highlightCommentTextField;
     
     TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
@@ -37,7 +39,9 @@
 
     TapDetector *tapDetector;
     OverlayManager *overlayManager;
+    int currentHighlightSerial;
     BOOL isSelectingHighlight;
+    NSMutableDictionary *highlights;
     
     int documentId;
     int currentIndex;
@@ -54,6 +58,8 @@
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
 @property(nonatomic,retain) IBOutlet UIView *selectionMenuView;
 @property(nonatomic,retain) IBOutlet UIView *highlightMenuView;
+@property(nonatomic,retain) IBOutlet UIView *highlightCommentMenuView;
+@property(nonatomic,retain) IBOutlet UITextField *highlightCommentTextField;
 @property(nonatomic,assign) UITouchAwareWindow *window;
 @property(nonatomic) int documentId;
 
@@ -69,6 +75,8 @@
 - (IBAction)searchButtonClick:(id)sender;
 - (IBAction)copyButtonClick;
 - (IBAction)highlightButtonClick;
+- (IBAction)highlightCommentButtonClick;
+- (IBAction)highlightCommentApplyButtonClick;
 - (IBAction)highlightChangeColorClick:(UIButton *)sender;
 - (IBAction)highlightDeleteClick;
 - (void)setIndexByPage:(int)page;

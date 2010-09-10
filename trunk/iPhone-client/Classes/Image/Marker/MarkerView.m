@@ -149,4 +149,25 @@
     [highlights removeObjectForKey:key];
 }
 
+- (CGPoint)calcHighlightTip:(int)serial {
+    NSArray *target = [highlights objectForKey:[NSNumber numberWithInt:serial]];
+    
+    float top = FLT_MIN;
+    float bottom = FLT_MAX;
+    for ( int index = 0 ; index < [target count] ; index++ ) {
+        UIView *view = [target objectAtIndex:index];
+        
+        if ( view.frame.origin.y > bottom || view.frame.origin.y + view.frame.size.height < top ) {
+            UIView *mid = [target objectAtIndex:((index - 1) / 2)];
+            return CGPointMake(mid.frame.origin.x + mid.frame.size.width / 2, mid.frame.origin.y);
+        }
+        
+        top = view.frame.origin.y;
+        bottom = view.frame.origin.y + view.frame.size.height;
+    }
+    
+    UIView *mid = [target objectAtIndex:([target count] / 2)];
+    return CGPointMake(mid.frame.origin.x + mid.frame.size.width / 2, mid.frame.origin.y);
+}
+
 @end
