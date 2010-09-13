@@ -39,11 +39,16 @@ public class UploadProcessor {
                 String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
                 String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
+                String cleanedPath =
+                        FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + "cleaned" + doc.id
+                                + ".pdf";
+                pdfAnnotationCleaner.clean( tempPdfPath , cleanedPath );
+
                 double ratio =
-                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , tempPdfPath , ppmPath
+                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
                                 + doc.id );
 
-                int pages = thumbnailCreator.getPages( tempPdfPath );
+                int pages = thumbnailCreator.getPages( cleanedPath );
 
                 packManager.createStruct( doc.id );
                 packManager.copyThumbnails( doc.id );
@@ -53,7 +58,7 @@ public class UploadProcessor {
                 packManager.writeRatio( doc.id , ratio );
 
                 int page = 0;
-                for ( PageTextInfo pageTextInfo : pdfTextParser.parse( tempPdfPath ) ) {
+                for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
                     packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
                     packManager.writeImageText( doc.id , page , pageTextInfo.text );
                     packManager.writeRegions( doc.id , page , pageTextInfo.regions );
@@ -103,6 +108,8 @@ public class UploadProcessor {
     private PackManager packManager;
     @Autowired
     private PDFTextParser pdfTextParser;
+    @Autowired
+    private PDFAnnotationCleaner pdfAnnotationCleaner;
 
     public void proc( String tempPath , Document doc ) {
         new UploadTask( tempPath , doc ).run();
