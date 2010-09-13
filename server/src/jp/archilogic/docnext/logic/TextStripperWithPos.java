@@ -5,6 +5,7 @@ import java.util.List;
 
 import jp.archilogic.docnext.dto.Region;
 
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
 
@@ -13,14 +14,12 @@ import com.google.common.collect.Lists;
 public class TextStripperWithPos extends PDFTextStripper {
     private final StringBuilder _text = new StringBuilder();
     private final List< Region > _regions = Lists.newArrayList();
-    private final float _width;
-    private final float _height;
+    private final PDRectangle _rect;
 
-    public TextStripperWithPos( float width , float height ) throws IOException {
+    public TextStripperWithPos( PDRectangle rect ) throws IOException {
         super();
 
-        _width = width;
-        _height = height;
+        _rect = rect;
     }
 
     public List< Region > getRegions() {
@@ -43,8 +42,9 @@ public class TextStripperWithPos extends PDFTextStripper {
         for ( int index = 0 ; index < text.getCharacter().length() ; index++ ) {
             float w = text.getIndividualWidths()[ index ];
             // fix y for coordinate system
-            _regions.add( new Region( x / _width , ( text.getY() - text.getHeight() ) / _height , w / _width , text
-                    .getHeight() / _height ) );
+            _regions.add( new Region( ( x - _rect.getLowerLeftX() ) / _rect.getWidth() , ( text.getY()
+                    - _rect.getLowerLeftY() - text.getHeight() )
+                    / _rect.getHeight() , w / _rect.getWidth() , text.getHeight() / _rect.getHeight() ) );
             x += w;
         }
     }

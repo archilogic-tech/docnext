@@ -174,6 +174,11 @@ public class ThumbnailCreator {
             return path;
         }
 
+        path = String.format( "%s-%02d.ppm" , prefix , page + 1 );
+        if ( new File( path ).exists() ) {
+            return path;
+        }
+
         throw new RuntimeException( "Could not find ppm file" );
     }
 }
