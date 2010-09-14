@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dto.Region;
 import jp.archilogic.docnext.dto.TOCElem;
+import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.io.FileUtils;
@@ -157,6 +158,17 @@ public class PackManager {
         } catch ( FileNotFoundException e ) {
             throw new RuntimeException( e );
         } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void writeAnnotations( long documentId , int page , List< PageAnnotationInfo > infos ) {
+        try {
+            FileUtils
+                    .writeStringToFile(
+                            new File( String.format( "%s/pack/%d/images/%d.anno.json" , prop.repository , documentId ,
+                                    page ) ) , JSON.encode( infos ) );
+        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }

@@ -1,12 +1,14 @@
 package jp.archilogic.docnext.logic;
 
 import java.io.File;
+import java.util.List;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dao.DocumentDao;
 import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.UnsupportedFormatException;
+import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
 import jp.archilogic.docnext.util.FileUtil;
 
@@ -39,31 +41,41 @@ public class UploadProcessor {
                 String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
                 String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
+                packManager.createStruct( doc.id );
+
+                {
+                    int page = 0;
+                    for ( List< PageAnnotationInfo > infos : pdfAnnotationParser.parse( tempPdfPath ) ) {
+                        packManager.writeAnnotations( doc.id , page , infos );
+
+                        page++;
+                    }
+                }
+
                 String cleanedPath =
                         FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + "cleaned" + doc.id
                                 + ".pdf";
-                pdfAnnotationCleaner.clean( tempPdfPath , cleanedPath );
+                pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
                 double ratio =
                         thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
                                 + doc.id );
 
-                int pages = thumbnailCreator.getPages( cleanedPath );
-
-                packManager.createStruct( doc.id );
                 packManager.copyThumbnails( doc.id );
-                packManager.writePages( doc.id , pages );
-                packManager.writeTOC( doc.id , Lists.< TOCElem > newArrayList() );
+                packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
+                packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
                 packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
                 packManager.writeRatio( doc.id , ratio );
 
-                int page = 0;
-                for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
-                    packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
-                    packManager.writeImageText( doc.id , page , pageTextInfo.text );
-                    packManager.writeRegions( doc.id , page , pageTextInfo.regions );
+                {
+                    int page = 0;
+                    for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
+                        packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
+                        packManager.writeImageText( doc.id , page , pageTextInfo.text );
+                        packManager.writeRegions( doc.id , page , pageTextInfo.regions );
 
-                    page++;
+                        page++;
+                    }
                 }
 
                 packManager.repack( doc.id );
@@ -109,7 +121,7 @@ public class UploadProcessor {
     @Autowired
     private PDFTextParser pdfTextParser;
     @Autowired
-    private PDFAnnotationCleaner pdfAnnotationCleaner;
+    private PDFAnnotationParser pdfAnnotationParser;
 
     public void proc( String tempPath , Document doc ) {
         new UploadTask( tempPath , doc ).run();
