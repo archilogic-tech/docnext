@@ -3,6 +3,8 @@ package jp.archilogic.docnext.logic;
 import java.io.IOException;
 import java.util.List;
 
+import jp.archilogic.docnext.dto.Region;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
@@ -36,33 +38,12 @@ public class PDFAnnotationParser {
     }
 
     class PageAnnotationInfo {
-        public Rect rect;
+        public Region region;
         public Action action;
 
-        public PageAnnotationInfo( Rect rect , Action action ) {
-            this.rect = rect;
+        public PageAnnotationInfo( Region region , Action action ) {
+            this.region = region;
             this.action = action;
-        }
-    }
-
-    class Rect {
-        public double x;
-        public double y;
-        public double width;
-        public double height;
-
-        Rect( PDAnnotation anno , PDPage page ) {
-            this( anno.getRectangle() , page.getCropBox() , page.getMediaBox() );
-        }
-
-        Rect( PDRectangle rect , PDRectangle crop , PDRectangle media ) {
-            float w = crop.getWidth();
-            float h = crop.getHeight();
-
-            x = ( rect.getLowerLeftX() - crop.getLowerLeftX() ) / w;
-            y = ( rect.getUpperRightY() - ( media.getHeight() - crop.getUpperRightY() ) ) / h;
-            width = rect.getWidth() / w;
-            height = rect.getHeight() / h;
         }
     }
 
@@ -102,6 +83,18 @@ public class PDFAnnotationParser {
         }
     }
 
+    private Region convertToRegion( PDAnnotation anno , PDPage page ) {
+        PDRectangle rect = anno.getRectangle();
+        PDRectangle crop = page.findCropBox();
+
+        float w = crop.getWidth();
+        float h = crop.getHeight();
+
+        return new Region( ( rect.getLowerLeftX() - crop.getLowerLeftX() ) / w ,
+                ( h - ( rect.getUpperRightY() - crop.getLowerLeftY() ) ) / h , rect.getWidth() / w , rect.getHeight()
+                        / h );
+    }
+
     @SuppressWarnings( "unchecked" )
     private List< PageAnnotationInfo > getAnnotations( PDPage page ) throws IOException {
         List< PageAnnotationInfo > ret = Lists.newArrayList();
@@ -116,14 +109,14 @@ public class PDFAnnotationParser {
                     if ( dest instanceof PDNamedDestination ) {
                         throw new RuntimeException();
                     } else if ( dest instanceof PDPageDestination ) {
-                        ret.add( new PageAnnotationInfo( new Rect( anno , page ) , new GoToPageAction(
+                        ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new GoToPageAction(
                                 ( ( PDPageDestination ) dest ).findPageNumber() ) ) );
                     } else {
                         throw new RuntimeException();
                     }
                 } else if ( action instanceof PDActionURI ) {
-                    ret.add( new PageAnnotationInfo( new Rect( anno , page ) , new URIAction( ( ( PDActionURI ) action )
-                            .getURI() ) ) );
+                    ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new URIAction(
+                            ( ( PDActionURI ) action ).getURI() ) ) );
                 } else {
                     throw new RuntimeException();
                 }
