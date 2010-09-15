@@ -14,13 +14,13 @@ import com.google.common.collect.Lists;
 public class TextStripperWithPos extends PDFTextStripper {
     private final StringBuilder _text = new StringBuilder();
     private final List< Region > _regions = Lists.newArrayList();
-    private final PDRectangle _trim;
+    private final PDRectangle _crop;
     private final PDRectangle _media;
 
-    public TextStripperWithPos( PDRectangle trim , PDRectangle media ) throws IOException {
+    public TextStripperWithPos( PDRectangle crop , PDRectangle media ) throws IOException {
         super();
 
-        _trim = trim;
+        _crop = crop;
         _media = media;
     }
 
@@ -44,9 +44,9 @@ public class TextStripperWithPos extends PDFTextStripper {
         for ( int index = 0 ; index < text.getCharacter().length() ; index++ ) {
             float w = text.getIndividualWidths()[ index ];
             // fix y for coordinate system
-            _regions.add( new Region( ( x - _trim.getLowerLeftX() ) / _trim.getWidth() , ( text.getY()
-                    - ( _media.getHeight() - _trim.getUpperRightY() ) - text.getHeight() )
-                    / _trim.getHeight() , w / _trim.getWidth() , text.getHeight() / _trim.getHeight() ) );
+            _regions.add( new Region( ( x - _crop.getLowerLeftX() ) / _crop.getWidth() , ( text.getY()
+                    - ( _media.getHeight() - _crop.getUpperRightY() ) - text.getHeight() )
+                    / _crop.getHeight() , w / _crop.getWidth() , text.getHeight() / _crop.getHeight() ) );
             x += w;
         }
     }

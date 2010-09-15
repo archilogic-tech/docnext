@@ -38,7 +38,7 @@ public class PDFTextParser {
             List< ? > allPages = document.getDocumentCatalog().getAllPages();
             for ( int i = 0 ; i < allPages.size() ; i++ ) {
                 PDPage page = ( PDPage ) allPages.get( i );
-                TextStripperWithPos stripper = new TextStripperWithPos( page.getCropBox() , page.getMediaBox() );
+                TextStripperWithPos stripper = new TextStripperWithPos( page.findCropBox() , page.findMediaBox() );
 
                 PDStream contents = page.getContents();
                 if ( contents != null ) {
