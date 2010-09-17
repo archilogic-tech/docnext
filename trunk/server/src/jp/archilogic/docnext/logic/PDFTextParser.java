@@ -9,6 +9,7 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,11 @@ public class PDFTextParser {
             List< ? > allPages = document.getDocumentCatalog().getAllPages();
             for ( int i = 0 ; i < allPages.size() ; i++ ) {
                 PDPage page = ( PDPage ) allPages.get( i );
-                TextStripperWithPos stripper = new TextStripperWithPos( page.findCropBox() , page.findMediaBox() );
+
+                PDRectangle crop = page.findCropBox();
+                PDRectangle media = page.findMediaBox();
+                PDRectangle container = crop.getWidth() < media.getWidth() ? crop : media;
+                TextStripperWithPos stripper = new TextStripperWithPos( container , media );
 
                 PDStream contents = page.getContents();
                 if ( contents != null ) {
