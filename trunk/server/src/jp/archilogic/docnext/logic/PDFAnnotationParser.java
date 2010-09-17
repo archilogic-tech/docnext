@@ -86,13 +86,16 @@ public class PDFAnnotationParser {
     private Region convertToRegion( PDAnnotation anno , PDPage page ) {
         PDRectangle rect = anno.getRectangle();
         PDRectangle crop = page.findCropBox();
+        PDRectangle media = page.findMediaBox();
 
-        float w = crop.getWidth();
-        float h = crop.getHeight();
+        PDRectangle container = crop.getWidth() < media.getWidth() ? crop : media;
 
-        return new Region( ( rect.getLowerLeftX() - crop.getLowerLeftX() ) / w ,
-                ( h - ( rect.getUpperRightY() - crop.getLowerLeftY() ) ) / h , rect.getWidth() / w , rect.getHeight()
-                        / h );
+        float w = container.getWidth();
+        float h = container.getHeight();
+
+        return new Region( ( rect.getLowerLeftX() - container.getLowerLeftX() ) / w ,
+                ( h - ( rect.getUpperRightY() - container.getLowerLeftY() ) ) / h , rect.getWidth() / w ,
+                rect.getHeight() / h );
     }
 
     @SuppressWarnings( "unchecked" )
