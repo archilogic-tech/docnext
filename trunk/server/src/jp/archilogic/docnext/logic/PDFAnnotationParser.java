@@ -19,6 +19,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -55,6 +57,8 @@ public class PDFAnnotationParser {
             this.uri = uri;
         }
     }
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( PDFAnnotationParser.class );
 
     public void clean( String src , String dst ) {
         try {
@@ -110,21 +114,21 @@ public class PDFAnnotationParser {
                     PDDestination dest = ( ( PDActionGoTo ) action ).getDestination();
 
                     if ( dest instanceof PDNamedDestination ) {
-                        throw new RuntimeException();
+                        LOGGER.info( "PDNamedDestination is not supported" );
                     } else if ( dest instanceof PDPageDestination ) {
                         ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new GoToPageAction(
                                 ( ( PDPageDestination ) dest ).findPageNumber() ) ) );
                     } else {
-                        throw new RuntimeException();
+                        LOGGER.info( "Unsupported PDDestination: " + dest.getClass() );
                     }
                 } else if ( action instanceof PDActionURI ) {
                     ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new URIAction(
                             ( ( PDActionURI ) action ).getURI() ) ) );
                 } else {
-                    throw new RuntimeException();
+                    LOGGER.info( "Unsupported PDActionGoto: " + action.getClass() );
                 }
             } else {
-                throw new RuntimeException();
+                LOGGER.info( "Unsupported PDAnnotation: " + anno.getClass() );
             }
         }
 
