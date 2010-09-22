@@ -119,20 +119,24 @@ public class PDFAnnotationParser {
                         ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new GoToPageAction(
                                 ( ( PDPageDestination ) dest ).findPageNumber() ) ) );
                     } else {
-                        LOGGER.info( "Unsupported PDDestination: " + dest.getClass() );
+                        LOGGER.info( "Unsupported PDDestination: " + nsGetClassName( dest ) );
                     }
                 } else if ( action instanceof PDActionURI ) {
                     ret.add( new PageAnnotationInfo( convertToRegion( anno , page ) , new URIAction(
                             ( ( PDActionURI ) action ).getURI() ) ) );
                 } else {
-                    LOGGER.info( "Unsupported PDActionGoto: " + action.getClass() );
+                    LOGGER.info( "Unsupported PDActionGoto: " + nsGetClassName( action ) );
                 }
             } else {
-                LOGGER.info( "Unsupported PDAnnotation: " + anno.getClass() );
+                LOGGER.info( "Unsupported PDAnnotation: " + nsGetClassName( anno ) );
             }
         }
 
         return ret;
+    }
+
+    private String nsGetClassName( Object object ) {
+        return object != null ? object.getClass().toString() : "(null)";
     }
 
     public List< List< PageAnnotationInfo >> parse( String src ) {
