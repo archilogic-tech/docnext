@@ -19,6 +19,7 @@
 #import "UIBalloon.h"
 #import "SeparationHolder.h"
 #import "HighlightObject.h"
+#import "ObjPoint.h"
 
 @interface ImageViewController ()
 - (TiledScrollView *)buildContentView;
@@ -30,14 +31,19 @@
 - (void)toggleHighlightCommentMenu;
 - (void)movePageToCurrent:(BOOL)isLeft;
 - (UIColor *)highlightColor:(int)index;
+- (void)addAnnotations;
 - (void)loadSinglePageInfo;
 - (void)loadHighlights;
 - (void)saveHighlights;
+- (NSArray *)loadAnnotations;
+- (void)saveFreehand;
+- (void)loadFreehand;
 @end
 
 @implementation ImageViewController
 
 @synthesize configView;
+@synthesize freehandSwitch = _freehandSwitch;
 @synthesize titleLabel;
 @synthesize tiledScrollViewContainer;
 @synthesize selectionMenuView;
@@ -75,12 +81,15 @@
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
     
     [self loadHighlights];
+    [self addAnnotations];
+    [self loadFreehand];
 }
 
 - (void)dealloc {
     window.touchesObserver = nil;
     
     [configView release];
+    [_freehandSwitch release];
     [tiledScrollView release];
     [tiledScrollViewContainer release];
     [selectionMenuView release];
@@ -88,6 +97,7 @@
     [highlightCommentMenuView release];
     [highlightCommentTextField release];
     [markerView release];
+    [_freehandView release];
     [balloonContainerView release];
     [tapDetector release];
     [prevTiledScrollView release];
@@ -163,6 +173,23 @@
     } else {
         [self.view addSubview:searchViewController.view];
     }
+}
+
+- (IBAction)freehandUndoClick {
+    [_freehandView undo];
+    [self saveFreehand];
+}
+
+- (IBAction)freehandClearClick {
+    [_freehandView clear];
+    [self saveFreehand];
+}
+
+- (IBAction)freehandSwitchChanged {
+    tiledScrollView.scrollEnabled = !_freehandSwitch.on;
+    _freehandView.enabled = _freehandSwitch.on;
+    
+    [self saveFreehand];
 }
 
 - (IBAction)copyButtonClick {
@@ -302,6 +329,11 @@
     markerView = [[MarkerView alloc] initWithFrame:view.frame];
     [view.zoomableContainerView addSubview:markerView];
     
+    [_freehandView release];
+    _freehandView = [[UIFreehandView alloc] initWithFrame:view.frame];
+    _freehandView.delegate = self;
+    [view.zoomableContainerView addSubview:_freehandView];
+    
     [balloonContainerView release];
     balloonContainerView = [[UIView alloc] initWithFrame:view.frame];
     balloonContainerView.userInteractionEnabled = NO;
@@ -348,6 +380,8 @@
     
     [self addOverlay:ret];
     [self setExternalDependent:ret];
+    
+    //ret.scrollEnabled = FALSE;
 
     return ret;
 }
@@ -434,6 +468,21 @@
     [UIView commitAnimations];
 }
 
+- (void)addAnnotations {
+    for ( NSDictionary *dict in [self loadAnnotations] ) {
+        NSDictionary *action = [dict objectForKey:@"action"];
+        NSString *actionType = [action objectForKey:@"action"];
+
+        if ( [actionType compare:@"URI"] == NSOrderedSame ) {
+            [overlayManager addURILink:[Region objectWithDictionary:[dict objectForKey:@"region"]] uri:[action objectForKey:@"uri"]];
+        } else if ( [actionType compare:@"GoToPage"] == NSOrderedSame ) {
+            [overlayManager addGoToPageLink:[Region objectWithDictionary:[dict objectForKey:@"region"]] page:[[action objectForKey:@"page"] intValue]];
+        } else {
+            assert(0);
+        }
+    }
+}
+
 - (void)movePageToCurrent:(BOOL)isLeft {
     titleLabel.text = [FileUtil toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
 
@@ -458,6 +507,8 @@
     
     [overlayManager setParam:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
     [self loadHighlights];
+    [self addAnnotations];
+    [self loadFreehand];
 }
 
 - (UIColor *)highlightColor:(int)index {
@@ -499,6 +550,41 @@
     
     [FileUtil write:[[buf JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding] toFile:
      [NSString stringWithFormat:@"%d/%d.highlight.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
+}
+
+- (NSArray *)loadAnnotations {
+    NSData *data = [FileUtil read:[NSString stringWithFormat:@"%d/images/%d.anno.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
+    return [[NSString stringWithData:data] JSONValue];
+}
+
+- (void)loadFreehand {
+    NSMutableArray *points = [NSMutableArray arrayWithCapacity:0];
+    
+    NSData *data = [FileUtil read:[NSString stringWithFormat:@"%d/images/%d.freehand.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
+    for ( NSArray *strokeJSON in [[NSString stringWithData:data] JSONValue] ) {
+        NSMutableArray *stroke = [NSMutableArray arrayWithCapacity:0];
+        for ( NSDictionary *point in strokeJSON ) {
+            [stroke addObject:[ObjPoint pointFromDictionary:point]];
+        }
+        [points addObject:stroke];
+    }
+    
+    [_freehandView performSelectorInBackground:@selector(loadPoints:) withObject:points];
+}
+
+- (void)saveFreehand {
+    NSMutableArray *buf = [NSMutableArray arrayWithCapacity:0];
+    
+    for ( NSArray *stroke in _freehandView.points ) {
+        NSMutableArray *strokeBuf = [NSMutableArray arrayWithCapacity:0];
+        for ( ObjPoint *point in stroke ) {
+            [strokeBuf addObject:[point toDictionary]];
+        }
+        [buf addObject:strokeBuf];
+    }
+    
+    [FileUtil write:[[buf JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding] toFile:
+     [NSString stringWithFormat:@"%d/images/%d.freehand.json" , documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
 }
 
 #pragma mark TiledScrollViewDataSource method
@@ -565,8 +651,8 @@
 #pragma mark TapDetectorDelegate 
 
 - (void)tapDetectorGotSingleTapAtPoint:(CGPoint)tapPoint {
-    if ( isSelectingHighlight ) {
-        isSelectingHighlight = NO;
+    if ( isIgnoreTap ) {
+        isIgnoreTap = NO;
     } else {
         if ( highlightMenuView.alpha > 0 ) {
             [self toggleHighlightMenu];
@@ -619,37 +705,91 @@
         return;
     }
 
-    [overlayManager selectNearest:tapPoint];
+    if ( ![overlayManager selectNearest:tapPoint] ) {
+        [[[[UIAlertView alloc] initWithTitle:@"No text found"
+                                     message:nil delegate:nil cancelButtonTitle:@"OK"
+                           otherButtonTitles:nil] autorelease] show];
+    }
 }
 
 #pragma mark TouchObserver
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
-        [tapDetector touchesBegan:touches withEvent:event];
+    if ( !_freehandSwitch.on ) {
+        if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
+            [tapDetector touchesBegan:touches withEvent:event];
+        }
     }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    [tapDetector touchesMoved:touches withEvent:event];
-    
-    if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
-        if ( configView.alpha > 0 ) {
-            [self toggleConfigView];
-        }
-        if ( highlightMenuView.alpha > 0 ) {
-            [self toggleHighlightMenu];
-        }
-        if ( highlightCommentMenuView.alpha > 0 ) {
-            [self toggleHighlightCommentMenu];
+    if ( !_freehandSwitch.on ) {
+        [tapDetector touchesMoved:touches withEvent:event];
+        
+        UIView *target = [[touches anyObject] view];
+        if ( !target || [target isDescendantOfView:tiledScrollView] ) {
+            if ( configView.alpha > 0 ) {
+                [self toggleConfigView];
+            }
+            if ( highlightMenuView.alpha > 0 ) {
+                [self toggleHighlightMenu];
+            }
+            if ( highlightCommentMenuView.alpha > 0 ) {
+                [self toggleHighlightCommentMenu];
+            }
         }
     }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
-        [tapDetector touchesEnded:touches withEvent:event];
+    if ( !_freehandSwitch.on ) {
+        if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
+            [tapDetector touchesEnded:touches withEvent:event];
+        }
     }
+}
+
+#pragma mark UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    enum {
+        BUTTON_OPEN = 0,
+        BUTTON_CANCEL = 1
+    };
+
+    switch (buttonIndex) {
+        case BUTTON_OPEN:
+            switch ( linkMode ) {
+                case ImageViewLinkModeURI:
+                    if ( ![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:linkURI]] ) {
+                        [[[[UIAlertView alloc] initWithTitle:@"Could not open URL" message:nil delegate:nil
+                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
+                        break;
+                    }
+                    
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:linkURI]];
+
+                    break;
+                case ImageViewLinkModeGoToPage: {
+                    int next = [self calcIndexByPage:linkPage];
+                    BOOL isLeft = next > currentIndex ? YES : NO;
+
+                    currentIndex = next;
+                    [self movePageToCurrent:isLeft];
+                    
+                    break;
+                }
+                default:
+                    assert(0);
+            }
+            break;
+        case BUTTON_CANCEL:
+            break;
+        default:
+            assert(0);
+    }
+    
+    [linkURI release];
 }
 
 #pragma mark OverlayManagerDelegate
@@ -668,7 +808,7 @@
 
 - (void)didTouchDownHighlight:(int)serial {
     currentHighlightSerial = serial;
-    isSelectingHighlight = YES;
+    isIgnoreTap = YES;
     
     if ( configView.alpha > 0 ) {
         [self toggleConfigView];
@@ -676,6 +816,37 @@
     if ( highlightMenuView.alpha == 0 ) {
         [self toggleHighlightMenu];
     }
+}
+
+- (void)didTouchDownURILink:(NSString *)uri {
+    isIgnoreTap = YES;
+    
+    linkMode = ImageViewLinkModeURI;
+    linkURI = [uri retain];
+    
+    UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:@"May I open this URL?" delegate:self
+                                              cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil
+                                              otherButtonTitles:@"Open" , nil] autorelease];
+    [sheet showInView:self.view];
+}
+
+- (void)didTouchDownGoToPageLink:(int)page {
+    isIgnoreTap = YES;
+    
+    linkMode = ImageViewLinkModeGoToPage;
+    // change 1-origin to 0-origin
+    linkPage = page - 1;
+    
+    UIActionSheet *sheet = [[[UIActionSheet alloc] initWithTitle:@"May I jump to the page?" delegate:self
+                                               cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil
+                                               otherButtonTitles:@"Jump" , nil] autorelease];
+    [sheet showInView:self.view];
+}
+
+#pragma mark UIFreehandViewDelegate
+
+- (void)pointsDidChange:(UIFreehandView *)sender {
+    [self saveFreehand];
 }
 
 @end

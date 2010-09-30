@@ -64,8 +64,15 @@
     for ( int index = 0 ; index < regions.count ; index++ ) {
         Region *region = [regions objectAtIndex:index];
 
-        int px = [SeparationHolder cx:region] * SeparationHolderNSegment;
-        int py = [SeparationHolder cy:region] * SeparationHolderNSegment;
+        double cx = [SeparationHolder cx:region];
+        double cy = [SeparationHolder cy:region];
+        
+        if ( cx < 0 || cx >= 1 || cy < 0 || cy >= 1 ) {
+            continue;
+        }
+
+        int px = cx * SeparationHolderNSegment;
+        int py = cy * SeparationHolderNSegment;
         
         [[[regionHashMap objectAtIndex:py] objectAtIndex:px] addObject:region];
         [[[indexHashMap objectAtIndex:py] objectAtIndex:px] addObject:[NSNumber numberWithInt:index]];

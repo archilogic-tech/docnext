@@ -26,6 +26,7 @@
 - (void)dealloc {
     [searchResults release];
     [selections release];
+    [highlights release];
     
     [super dealloc];
 }
@@ -33,8 +34,7 @@
 #pragma mark private
 
 - (UIView *)addMarker:(CGRect)rect color:(UIColor *)color {
-    UIView *view = [[[UIView alloc] initWithFrame:CGRectMake(rect.origin.x, rect.origin.y, rect.size.width,
-                                                             rect.size.height)] autorelease];
+    UIView *view = [[[UIView alloc] initWithFrame:rect] autorelease];
     view.backgroundColor = color;
     
     [self addSubview:view];
@@ -42,9 +42,8 @@
     return view;
 }
 
-- (UIControl *)addControlMarker:(CGRect)rect color:(UIColor *)color {
-    UIControl *view = [[[UIControl alloc] initWithFrame:CGRectMake(rect.origin.x, rect.origin.y, rect.size.width,
-                                                                   rect.size.height)] autorelease];
+- (UIHighlightIndicator *)addHighlightMarker:(CGRect)rect color:(UIColor *)color {
+    UIHighlightIndicator *view = [[[UIHighlightIndicator alloc] initWithFrame:rect] autorelease];
     view.backgroundColor = color;
     
     [self addSubview:view];
@@ -97,14 +96,16 @@
     [searchResults removeAllObjects];
 }
 
-- (UIControl *)addHighlightMarker:(CGRect)rect color:(UIColor *)color serial:(int)serial {
+- (UIHighlightIndicator *)addHighlightMarker:(CGRect)rect color:(UIColor *)color serial:(int)serial {
     id key = [NSNumber numberWithInt:serial];
     
     if ( ![highlights objectForKey:key] ) {
         [highlights setObject:[NSMutableArray arrayWithCapacity:0] forKey:key];
     }
     
-    UIControl *marker = [self addControlMarker:rect color:color];
+    UIHighlightIndicator *marker = [self addHighlightMarker:rect color:color];
+    marker.serial = serial;
+    
     [[highlights objectForKey:key] addObject:marker];
     
     return marker;
@@ -168,6 +169,26 @@
     
     UIView *mid = [target objectAtIndex:([target count] / 2)];
     return CGPointMake(mid.frame.origin.x + mid.frame.size.width / 2, mid.frame.origin.y);
+}
+
+- (UIURILinkIndicator *)addURILink:(CGRect)rect {
+    UIURILinkIndicator *view = [[[UIURILinkIndicator alloc] initWithFrame:rect] autorelease];
+
+    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
+    
+    [self addSubview:view];
+    
+    return view;
+}
+
+- (UIGoToPageLinkIndicator *)addGoToPageLink:(CGRect)rect {
+    UIGoToPageLinkIndicator *view = [[[UIGoToPageLinkIndicator alloc] initWithFrame:rect] autorelease];
+    
+    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
+    
+    [self addSubview:view];
+    
+    return view;
 }
 
 @end

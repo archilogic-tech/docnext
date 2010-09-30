@@ -12,6 +12,9 @@
 #import "JSON.h"
 #import "RangeObject.h"
 #import "UIBalloon.h"
+#import "UIHighlightIndicator.h"
+#import "UIURILinkIndicator.h"
+#import "UIGoToPageLinkIndicator.h"
 
 @implementation OverlayManager
 
@@ -71,6 +74,11 @@
     if ( regions == nil ) {
         regions = [[FileUtil regions:docId page:page] retain];
     }
+    
+    if ( regions.count == 0 ) {
+        return -1;
+    }
+    
     if ( separationHolder == nil ) {
         separationHolder = [[SeparationHolder alloc] initWithRegions:regions];
     }
@@ -188,12 +196,18 @@
     [delegate didEndSelect];
 }
 
-- (void)touchDownHighlight:(UIControl *)sender {
-    int serial = sender.tag;
+- (void)touchDownHighlight:(UIHighlightIndicator *)sender {
+    [markerView setHighlightSelected:sender.serial];
     
-    [markerView setHighlightSelected:serial];
-    
-    [delegate didTouchDownHighlight:serial];
+    [delegate didTouchDownHighlight:sender.serial];
+}
+
+- (void)touchDownURILink:(UIURILinkIndicator *)sender {
+    [delegate didTouchDownURILink:sender.uri];
+}
+
+- (void)touchDownGoToPageLink:(UIGoToPageLinkIndicator *)sender {
+    [delegate didTouchDownGoToPageLink:sender.page];
 }
 
 #pragma mark public
@@ -217,9 +231,16 @@
 
 #pragma mark Selection
 
-- (void)selectNearest:(CGPoint)point {
+- (BOOL)selectNearest:(CGPoint)point {
     int index = [self getNearestIndex:point];
+    
+    if ( index == -1 ) {
+        return NO;
+    }
+    
     [self showSelectionMarkerForMin:index max:index];
+    
+    return YES;
 }
 
 - (BOOL)hasSelection {
@@ -284,8 +305,7 @@
     for ( int delta = 0 ; delta < range.length ; delta++ ) {
         Region *region = [self region:(range.location + delta)];
         
-        UIControl *marker = [markerView addHighlightMarker:[self convertToStageRect:region] color:color serial:serial];
-        marker.tag = serial;
+        UIHighlightIndicator *marker = [markerView addHighlightMarker:[self convertToStageRect:region] color:color serial:serial];
         
         [marker addTarget:self action:@selector(touchDownHighlight:) forControlEvents:UIControlEventTouchDown];
     }
@@ -326,6 +346,22 @@
         [[highlightBalloons objectForKey:key] removeFromSuperview];
         [highlightBalloons removeObjectForKey:key];
     }
+}
+
+#pragma mark Link
+
+- (void)addURILink:(Region *)region uri:(NSString *)uri {
+    UIURILinkIndicator *view = [markerView addURILink:[self convertToStageRect:region]];
+    view.uri = uri;
+    
+    [view addTarget:self action:@selector(touchDownURILink:) forControlEvents:UIControlEventTouchDown];
+}
+
+- (void)addGoToPageLink:(Region *)region page:(int)_page {
+    UIGoToPageLinkIndicator *view = [markerView addGoToPageLink:[self convertToStageRect:region]];
+    view.page = _page;
+    
+    [view addTarget:self action:@selector(touchDownGoToPageLink:) forControlEvents:UIControlEventTouchDown];
 }
 
 #pragma mark etc
