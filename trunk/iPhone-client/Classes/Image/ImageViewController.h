@@ -15,12 +15,21 @@
 #import "TapDetector.h"
 #import "UIScaleButton.h"
 #import "OverlayManager.h"
+#import "UIFreehandView.h"
 
 @class ImageSearchViewController;
 
-@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate, OverlayManagerDelegate> {
+typedef enum {
+    ImageViewLinkModeURI,
+    ImageViewLinkModeGoToPage
+} ImageViewLinkMode;
+
+@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate,
+                                                    OverlayManagerDelegate, UIActionSheetDelegate,
+                                                    UIFreehandViewDelegate> {
     UIView *configView;
     UILabel *titleLabel;
+    UISwitch *_freehandSwitch;
     UIView *tiledScrollViewContainer;
     UIView *selectionMenuView;
     UIView *highlightMenuView;
@@ -31,17 +40,23 @@
     TiledScrollView *prevTiledScrollView;
 
     MarkerView *markerView;
+    UIFreehandView *_freehandView;
     UIView *balloonContainerView;
     UITouchAwareWindow *window;
 
     UIPopoverController *popover;
     ImageSearchViewController *searchViewController;
 
+    BOOL isIgnoreTap;
+
     TapDetector *tapDetector;
     OverlayManager *overlayManager;
     int currentHighlightSerial;
-    BOOL isSelectingHighlight;
     NSMutableDictionary *highlights;
+    
+    ImageViewLinkMode linkMode;
+    NSString *linkURI;
+    int linkPage;
     
     int documentId;
     int currentIndex;
@@ -55,6 +70,7 @@
 
 @property(nonatomic,retain) IBOutlet UIView *configView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
+@property(nonatomic,retain) IBOutlet UISwitch *freehandSwitch;
 @property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
 @property(nonatomic,retain) IBOutlet UIView *selectionMenuView;
 @property(nonatomic,retain) IBOutlet UIView *highlightMenuView;
@@ -73,6 +89,9 @@
 - (IBAction)textViewButtonClick:(id)sender;
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
+- (IBAction)freehandUndoClick;
+- (IBAction)freehandClearClick;
+- (IBAction)freehandSwitchChanged;
 - (IBAction)copyButtonClick;
 - (IBAction)highlightButtonClick;
 - (IBAction)highlightCommentButtonClick;

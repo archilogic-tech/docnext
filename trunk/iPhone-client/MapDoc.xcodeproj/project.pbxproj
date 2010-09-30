@@ -74,6 +74,12 @@
 		7295944211D2124A00C4B72F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7295944111D2124A00C4B72F /* QuartzCore.framework */; };
 		729E794F12066DF900D98CA1 /* UITouchAwareWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 729E794E12066DF900D98CA1 /* UITouchAwareWindow.m */; };
 		72A2588311F028F40091AC3F /* BrowserViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */; };
+		72A67321125445E80043673E /* ObjBezier.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A6731C125445E80043673E /* ObjBezier.m */; };
+		72A67322125445E80043673E /* ObjPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A6731E125445E80043673E /* ObjPoint.m */; };
+		72A67323125445E80043673E /* UIFreehandView.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A67320125445E80043673E /* UIFreehandView.m */; };
+		72A6732A1254461E0043673E /* UIGoToPageLinkIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A673251254461E0043673E /* UIGoToPageLinkIndicator.m */; };
+		72A6732B1254461E0043673E /* UIHighlightIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A673271254461E0043673E /* UIHighlightIndicator.m */; };
+		72A6732C1254461E0043673E /* UIURILinkIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A673291254461E0043673E /* UIURILinkIndicator.m */; };
 		72AD852112096D9800C18C38 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72AD852012096D9800C18C38 /* MediaPlayer.framework */; };
 		72B01A4511F59F630041346E /* BookshelfViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */; };
 		72C77E6F11D9FD3A00316C0D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72C77E6E11D9FD3A00316C0D /* OpenGLES.framework */; };
@@ -239,6 +245,18 @@
 		729E794D12066DF900D98CA1 /* UITouchAwareWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITouchAwareWindow.h; sourceTree = "<group>"; };
 		729E794E12066DF900D98CA1 /* UITouchAwareWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITouchAwareWindow.m; sourceTree = "<group>"; };
 		72A2588211F028F40091AC3F /* BrowserViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BrowserViewController-iPad.xib"; path = "Resources-iPad/BrowserViewController-iPad.xib"; sourceTree = "<group>"; };
+		72A6731B125445E80043673E /* ObjBezier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjBezier.h; path = Image/Freehand/ObjBezier.h; sourceTree = "<group>"; };
+		72A6731C125445E80043673E /* ObjBezier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ObjBezier.m; path = Image/Freehand/ObjBezier.m; sourceTree = "<group>"; };
+		72A6731D125445E80043673E /* ObjPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjPoint.h; path = Image/Freehand/ObjPoint.h; sourceTree = "<group>"; };
+		72A6731E125445E80043673E /* ObjPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ObjPoint.m; path = Image/Freehand/ObjPoint.m; sourceTree = "<group>"; };
+		72A6731F125445E80043673E /* UIFreehandView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIFreehandView.h; path = Image/Freehand/UIFreehandView.h; sourceTree = "<group>"; };
+		72A67320125445E80043673E /* UIFreehandView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIFreehandView.m; path = Image/Freehand/UIFreehandView.m; sourceTree = "<group>"; };
+		72A673241254461E0043673E /* UIGoToPageLinkIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIGoToPageLinkIndicator.h; path = Image/Marker/UIGoToPageLinkIndicator.h; sourceTree = "<group>"; };
+		72A673251254461E0043673E /* UIGoToPageLinkIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIGoToPageLinkIndicator.m; path = Image/Marker/UIGoToPageLinkIndicator.m; sourceTree = "<group>"; };
+		72A673261254461E0043673E /* UIHighlightIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIHighlightIndicator.h; path = Image/Marker/UIHighlightIndicator.h; sourceTree = "<group>"; };
+		72A673271254461E0043673E /* UIHighlightIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIHighlightIndicator.m; path = Image/Marker/UIHighlightIndicator.m; sourceTree = "<group>"; };
+		72A673281254461E0043673E /* UIURILinkIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIURILinkIndicator.h; path = Image/Marker/UIURILinkIndicator.h; sourceTree = "<group>"; };
+		72A673291254461E0043673E /* UIURILinkIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIURILinkIndicator.m; path = Image/Marker/UIURILinkIndicator.m; sourceTree = "<group>"; };
 		72AD852012096D9800C18C38 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		72B01A4411F59F630041346E /* BookshelfViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfViewController-iPhone.xib"; path = "Resources-iPhone/BookshelfViewController-iPhone.xib"; sourceTree = "<group>"; };
 		72C77E6E11D9FD3A00316C0D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -628,6 +646,19 @@
 			name = Balloon;
 			sourceTree = "<group>";
 		};
+		727F3EA312507D6900AB3A78 /* Freehand */ = {
+			isa = PBXGroup;
+			children = (
+				72A6731B125445E80043673E /* ObjBezier.h */,
+				72A6731C125445E80043673E /* ObjBezier.m */,
+				72A6731D125445E80043673E /* ObjPoint.h */,
+				72A6731E125445E80043673E /* ObjPoint.m */,
+				72A6731F125445E80043673E /* UIFreehandView.h */,
+				72A67320125445E80043673E /* UIFreehandView.m */,
+			);
+			name = Freehand;
+			sourceTree = "<group>";
+		};
 		728866C811DC7C3C00C017B5 /* Bookmark */ = {
 			isa = PBXGroup;
 			children = (
@@ -644,6 +675,12 @@
 			children = (
 				7235B3941209178D00D50B96 /* MarkerView.h */,
 				7235B3951209178D00D50B96 /* MarkerView.m */,
+				72A673241254461E0043673E /* UIGoToPageLinkIndicator.h */,
+				72A673251254461E0043673E /* UIGoToPageLinkIndicator.m */,
+				72A673261254461E0043673E /* UIHighlightIndicator.h */,
+				72A673271254461E0043673E /* UIHighlightIndicator.m */,
+				72A673281254461E0043673E /* UIURILinkIndicator.h */,
+				72A673291254461E0043673E /* UIURILinkIndicator.m */,
 			);
 			name = Marker;
 			sourceTree = "<group>";
@@ -694,6 +731,7 @@
 		72E8A6E411D447D600651F27 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				727F3EA312507D6900AB3A78 /* Freehand */,
 				72364FDE12080C5800EA6875 /* OverlayManager */,
 				72364F381207F85300EA6875 /* RemoteImage */,
 				729E79A91206AF4500D98CA1 /* Marker */,
@@ -983,6 +1021,12 @@
 				7235B3AD1209186D00D50B96 /* IntDoublePair.m in Sources */,
 				7235B3AE1209186D00D50B96 /* SeparationHolder.m in Sources */,
 				723E2D64123A356B00EDD2CC /* HighlightObject.m in Sources */,
+				72A67321125445E80043673E /* ObjBezier.m in Sources */,
+				72A67322125445E80043673E /* ObjPoint.m in Sources */,
+				72A67323125445E80043673E /* UIFreehandView.m in Sources */,
+				72A6732A1254461E0043673E /* UIGoToPageLinkIndicator.m in Sources */,
+				72A6732B1254461E0043673E /* UIHighlightIndicator.m in Sources */,
+				72A6732C1254461E0043673E /* UIURILinkIndicator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

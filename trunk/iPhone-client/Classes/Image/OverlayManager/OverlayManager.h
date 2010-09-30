@@ -17,6 +17,8 @@
 - (void)didBeginSelect;
 - (void)didEndSelect;
 - (void)didTouchDownHighlight:(int)serial;
+- (void)didTouchDownURILink:(NSString *)uri;
+- (void)didTouchDownGoToPageLink:(int)page;
 
 @end
 
@@ -49,7 +51,7 @@
 @property(nonatomic,assign) UIView *balloonContainerView;
 
 - (void)setParam:(int)docId page:(int)page size:(CGSize)size;
-- (void)selectNearest:(CGPoint)point;
+- (BOOL)selectNearest:(CGPoint)point;
 - (BOOL)hasSelection;
 - (NSRange)selection;
 - (void)clearSelection;
@@ -60,6 +62,8 @@
 - (void)changeHighlightComment:(int)serial text:(NSString *)text;
 - (void)changeHighlightColor:(int)serial color:(UIColor *)color;
 - (void)deleteHighlight:(int)serial;
+- (void)addURILink:(Region *)region uri:(NSString *)uri;
+- (void)addGoToPageLink:(Region *)region page:(int)page;
 - (void)applyScaleView:(float)scale;
 
 @end
