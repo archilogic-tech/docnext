@@ -19,7 +19,6 @@
 
 @interface UIFreehandView : UIView {
     NSMutableArray /* of NSMutableArray of ObjPoint */ *_points;
-    BOOL _enabled;
     CGContextRef _bufferContext;
     
     id<UIFreehandViewDelegate> _delegate;
