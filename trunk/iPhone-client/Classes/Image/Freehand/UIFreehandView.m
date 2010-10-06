@@ -26,9 +26,9 @@
 - (void)initialize {
     self.backgroundColor = [UIColor clearColor];
     self.clearsContextBeforeDrawing = NO;
+    self.userInteractionEnabled = NO;
     
     _points = [[NSMutableArray arrayWithCapacity:0] retain];
-    _enabled = FALSE;
     _bufferContext = [self createOffscreenContext:nil size:self.frame.size];
 }
 
@@ -213,39 +213,19 @@
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( _enabled ) {
-        [_points addObject:[NSMutableArray arrayWithCapacity:0]];
-
-        [self addPoint:touches];
-    }
+    [_points addObject:[NSMutableArray arrayWithCapacity:0]];
+    
+    [self addPoint:touches];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( _enabled ) {
-        /*if ( CFAbsoluteTimeGetCurrent() - _lastTime < TIME_THRESHOLD ) {
-         return;
-         }
-         
-         _lastTime = CFAbsoluteTimeGetCurrent();
-         */
-        
-        /*CGPoint point = [[touches anyObject] locationInView:self];
-         ObjPoint *last = [[_points lastObject] lastObject];
-         
-         if ( pow( point.x - last.x , 2 ) + pow( point.y - last.y , 2 ) < DISTANCE_THRESHOLD ) {
-         return;
-         }*/
-        
-        [self addPoint:touches];
-    }
+    [self addPoint:touches];
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( _enabled ) {
-        [self drawBezierWithState:_bufferContext drawLast:YES];
-        
-        [_delegate pointsDidChange:self];
-    }
+    [self drawBezierWithState:_bufferContext drawLast:YES];
+    
+    [_delegate pointsDidChange:self];
 }
 
 - (void)redrawBuffer {

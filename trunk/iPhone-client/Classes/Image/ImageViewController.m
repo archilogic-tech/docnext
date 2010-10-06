@@ -187,7 +187,7 @@
 
 - (IBAction)freehandSwitchChanged {
     tiledScrollView.scrollEnabled = !_freehandSwitch.on;
-    _freehandView.enabled = _freehandSwitch.on;
+    _freehandView.userInteractionEnabled = _freehandSwitch.on;
     
     [self saveFreehand];
 }
@@ -381,8 +381,6 @@
     [self addOverlay:ret];
     [self setExternalDependent:ret];
     
-    //ret.scrollEnabled = FALSE;
-
     return ret;
 }
 
