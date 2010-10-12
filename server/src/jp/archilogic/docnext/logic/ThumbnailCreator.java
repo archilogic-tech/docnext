@@ -28,6 +28,10 @@ public class ThumbnailCreator {
         }
     }
 
+    static {
+    	System.setProperty( "jmagick.systemclassloader" , "no" );
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger( ThumbnailCreator.class );
 
     private static final int IPAD_MAX_LEVEL = 2;
