@@ -1,11 +1,15 @@
 package jp.archilogic.docnext.logic;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.util.ProcUtil;
+
+import magick.MagickException;
+import magick.MagickImage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,25 +105,35 @@ public class ThumbnailCreator {
         }
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( maxResolution ) );
-        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , deviceWidth * maxFactor ,
-                deviceHeight * maxFactor , info.unitWidth * maxResolution , info.unitHeight * maxResolution );
+        try {
+            MagickImage mi = new MagickImage(new magick.ImageInfo(getPpmPath( prefix , page )));
+            int borderWidth = ( int ) Math.round( ( deviceWidth * maxFactor - info.unitWidth * maxResolution ) / 2.0 );
+            int borderHeight = ( int ) Math.round( ( deviceHeight * maxFactor - info.unitHeight * maxResolution ) / 2.0 );
+            Rectangle border = new Rectangle(borderWidth, borderHeight);
+            mi = mi.borderImage(border);
+            
+            for ( int level = 0 ; level < maxLevel ; level++ ) {
+                LOGGER.info( "Proc level: " + level );
+    
+                int factor = ( int ) Math.pow( 2 , level );
+    
+                for ( int py = 0 ; py < factor ; py++ ) {
+                    for ( int px = 0 ; px < factor ; px++ ) {
+                        LOGGER.info( "Proc part: " + px + "," + py );
+    
+                        int w = deviceWidth * maxFactor / factor;
+                        int h = deviceHeight * maxFactor / factor;
 
-        for ( int level = 0 ; level < maxLevel ; level++ ) {
-            LOGGER.info( "Proc level: " + level );
-
-            int factor = ( int ) Math.pow( 2 , level );
-
-            for ( int py = 0 ; py < factor ; py++ ) {
-                for ( int px = 0 ; px < factor ; px++ ) {
-                    LOGGER.info( "Proc part: " + px + "," + py );
-
-                    int w = deviceWidth * maxFactor / factor;
-                    int h = deviceHeight * maxFactor / factor;
-                    cropAndResize( getPngPath( prefix , page ) ,
-                            String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) , px * w , py * h ,
-                            w , h , deviceWidth , deviceHeight );
+                        Rectangle crop = new Rectangle(px * w, py * h, w, h);
+                        MagickImage croped = mi.cropImage(crop);
+                        MagickImage scale = croped.scaleImage( deviceWidth, deviceHeight );
+                        scale.setFileName( String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) );
+                        scale.writeImage( new magick.ImageInfo() );
+                    }
                 }
             }
+        } catch (MagickException e) {
+            throw new RuntimeException("Can't convert ", e);
         }
     }
 
