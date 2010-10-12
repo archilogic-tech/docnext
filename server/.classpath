@@ -84,5 +84,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/guava-r06.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/pdfbox-1.2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jmagick6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
