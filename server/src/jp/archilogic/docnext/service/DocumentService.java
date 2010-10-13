@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.service;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import jp.archilogic.docnext.converter.DocumentConverter;
@@ -10,7 +12,9 @@ import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
+import jp.archilogic.docnext.logic.RepositoryManager;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.stereotype.Component;
@@ -24,6 +28,8 @@ public class DocumentService {
     private DocumentConverter documentConverter;
     @Autowired
     private PackManager packManager;
+    @Autowired
+    private RepositoryManager repositoryManager;
 
     public List< DocumentResDto > findAll() {
         return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
@@ -37,6 +43,19 @@ public class DocumentService {
         }
 
         return documentConverter.toDto( document );
+    }
+
+    public byte[] getPage( long id , int page ) {
+        try {
+            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "iPad" , id , page , 0 ,
+                    0 , 0 ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public int getPageCount( long id ) {
+        return 3;
     }
 
     public String getPublisher( long id ) {
