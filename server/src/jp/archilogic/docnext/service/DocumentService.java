@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 @Component
 @RemotingDestination
 public class DocumentService {
@@ -45,17 +47,22 @@ public class DocumentService {
         return documentConverter.toDto( document );
     }
 
-    public byte[] getPage( long id , int page ) {
-        try {
-            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "iPad" , id , page , 0 ,
-                    0 , 0 ) ) );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
+    public List< byte[] > getPage( long id , int page ) {
+        return Lists.newArrayList( getPageHelper( id , page , 1 , 0 , 0 ) , getPageHelper( id , page , 1 , 0 , 1 ) ,
+                getPageHelper( id , page , 1 , 1 , 0 ) , getPageHelper( id , page , 1 , 1 , 1 ) );
     }
 
     public int getPageCount( long id ) {
-        return 3;
+        return packManager.readPages( id );
+    }
+
+    private byte[] getPageHelper( long id , int page , int level , int px , int py ) {
+        try {
+            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "iPad" , id , page ,
+                    level , px , py ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     public String getPublisher( long id ) {
