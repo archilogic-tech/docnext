@@ -25,4 +25,7 @@ public class PropBean {
 
     @Value( "${path.tmp}" )
     public String tmp;
+    
+    @Value( "${document.resolution}" )
+    public int resolution;
 }

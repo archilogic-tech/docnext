@@ -57,12 +57,12 @@ public class UploadProcessor {
                                 + ".pdf";
                 pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
-                double ratio =
-                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
+                ImageInfo info = imageCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
                                 + doc.id );
+                double ratio = info.getRatio();
 
                 packManager.copyThumbnails( doc.id );
-                packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
+                packManager.writePages( doc.id , info.getPages() );
                 packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
                 packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
                 packManager.writeRatio( doc.id , ratio );
@@ -109,7 +109,7 @@ public class UploadProcessor {
     }
 
     @Autowired
-    private ThumbnailCreator thumbnailCreator;
+    private ImageCreator imageCreator;
     @Autowired
     private DocumentConverter converter;
     @Autowired
