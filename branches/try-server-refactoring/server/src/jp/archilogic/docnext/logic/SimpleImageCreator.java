@@ -1,5 +1,6 @@
 package jp.archilogic.docnext.logic;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.regex.Matcher;
@@ -48,15 +49,19 @@ public class SimpleImageCreator implements ImageCreator {
         return new ImageInfo( 1.0 * width / prop.resolution , 1.0 * height / prop.resolution, pages );
     }
 
-    protected MagickImage addBorder( MagickImage image , int width , int height , double imageWidth ,
-            double imageHeight ) throws MagickException {
-        LOGGER.info( "Add border" );
-        int borderWidth = ( int ) Math.round( ( width - imageWidth ) / 2.0 );
-        int borderHeight = ( int ) Math.round( ( height - imageHeight ) / 2.0 );
-
-        Rectangle border = new Rectangle( borderWidth, borderHeight );
+    /**
+     * 指定した幅、高さの縦横比を維持できるように枠を付加する
+     */
+    protected MagickImage addBorder( MagickImage image , int width , int height ) throws MagickException {
+        Dimension d = image.getDimension();
+        Rectangle border;
+        if ( width * d.height >= height *  d.width ) {
+            border = new Rectangle( ( width * d.height / height - d.width ) / 2, 0 );
+        } else {
+            border = new Rectangle( 0 , ( height * d.width / width - d.height ) / 2 );
+        }
         MagickImage mi = image.borderImage( border );
-        
+        LOGGER.info( "Bordered image :" + mi.getDimension() );
         return mi;
     }
 
@@ -79,19 +84,19 @@ public class SimpleImageCreator implements ImageCreator {
 
     protected void createAllPages( String outDir, String prefix, ImageInfo info ) {
         try {
-	        for ( int page = 0 , pages = info.getPages() ; page < pages ; page++ ) {
-	            LOGGER.info( "Proc page: " + page );
-	            MagickImage mi = new MagickImage(new magick.ImageInfo( getPpmPath(prefix, page)));
-	            
-	            createImage( outDir + "iPad" , mi , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
-	                    IPAD_DEVICE_HEIGHT );
-	            createImage( outDir + "iPhone" , mi , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
-	                    IPHONE_DEVICE_HEIGHT );
-	            createThumbnail( outDir , mi , info , page );
-	        }
+            for ( int page = 0 , pages = info.getPages() ; page < pages ; page++ ) {
+                LOGGER.info( "Proc page: " + page );
+                MagickImage mi = new MagickImage(new magick.ImageInfo( getPpmPath(prefix, page)));
+
+                createImage( outDir + "iPad" , mi , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+                        IPAD_DEVICE_HEIGHT );
+                createImage( outDir + "iPhone" , mi , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
+                        IPHONE_DEVICE_HEIGHT );
+                createThumbnail( outDir , mi , info , page );
+            }
         } catch (MagickException e) {
         	throw new RuntimeException("Can't create image.", e);
-		}
+        }
     }
 
     protected void createByResolution( String pdfPath , String prefix , int page , int resolution ) {
@@ -102,17 +107,15 @@ public class SimpleImageCreator implements ImageCreator {
     protected void createImage( String outPath , MagickImage image , ImageInfo info , int page ,
             int maxLevel , int deviceWidth , int deviceHeight ) throws MagickException {
         int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
-        double maxResolution = getMaxResolution(info, deviceWidth, deviceHeight, maxFactor);
-
-        MagickImage mi = addBorder( image , deviceWidth * maxFactor , deviceHeight * maxFactor ,
-                info.getUnitWidth() * maxResolution , info.getUnitHeight() * maxResolution );
+        MagickImage mi = addBorder( image , deviceWidth * maxFactor , deviceHeight * maxFactor );
 
         for ( int level = 0 ; level < maxLevel ; level++ ) {
             LOGGER.info( "Proc level: " + level );
 
+            Dimension d = mi.getDimension();
             int factor = ( int ) Math.pow( 2 , level );
-            int w = deviceWidth * maxFactor / factor;
-            int h = deviceHeight * maxFactor / factor;
+            int w = d.width / factor;
+            int h = d.height / factor;
 
             for ( int py = 0 ; py < factor ; py++ ) {
                 for ( int px = 0 ; px < factor ; px++ ) {
@@ -127,27 +130,18 @@ public class SimpleImageCreator implements ImageCreator {
         mi.destroyImages();
     }
 
-    protected double getMaxResolution( ImageInfo info, int deviceWidth, int deviceHeight, int maxFactor ) {
-        double maxResolution;
-        if ( info.getUnitWidth() * deviceHeight > info.getUnitHeight() * deviceWidth ) {
-            maxResolution = deviceWidth / info.getUnitWidth() * maxFactor;
-        } else {
-            maxResolution = deviceHeight / info.getUnitHeight() * maxFactor;
-        }
-        return maxResolution;
-    }
-
     protected void createThumbnail( String outDir , MagickImage image ,
             ImageInfo info , int page ) throws MagickException {
-        double resolution = THUMBNAIL_SIZE / Math.max( info.getUnitWidth() , info.getUnitHeight() );
+        
+        Dimension d = image.getDimension();
+        double ratio = THUMBNAIL_SIZE / (double) Math.max( d.width, d.height );
+        int w = ( int ) Math.round( d.width * ratio );
+        int h = ( int ) Math.round( d.height * ratio );
 
-        int w = ( int ) Math.round( info.getUnitWidth() * resolution );
-        int h = ( int ) Math.round( info.getUnitHeight() * resolution );
-
-        MagickImage mi = addBorder( image , w , h , w , h );
-        cropAndResize( mi , String.format( "%sthumb-%d.jpg" , outDir , page ) ,
-                0 , 0 , w , h , w , h );
-        mi.destroyImages();
+        MagickImage scaled = image.scaleImage( w, h );
+        scaled.setFileName( String.format( "%sthumb-%d.jpg" , outDir , page ) );
+        scaled.writeImage( new magick.ImageInfo() );
+        scaled.destroyImages();
 
     }
 

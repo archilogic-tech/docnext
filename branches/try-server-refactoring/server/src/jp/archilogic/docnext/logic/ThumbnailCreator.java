@@ -1,15 +1,11 @@
 package jp.archilogic.docnext.logic;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.util.ProcUtil;
-
-import magick.MagickException;
-import magick.MagickImage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ThumbnailCreator implements ImageCreator {
-    static {
-    	System.setProperty( "jmagick.systemclassloader" , "no" );
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger( ThumbnailCreator.class );
 
     private static final int IPAD_MAX_LEVEL = 2;
@@ -44,19 +36,17 @@ public class ThumbnailCreator implements ImageCreator {
         int sampleWidth = size[ 0 ];
         int sampleHeight = size[ 1 ];
 
-        return new ImageInfo( 1.0 * sampleWidth / SAMPLE_RESOLUTION , 1.0 * sampleHeight / SAMPLE_RESOLUTION, 0 );
+        return new ImageInfo( 1.0 * sampleWidth / SAMPLE_RESOLUTION ,
+                1.0 * sampleHeight / SAMPLE_RESOLUTION , getPages( pdfPath ) );
     }
 
-    private MagickImage convertAndResize( String ppmPath , String pngPath , int width , int height , double imageWidth ,
-            double imageHeight ) throws MagickException {
+    private void convertAndResize( String ppmPath , String pngPath , int width , int height , double imageWidth ,
+            double imageHeight ) {
         int borderWidth = ( int ) Math.round( ( width - imageWidth ) / 2.0 );
         int borderHeight = ( int ) Math.round( ( height - imageHeight ) / 2.0 );
 
-        MagickImage mi = new MagickImage(new magick.ImageInfo(ppmPath));
-        Rectangle border = new Rectangle( borderWidth, borderHeight );
-        mi = mi.borderImage( border );
-        
-        return mi;
+        ProcUtil.doProc( String.format( "%s %s -format png -resize %dx%d -border %dx%d %s" , prop.convert , ppmPath ,
+                width , height , borderWidth , borderHeight , pngPath ) );
     }
 
     /**
@@ -70,24 +60,19 @@ public class ThumbnailCreator implements ImageCreator {
 
         ImageInfo info = calcBaseResolution( pdfPath , prefix );
 
-        int pages = getPages( pdfPath ); 
-        try {
-	        for ( int page = 0 ; page < pages ; page++ ) {
-	            LOGGER.info( "Proc page: " + page );
-	
-	            createImage( outDir + "iPad" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
-	                    IPAD_DEVICE_HEIGHT );
-	            createImage( outDir + "iPhone" , pdfPath , prefix , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
-	                    IPHONE_DEVICE_HEIGHT );
-	            createThumbnail( outDir , pdfPath , prefix , info , page );
-	        }
-        } catch (MagickException e) {
-        	throw new RuntimeException("Can't create image.", e);
-		}
+        for ( int page = 0 , pages = info.getPages() ; page < pages ; page++ ) {
+            LOGGER.info( "Proc page: " + page );
+
+            createImage( outDir + "iPad" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+                    IPAD_DEVICE_HEIGHT );
+            createImage( outDir + "iPhone" , pdfPath , prefix , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
+                    IPHONE_DEVICE_HEIGHT );
+            createThumbnail( outDir , pdfPath , prefix , info , page );
+        }
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return new ImageInfo(info.getUnitWidth() , info.getUnitHeight(), pages);
+        return info;
     }
 
     private void createByResolution( String pdfPath , String prefix , int page , int resolution ) {
@@ -96,7 +81,7 @@ public class ThumbnailCreator implements ImageCreator {
     }
 
     private void createImage( String outPath , String pdfPath , String prefix , ImageInfo info , int page ,
-            int maxLevel , int deviceWidth , int deviceHeight ) throws MagickException {
+            int maxLevel , int deviceWidth , int deviceHeight ) {
         int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
 
         double maxResolution;
@@ -107,9 +92,8 @@ public class ThumbnailCreator implements ImageCreator {
         }
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( maxResolution ) );
-        MagickImage mi = convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) ,
-        		deviceWidth * maxFactor , deviceHeight * maxFactor ,
-        		info.getUnitWidth() * maxResolution , info.getUnitHeight() * maxResolution );
+        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , deviceWidth * maxFactor ,
+                deviceHeight * maxFactor , info.getUnitWidth() * maxResolution , info.getUnitHeight() * maxResolution );
 
         for ( int level = 0 ; level < maxLevel ; level++ ) {
             LOGGER.info( "Proc level: " + level );
@@ -122,41 +106,30 @@ public class ThumbnailCreator implements ImageCreator {
 
                     int w = deviceWidth * maxFactor / factor;
                     int h = deviceHeight * maxFactor / factor;
-                    cropAndResize( mi ,
+                    cropAndResize( getPngPath( prefix , page ) ,
                             String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) , px * w , py * h ,
                             w , h , deviceWidth , deviceHeight );
                 }
             }
         }
-        mi.destroyImages();
     }
 
-    private void createThumbnail( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) throws MagickException {
+    private void createThumbnail( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) {
         double resolution = THUMBNAIL_SIZE / Math.max( info.getUnitWidth() , info.getUnitHeight() );
 
         int w = ( int ) Math.round( info.getUnitWidth() * resolution );
         int h = ( int ) Math.round( info.getUnitHeight() * resolution );
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
-        MagickImage mi = convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , w , h , w , h );
-        cropAndResize( mi , String.format( "%sthumb-%d.jpg" , outDir , page ) , 0 , 0 , w , h ,
+        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , w , h , w , h );
+        cropAndResize( getPngPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , 0 , 0 , w , h ,
                 w , h );
-        mi.destroyImages();
-
     }
 
-    private void cropAndResize( MagickImage image , String destPath , int x , int y , int cropWidth , int cropHeight ,
-            int resizeWidth , int resizeHeight ) throws MagickException {
-    	Rectangle crop = new Rectangle( x , y , cropWidth , cropHeight );
-        MagickImage croped = image.cropImage( crop );
-        MagickImage scale = croped.scaleImage( resizeWidth, resizeHeight );
-        croped.destroyImages();
-
-        scale.setFileName( destPath );
-        scale.writeImage( new magick.ImageInfo() );
-        scale.destroyImages();
-        
-        LOGGER.debug( "Convert image:" + destPath);
+    private void cropAndResize( String pngPath , String destPath , int x , int y , int cropWidth , int cropHeight ,
+            int resizeWidth , int resizeHeight ) {
+        ProcUtil.doProc( String.format( "%s %s -crop %dx%d+%d+%d -resize %dx%d %s" , prop.convert , pngPath ,
+                cropWidth , cropHeight , x , y , resizeWidth , resizeHeight , destPath ) );
     }
 
     private int[] getImageSize( String path ) {
