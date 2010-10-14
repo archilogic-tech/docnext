@@ -33,6 +33,26 @@ public class UploadProcessor {
             this.doc = doc;
         }
 
+        private void parseAnnotation( String tempPdfPath ) {
+            int page = 0;
+            for ( List< PageAnnotationInfo > infos : pdfAnnotationParser.parse( tempPdfPath ) ) {
+                packManager.writeAnnotations( doc.id , page , infos );
+
+                page++;
+            }
+        }
+
+        private void parseText( String cleanedPath ) {
+            int page = 0;
+            for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
+                packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
+                packManager.writeImageText( doc.id , page , pageTextInfo.text );
+                packManager.writeRegions( doc.id , page , pageTextInfo.regions );
+
+                page++;
+            }
+        }
+
         @Override
         public void run() {
             try {
@@ -43,14 +63,7 @@ public class UploadProcessor {
 
                 packManager.createStruct( doc.id );
 
-                {
-                    int page = 0;
-                    for ( List< PageAnnotationInfo > infos : pdfAnnotationParser.parse( tempPdfPath ) ) {
-                        packManager.writeAnnotations( doc.id , page , infos );
-
-                        page++;
-                    }
-                }
+                parseAnnotation( tempPdfPath );
 
                 String cleanedPath =
                         FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + "cleaned" + doc.id
@@ -67,16 +80,7 @@ public class UploadProcessor {
                 packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
                 packManager.writeRatio( doc.id , ratio );
 
-                {
-                    int page = 0;
-                    for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
-                        packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
-                        packManager.writeImageText( doc.id , page , pageTextInfo.text );
-                        packManager.writeRegions( doc.id , page , pageTextInfo.regions );
-
-                        page++;
-                    }
-                }
+                parseText( cleanedPath );
 
                 packManager.repack( doc.id );
 
