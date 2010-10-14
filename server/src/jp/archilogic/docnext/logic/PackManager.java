@@ -110,6 +110,10 @@ public class PackManager {
         }
     }
 
+    public int readPages( long documentId ) {
+        return readInfo( documentId ).pages;
+    }
+
     public String readPublisher( long documentId ) {
         return readInfo( documentId ).publisher;
     }

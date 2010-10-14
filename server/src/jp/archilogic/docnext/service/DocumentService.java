@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.service;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import jp.archilogic.docnext.converter.DocumentConverter;
@@ -10,10 +12,14 @@ import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
+import jp.archilogic.docnext.logic.RepositoryManager;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 @RemotingDestination
@@ -24,6 +30,8 @@ public class DocumentService {
     private DocumentConverter documentConverter;
     @Autowired
     private PackManager packManager;
+    @Autowired
+    private RepositoryManager repositoryManager;
 
     public List< DocumentResDto > findAll() {
         return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
@@ -37,6 +45,24 @@ public class DocumentService {
         }
 
         return documentConverter.toDto( document );
+    }
+
+    public List< byte[] > getPage( long id , int page ) {
+        return Lists.newArrayList( getPageHelper( id , page , 1 , 0 , 0 ) , getPageHelper( id , page , 1 , 0 , 1 ) ,
+                getPageHelper( id , page , 1 , 1 , 0 ) , getPageHelper( id , page , 1 , 1 , 1 ) );
+    }
+
+    public int getPageCount( long id ) {
+        return packManager.readPages( id );
+    }
+
+    private byte[] getPageHelper( long id , int page , int level , int px , int py ) {
+        try {
+            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "iPad" , id , page ,
+                    level , px , py ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     public String getPublisher( long id ) {
