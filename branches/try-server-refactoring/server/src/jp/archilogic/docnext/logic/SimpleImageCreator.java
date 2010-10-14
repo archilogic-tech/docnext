@@ -46,30 +46,41 @@ public class SimpleImageCreator implements ImageCreator {
         int width = size[ 0 ];
         int height = size[ 1 ];
 
-        return new ImageInfo( 1.0 * width / prop.resolution , 1.0 * height / prop.resolution, pages );
+        return new ImageInfo( width , height , pages );
     }
 
     /**
      * 指定した幅、高さの縦横比を維持できるように枠を付加する
      */
     protected MagickImage addBorder( MagickImage image , int width , int height ) throws MagickException {
+        LOGGER.debug("Add border:"+width+","+height);
+
         Dimension d = image.getDimension();
+        int iw = (int) d.width;
+        int ih = (int) d.height;
+
         Rectangle border;
-        if ( width * d.height >= height *  d.width ) {
-            border = new Rectangle( ( width * d.height / height - d.width ) / 2, 0 );
+        MagickImage scaled;
+        if ( width * ih >= height * iw ) {
+            int nw = ( iw * height / ih ) / 2 * 2;  // 偶数化
+            scaled = image.scaleImage( nw , height );
+            border = new Rectangle( ( width  - nw ) / 2 , 0 );
         } else {
-            border = new Rectangle( 0 , ( height * d.width / width - d.height ) / 2 );
+            int nh = ( ih * width / iw ) / 2 * 2;  // 偶数化
+            scaled = image.scaleImage( width , nh );
+            border = new Rectangle( 0 , ( height  - nh ) / 2 );
         }
-        MagickImage mi = image.borderImage( border );
-        LOGGER.info( "Bordered image :" + mi.getDimension() );
-        return mi;
+        MagickImage bordered = scaled.borderImage( border );
+        scaled.destroyImages();
+
+        return bordered;
     }
 
     /**
      * @return width / height ratio
      */
     public ImageInfo create( String outDir , String pdfPath , String prefix ) {
-        LOGGER.info( "Begin create thumbanil" );
+        LOGGER.info( "Begin create image" );
         long t = System.currentTimeMillis();
 
         new File( outDir ).mkdir();
@@ -77,7 +88,7 @@ public class SimpleImageCreator implements ImageCreator {
         ImageInfo info = createAllPpms( pdfPath , prefix );
         createAllPages(outDir, prefix, info);
 
-        LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
+        LOGGER.info( "End create image. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
         return info;
     }
@@ -88,55 +99,43 @@ public class SimpleImageCreator implements ImageCreator {
                 LOGGER.info( "Proc page: " + page );
                 MagickImage mi = new MagickImage(new magick.ImageInfo( getPpmPath(prefix, page)));
 
-                createImage( outDir + "iPad" , mi , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+                createImage( outDir + "iPad" , mi , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
                         IPAD_DEVICE_HEIGHT );
-                createImage( outDir + "iPhone" , mi , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
+                createImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
                         IPHONE_DEVICE_HEIGHT );
-                createThumbnail( outDir , mi , info , page );
+                createThumbnail( outDir , mi , page );
             }
         } catch (MagickException e) {
         	throw new RuntimeException("Can't create image.", e);
         }
     }
 
-    protected void createByResolution( String pdfPath , String prefix , int page , int resolution ) {
-        ProcUtil.doProc( String.format( "%s -r %d -f %d -l %d %s %s" , prop.pdfToPpm , resolution , page + 1 ,
-                page + 1 , pdfPath , prefix ) , true );
-    }
-
-    protected void createImage( String outPath , MagickImage image , ImageInfo info , int page ,
+    protected void createImage( String outPath , MagickImage image , int page ,
             int maxLevel , int deviceWidth , int deviceHeight ) throws MagickException {
-        int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
-        MagickImage mi = addBorder( image , deviceWidth * maxFactor , deviceHeight * maxFactor );
-
         for ( int level = 0 ; level < maxLevel ; level++ ) {
             LOGGER.info( "Proc level: " + level );
 
-            Dimension d = mi.getDimension();
             int factor = ( int ) Math.pow( 2 , level );
-            int w = d.width / factor;
-            int h = d.height / factor;
+            MagickImage mi = addBorder(image , deviceWidth * factor, deviceHeight * factor );
 
             for ( int py = 0 ; py < factor ; py++ ) {
                 for ( int px = 0 ; px < factor ; px++ ) {
                     LOGGER.info( "Proc part: " + px + "," + py );
 
-                    cropAndResize( mi ,
-                            String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) , px * w , py * h ,
-                            w , h , deviceWidth , deviceHeight );
+                    String file = String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py );
+                    cropImage( mi , file , px * deviceWidth , py * deviceHeight ,
+                               deviceWidth , deviceHeight );
                 }
             }
+            mi.destroyImages();
         }
-        mi.destroyImages();
     }
 
-    protected void createThumbnail( String outDir , MagickImage image ,
-            ImageInfo info , int page ) throws MagickException {
-        
+    protected void createThumbnail( String outDir , MagickImage image , int page ) throws MagickException {
         Dimension d = image.getDimension();
-        double ratio = THUMBNAIL_SIZE / (double) Math.max( d.width, d.height );
-        int w = ( int ) Math.round( d.width * ratio );
-        int h = ( int ) Math.round( d.height * ratio );
+        double ratio = THUMBNAIL_SIZE / (double) Math.max( (int) d.width , (int) d.height );
+        int w = ( int ) Math.round( (int) d.width * ratio );
+        int h = ( int ) Math.round( (int) d.height * ratio );
 
         MagickImage scaled = image.scaleImage( w, h );
         scaled.setFileName( String.format( "%sthumb-%d.jpg" , outDir , page ) );
@@ -145,17 +144,17 @@ public class SimpleImageCreator implements ImageCreator {
 
     }
 
-    protected void cropAndResize( MagickImage image , String destPath , int x , int y , int cropWidth , int cropHeight ,
-            int resizeWidth , int resizeHeight ) throws MagickException {
-    	Rectangle crop = new Rectangle( x , y , cropWidth , cropHeight );
+    protected void cropImage( MagickImage image , String destPath , int x , int y ,
+            int cropWidth , int cropHeight ) throws MagickException {
+        LOGGER.debug( "CROP :" + x + "," + y + "," + cropWidth + "," + cropHeight );
+
+        Rectangle crop = new Rectangle( x , y , cropWidth , cropHeight );
         MagickImage croped = image.cropImage( crop );
-        MagickImage scale = croped.scaleImage( resizeWidth, resizeHeight );
+
+        croped.setFileName( destPath );
+        croped.writeImage( new magick.ImageInfo() );
         croped.destroyImages();
 
-        scale.setFileName( destPath );
-        scale.writeImage( new magick.ImageInfo() );
-        scale.destroyImages();
-        
         LOGGER.debug( "Convert image:" + destPath);
     }
 
