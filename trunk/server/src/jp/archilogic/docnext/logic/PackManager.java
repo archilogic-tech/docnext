@@ -101,10 +101,23 @@ public class PackManager {
         return String.format( "%s/pack/%d.zip" , prop.repository , documentId );
     }
 
-    private Info readInfo( long documentId ) {
+    public String readImageText( long documentId , int page ) {
         try {
-            return JSON.decode( FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" ,
-                    prop.repository , documentId ) ) ) , Info.class );
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/texts/%d.image.txt" ,
+                    prop.repository , documentId , page ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private Info readInfo( long documentId ) {
+        return JSON.decode( readInfoJson( documentId ) , Info.class );
+    }
+
+    public String readInfoJson( long docId ) {
+        try {
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" , prop.repository ,
+                    docId ) ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
@@ -116,6 +129,15 @@ public class PackManager {
 
     public String readPublisher( long documentId ) {
         return readInfo( documentId ).publisher;
+    }
+
+    public byte[] readRegions( long docId , int page ) {
+        try {
+            return FileUtils.readFileToByteArray( new File( String.format( "%s/pack/%d/texts/%d.regions" ,
+                    prop.repository , docId , page ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     @SuppressWarnings( "unchecked" )
