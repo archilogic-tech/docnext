@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ui="jp.archilogic.docnext.ui.*">
+    <mx:Script>
+        <![CDATA[
+            import jp.archilogic.docnext.resource.Resource;
+        ]]>
+    </mx:Script>
+
+    <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
+                    sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
+    <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
+                    sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
+    <mx:ToggleButtonBar id="mouseModeToggleButtonBar">
+        <mx:Object icon="{Resource.ICON_MOUSE_MODE_SCROLL}" />
+        <mx:Object icon="{Resource.ICON_MOUSE_MODE_SELECT}" />
+    </mx:ToggleButtonBar>
+    <mx:Button id="copyButton" label="Copy" />
+</mx:HBox>
