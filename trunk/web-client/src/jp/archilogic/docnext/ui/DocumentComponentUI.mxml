@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ui="jp.archilogic.docnext.ui.*" width="100%" height="100%"
+           horizontalScrollPolicy="off" verticalScrollPolicy="off">
+    <ui:DocumentComponentArrowIndicator id="arrowIndicator" width="100%" height="100%">
+        <mx:Canvas id="scroller" width="100%" height="100%" minWidth="0" minHeight="0">
+            <mx:Canvas id="wrapper" />
+        </mx:Canvas>
+    </ui:DocumentComponentArrowIndicator>
+</mx:Canvas>
