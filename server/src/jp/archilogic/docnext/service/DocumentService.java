@@ -47,13 +47,17 @@ public class DocumentService {
         return documentConverter.toDto( document );
     }
 
+    public String getImageText( long id , int page ) {
+        return packManager.readImageText( id , page );
+    }
+
+    public String getInfo( long id ) {
+        return packManager.readInfoJson( id );
+    }
+
     public List< byte[] > getPage( long id , int page ) {
         return Lists.newArrayList( getPageHelper( id , page , 1 , 0 , 0 ) , getPageHelper( id , page , 1 , 0 , 1 ) ,
                 getPageHelper( id , page , 1 , 1 , 0 ) , getPageHelper( id , page , 1 , 1 , 1 ) );
-    }
-
-    public int getPageCount( long id ) {
-        return packManager.readPages( id );
     }
 
     private byte[] getPageHelper( long id , int page , int level , int px , int py ) {
@@ -67,6 +71,10 @@ public class DocumentService {
 
     public String getPublisher( long id ) {
         return packManager.readPublisher( id );
+    }
+
+    public byte[] getRegions( long id , int page ) {
+        return packManager.readRegions( id , page );
     }
 
     public List< Integer > getSinglePageInfo( long id ) {
