@@ -239,11 +239,19 @@ package jp.archilogic.docnext.ui {
         }
 
         private function hasLeft() : Boolean {
+            return hasNext();
+        }
+
+        private function hasNext() : Boolean {
+            return _currentPos < Math.min( _pageImages.length - 1 , _pageLoadHelper.loadedPos );
+        }
+
+        private function hasPrev() : Boolean {
             return _currentPos > 0;
         }
 
         private function hasRight() : Boolean {
-            return _currentPos < Math.min( _pageImages.length - 1 , _pageLoadHelper.loadedPos );
+            return hasPrev();
         }
 
         private function loadImageText() : void {
@@ -328,11 +336,11 @@ package jp.archilogic.docnext.ui {
         }
 
         private function moveLeft() : void {
-            moveToPrevPage();
+            moveToNextPage();
         }
 
         private function moveRight() : void {
-            moveToNextPage();
+            moveToPrevPage();
         }
 
         private function moveToNextPage() : void {
