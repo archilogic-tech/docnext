@@ -119,9 +119,6 @@
             if ( tileIsMissing ) {
                 UIView *tile = [dataSource tiledScrollViewGetTile:self row:row column:col resolution:resolution];
                 
-                tile.layer.borderWidth = 1;
-                tile.layer.borderColor = [[UIColor grayColor] CGColor];
-
                 // set the tile's frame so we insert it at the correct position
                 tile.frame = CGRectMake(tileSize.width / power * col , tileSize.height / power * row ,
                                         tileSize.width / power , tileSize.height / power);
