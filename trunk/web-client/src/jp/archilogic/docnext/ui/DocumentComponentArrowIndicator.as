@@ -17,6 +17,7 @@ package jp.archilogic.docnext.ui {
         public function DocumentComponentArrowIndicator() {
             super();
 
+            addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
             addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
             addEventListener( MouseEvent.ROLL_OUT , arrowLayoutMouseOutHandler );
             addEventListener( MouseEvent.CLICK , mouseClickHandler );
@@ -32,6 +33,7 @@ package jp.archilogic.docnext.ui {
 
         private var _currentArrow : Image;
         private var _arrowMode : int;
+        private var _isOnValidRegion : Boolean;
 
         public function set bottomPosFunc( value : Function ) : void {
             _bottomPosFunc = value;
@@ -95,25 +97,35 @@ package jp.archilogic.docnext.ui {
             } else {
                 removeArrow();
             }
+
+            if ( _isOnValidRegion && _currentArrow == null ) {
+                _isOnValidRegion = false;
+            }
         }
 
         private function mouseClickHandler( e : MouseEvent ) : void {
-            switch ( _arrowMode ) {
-                case ARROW_MODE_LEFT:
-                    _clickHandler( -1 );
+            if ( _isOnValidRegion ) {
+                switch ( _arrowMode ) {
+                    case ARROW_MODE_LEFT:
+                        _clickHandler( -1 );
 
-                    if ( !_hasLeftFunc() ) {
-                        removeArrow();
-                    }
-                    break;
-                case ARROW_MODE_RIGHT:
-                    _clickHandler( 1 );
+                        if ( !_hasLeftFunc() ) {
+                            removeArrow();
+                        }
+                        break;
+                    case ARROW_MODE_RIGHT:
+                        _clickHandler( 1 );
 
-                    if ( !_hasRightFunc() ) {
-                        removeArrow();
-                    }
-                    break;
+                        if ( !_hasRightFunc() ) {
+                            removeArrow();
+                        }
+                        break;
+                }
             }
+        }
+
+        private function mouseDownHandler( e : MouseEvent ) : void {
+            _isOnValidRegion = _currentArrow != null;
         }
 
         private function mouseMoveHandler( e : MouseEvent ) : void {

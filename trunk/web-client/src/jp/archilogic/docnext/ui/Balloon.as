@@ -1,6 +1,7 @@
 package jp.archilogic.docnext.ui {
     import flash.geom.Point;
     import flash.text.TextField;
+    import flash.text.TextFieldAutoSize;
     import flash.text.TextFormat;
     import mx.core.UIComponent;
 
@@ -18,8 +19,9 @@ package jp.archilogic.docnext.ui {
             _textField = new TextField();
             _textField.x = CORNER_RAD;
             _textField.y = CORNER_RAD;
+            _textField.autoSize = TextFieldAutoSize.LEFT;
+            _textField.defaultTextFormat = format;
             _textField.text = text;
-            _textField.setTextFormat( format , 0 , text.length );
             addChild( _textField );
 
             drawBackground();
@@ -27,12 +29,29 @@ package jp.archilogic.docnext.ui {
 
         private var _textField : TextField;
         private var _tip : Point;
+        private var _parentTip : Point;
+
+        public function adjust( parentScale : Number ) : void {
+            var scale : Number = 1.0 / parentScale;
+            scaleX = scaleY = scale;
+
+            x = _parentTip.x - _tip.x * scale;
+            y = _parentTip.y - _tip.y * scale;
+        }
+
+        public function set parentTip( value : Point ) : * {
+            _parentTip = value;
+        }
+
+        public function get text() : String {
+            return _textField.text;
+        }
 
         private function drawBackground() : void {
             graphics.clear();
 
-            graphics.beginFill( 0xff0000 );
-            graphics.lineStyle( 1 , 0x000000 , 1 , true );
+            graphics.beginFill( 0xff8040 );
+            graphics.lineStyle( 1 , 0x808080 , 1 , true );
             drawBorder();
             graphics.endFill();
 

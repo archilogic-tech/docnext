@@ -38,6 +38,26 @@ package jp.archilogic.docnext.ui {
         private var _baseScale : Number;
         private var _zoomExponent : int;
         private var _mouseModeHandler : Function;
+        private var _isSelectingHandler : Function;
+        private var _isSelectHighlightHandler : Function;
+        private var _initHighlightCommentHandler : Function;
+
+        public function changeHighlightColor( color : uint ) : void {
+            var current : TiledLoader = _pageImages[ _currentPos ];
+            current.changeHighlightColor( color );
+        }
+
+        public function changeHighlightComment( comment : String ) : void {
+            var current : TiledLoader = _pageImages[ _currentPos ];
+            current.changeHighlightComment( comment );
+        }
+
+        public function changeToHighlight() : void {
+            var current : TiledLoader = _pageImages[ _currentPos ];
+            current.changeSelectionToHighlight();
+
+            _isSelectingHandler( false );
+        }
 
         public function copy() : void {
             var current : TiledLoader = _pageImages[ _currentPos ];
@@ -45,6 +65,18 @@ package jp.archilogic.docnext.ui {
             if ( current.hasSelectedText() ) {
                 System.setClipboard( current.selectedText );
             }
+        }
+
+        public function set initHighlightCommentHandler( value : Function ) : * {
+            _initHighlightCommentHandler = value;
+        }
+
+        public function set isSelectHighlightHandler( value : Function ) : * {
+            _isSelectHighlightHandler = value;
+        }
+
+        public function set isSelectingHandler( value : Function ) : * {
+            _isSelectingHandler = value;
         }
 
         public function load( dto : DocumentResDto ) : void {
@@ -58,7 +90,11 @@ package jp.archilogic.docnext.ui {
 
                 for ( var index : int = 0 ; index < _info.pages ; index++ ) {
                     _pageImages[ index ] = new TiledLoader();
+                    _pageImages[ index ].docId = _dto.id;
+                    _pageImages[ index ].page = index;
                     _pageImages[ index ].ratio = _info.ratio;
+                    _pageImages[ index ].isSelectHighlightHandler = _isSelectHighlightHandler;
+                    _pageImages[ index ].initHighlightCommentHandler = _initHighlightCommentHandler;
                     _pageImages[ index ].addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
                 }
 
@@ -73,12 +109,17 @@ package jp.archilogic.docnext.ui {
             _mouseModeHandler = value;
         }
 
+        public function removeHighlight() : void {
+            var current : TiledLoader = _pageImages[ _currentPos ];
+            current.removeHighlight();
+        }
+
         public function stopLoading() : void {
             _pageLoadHelper.needStopLoading();
         }
 
         public function zoomIn() : void {
-            _zoomExponent = Math.min( _zoomExponent + 1 , 4 );
+            _zoomExponent = Math.min( _zoomExponent + 1 , 6 );
 
             changeScale();
         }
@@ -115,6 +156,7 @@ package jp.archilogic.docnext.ui {
             var next : TiledLoader = _pageImages[ pos ];
 
             _ui.wrapper.addChild( next );
+            next.scale = _ui.wrapper.scaleX;
 
             // for init
             if ( _ui.wrapper.contains( current ) ) {
@@ -123,7 +165,15 @@ package jp.archilogic.docnext.ui {
 
             _currentPos = pos;
 
-            loadRegions();
+            next.initSelection();
+            _isSelectingHandler( false );
+            _isSelectHighlightHandler( false );
+
+            if ( next.hasRegions() ) {
+                next.clearEmphasize();
+            } else {
+                loadRegions();
+            }
         }
 
         private function changeScale() : void {
@@ -132,7 +182,10 @@ package jp.archilogic.docnext.ui {
             var vPos : Number =
                 _ui.scroller.maxVerticalScrollPosition > 0 ? ( _ui.scroller.verticalScrollPosition ) / _ui.scroller.maxVerticalScrollPosition : 0.5;
 
-            _ui.wrapper.scaleX = _ui.wrapper.scaleY = _baseScale * Math.pow( 2 , _zoomExponent / 2.0 );
+            _ui.wrapper.scaleX = _ui.wrapper.scaleY = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
+
+            var current : TiledLoader = _pageImages[ _currentPos ];
+            current.scale = _ui.wrapper.scaleX;
 
             _ui.wrapper.callLater( function() : void {
                 centering();
@@ -201,27 +254,26 @@ package jp.archilogic.docnext.ui {
         }
 
         private function loadRegions() : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            DocumentService.getRegions( _dto.id , _currentPos , function( regions : ByteArray ) : void {
+                regions.endian = Endian.LITTLE_ENDIAN;
 
-            if ( !current.hasRegions() ) {
-                DocumentService.getRegions( _dto.id , _currentPos , function( regions : ByteArray ) : void {
-                    regions.endian = Endian.LITTLE_ENDIAN;
+                var regions_ : Array = [];
 
-                    var regions_ : Array = [];
+                while ( regions.position < regions.length ) {
+                    var region : Rectangle =
+                        new Rectangle( regions.readDouble() , regions.readDouble() , regions.readDouble() ,
+                                       regions.readDouble() );
 
-                    while ( regions.position < regions.length ) {
-                        var region : Rectangle =
-                            new Rectangle( regions.readDouble() , regions.readDouble() , regions.readDouble() ,
-                                           regions.readDouble() );
+                    regions_.push( region );
+                }
 
-                        regions_.push( region );
-                    }
+                var current : TiledLoader = _pageImages[ _currentPos ];
 
-                    current.regions = regions_;
+                current.regions = regions_;
+                current.loadState();
 
-                    loadImageText();
-                } );
-            }
+                loadImageText();
+            } );
         }
 
         private function mouseDownHandler( e : MouseEvent ) : void {
@@ -255,14 +307,18 @@ package jp.archilogic.docnext.ui {
             var current : TiledLoader = _pageImages[ _currentPos ];
 
             var edgeIndex : int = current.getNearTextPos( current.globalToLocal( new Point( e.stageX , e.stageY ) ) );
-            current.initHighlight();
+            current.initSelection();
 
             systemManager.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
             systemManager.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
 
+            _isSelectingHandler( false );
+
             function mouseMoveHandler( _e : MouseEvent ) : void {
                 var index : int = current.getNearTextPos( current.globalToLocal( new Point( _e.stageX , _e.stageY ) ) );
-                current.showHighlight( Math.min( edgeIndex , index ) , Math.max( edgeIndex , index ) );
+                current.showSelection( Math.min( edgeIndex , index ) , Math.max( edgeIndex , index ) );
+
+                _isSelectingHandler( true );
             }
 
             function mouseUpHandler( _e : MouseEvent ) : void {
@@ -300,6 +356,9 @@ package jp.archilogic.docnext.ui {
         private function pageLoaderHelperInitLoadCompleteHanlder( page : TiledLoader ) : void {
             _currentPos = 0;
             _zoomExponent = 0;
+            _isSelectingHandler( false );
+            _isSelectHighlightHandler( false );
+
             fitWrapperSize( page );
 
             loadRegions();

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ui="jp.archilogic.docnext.ui.*">
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:ui="jp.archilogic.docnext.ui.*"
+        xmlns:code="http://code.google.com/p/flexlib/" width="100%">
     <mx:Script>
         <![CDATA[
             import jp.archilogic.docnext.resource.Resource;
         ]]>
     </mx:Script>
 
-    <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
-                    sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
-    <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
-                    sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
-    <mx:ToggleButtonBar id="mouseModeToggleButtonBar">
-        <mx:Object icon="{Resource.ICON_MOUSE_MODE_SCROLL}" />
-        <mx:Object icon="{Resource.ICON_MOUSE_MODE_SELECT}" />
-    </mx:ToggleButtonBar>
-    <mx:Button id="copyButton" label="Copy" />
-</mx:HBox>
+    <mx:HBox>
+        <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
+                        sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
+        <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
+                        sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
+        <mx:ToggleButtonBar id="mouseModeToggleButtonBar">
+            <mx:Object icon="{Resource.ICON_MOUSE_MODE_SCROLL}" />
+            <mx:Object icon="{Resource.ICON_MOUSE_MODE_SELECT}" />
+        </mx:ToggleButtonBar>
+    </mx:HBox>
+    <mx:HBox>
+        <mx:Button id="copyButton" label="Copy" />
+        <mx:Button id="changeToHighlightButton" label="Change to highlight" />
+    </mx:HBox>
+    <mx:HBox width="100%">
+        <mx:Button id="redHighlightButton" label="R" />
+        <mx:Button id="greenHighlightButton" label="G" />
+        <mx:Button id="blueHighlightButton" label="B" />
+        <mx:Button id="removeHighlightButton" label="Remove highlight" />
+        <code:PromptingTextInput id="highlightCommentTextInput" width="100%" prompt="comment" />
+    </mx:HBox>
+</mx:Box>
