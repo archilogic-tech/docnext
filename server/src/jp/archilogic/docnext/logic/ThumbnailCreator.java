@@ -85,7 +85,7 @@ public class ThumbnailCreator {
     }
 
     private void createByResolution( String pdfPath , String prefix , int page , int resolution ) {
-        ProcUtil.doProc( String.format( "%s -r %d -f %d -l %d %s %s" , prop.pdfToPpm , resolution , page + 1 ,
+        ProcUtil.doProc( String.format( "%s -cropbox -r %d -f %d -l %d %s %s" , prop.pdfToPpm , resolution , page + 1 ,
                 page + 1 , pdfPath , prefix ) , true );
     }
 
