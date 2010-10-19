@@ -2,20 +2,15 @@ package jp.archilogic.docnext.ui {
     import com.adobe.serialization.json.JSON;
     import flash.events.Event;
     import flash.events.KeyboardEvent;
-    import flash.events.MouseEvent;
-    import flash.geom.Point;
-    import flash.geom.Rectangle;
     import flash.system.System;
-    import flash.utils.ByteArray;
-    import flash.utils.Endian;
     import mx.containers.Canvas;
     import mx.core.IIMESupport;
     import mx.events.FlexEvent;
     import jp.archilogic.docnext.dto.DocumentResDto;
-    import jp.archilogic.docnext.helper.PageLoadHelper;
+    import jp.archilogic.docnext.helper.MouseActionHelper;
     import jp.archilogic.docnext.helper.ResizeHelper;
     import jp.archilogic.docnext.service.DocumentService;
-    import jp.archilogic.docnext.type.MouseMode;
+    import jp.archilogic.docnext.util.DocumentLoadUtil;
 
     public class DocumentComponent extends Canvas {
         public function DocumentComponent() {
@@ -30,37 +25,36 @@ package jp.archilogic.docnext.ui {
 
         private var _ui : DocumentComponentUI;
         private var _currentPos : int;
-        private var _pageImages : Array; /* of Image */
+        private var _pages : Array /* of TiledLoader */;
         private var _dto : DocumentResDto;
         private var _info : Object;
-        private var _text : String;
-        private var _pageLoadHelper : PageLoadHelper;
         private var _baseScale : Number;
         private var _zoomExponent : int;
-        private var _mouseModeHandler : Function;
         private var _isSelectingHandler : Function;
         private var _isSelectHighlightHandler : Function;
         private var _initHighlightCommentHandler : Function;
 
+        private var _mouseActionHelper : MouseActionHelper;
+
         public function changeHighlightColor( color : uint ) : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
             current.changeHighlightColor( color );
         }
 
         public function changeHighlightComment( comment : String ) : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
             current.changeHighlightComment( comment );
         }
 
         public function changeToHighlight() : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
             current.changeSelectionToHighlight();
 
             _isSelectingHandler( false );
         }
 
         public function copy() : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
 
             if ( current.hasSelectedText() ) {
                 System.setClipboard( current.selectedText );
@@ -76,46 +70,32 @@ package jp.archilogic.docnext.ui {
         }
 
         public function set isSelectingHandler( value : Function ) : * {
-            _isSelectingHandler = value;
+            _isSelectingHandler = _mouseActionHelper.isSelectingHandler =value;
         }
 
         public function load( dto : DocumentResDto ) : void {
             _dto = dto;
 
-            var self : DocumentComponent = this;
             DocumentService.getInfo( dto.id , function( json : String ) : void {
                 _info = JSON.decode( json );
 
-                _pageImages = [];
+                _pages = [];
 
-                for ( var index : int = 0 ; index < _info.pages ; index++ ) {
-                    _pageImages[ index ] = new TiledLoader();
-                    _pageImages[ index ].docId = _dto.id;
-                    _pageImages[ index ].page = index;
-                    _pageImages[ index ].ratio = _info.ratio;
-                    _pageImages[ index ].isSelectHighlightHandler = _isSelectHighlightHandler;
-                    _pageImages[ index ].initHighlightCommentHandler = _initHighlightCommentHandler;
-                    _pageImages[ index ].addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
+                loadPage( 0 , true );
+
+                if ( _info.pages > 1 ) {
+                    loadPage( 1 );
                 }
-
-                _pageLoadHelper =
-                    new PageLoadHelper( self , _info.pages , _dto.id , _pageImages , _ui.wrapper ,
-                                        pageLoaderHelperInitLoadCompleteHanlder );
-                _pageLoadHelper.start();
             } );
         }
 
         public function set mouseModeHandler( value : Function ) : * {
-            _mouseModeHandler = value;
+            _mouseActionHelper.mouseModeHandler = value;
         }
 
         public function removeHighlight() : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
             current.removeHighlight();
-        }
-
-        public function stopLoading() : void {
-            _pageLoadHelper.needStopLoading();
         }
 
         public function zoomIn() : void {
@@ -147,13 +127,13 @@ package jp.archilogic.docnext.ui {
             _ui.wrapper.y = Math.max( ( _ui.scroller.height - _ui.wrapper.height ) / 2 , 0 );
         }
 
-        private function changePage( pos : int , fromThumb : Boolean = false ) : void {
-            if ( pos < 0 || pos >= _pageImages.length || pos > _pageLoadHelper.loadedPos || pos == _currentPos ) {
+        private function changePage( pos : int ) : void {
+            if ( pos < 0 || pos >= _pages.length || !_pages[ pos ] || pos == _currentPos ) {
                 return;
             }
 
-            var current : TiledLoader = _pageImages[ _currentPos ];
-            var next : TiledLoader = _pageImages[ pos ];
+            var current : TiledLoader = _pages[ _currentPos ];
+            var next : TiledLoader = _pages[ pos ];
 
             _ui.wrapper.addChild( next );
             next.scale = _ui.wrapper.scaleX;
@@ -174,6 +154,8 @@ package jp.archilogic.docnext.ui {
             } else {
                 loadRegions();
             }
+
+            loadNeighborPage();
         }
 
         private function changeScale() : void {
@@ -184,7 +166,7 @@ package jp.archilogic.docnext.ui {
 
             _ui.wrapper.scaleX = _ui.wrapper.scaleY = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
 
-            var current : TiledLoader = _pageImages[ _currentPos ];
+            var current : TiledLoader = _pages[ _currentPos ];
             current.scale = _ui.wrapper.scaleX;
 
             _ui.wrapper.callLater( function() : void {
@@ -208,6 +190,12 @@ package jp.archilogic.docnext.ui {
             _ui.arrowIndicator.hasRightFunc = hasRight;
 
             new ResizeHelper( this , resizeHandler );
+
+            _mouseActionHelper = new MouseActionHelper( _ui.scroller , systemManager , currentPageHandler );
+        }
+
+        private function currentPageHandler() : TiledLoader {
+            return _pages[ _currentPos ];
         }
 
         private function fitWrapperSize( page : TiledLoader ) : void {
@@ -243,7 +231,7 @@ package jp.archilogic.docnext.ui {
         }
 
         private function hasNext() : Boolean {
-            return _currentPos < Math.min( _pageImages.length - 1 , _pageLoadHelper.loadedPos );
+            return _currentPos < _info.pages - 1;
         }
 
         private function hasPrev() : Boolean {
@@ -254,85 +242,45 @@ package jp.archilogic.docnext.ui {
             return hasPrev();
         }
 
-        private function loadImageText() : void {
-            DocumentService.getImageText( _dto.id , _currentPos , function( text : String ) : void {
-                var current : TiledLoader = _pageImages[ _currentPos ];
-                current.text = text;
-            } );
+        private function initLoadComplete( page : TiledLoader ) : void {
+            _currentPos = 0;
+            _zoomExponent = 0;
+            _isSelectingHandler( false );
+            _isSelectHighlightHandler( false );
+
+            fitWrapperSize( page );
+
+            loadRegions();
+        }
+
+        private function loadNeighborPage() : void {
+            var delta : int = 1;
+
+            for ( var index : int = 0 ; index < _info.pages ; index++ ) {
+                if ( index >= _currentPos - delta && index <= _currentPos + delta ) {
+                    continue;
+                }
+
+                delete _pages[ index ];
+            }
+
+            if ( _currentPos + 1 < _info.pages && !_pages[ _currentPos + 1 ] ) {
+                loadPage( _currentPos + 1 );
+            }
+
+            if ( _currentPos - 1 >= 0 && !_pages[ _currentPos - 1 ] ) {
+                loadPage( _currentPos - 1 );
+            }
+        }
+
+        private function loadPage( index : int , isInit : Boolean = false ) : void {
+            DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _isSelectHighlightHandler ,
+                                       _initHighlightCommentHandler , _mouseActionHelper.mouseDownHandler ,
+                                       isInit ? initLoadComplete : null , _ui.wrapper );
         }
 
         private function loadRegions() : void {
-            DocumentService.getRegions( _dto.id , _currentPos , function( regions : ByteArray ) : void {
-                regions.endian = Endian.LITTLE_ENDIAN;
-
-                var regions_ : Array = [];
-
-                while ( regions.position < regions.length ) {
-                    var region : Rectangle =
-                        new Rectangle( regions.readDouble() , regions.readDouble() , regions.readDouble() ,
-                                       regions.readDouble() );
-
-                    regions_.push( region );
-                }
-
-                var current : TiledLoader = _pageImages[ _currentPos ];
-
-                current.regions = regions_;
-                current.loadState();
-
-                loadImageText();
-            } );
-        }
-
-        private function mouseDownHandler( e : MouseEvent ) : void {
-            if ( _mouseModeHandler() == MouseMode.SCROLL ) {
-                mouseDownHandlerOnScroll( e );
-            } else if ( _mouseModeHandler() == MouseMode.SELECT ) {
-                mouseDownHandlerOnSelect( e );
-            }
-        }
-
-        private function mouseDownHandlerOnScroll( e : MouseEvent ) : void {
-            var mousePoint : Point = new Point( e.stageX , e.stageY );
-            var scrollPoint : Point =
-                new Point( _ui.scroller.horizontalScrollPosition , _ui.scroller.verticalScrollPosition );
-
-            systemManager.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-            systemManager.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
-
-            function mouseMoveHandler( _e : MouseEvent ) : void {
-                _ui.scroller.horizontalScrollPosition = scrollPoint.x - _e.stageX + mousePoint.x;
-                _ui.scroller.verticalScrollPosition = scrollPoint.y - _e.stageY + mousePoint.y;
-            }
-
-            function mouseUpHandler( _e : MouseEvent ) : void {
-                systemManager.removeEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-                systemManager.removeEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
-            }
-        }
-
-        private function mouseDownHandlerOnSelect( e : MouseEvent ) : void {
-            var current : TiledLoader = _pageImages[ _currentPos ];
-
-            var edgeIndex : int = current.getNearTextPos( current.globalToLocal( new Point( e.stageX , e.stageY ) ) );
-            current.initSelection();
-
-            systemManager.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-            systemManager.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
-
-            _isSelectingHandler( false );
-
-            function mouseMoveHandler( _e : MouseEvent ) : void {
-                var index : int = current.getNearTextPos( current.globalToLocal( new Point( _e.stageX , _e.stageY ) ) );
-                current.showSelection( Math.min( edgeIndex , index ) , Math.max( edgeIndex , index ) );
-
-                _isSelectingHandler( true );
-            }
-
-            function mouseUpHandler( _e : MouseEvent ) : void {
-                systemManager.removeEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-                systemManager.removeEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
-            }
+            DocumentLoadUtil.loadRegions( _dto.id , _currentPos , _pages[ _currentPos ] );
         }
 
         private function moveLeft() : void {
@@ -361,20 +309,9 @@ package jp.archilogic.docnext.ui {
             }
         }
 
-        private function pageLoaderHelperInitLoadCompleteHanlder( page : TiledLoader ) : void {
-            _currentPos = 0;
-            _zoomExponent = 0;
-            _isSelectingHandler( false );
-            _isSelectHighlightHandler( false );
-
-            fitWrapperSize( page );
-
-            loadRegions();
-        }
-
         private function resizeHandler() : void {
-            if ( _pageImages ) {
-                fitWrapperSize( _pageImages[ _currentPos ] );
+            if ( _pages[ _currentPos ] ) {
+                fitWrapperSize( _pages[ _currentPos ] );
             }
         }
     }
