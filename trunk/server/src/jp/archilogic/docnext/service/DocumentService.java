@@ -47,6 +47,10 @@ public class DocumentService {
         return documentConverter.toDto( document );
     }
 
+    public String getAnnotation( long id , int page ) {
+        return packManager.readAnnotation( id , page );
+    }
+
     public String getImageText( long id , int page ) {
         return packManager.readImageText( id , page );
     }

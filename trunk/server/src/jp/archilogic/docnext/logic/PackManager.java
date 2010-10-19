@@ -101,6 +101,15 @@ public class PackManager {
         return String.format( "%s/pack/%d.zip" , prop.repository , documentId );
     }
 
+    public String readAnnotation( long documentId , int page ) {
+        try {
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/images/%d.anno.json" ,
+                    prop.repository , documentId , page ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     public String readImageText( long documentId , int page ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/texts/%d.image.txt" ,
