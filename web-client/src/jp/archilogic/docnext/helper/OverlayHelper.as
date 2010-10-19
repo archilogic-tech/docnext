@@ -49,7 +49,6 @@ package jp.archilogic.docnext.helper {
 
         private var _isSelectHighlightHandler : Function;
         private var _initHighlightCommentHandler : Function;
-        private var _changePageHanlder : Function;
 
         private var _foo : Number = 0;
         private var _bar : Number = 0;
@@ -84,7 +83,7 @@ package jp.archilogic.docnext.helper {
         }
 
         public function set changePageHandler( value : Function ) : * {
-            _changePageHanlder = value;
+            _annotationHelper.changePageHelper = value;
         }
 
         public function changeSelectionToHighlight() : void {
