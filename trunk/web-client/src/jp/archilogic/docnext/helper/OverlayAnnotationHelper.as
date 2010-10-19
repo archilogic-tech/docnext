@@ -44,6 +44,10 @@ package jp.archilogic.docnext.helper {
             }
         }
 
+        public function set changePageHelper( value : Function ) : * {
+            _changePageHanlder = value;
+        }
+
         private function addAnnotation( rect : Rectangle , clickHandler : Function ) : void {
             var indicator : Canvas = new Canvas();
             indicator.x = rect.x;
