@@ -9,6 +9,10 @@ package jp.archilogic.docnext.service {
             ServiceUtil.callHelper( service.findById( id ) , result , fault );
         }
 
+        public static function getAnnotation( id : Number , page : int , result : Function ) : void {
+            ServiceUtil.callHelper( service.getAnnotation( id , page ) , result );
+        }
+
         public static function getImageText( id : Number , page : int , result : Function ) : void {
             ServiceUtil.callHelper( service.getImageText( id , page ) , result );
         }
