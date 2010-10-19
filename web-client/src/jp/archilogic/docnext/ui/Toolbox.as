@@ -70,6 +70,11 @@ package jp.archilogic.docnext.ui {
             _removeHighlightHandler = value;
         }
 
+        public function setPage( current : int , total : int ) : void {
+            // change to 1-origin
+            _ui.pageLabel.text = ( current + 1 ) + '/' + total;
+        }
+
         public function set zoomInHandler( value : Function ) : * {
             _zoomInHandler = value;
         }

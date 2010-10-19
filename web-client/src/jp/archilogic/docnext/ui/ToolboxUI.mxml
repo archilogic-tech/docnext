@@ -7,7 +7,7 @@
         ]]>
     </mx:Script>
 
-    <mx:HBox>
+    <mx:HBox width="100%">
         <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
                         sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
         <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
@@ -16,6 +16,8 @@
             <mx:Object icon="{Resource.ICON_MOUSE_MODE_SCROLL}" />
             <mx:Object icon="{Resource.ICON_MOUSE_MODE_SELECT}" />
         </mx:ToggleButtonBar>
+        <mx:Spacer width="100%" />
+        <mx:Label id="pageLabel" />
     </mx:HBox>
     <mx:HBox>
         <mx:Button id="copyButton" label="Copy" />

@@ -1,4 +1,5 @@
 package jp.archilogic.docnext.util {
+    import com.adobe.serialization.json.JSON;
     import flash.events.Event;
     import flash.events.MouseEvent;
     import flash.geom.Rectangle;
@@ -7,20 +8,21 @@ package jp.archilogic.docnext.util {
     import mx.collections.ArrayCollection;
     import mx.core.Container;
     import jp.archilogic.docnext.service.DocumentService;
-    import jp.archilogic.docnext.ui.TiledLoader;
+    import jp.archilogic.docnext.ui.PageComponent;
 
     public class DocumentLoadUtil {
         public static function loadPage( docId : Number , index : int , ratio : Number , pages : Array ,
                                          isSelectHighlightHandler : Function , initHighlightCommentHandler : Function ,
-                                         mouseDownHandler : Function , initLoadCompleteHandler : Function = null ,
-                                         wrapper : Container = null ) : void {
+                                         mouseDownHandler : Function , changePageHandler : Function ,
+                                         loadCompleteHandler : Function = null ) : void {
             DocumentService.getPage( docId , index , function( result : ArrayCollection ) : void {
-                var page : TiledLoader = new TiledLoader();
+                var page : PageComponent = new PageComponent();
                 page.docId = docId;
                 page.page = index;
                 page.ratio = ratio;
                 page.isSelectHighlightHandler = isSelectHighlightHandler;
                 page.initHighlightCommentHandler = initHighlightCommentHandler;
+                page.changePageHandler = changePageHandler;
                 page.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
 
                 page.addEventListener( Event.COMPLETE , function() : void {
@@ -28,16 +30,8 @@ package jp.archilogic.docnext.util {
 
                     pages[ index ] = page;
 
-                    if ( initLoadCompleteHandler != null ) {
-                        page.addEventListener( Event.ADDED_TO_STAGE , function() : void {
-                            page.removeEventListener( Event.ADDED_TO_STAGE , arguments.callee );
-
-                            page.callLater( function() : void {
-                                initLoadCompleteHandler( page );
-                            } );
-                        } );
-
-                        wrapper.addChild( page );
+                    if ( loadCompleteHandler != null ) {
+                        loadCompleteHandler( page );
                     }
                 } );
 
@@ -45,7 +39,7 @@ package jp.archilogic.docnext.util {
             } );
         }
 
-        public static function loadRegions( docId : Number , currentIndex : int , currentPage : TiledLoader ) : void {
+        public static function loadRegions( docId : Number , currentIndex : int , currentPage : PageComponent ) : void {
             DocumentService.getRegions( docId , currentIndex , function( result : ByteArray ) : void {
                 result.endian = Endian.LITTLE_ENDIAN;
 
@@ -60,15 +54,24 @@ package jp.archilogic.docnext.util {
                 }
 
                 currentPage.regions = regions;
-                currentPage.loadState();
 
                 loadImageText( docId , currentIndex , currentPage );
             } );
         }
 
-        private static function loadImageText( docId : Number , currentIndex : int , currentPage : TiledLoader ) : void {
+        private static function loadAnnotation( docId : Number , currentIndex : int ,
+                                                currentPage : PageComponent ) : void {
+            DocumentService.getAnnotation( docId , currentIndex , function( result : String ) : void {
+                currentPage.annotation = JSON.decode( result );
+            } );
+        }
+
+        private static function loadImageText( docId : Number , currentIndex : int ,
+                                               currentPage : PageComponent ) : void {
             DocumentService.getImageText( docId , currentIndex , function( text : String ) : void {
                 currentPage.text = text;
+
+                loadAnnotation( docId , currentIndex , currentPage );
             } );
         }
     }

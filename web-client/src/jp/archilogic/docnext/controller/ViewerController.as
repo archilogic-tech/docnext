@@ -15,6 +15,7 @@ package jp.archilogic.docnext.controller {
             view.toolbox.zoomInHandler = zoomInHandler;
             view.toolbox.zoomOutHandler = zoomOutHandler;
             view.documentComponent.mouseModeHandler = view.toolbox.mouseModeHander;
+            view.documentComponent.setPageHandler = setPageHandler;
             view.documentComponent.isSelectingHandler = view.toolbox.isSelectingHandler;
             view.toolbox.copyHandler = copyHandler;
             view.toolbox.changeToHighlightHandler = changeToHighlightHandler;
@@ -63,6 +64,10 @@ package jp.archilogic.docnext.controller {
 
         private function removeHighlightHandler() : void {
             view.documentComponent.removeHighlight();
+        }
+
+        private function setPageHandler( current : int , total : int ) : void {
+            view.toolbox.setPage( current , total );
         }
 
         private function zoomInHandler() : void {

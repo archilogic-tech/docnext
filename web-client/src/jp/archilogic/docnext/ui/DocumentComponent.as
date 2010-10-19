@@ -25,11 +25,12 @@ package jp.archilogic.docnext.ui {
 
         private var _ui : DocumentComponentUI;
         private var _currentPos : int;
-        private var _pages : Array /* of TiledLoader */;
+        private var _pages : Array /* of PageComponent */;
         private var _dto : DocumentResDto;
         private var _info : Object;
         private var _baseScale : Number;
         private var _zoomExponent : int;
+        private var _setPageHandler : Function;
         private var _isSelectingHandler : Function;
         private var _isSelectHighlightHandler : Function;
         private var _initHighlightCommentHandler : Function;
@@ -37,27 +38,22 @@ package jp.archilogic.docnext.ui {
         private var _mouseActionHelper : MouseActionHelper;
 
         public function changeHighlightColor( color : uint ) : void {
-            var current : TiledLoader = _pages[ _currentPos ];
-            current.changeHighlightColor( color );
+            getCurrentPage().changeHighlightColor( color );
         }
 
         public function changeHighlightComment( comment : String ) : void {
-            var current : TiledLoader = _pages[ _currentPos ];
-            current.changeHighlightComment( comment );
+            getCurrentPage().changeHighlightComment( comment );
         }
 
         public function changeToHighlight() : void {
-            var current : TiledLoader = _pages[ _currentPos ];
-            current.changeSelectionToHighlight();
+            getCurrentPage().changeSelectionToHighlight();
 
             _isSelectingHandler( false );
         }
 
         public function copy() : void {
-            var current : TiledLoader = _pages[ _currentPos ];
-
-            if ( current.hasSelectedText() ) {
-                System.setClipboard( current.selectedText );
+            if ( getCurrentPage().hasSelectedText() ) {
+                System.setClipboard( getCurrentPage().selectedText );
             }
         }
 
@@ -70,7 +66,7 @@ package jp.archilogic.docnext.ui {
         }
 
         public function set isSelectingHandler( value : Function ) : * {
-            _isSelectingHandler = _mouseActionHelper.isSelectingHandler =value;
+            _isSelectingHandler = _mouseActionHelper.isSelectingHandler = value;
         }
 
         public function load( dto : DocumentResDto ) : void {
@@ -81,7 +77,7 @@ package jp.archilogic.docnext.ui {
 
                 _pages = [];
 
-                loadPage( 0 , true );
+                loadPage( 0 , initLoadComplete );
 
                 if ( _info.pages > 1 ) {
                     loadPage( 1 );
@@ -94,8 +90,11 @@ package jp.archilogic.docnext.ui {
         }
 
         public function removeHighlight() : void {
-            var current : TiledLoader = _pages[ _currentPos ];
-            current.removeHighlight();
+            getCurrentPage().removeHighlight();
+        }
+
+        public function set setPageHandler( value : Function ) : * {
+            _setPageHandler = value;
         }
 
         public function zoomIn() : void {
@@ -128,22 +127,29 @@ package jp.archilogic.docnext.ui {
         }
 
         private function changePage( pos : int ) : void {
-            if ( pos < 0 || pos >= _pages.length || !_pages[ pos ] || pos == _currentPos ) {
+            if ( pos < 0 || pos >= _info.pages || pos == _currentPos ) {
                 return;
             }
 
-            var current : TiledLoader = _pages[ _currentPos ];
-            var next : TiledLoader = _pages[ pos ];
+            if ( !_pages[ pos ] ) {
+                loadPage( pos , function( page : PageComponent ) : void {
+                    changePage( pos );
+                } );
+                return;
+            }
+
+            var prev : PageComponent = getCurrentPage();
+
+            currentPos = pos;
+            var next : PageComponent = getCurrentPage();
 
             _ui.wrapper.addChild( next );
             next.scale = _ui.wrapper.scaleX;
 
             // for init
-            if ( _ui.wrapper.contains( current ) ) {
-                _ui.wrapper.removeChild( current );
+            if ( _ui.wrapper.contains( prev ) ) {
+                _ui.wrapper.removeChild( prev );
             }
-
-            _currentPos = pos;
 
             next.initSelection();
             _isSelectingHandler( false );
@@ -166,8 +172,7 @@ package jp.archilogic.docnext.ui {
 
             _ui.wrapper.scaleX = _ui.wrapper.scaleY = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
 
-            var current : TiledLoader = _pages[ _currentPos ];
-            current.scale = _ui.wrapper.scaleX;
+            getCurrentPage().scale = _ui.wrapper.scaleX;
 
             _ui.wrapper.callLater( function() : void {
                 centering();
@@ -191,14 +196,15 @@ package jp.archilogic.docnext.ui {
 
             new ResizeHelper( this , resizeHandler );
 
-            _mouseActionHelper = new MouseActionHelper( _ui.scroller , systemManager , currentPageHandler );
+            _mouseActionHelper = new MouseActionHelper( _ui.scroller , systemManager , getCurrentPage );
         }
 
-        private function currentPageHandler() : TiledLoader {
-            return _pages[ _currentPos ];
+        private function set currentPos( value : int ) : * {
+            _currentPos = value;
+            _setPageHandler( _currentPos , _info.pages );
         }
 
-        private function fitWrapperSize( page : TiledLoader ) : void {
+        private function fitWrapperSize( page : PageComponent ) : void {
             if ( _ui.width / page.content.width > _ui.height / page.content.height ) {
                 // fit to height
                 _baseScale = _ui.height / page.content.height;
@@ -212,6 +218,10 @@ package jp.archilogic.docnext.ui {
 
         private function getBottomPos() : Number {
             return Math.min( _ui.scroller.height , _ui.wrapper.y + _ui.wrapper.height );
+        }
+
+        private function getCurrentPage() : PageComponent {
+            return _pages[ _currentPos ];
         }
 
         private function getLeftPos() : Number {
@@ -242,15 +252,23 @@ package jp.archilogic.docnext.ui {
             return hasPrev();
         }
 
-        private function initLoadComplete( page : TiledLoader ) : void {
-            _currentPos = 0;
-            _zoomExponent = 0;
-            _isSelectingHandler( false );
-            _isSelectHighlightHandler( false );
+        private function initLoadComplete( page : PageComponent ) : void {
+            page.addEventListener( Event.ADDED_TO_STAGE , function() : void {
+                page.removeEventListener( Event.ADDED_TO_STAGE , arguments.callee );
 
-            fitWrapperSize( page );
+                page.callLater( function() : void {
+                    currentPos = 0;
+                    _zoomExponent = 0;
+                    _isSelectingHandler( false );
+                    _isSelectHighlightHandler( false );
 
-            loadRegions();
+                    fitWrapperSize( page );
+
+                    loadRegions();
+                } );
+            } );
+
+            _ui.wrapper.addChild( page );
         }
 
         private function loadNeighborPage() : void {
@@ -273,14 +291,14 @@ package jp.archilogic.docnext.ui {
             }
         }
 
-        private function loadPage( index : int , isInit : Boolean = false ) : void {
+        private function loadPage( index : int , next : Function = null ) : void {
             DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _isSelectHighlightHandler ,
-                                       _initHighlightCommentHandler , _mouseActionHelper.mouseDownHandler ,
-                                       isInit ? initLoadComplete : null , _ui.wrapper );
+                                       _initHighlightCommentHandler , _mouseActionHelper.mouseDownHandler , changePage ,
+                                       next );
         }
 
         private function loadRegions() : void {
-            DocumentLoadUtil.loadRegions( _dto.id , _currentPos , _pages[ _currentPos ] );
+            DocumentLoadUtil.loadRegions( _dto.id , _currentPos , getCurrentPage() );
         }
 
         private function moveLeft() : void {
@@ -310,8 +328,8 @@ package jp.archilogic.docnext.ui {
         }
 
         private function resizeHandler() : void {
-            if ( _pages[ _currentPos ] ) {
-                fitWrapperSize( _pages[ _currentPos ] );
+            if ( getCurrentPage() ) {
+                fitWrapperSize( getCurrentPage() );
             }
         }
     }

@@ -5,7 +5,7 @@ package jp.archilogic.docnext.helper {
     import mx.managers.ISystemManager;
     import mx.managers.SystemManager;
     import jp.archilogic.docnext.type.MouseMode;
-    import jp.archilogic.docnext.ui.TiledLoader;
+    import jp.archilogic.docnext.ui.PageComponent;
 
     public class MouseActionHelper {
         public function MouseActionHelper( scroller : Canvas , systemManager : ISystemManager ,
@@ -57,7 +57,7 @@ package jp.archilogic.docnext.helper {
         }
 
         private function mouseDownHandlerOnSelect( e : MouseEvent ) : void {
-            var current : TiledLoader = _currentPageHandler();
+            var current : PageComponent = _currentPageHandler();
 
             var edgeIndex : int = current.getNearTextPos( current.globalToLocal( new Point( e.stageX , e.stageY ) ) );
             current.initSelection();

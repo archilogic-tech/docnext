@@ -1,40 +1,34 @@
-package jp.archilogic.docnext.ui {
-    import flash.display.Bitmap;
-    import flash.display.BitmapData;
-    import flash.display.Loader;
-    import flash.events.Event;
+package jp.archilogic.docnext.helper {
+    import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
-    import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.net.SharedObject;
-    import flash.utils.ByteArray;
     import flash.utils.Dictionary;
-    import mx.collections.ArrayCollection;
     import mx.containers.Canvas;
-    import mx.controls.Image;
-    import mx.utils.ObjectUtil;
+    import jp.archilogic.docnext.ui.Balloon;
 
-    public class TiledLoader extends Image {
+    public class OverlayHelper {
         private static const ALPHA_NORMAL : Number = 0.3;
         private static const ALPHA_EMPHASIZE : Number = 0.8;
+
         private static const KEY_TOP : String = 'top';
         private static const KEY_BOTTOM : String = 'bottom';
         private static const KEY_LEFT : String = 'left';
         private static const KEY_RIGHT : String = 'right';
 
-        public function TiledLoader() {
-            super();
+        public function OverlayHelper( container : DisplayObjectContainer ) {
+            _container = container;
+
+            _annotationHelper = new OverlayAnnotationHelper( container , convertToStageRect );
         }
+
+        private var _container : DisplayObjectContainer;
+
+        private var _annotationHelper : OverlayAnnotationHelper;
 
         private var _docId : Number;
         private var _page : int;
-
-        private var _bd : BitmapData;
-        private var _loaded : int;
-
-        private var _isSelectHighlightHandler : Function;
-        private var _initHighlightCommentHandler : Function;
 
         private var _regions : Array = null;
         private var _ratio : Number;
@@ -53,8 +47,16 @@ package jp.archilogic.docnext.ui {
 
         private var _scale : Number;
 
+        private var _isSelectHighlightHandler : Function;
+        private var _initHighlightCommentHandler : Function;
+        private var _changePageHanlder : Function;
+
         private var _foo : Number = 0;
         private var _bar : Number = 0;
+
+        public function set annotation( value : Array ) : * {
+            _annotationHelper.annotation = value;
+        }
 
         public function changeHighlightColor( color : uint ) : void {
             _highlightInfos[ _currentHighlightIndex ].color = color;
@@ -72,13 +74,17 @@ package jp.archilogic.docnext.ui {
             saveState();
 
             if ( _balloons[ _currentHighlightIndex ] ) {
-                removeChild( _balloons[ _currentHighlightIndex ] );
+                _container.removeChild( _balloons[ _currentHighlightIndex ] );
                 delete _balloons[ _currentHighlightIndex ];
             }
 
             if ( comment.length > 0 ) {
                 addBalloon( comment , _currentHighlightIndex );
             }
+        }
+
+        public function set changePageHandler( value : Function ) : * {
+            _changePageHanlder = value;
         }
 
         public function changeSelectionToHighlight() : void {
@@ -140,7 +146,7 @@ package jp.archilogic.docnext.ui {
 
         public function initSelection() : void {
             for each ( var indicator : Canvas in _currentSelections ) {
-                removeChild( indicator );
+                _container.removeChild( indicator );
             }
             _currentSelections = null;
 
@@ -150,39 +156,6 @@ package jp.archilogic.docnext.ui {
 
         public function set isSelectHighlightHandler( value : Function ) : * {
             _isSelectHighlightHandler = value;
-        }
-
-        public function loadData( data : ArrayCollection /* of ByteArray */ ) : void {
-            _bd = null;
-            _loaded = 0;
-
-            loadHelper( ByteArray( data.getItemAt( 0 ) ) , 0 , 0 );
-            loadHelper( ByteArray( data.getItemAt( 1 ) ) , 0 , 1 );
-            loadHelper( ByteArray( data.getItemAt( 2 ) ) , 1 , 0 );
-            loadHelper( ByteArray( data.getItemAt( 3 ) ) , 1 , 1 );
-        }
-
-        public function loadState() : void {
-            var so : SharedObject = SharedObject.getLocal( 'so' );
-
-            if ( !so.data[ 'highlight' ] ) {
-                so.data[ 'highlight' ] = {};
-            }
-
-            if ( !so.data[ 'highlight' ][ _docId ] ) {
-                so.data[ 'highlight' ][ _docId ] = {};
-            }
-
-            if ( !so.data[ 'highlight' ][ _docId ][ _page ] ) {
-                so.data[ 'highlight' ][ _docId ][ _page ] = [];
-            }
-
-            _highlightInfos = [];
-
-            for each ( var info : Object in so.data[ 'highlight' ][ _docId ][ _page ] ) {
-                _highlightInfos.push( info );
-                addHighlight( info , _highlightInfos.length - 1 );
-            }
         }
 
         public function set page( value : int ) : * {
@@ -197,9 +170,11 @@ package jp.archilogic.docnext.ui {
             _regions = [];
 
             for each ( var rect : Rectangle in value ) {
-                var region : Rectangle = convertToStageRect( rect , new Point( width , height ) , _ratio );
+                var region : Rectangle = convertToStageRect( rect );
                 _regions.push( region );
             }
+
+            loadState();
         }
 
         public function removeHighlight() : void {
@@ -208,34 +183,19 @@ package jp.archilogic.docnext.ui {
             saveState();
 
             for each ( var indicator : Canvas in _highlights[ _currentHighlightIndex ] ) {
-                removeChild( indicator );
+                _container.removeChild( indicator );
             }
 
             delete _highlights[ _currentHighlightIndex ];
 
             if ( _balloons[ _currentHighlightIndex ] ) {
-                removeChild( _balloons[ _currentHighlightIndex ] );
+                _container.removeChild( _balloons[ _currentHighlightIndex ] );
                 delete _balloons[ _currentHighlightIndex ];
             }
 
             _currentHighlightIndex = -1;
 
             _isSelectHighlightHandler( false );
-        }
-
-        public function saveState() : void {
-            var so : SharedObject = SharedObject.getLocal( 'so' );
-
-            // repack
-            var data : Array = [];
-
-            for each ( var info : Object in _highlightInfos ) {
-                data.push( info );
-            }
-
-            so.data[ 'highlight' ][ _docId ][ _page ] = data;
-
-            so.flush();
         }
 
         public function set scale( value : Number ) : * {
@@ -282,6 +242,7 @@ package jp.archilogic.docnext.ui {
             _text = value;
         }
 
+
         private function addBalloon( comment : String , index : int ) : void {
             var met : Object = calcHighlightMetrics( index );
             var tip : Point = new Point( ( met[ KEY_LEFT ] + met[ KEY_RIGHT ] ) / 2.0 , met[ KEY_TOP ] );
@@ -290,7 +251,7 @@ package jp.archilogic.docnext.ui {
             balloon.parentTip = tip;
             balloon.adjust( _scale );
 
-            addChild( balloon );
+            _container.addChild( balloon );
 
             _balloons[ index ] = balloon;
         }
@@ -325,7 +286,7 @@ package jp.archilogic.docnext.ui {
                 indicator.setStyle( 'backgroundColor' , color );
                 indicator.alpha = ALPHA_NORMAL;
 
-                addChild( indicator );
+                _container.addChild( indicator );
 
                 if ( holder != null ) {
                     holder[ index ] = indicator;
@@ -341,17 +302,17 @@ package jp.archilogic.docnext.ui {
             addOverlay( begin , end , 0xff0000 , _currentSelections );
         }
 
-        private function calcActualRect( size : Point , ratio : Number ) : Rectangle {
-            var ret : Rectangle = new Rectangle( 0 , 0 , size.x , size.y );
+        private function calcActualRect() : Rectangle {
+            var ret : Rectangle = new Rectangle( 0 , 0 , _container.width , _container.height );
 
-            if ( ret.width < ret.height * ratio ) {
+            if ( ret.width < ret.height * _ratio ) {
                 // fit to width
-                ret.y = ( ret.height - ret.width / ratio ) / 2.0;
-                ret.height = ret.width / ratio;
+                ret.y = ( ret.height - ret.width / _ratio ) / 2.0;
+                ret.height = ret.width / _ratio;
             } else {
                 // fit to height
-                ret.x = ( ret.width - ret.height * ratio ) / 2.0;
-                ret.width = ret.height * ratio;
+                ret.x = ( ret.width - ret.height * _ratio ) / 2.0;
+                ret.width = ret.height * _ratio;
             }
 
             return ret;
@@ -374,8 +335,8 @@ package jp.archilogic.docnext.ui {
             return ret;
         }
 
-        private function convertToStageRect( rect : Rectangle , size : Point , ratio : Number ) : Rectangle {
-            var actual : Rectangle = calcActualRect( size , ratio );
+        private function convertToStageRect( rect : Rectangle ) : Rectangle {
+            var actual : Rectangle = calcActualRect();
 
             return new Rectangle( actual.x + rect.x * actual.width , actual.y + rect.y * actual.height ,
                                   rect.width * actual.width , rect.height * actual.height );
@@ -391,37 +352,49 @@ package jp.archilogic.docnext.ui {
             }
         }
 
-        private function loadHelper( data : ByteArray , px : int , py : int ) : void {
-            var loader : Loader = new Loader();
+        private function loadState() : void {
+            var so : SharedObject = SharedObject.getLocal( 'so' );
 
-            loader.contentLoaderInfo.addEventListener( Event.COMPLETE , function() : void {
-                loader.removeEventListener( Event.COMPLETE , arguments.callee );
+            if ( !so.data[ 'highlight' ] ) {
+                so.data[ 'highlight' ] = {};
+            }
 
-                if ( _bd == null ) {
-                    _bd = new BitmapData( loader.width * 2 , loader.height * 2 );
-                }
+            if ( !so.data[ 'highlight' ][ _docId ] ) {
+                so.data[ 'highlight' ][ _docId ] = {};
+            }
 
-                var mat : Matrix = new Matrix();
-                mat.translate( loader.width * px , loader.height * py );
-                _bd.draw( loader , mat );
+            if ( !so.data[ 'highlight' ][ _docId ][ _page ] ) {
+                so.data[ 'highlight' ][ _docId ][ _page ] = [];
+            }
 
-                _loaded++;
+            _highlightInfos = [];
 
-                if ( _loaded == 4 ) {
-                    source = new Bitmap( _bd , 'auto' , true );
-
-                    dispatchEvent( new Event( Event.COMPLETE ) );
-                }
-            } );
-
-            loader.loadBytes( data );
+            for each ( var info : Object in so.data[ 'highlight' ][ _docId ][ _page ] ) {
+                _highlightInfos.push( info );
+                addHighlight( info , _highlightInfos.length - 1 );
+            }
         }
 
         private function removeSelection( begin : int , end : int ) : void {
             for ( var index : int = begin ; index < end ; index++ ) {
-                removeChild( _currentSelections[ index ] );
+                _container.removeChild( _currentSelections[ index ] );
                 delete _currentSelections[ index ];
             }
+        }
+
+        private function saveState() : void {
+            var so : SharedObject = SharedObject.getLocal( 'so' );
+
+            // repack
+            var data : Array = [];
+
+            for each ( var info : Object in _highlightInfos ) {
+                data.push( info );
+            }
+
+            so.data[ 'highlight' ][ _docId ][ _page ] = data;
+
+            so.flush();
         }
     }
 }
