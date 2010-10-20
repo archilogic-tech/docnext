@@ -5,6 +5,8 @@ package jp.archilogic.docnext.helper {
     import flash.net.URLRequest;
     import flash.net.navigateToURL;
     import mx.containers.Canvas;
+    import mx.controls.Alert;
+    import mx.events.CloseEvent;
 
     public class OverlayAnnotationHelper {
         private static const ALPHA : Number = 0.2;
@@ -33,8 +35,13 @@ package jp.archilogic.docnext.helper {
                             break;
                         case 'GoToPage':
                             addAnnotation( rect , function( e : MouseEvent ) : void {
-                                // change to 0-origin
-                                _changePageHanlder( anno.action.page - 1 );
+                                Alert.show( 'May I jump to the page?' , 'Confirm' , Alert.YES | Alert.NO , null ,
+                                            function( e_ : CloseEvent ) : void {
+                                    if ( e_.detail == Alert.YES ) {
+                                        // change to 0-origin
+                                        _changePageHanlder( anno.action.page - 1 );
+                                    }
+                                } );
                             } );
                             break;
                         default:
