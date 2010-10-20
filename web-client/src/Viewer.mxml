@@ -1,15 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controller="jp.archilogic.docnext.controller.*"
                 xmlns:ui="jp.archilogic.docnext.ui.*" backgroundColor="#d0d0d0" paddingTop="0" paddingBottom="0"
-                paddingLeft="0" paddingRight="0" addedToStage="addToStageHandler()">
+                paddingLeft="0" paddingRight="0" addedToStage="addToStageHandler()"
+                applicationComplete="applicationCompleteHandler()">
     <mx:Script>
         <![CDATA[
+            import flash.net.getClassByAlias;
+            import mx.controls.Alert;
+            import mx.rpc.Fault;
+            import mx.utils.ObjectUtil;
+            import __AS3__.vec.Vector;
+            import jp.archilogic.ServiceUtil;
             import jp.archilogic.util.DebugHelper;
             import org.libspark.ui.SWFWheel;
 
             private function addToStageHandler() : void {
                 SWFWheel.initialize( stage );
                 DebugHelper.load( stage , this , true );
+            }
+
+            private function applicationCompleteHandler() : void {
+                ServiceUtil.defaultFaultHandler = function( fault : Fault ) : void {
+                    throw new Error( fault.message );
+                };
+
+                loaderInfo.uncaughtErrorEvents.addEventListener( UncaughtErrorEvent.UNCAUGHT_ERROR ,
+                                                                 function( e : UncaughtErrorEvent ) : void {
+                    var message : String;
+
+                    if ( e.error is Error ) {
+                        var error : Error = e.error;
+                        message =
+                            error.message + "\n----------------------------------------\n" + error.getStackTrace();
+                    } else {
+                        message = ObjectUtil.toString( e.error );
+                    }
+
+                    Alert.show( message , 'Error' );
+
+                    e.preventDefault();
+                } );
             }
         ]]>
     </mx:Script>
