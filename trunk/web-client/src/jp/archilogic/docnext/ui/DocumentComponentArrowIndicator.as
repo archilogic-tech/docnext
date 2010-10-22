@@ -44,6 +44,10 @@ package jp.archilogic.docnext.ui {
             _clickHandler = value;
         }
 
+        public function endAnimating() : void {
+            mouseMoveHandler( null );
+        }
+
         public function set hasLeftFunc( value : Function ) : void {
             _hasLeftFunc = value;
         }
@@ -144,7 +148,7 @@ package jp.archilogic.docnext.ui {
                 return;
             }
 
-            var point : Point = globalToLocal( new Point( e.stageX , e.stageY ) );
+            var point : Point = new Point( mouseX , mouseY );
 
             horizontalMouseMoveHandler( point );
         }

@@ -60,23 +60,27 @@ package jp.archilogic.docnext.helper {
             var current : PageComponent = _currentPageHandler();
 
             var edgeIndex : int = current.getNearTextPos( current.globalToLocal( new Point( e.stageX , e.stageY ) ) );
-            current.initSelection();
 
-            _systemManager.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-            _systemManager.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
+            if ( edgeIndex != -1 ) {
+                current.initSelection();
 
-            _isSelectingHandler( false );
+                _systemManager.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
+                _systemManager.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
 
-            function mouseMoveHandler( _e : MouseEvent ) : void {
-                var index : int = current.getNearTextPos( current.globalToLocal( new Point( _e.stageX , _e.stageY ) ) );
-                current.showSelection( Math.min( edgeIndex , index ) , Math.max( edgeIndex , index ) );
+                _isSelectingHandler( false );
 
-                _isSelectingHandler( true );
-            }
+                function mouseMoveHandler( _e : MouseEvent ) : void {
+                    var index : int =
+                        current.getNearTextPos( current.globalToLocal( new Point( _e.stageX , _e.stageY ) ) );
+                    current.showSelection( Math.min( edgeIndex , index ) , Math.max( edgeIndex , index ) );
 
-            function mouseUpHandler( _e : MouseEvent ) : void {
-                _systemManager.removeEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-                _systemManager.removeEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
+                    _isSelectingHandler( true );
+                }
+
+                function mouseUpHandler( _e : MouseEvent ) : void {
+                    _systemManager.removeEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
+                    _systemManager.removeEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
+                }
             }
         }
     }

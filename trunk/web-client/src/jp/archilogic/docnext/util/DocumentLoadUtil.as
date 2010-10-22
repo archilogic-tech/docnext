@@ -29,6 +29,8 @@ package jp.archilogic.docnext.util {
 
                     pages[ index ] = page;
 
+                    loadRegions( page );
+
                     if ( loadCompleteHandler != null ) {
                         loadCompleteHandler( page );
                     }
@@ -38,8 +40,22 @@ package jp.archilogic.docnext.util {
             } );
         }
 
-        public static function loadRegions( docId : Number , currentIndex : int , currentPage : PageComponent ) : void {
-            DocumentService.getRegions( docId , currentIndex , function( result : ByteArray ) : void {
+        private static function loadAnnotation( page : PageComponent ) : void {
+            DocumentService.getAnnotation( page.docId , page.page , function( result : String ) : void {
+                page.annotation = JSON.decode( result );
+            } );
+        }
+
+        private static function loadImageText( page : PageComponent ) : void {
+            DocumentService.getImageText( page.docId , page.page , function( text : String ) : void {
+                page.text = text;
+
+                loadAnnotation( page );
+            } );
+        }
+
+        private static function loadRegions( page : PageComponent ) : void {
+            DocumentService.getRegions( page.docId , page.page , function( result : ByteArray ) : void {
                 result.endian = Endian.LITTLE_ENDIAN;
 
                 var regions : Vector.<Rectangle> = new Vector.<Rectangle>();
@@ -52,25 +68,9 @@ package jp.archilogic.docnext.util {
                     regions.push( region );
                 }
 
-                currentPage.regions = regions;
+                page.regions = regions;
 
-                loadImageText( docId , currentIndex , currentPage );
-            } );
-        }
-
-        private static function loadAnnotation( docId : Number , currentIndex : int ,
-                                                currentPage : PageComponent ) : void {
-            DocumentService.getAnnotation( docId , currentIndex , function( result : String ) : void {
-                currentPage.annotation = JSON.decode( result );
-            } );
-        }
-
-        private static function loadImageText( docId : Number , currentIndex : int ,
-                                               currentPage : PageComponent ) : void {
-            DocumentService.getImageText( docId , currentIndex , function( text : String ) : void {
-                currentPage.text = text;
-
-                loadAnnotation( docId , currentIndex , currentPage );
+                loadImageText( page );
             } );
         }
     }

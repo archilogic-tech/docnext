@@ -47,6 +47,10 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.clearEmphasize();
         }
 
+        public function get docId() : Number {
+            return _overlayHelper.docId;
+        }
+
         public function set docId( value : Number ) : * {
             _overlayHelper.docId = value;
         }
@@ -86,10 +90,17 @@ package jp.archilogic.docnext.ui {
 
                 source = new Bitmap( bd , 'auto' , true );
 
+                width = loader.width;
+                height = loader.height;
+
                 dispatchEvent( new Event( Event.COMPLETE ) );
             } );
 
             loader.loadBytes( data );
+        }
+
+        public function get page() : int {
+            return _overlayHelper.page;
         }
 
         public function set page( value : int ) : * {
