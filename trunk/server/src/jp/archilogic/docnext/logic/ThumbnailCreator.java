@@ -33,6 +33,7 @@ public class ThumbnailCreator {
     private static final int IPHONE_DEVICE_WIDTH = 320;
     private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
     private static final int THUMBNAIL_SIZE = 256;
+    private static final int WEB_HEIGHT = 1600;
 
     @Autowired
     private PropBean prop;
@@ -76,6 +77,7 @@ public class ThumbnailCreator {
                     IPAD_DEVICE_HEIGHT );
             createImage( outDir + "iPhone" , pdfPath , prefix , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
                     IPHONE_DEVICE_HEIGHT );
+            createWeb( outDir , pdfPath , prefix , info , page );
             createThumbnail( outDir , pdfPath , prefix , info , page );
         }
 
@@ -130,9 +132,18 @@ public class ThumbnailCreator {
         int h = ( int ) Math.round( info.unitHeight * resolution );
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
-        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , w , h , w , h );
-        cropAndResize( getPngPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , 0 , 0 , w , h ,
-                w , h );
+        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , w , h , w ,
+                h );
+    }
+
+    private void createWeb( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) {
+        double resolution = WEB_HEIGHT / info.unitHeight;
+
+        int w = ( int ) Math.round( info.unitWidth * resolution );
+        int h = ( int ) Math.round( info.unitHeight * resolution );
+
+        createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
+        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sweb-%d.jpg" , outDir , page ) , w , h , w , h );
     }
 
     private void cropAndResize( String pngPath , String destPath , int x , int y , int cropWidth , int cropHeight ,
