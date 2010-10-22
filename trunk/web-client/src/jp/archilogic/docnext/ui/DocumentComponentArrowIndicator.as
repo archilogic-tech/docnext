@@ -30,6 +30,7 @@ package jp.archilogic.docnext.ui {
         private var _clickHandler : Function;
         private var _hasLeftFunc : Function;
         private var _hasRightFunc : Function;
+        private var _isAnimatingFunc : Function;
 
         private var _currentArrow : Image;
         private var _arrowMode : int;
@@ -51,12 +52,20 @@ package jp.archilogic.docnext.ui {
             _hasRightFunc = value;
         }
 
+        public function set isAnimatingFunc( value : Function ) : * {
+            _isAnimatingFunc = value;
+        }
+
         public function set leftPosFunc( value : Function ) : void {
             _leftPosFunc = value;
         }
 
         public function set rightPosFunc( value : Function ) : void {
             _rightPosFunc = value;
+        }
+
+        public function startAnimating() : void {
+            removeArrow();
         }
 
         public function set topPosFunc( value : Function ) : void {
@@ -130,6 +139,10 @@ package jp.archilogic.docnext.ui {
 
         private function mouseMoveHandler( e : MouseEvent ) : void {
             _arrowMode = ARROW_MODE_UNDEFINED;
+
+            if ( _isAnimatingFunc() ) {
+                return;
+            }
 
             var point : Point = globalToLocal( new Point( e.stageX , e.stageY ) );
 

@@ -3,12 +3,11 @@ package jp.archilogic.docnext.ui {
     import flash.display.BitmapData;
     import flash.display.Loader;
     import flash.events.Event;
-    import flash.geom.Matrix;
     import flash.geom.Point;
+    import flash.geom.Rectangle;
     import flash.utils.ByteArray;
-    import mx.collections.ArrayCollection;
     import mx.controls.Image;
-    import jp.archilogic.docnext.helper.OverlayAnnotationHelper;
+    import __AS3__.vec.Vector;
     import jp.archilogic.docnext.helper.OverlayHelper;
 
     public class PageComponent extends Image {
@@ -18,13 +17,14 @@ package jp.archilogic.docnext.ui {
             _overlayHelper = new OverlayHelper( this );
         }
 
-        private var _bd : BitmapData;
-        private var _loaded : int;
-
         private var _overlayHelper : OverlayHelper;
 
         public function set annotation( value : Array ) : * {
             _overlayHelper.annotation = value;
+        }
+
+        public function get bitmapData() : BitmapData {
+            return Bitmap( source ).bitmapData;
         }
 
         public function changeHighlightColor( color : uint ) : void {
@@ -75,14 +75,21 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.isSelectHighlightHandler = value;
         }
 
-        public function loadData( data : ArrayCollection /* of ByteArray */ ) : void {
-            _bd = null;
-            _loaded = 0;
+        public function loadData( data : ByteArray ) : void {
+            var loader : Loader = new Loader();
 
-            loadHelper( ByteArray( data.getItemAt( 0 ) ) , 0 , 0 );
-            loadHelper( ByteArray( data.getItemAt( 1 ) ) , 0 , 1 );
-            loadHelper( ByteArray( data.getItemAt( 2 ) ) , 1 , 0 );
-            loadHelper( ByteArray( data.getItemAt( 3 ) ) , 1 , 1 );
+            loader.contentLoaderInfo.addEventListener( Event.COMPLETE , function() : void {
+                loader.removeEventListener( Event.COMPLETE , arguments.callee );
+
+                var bd : BitmapData = new BitmapData( loader.width , loader.height );
+                bd.draw( loader );
+
+                source = new Bitmap( bd , 'auto' , true );
+
+                dispatchEvent( new Event( Event.COMPLETE ) );
+            } );
+
+            loader.loadBytes( data );
         }
 
         public function set page( value : int ) : * {
@@ -93,7 +100,7 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.ratio = value;
         }
 
-        public function set regions( value : Array ) : * {
+        public function set regions( value : Vector.<Rectangle> ) : * {
             _overlayHelper.regions = value;
         }
 
@@ -115,32 +122,6 @@ package jp.archilogic.docnext.ui {
 
         public function set text( value : String ) : * {
             _overlayHelper.text = value;
-        }
-
-        private function loadHelper( data : ByteArray , px : int , py : int ) : void {
-            var loader : Loader = new Loader();
-
-            loader.contentLoaderInfo.addEventListener( Event.COMPLETE , function() : void {
-                loader.removeEventListener( Event.COMPLETE , arguments.callee );
-
-                if ( _bd == null ) {
-                    _bd = new BitmapData( loader.width * 2 , loader.height * 2 );
-                }
-
-                var mat : Matrix = new Matrix();
-                mat.translate( loader.width * px , loader.height * py );
-                _bd.draw( loader , mat );
-
-                _loaded++;
-
-                if ( _loaded == 4 ) {
-                    source = new Bitmap( _bd , 'auto' , true );
-
-                    dispatchEvent( new Event( Event.COMPLETE ) );
-                }
-            } );
-
-            loader.loadBytes( data );
         }
     }
 }

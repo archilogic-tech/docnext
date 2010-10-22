@@ -5,17 +5,16 @@ package jp.archilogic.docnext.util {
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
     import flash.utils.Endian;
-    import mx.collections.ArrayCollection;
-    import mx.core.Container;
+    import __AS3__.vec.Vector;
     import jp.archilogic.docnext.service.DocumentService;
     import jp.archilogic.docnext.ui.PageComponent;
 
     public class DocumentLoadUtil {
-        public static function loadPage( docId : Number , index : int , ratio : Number , pages : Array ,
-                                         isSelectHighlightHandler : Function , initHighlightCommentHandler : Function ,
-                                         mouseDownHandler : Function , changePageHandler : Function ,
-                                         loadCompleteHandler : Function = null ) : void {
-            DocumentService.getPage( docId , index , function( result : ArrayCollection ) : void {
+        public static function loadPage( docId : Number , index : int , ratio : Number ,
+                                         pages : Vector.<PageComponent> , isSelectHighlightHandler : Function ,
+                                         initHighlightCommentHandler : Function , mouseDownHandler : Function ,
+                                         changePageHandler : Function , loadCompleteHandler : Function = null ) : void {
+            DocumentService.getPage( docId , index , function( result : ByteArray ) : void {
                 var page : PageComponent = new PageComponent();
                 page.docId = docId;
                 page.page = index;
@@ -43,7 +42,7 @@ package jp.archilogic.docnext.util {
             DocumentService.getRegions( docId , currentIndex , function( result : ByteArray ) : void {
                 result.endian = Endian.LITTLE_ENDIAN;
 
-                var regions : Array = [];
+                var regions : Vector.<Rectangle> = new Vector.<Rectangle>();
 
                 while ( result.position < result.length ) {
                     var region : Rectangle =

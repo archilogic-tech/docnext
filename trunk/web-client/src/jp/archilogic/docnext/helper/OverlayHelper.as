@@ -6,6 +6,7 @@ package jp.archilogic.docnext.helper {
     import flash.net.SharedObject;
     import flash.utils.Dictionary;
     import mx.containers.Canvas;
+    import __AS3__.vec.Vector;
     import jp.archilogic.docnext.ui.Balloon;
 
     public class OverlayHelper {
@@ -30,7 +31,7 @@ package jp.archilogic.docnext.helper {
         private var _docId : Number;
         private var _page : int;
 
-        private var _regions : Array = null;
+        private var _regions : Vector.<Rectangle> = null;
         private var _ratio : Number;
         private var _text : String;
 
@@ -38,7 +39,7 @@ package jp.archilogic.docnext.helper {
         private var _currentSelectionBegin : int;
         private var _currentSelectionEnd : int;
 
-        private var _highlightInfos : Array /* of Object{begin,end,color,comment} */ = [];
+        private var _highlightInfos : Vector.<Object> /* of Object{begin,end,color,comment} */ = new Vector.<Object>();
         private var _currentHighlightIndex : int = -1;
 
         private var _highlights : Dictionary /* of <int,Dictionary<int,Indicator>> */ = new Dictionary();
@@ -165,8 +166,8 @@ package jp.archilogic.docnext.helper {
             _ratio = value;
         }
 
-        public function set regions( value : Array ) : * {
-            _regions = [];
+        public function set regions( value : Vector.<Rectangle> ) : * {
+            _regions = new Vector.<Rectangle>();
 
             for each ( var rect : Rectangle in value ) {
                 var region : Rectangle = convertToStageRect( rect );
@@ -366,7 +367,7 @@ package jp.archilogic.docnext.helper {
                 so.data[ 'highlight' ][ _docId ][ _page ] = [];
             }
 
-            _highlightInfos = [];
+            _highlightInfos = new Vector.<Object>();
 
             for each ( var info : Object in so.data[ 'highlight' ][ _docId ][ _page ] ) {
                 _highlightInfos.push( info );
@@ -385,7 +386,7 @@ package jp.archilogic.docnext.helper {
             var so : SharedObject = SharedObject.getLocal( 'so' );
 
             // repack
-            var data : Array = [];
+            var data : Vector.<Object> = new Vector.<Object>();
 
             for each ( var info : Object in _highlightInfos ) {
                 data.push( info );
