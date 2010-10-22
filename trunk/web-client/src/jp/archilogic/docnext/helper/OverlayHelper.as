@@ -183,8 +183,6 @@ package jp.archilogic.docnext.helper {
             }
 
             loadState();
-
-            addOverlay( 0 , _regions.length , 0xffff0000 );
         }
 
         public function removeHighlight() : void {
