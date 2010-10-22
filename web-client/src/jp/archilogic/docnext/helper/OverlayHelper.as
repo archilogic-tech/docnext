@@ -104,6 +104,10 @@ package jp.archilogic.docnext.helper {
             emphasizeHighlight( -1 );
         }
 
+        public function get docId() : Number {
+            return _docId;
+        }
+
         public function set docId( value : Number ) : * {
             _docId = value;
         }
@@ -158,6 +162,10 @@ package jp.archilogic.docnext.helper {
             _isSelectHighlightHandler = value;
         }
 
+        public function get page() : int {
+            return _page;
+        }
+
         public function set page( value : int ) : * {
             _page = value;
         }
@@ -175,6 +183,8 @@ package jp.archilogic.docnext.helper {
             }
 
             loadState();
+
+            addOverlay( 0 , _regions.length , 0xffff0000 );
         }
 
         public function removeHighlight() : void {

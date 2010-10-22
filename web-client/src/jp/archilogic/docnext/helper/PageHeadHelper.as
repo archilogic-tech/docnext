@@ -1,4 +1,5 @@
 package jp.archilogic.docnext.helper {
+    import mx.collections.ArrayCollection;
     import __AS3__.vec.Vector;
 
     public class PageHeadHelper {
@@ -8,11 +9,9 @@ package jp.archilogic.docnext.helper {
 
                 if ( !isSinglePage( page , singlePages ) && page + 1 < pages &&
                     !isSinglePage( page + 1 , singlePages ) ) {
-                    trace( page , 'not single' );
                     _isSingleHead.push( false );
                     page += 2;
                 } else {
-                    trace( page , 'single' );
                     _isSingleHead.push( true );
                     page += 1;
                 }

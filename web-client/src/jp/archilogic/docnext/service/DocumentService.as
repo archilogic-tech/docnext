@@ -28,5 +28,9 @@ package jp.archilogic.docnext.service {
         public static function getRegions( id : Number , page : int , result : Function ) : void {
             ServiceUtil.callHelper( service.getRegions( id , page ) , result );
         }
+
+        public static function getSinglePageInfo( id : Number , result : Function ) : void {
+            ServiceUtil.callHelper( service.getSinglePageInfo( id ) , result );
+        }
     }
 }
