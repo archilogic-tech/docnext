@@ -33,6 +33,7 @@ package jp.archilogic.docnext.ui {
 
         public function adjust( parentScale : Number ) : void {
             var scale : Number = 1.0 / parentScale;
+            trace( 'scale' , scale );
             scaleX = scaleY = scale;
 
             x = _parentTip.x - _tip.x * scale;
@@ -61,6 +62,10 @@ package jp.archilogic.docnext.ui {
         private function drawBorder() : void {
             var w : Number = _textField.textWidth + CORNER_RAD * 2;
             var h : Number = _textField.textHeight + CORNER_RAD * 2;
+
+            trace( w , h , _textField.textWidth , _textField.textHeight );
+            width = w;
+            height = h;
 
             graphics.moveTo( CORNER_RAD , 0 );
 
