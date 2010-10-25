@@ -6,18 +6,32 @@ package jp.archilogic.docnext.ui {
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
+    import mx.containers.Canvas;
     import mx.controls.Image;
+    import mx.events.FlexEvent;
     import __AS3__.vec.Vector;
+    import jp.archilogic.docnext.helper.MouseActionHelper;
     import jp.archilogic.docnext.helper.OverlayHelper;
 
     public class PageComponent extends Image {
-        public function PageComponent() {
+        public function PageComponent( scroller : Canvas ) {
             super();
 
             _overlayHelper = new OverlayHelper( this );
+            _mouseActionHelper = new MouseActionHelper( scroller , this );
+
+            addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
+                removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
+
+                _hasCreationCompleted = true;
+
+                _mouseActionHelper.systemManager = systemManager;
+            } );
         }
 
         private var _overlayHelper : OverlayHelper;
+        private var _mouseActionHelper : MouseActionHelper;
+        private var _hasCreationCompleted : Boolean = false;
 
         public function set annotation( value : Array ) : * {
             _overlayHelper.annotation = value;
@@ -32,6 +46,8 @@ package jp.archilogic.docnext.ui {
         }
 
         public function changeHighlightComment( comment : String ) : void {
+            trace( 'PageComponent.changeHighlightComment' , comment );
+
             _overlayHelper.changeHighlightComment( comment );
         }
 
@@ -47,6 +63,10 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.clearEmphasize();
         }
 
+        public function set currentTargetHandler( value : Function ) : * {
+            _overlayHelper.currentTargetHandler = _mouseActionHelper.currentTargetHandler = value;
+        }
+
         public function get docId() : Number {
             return _overlayHelper.docId;
         }
@@ -57,6 +77,10 @@ package jp.archilogic.docnext.ui {
 
         public function getNearTextPos( point : Point ) : int {
             return _overlayHelper.getNearTextPos( point );
+        }
+
+        public function get hasCreationCompleted() : Boolean {
+            return _hasCreationCompleted;
         }
 
         public function hasRegions() : Boolean {
@@ -79,6 +103,10 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.isSelectHighlightHandler = value;
         }
 
+        public function set isSelectingHandler( value : Function ) : * {
+            _mouseActionHelper.isSelectingHandler = value;
+        }
+
         public function loadData( data : ByteArray ) : void {
             var loader : Loader = new Loader();
 
@@ -97,6 +125,10 @@ package jp.archilogic.docnext.ui {
             } );
 
             loader.loadBytes( data );
+        }
+
+        public function set mouseModeHandler( value : Function ) : * {
+            _mouseActionHelper.mouseModeHandler = value;
         }
 
         public function get page() : int {
@@ -133,6 +165,11 @@ package jp.archilogic.docnext.ui {
 
         public function set text( value : String ) : * {
             _overlayHelper.text = value;
+        }
+
+        private function __registerClass__() : * {
+            var __v__ : Vector;
+            var __r__ : Rectangle;
         }
     }
 }

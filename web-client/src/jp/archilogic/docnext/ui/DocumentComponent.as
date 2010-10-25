@@ -14,7 +14,6 @@ package jp.archilogic.docnext.ui {
     import mx.events.FlexEvent;
     import __AS3__.vec.Vector;
     import jp.archilogic.docnext.dto.DocumentResDto;
-    import jp.archilogic.docnext.helper.MouseActionHelper;
     import jp.archilogic.docnext.helper.PageHeadHelper;
     import jp.archilogic.docnext.helper.ResizeHelper;
     import jp.archilogic.docnext.service.DocumentService;
@@ -40,29 +39,32 @@ package jp.archilogic.docnext.ui {
         private var _baseScale : Number;
         private var _zoomExponent : int;
         private var _setPageHandler : Function;
+        private var _mouseModeHandler : Function;
         private var _isSelectingHandler : Function;
         private var _isSelectHighlightHandler : Function;
         private var _initHighlightCommentHandler : Function;
-        private var _mouseActionHelper : MouseActionHelper;
         private var _isAnimating : Boolean;
+        private var _currentTarget : PageComponent;
 
         public function changeHighlightColor( color : uint ) : void {
-            getCurrentForePage().changeHighlightColor( color );
+            _currentTarget.changeHighlightColor( color );
         }
 
         public function changeHighlightComment( comment : String ) : void {
-            getCurrentForePage().changeHighlightComment( comment );
+            trace( 'DocumentComponent,changeHighlightComment' , comment );
+
+            _currentTarget.changeHighlightComment( comment );
         }
 
         public function changeToHighlight() : void {
-            getCurrentForePage().changeSelectionToHighlight();
+            _currentTarget.changeSelectionToHighlight();
 
             _isSelectingHandler( false );
         }
 
         public function copy() : void {
-            if ( getCurrentForePage().hasSelectedText() ) {
-                System.setClipboard( getCurrentForePage().selectedText );
+            if ( _currentTarget.hasSelectedText() ) {
+                System.setClipboard( _currentTarget.selectedText );
             }
         }
 
@@ -75,7 +77,7 @@ package jp.archilogic.docnext.ui {
         }
 
         public function set isSelectingHandler( value : Function ) : * {
-            _isSelectingHandler = _mouseActionHelper.isSelectingHandler = value;
+            _isSelectingHandler = value;
         }
 
         public function load( dto : DocumentResDto ) : void {
@@ -114,11 +116,19 @@ package jp.archilogic.docnext.ui {
         }
 
         public function set mouseModeHandler( value : Function ) : * {
-            _mouseActionHelper.mouseModeHandler = value;
+            _mouseModeHandler = value;
+
+            if ( getCurrentForePage() ) {
+                getCurrentForePage().mouseModeHandler = value;
+            }
+
+            if ( getCurrentRearPage() ) {
+                getCurrentRearPage().mouseModeHandler = value;
+            }
         }
 
         public function removeHighlight() : void {
-            getCurrentForePage().removeHighlight();
+            _currentTarget.removeHighlight();
         }
 
         public function set setPageHandler( value : Function ) : * {
@@ -201,7 +211,7 @@ package jp.archilogic.docnext.ui {
             _ui.wrapper.y = calcCenterY( _ui.wrapper.height );
         }
 
-        private function changePage( head : int ) : void {
+        private function changeHead( head : int ) : void {
             if ( !_pageHeadHelper.isValidHead( head ) || head == _currentHead || _isAnimating ) {
                 return;
             }
@@ -229,7 +239,7 @@ package jp.archilogic.docnext.ui {
 
             var prevHead : int = _currentHead;
 
-            _currentHead = head;
+            currentHead = head;
             var next : PageComponent = getCurrentForePage();
 
             if ( !next ) {
@@ -237,9 +247,11 @@ package jp.archilogic.docnext.ui {
                     changePage1to1( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
+
+            next.scale = _ui.wrapper.scaleX;
 
             addPage( next , false , function( page : PageComponent ) : void {
                 isAnimating = true;
@@ -266,7 +278,7 @@ package jp.archilogic.docnext.ui {
 
             var prevHead : int = _currentHead;
 
-            _currentHead = head;
+            currentHead = head;
             var nextFore : PageComponent = getCurrentForePage();
             var nextRear : PageComponent = getCurrentRearPage();
 
@@ -275,7 +287,7 @@ package jp.archilogic.docnext.ui {
                     changePage1to2( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
 
@@ -284,9 +296,11 @@ package jp.archilogic.docnext.ui {
                     changePage1to2( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
+
+            nextFore.scale = nextRear.scale = _ui.wrapper.scaleX;
 
             if ( !isForward ) {
                 _ui.wrapper.x -= _ui.wrapper.width;
@@ -337,7 +351,7 @@ package jp.archilogic.docnext.ui {
 
             var prevHead : int = _currentHead;
 
-            _currentHead = head;
+            currentHead = head;
             var next : PageComponent = getCurrentForePage();
 
             if ( !next ) {
@@ -345,9 +359,11 @@ package jp.archilogic.docnext.ui {
                     changePage2to1( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
+
+            next.scale = _ui.wrapper.scaleX;
 
             var deltaX : Number =
                 calcCenterX( _ui.wrapper.width * ( isForward ? 3 : 1 ) / 2 ,
@@ -394,7 +410,7 @@ package jp.archilogic.docnext.ui {
 
             var prevHead : int = _currentHead;
 
-            _currentHead = head;
+            currentHead = head;
             var nextFore : PageComponent = getCurrentForePage();
             var nextRear : PageComponent = getCurrentRearPage();
 
@@ -403,7 +419,7 @@ package jp.archilogic.docnext.ui {
                     changePage2to2( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
 
@@ -412,9 +428,11 @@ package jp.archilogic.docnext.ui {
                     changePage2to2( head );
                 } );
 
-                _currentHead = prevHead;
+                currentHead = prevHead;
                 return;
             }
+
+            nextFore.scale = nextRear.scale = _ui.wrapper.scaleX;
 
             addPage( nextFore , true , function( page : PageComponent ) : void {
                 addPage( nextRear , false , function( page : PageComponent ) : void {
@@ -453,15 +471,24 @@ package jp.archilogic.docnext.ui {
             loadNeighborPage();
         }
 
+        private function changePageHandler( page : int ) : void {
+            changeHead( _pageHeadHelper.pageToHead( page ) );
+        }
+
         private function changeScale() : void {
             var hPos : Number =
                 _ui.scroller.maxHorizontalScrollPosition > 0 ? ( _ui.scroller.horizontalScrollPosition ) / _ui.scroller.maxHorizontalScrollPosition : 0.5;
             var vPos : Number =
                 _ui.scroller.maxVerticalScrollPosition > 0 ? ( _ui.scroller.verticalScrollPosition ) / _ui.scroller.maxVerticalScrollPosition : 0.5;
 
-            _ui.wrapper.scaleX = _ui.wrapper.scaleY = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
+            var scale : Number = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
+            _ui.wrapper.scaleX = _ui.wrapper.scaleY = scale;
 
-            getCurrentForePage().scale = _ui.wrapper.scaleX;
+            getCurrentForePage().scale = scale;
+
+            if ( getCurrentRearPage() ) {
+                getCurrentRearPage().scale = scale;
+            }
 
             _ui.wrapper.callLater( function() : void {
                 centering();
@@ -484,13 +511,15 @@ package jp.archilogic.docnext.ui {
             _ui.arrowIndicator.isAnimatingFunc = isAnimatingFunc;
 
             new ResizeHelper( this , resizeHandler );
-
-            _mouseActionHelper = new MouseActionHelper( _ui.scroller , systemManager , getCurrentForePage );
         }
 
-        private function set currentPos( value : int ) : * {
+        private function set currentHead( value : int ) : * {
             _currentHead = value;
-            _setPageHandler( _currentHead , _info.pages );
+            _setPageHandler( _pageHeadHelper.headToPage( _currentHead ) , _info.pages );
+        }
+
+        private function currentTargetHandler( page : PageComponent ) : void {
+            _currentTarget = page;
         }
 
         private function easeInOutCubic( t : Number ) : Number {
@@ -518,10 +547,18 @@ package jp.archilogic.docnext.ui {
         }
 
         private function getCurrentForePage() : PageComponent {
+            if ( !_pages ) {
+                return null;
+            }
+
             return _pages[ _pageHeadHelper.headToPage( _currentHead ) ];
         }
 
         private function getCurrentRearPage() : PageComponent {
+            if ( !_pages ) {
+                return null;
+            }
+
             if ( _pageHeadHelper.isSingleHead( _currentHead ) ) {
                 return null;
             }
@@ -558,14 +595,12 @@ package jp.archilogic.docnext.ui {
         }
 
         private function initLoadComplete( page : PageComponent ) : void {
-            currentPos = 0;
+            currentHead = 0;
             _zoomExponent = 0;
             _isSelectingHandler( false );
             _isSelectHighlightHandler( false );
 
             fitWrapperSize( page );
-
-            //loadRegions();
         }
 
         private function set isAnimating( value : Boolean ) : * {
@@ -600,9 +635,10 @@ package jp.archilogic.docnext.ui {
 
         private function loadPage( index : int , next : Function = null ) : void {
             if ( index >= 0 && index < _info.pages && !_pages[ index ] ) {
-                DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _isSelectHighlightHandler ,
-                                           _initHighlightCommentHandler , _mouseActionHelper.mouseDownHandler ,
-                                           changePage , next );
+                DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _ui.scroller , _mouseModeHandler ,
+                                           _isSelectingHandler , _isSelectHighlightHandler ,
+                                           _initHighlightCommentHandler , currentTargetHandler , changePageHandler ,
+                                           next );
             }
         }
 
@@ -615,11 +651,11 @@ package jp.archilogic.docnext.ui {
         }
 
         private function moveToNextPage() : void {
-            changePage( _currentHead + 1 );
+            changeHead( _currentHead + 1 );
         }
 
         private function moveToPrevPage() : void {
-            changePage( _currentHead - 1 );
+            changeHead( _currentHead - 1 );
         }
 
         private function myKeyUpHandler( e : KeyboardEvent ) : void {

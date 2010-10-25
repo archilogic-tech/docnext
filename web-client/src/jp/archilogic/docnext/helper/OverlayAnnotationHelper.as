@@ -1,5 +1,4 @@
 package jp.archilogic.docnext.helper {
-    import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
     import flash.geom.Rectangle;
     import flash.net.URLRequest;
@@ -7,16 +6,18 @@ package jp.archilogic.docnext.helper {
     import mx.containers.Canvas;
     import mx.controls.Alert;
     import mx.events.CloseEvent;
+    import mx.events.FlexEvent;
+    import jp.archilogic.docnext.ui.PageComponent;
 
     public class OverlayAnnotationHelper {
         private static const ALPHA : Number = 0.2;
 
-        public function OverlayAnnotationHelper( container : DisplayObjectContainer , converter : Function ) {
-            _container = container;
+        public function OverlayAnnotationHelper( page : PageComponent , converter : Function ) {
+            _page = page;
             _converter = converter;
         }
 
-        private var _container : DisplayObjectContainer;
+        private var _page : PageComponent;
         private var _converter : Function;
         private var _changePageHanlder : Function;
 
@@ -64,7 +65,15 @@ package jp.archilogic.docnext.helper {
             indicator.setStyle( 'backgroundColor' , 0x000000 );
             indicator.alpha = ALPHA;
 
-            _container.addChild( indicator );
+            if ( _page.hasCreationCompleted ) {
+                _page.addChild( indicator );
+            } else {
+                _page.addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
+                    _page.removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
+
+                    _page.addChild( indicator );
+                } );
+            }
 
             indicator.addEventListener( MouseEvent.CLICK , clickHandler );
         }

@@ -1,28 +1,32 @@
 package jp.archilogic.docnext.util {
     import com.adobe.serialization.json.JSON;
     import flash.events.Event;
-    import flash.events.MouseEvent;
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
     import flash.utils.Endian;
+    import mx.containers.Canvas;
     import __AS3__.vec.Vector;
     import jp.archilogic.docnext.service.DocumentService;
     import jp.archilogic.docnext.ui.PageComponent;
 
     public class DocumentLoadUtil {
         public static function loadPage( docId : Number , index : int , ratio : Number ,
-                                         pages : Vector.<PageComponent> , isSelectHighlightHandler : Function ,
-                                         initHighlightCommentHandler : Function , mouseDownHandler : Function ,
-                                         changePageHandler : Function , loadCompleteHandler : Function = null ) : void {
+                                         pages : Vector.<PageComponent> , scroller : Canvas ,
+                                         mouseModeHandler : Function , isSelectingHandler : Function ,
+                                         isSelectHighlightHandler : Function , initHighlightCommentHandler : Function ,
+                                         currentTargetHandler : Function , changePageHandler : Function ,
+                                         loadCompleteHandler : Function = null ) : void {
             DocumentService.getPage( docId , index , function( result : ByteArray ) : void {
-                var page : PageComponent = new PageComponent();
+                var page : PageComponent = new PageComponent( scroller );
                 page.docId = docId;
                 page.page = index;
                 page.ratio = ratio;
                 page.isSelectHighlightHandler = isSelectHighlightHandler;
                 page.initHighlightCommentHandler = initHighlightCommentHandler;
                 page.changePageHandler = changePageHandler;
-                page.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
+                page.mouseModeHandler = mouseModeHandler;
+                page.isSelectingHandler = isSelectingHandler;
+                page.currentTargetHandler = currentTargetHandler;
 
                 page.addEventListener( Event.COMPLETE , function() : void {
                     page.removeEventListener( Event.COMPLETE , arguments.callee );

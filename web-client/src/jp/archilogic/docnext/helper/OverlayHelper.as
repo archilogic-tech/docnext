@@ -1,13 +1,15 @@
 package jp.archilogic.docnext.helper {
-    import flash.display.DisplayObjectContainer;
     import flash.events.MouseEvent;
     import flash.geom.Point;
     import flash.geom.Rectangle;
     import flash.net.SharedObject;
     import flash.utils.Dictionary;
     import mx.containers.Canvas;
+    import mx.events.FlexEvent;
+    import mx.utils.ObjectUtil;
     import __AS3__.vec.Vector;
     import jp.archilogic.docnext.ui.Balloon;
+    import jp.archilogic.docnext.ui.PageComponent;
 
     public class OverlayHelper {
         private static const ALPHA_NORMAL : Number = 0.3;
@@ -18,13 +20,13 @@ package jp.archilogic.docnext.helper {
         private static const KEY_LEFT : String = 'left';
         private static const KEY_RIGHT : String = 'right';
 
-        public function OverlayHelper( container : DisplayObjectContainer ) {
+        public function OverlayHelper( container : PageComponent ) {
             _container = container;
 
             _annotationHelper = new OverlayAnnotationHelper( container , convertToStageRect );
         }
 
-        private var _container : DisplayObjectContainer;
+        private var _container : PageComponent;
 
         private var _annotationHelper : OverlayAnnotationHelper;
 
@@ -50,6 +52,7 @@ package jp.archilogic.docnext.helper {
 
         private var _isSelectHighlightHandler : Function;
         private var _initHighlightCommentHandler : Function;
+        private var _currentTargetHandler : Function;
 
         private var _foo : Number = 0;
         private var _bar : Number = 0;
@@ -69,6 +72,8 @@ package jp.archilogic.docnext.helper {
         }
 
         public function changeHighlightComment( comment : String ) : void {
+            trace( 'OverlayHelper.changeHighlightComment' , comment );
+
             _highlightInfos[ _currentHighlightIndex ].text = comment;
 
             saveState();
@@ -102,6 +107,10 @@ package jp.archilogic.docnext.helper {
 
         public function clearEmphasize() : void {
             emphasizeHighlight( -1 );
+        }
+
+        public function set currentTargetHandler( value : Function ) : * {
+            _currentTargetHandler = value;
         }
 
         public function get docId() : Number {
@@ -177,15 +186,23 @@ package jp.archilogic.docnext.helper {
         public function set regions( value : Vector.<Rectangle> ) : * {
             _regions = new Vector.<Rectangle>();
 
+            var i : int = 0;
+
             for each ( var rect : Rectangle in value ) {
                 var region : Rectangle = convertToStageRect( rect );
                 _regions.push( region );
             }
 
+            /*if ( i > 0 ) {
+               _highlightInfos.push( { begin: 0 , end: 10 , color: 0x0000ff , text: '' } );
+               saveState();
+             }*/
+
             loadState();
         }
 
         public function removeHighlight() : void {
+            _highlightInfos[ _currentHighlightIndex ] = null;
             delete _highlightInfos[ _currentHighlightIndex ];
 
             saveState();
@@ -194,10 +211,12 @@ package jp.archilogic.docnext.helper {
                 _container.removeChild( indicator );
             }
 
+            _highlights[ _currentHighlightIndex ] = null;
             delete _highlights[ _currentHighlightIndex ];
 
             if ( _balloons[ _currentHighlightIndex ] ) {
                 _container.removeChild( _balloons[ _currentHighlightIndex ] );
+                _balloons[ _currentHighlightIndex ] = null;
                 delete _balloons[ _currentHighlightIndex ];
             }
 
@@ -259,7 +278,15 @@ package jp.archilogic.docnext.helper {
             balloon.parentTip = tip;
             balloon.adjust( _scale );
 
-            _container.addChild( balloon );
+            if ( _container.hasCreationCompleted ) {
+                _container.addChild( balloon );
+            } else {
+                _container.addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
+                    _container.removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
+
+                    _container.addChild( balloon );
+                } );
+            }
 
             _balloons[ index ] = balloon;
         }
@@ -274,6 +301,7 @@ package jp.archilogic.docnext.helper {
                 _initHighlightCommentHandler( _balloons[ _currentHighlightIndex ] ? _balloons[ _currentHighlightIndex ].text : '' );
 
                 _isSelectHighlightHandler( true );
+                _currentTargetHandler( _container );
             } );
 
             if ( info.text ) {
@@ -294,7 +322,17 @@ package jp.archilogic.docnext.helper {
                 indicator.setStyle( 'backgroundColor' , color );
                 indicator.alpha = ALPHA_NORMAL;
 
-                _container.addChild( indicator );
+                if ( _container.hasCreationCompleted ) {
+                    _container.addChild( indicator );
+                } else {
+                    ( function( indicator_ : Canvas ) : void {
+                        _container.addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
+                            _container.removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
+
+                            _container.addChild( indicator_ );
+                        } );
+                    } )( indicator );
+                }
 
                 if ( holder != null ) {
                     holder[ index ] = indicator;
@@ -378,6 +416,8 @@ package jp.archilogic.docnext.helper {
             _highlightInfos = new Vector.<Object>();
 
             for each ( var info : Object in so.data[ 'highlight' ][ _docId ][ _page ] ) {
+                trace( ObjectUtil.toString( info ) );
+
                 _highlightInfos.push( info );
                 addHighlight( info , _highlightInfos.length - 1 );
             }
@@ -397,7 +437,9 @@ package jp.archilogic.docnext.helper {
             var data : Vector.<Object> = new Vector.<Object>();
 
             for each ( var info : Object in _highlightInfos ) {
-                data.push( info );
+                if ( info ) {
+                    data.push( info );
+                }
             }
 
             so.data[ 'highlight' ][ _docId ][ _page ] = data;
