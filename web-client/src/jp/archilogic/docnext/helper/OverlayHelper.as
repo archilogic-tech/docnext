@@ -72,8 +72,6 @@ package jp.archilogic.docnext.helper {
         }
 
         public function changeHighlightComment( comment : String ) : void {
-            trace( 'OverlayHelper.changeHighlightComment' , comment );
-
             _highlightInfos[ _currentHighlightIndex ].text = comment;
 
             saveState();
@@ -416,8 +414,6 @@ package jp.archilogic.docnext.helper {
             _highlightInfos = new Vector.<Object>();
 
             for each ( var info : Object in so.data[ 'highlight' ][ _docId ][ _page ] ) {
-                trace( ObjectUtil.toString( info ) );
-
                 _highlightInfos.push( info );
                 addHighlight( info , _highlightInfos.length - 1 );
             }

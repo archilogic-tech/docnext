@@ -46,8 +46,6 @@ package jp.archilogic.docnext.ui {
         }
 
         public function changeHighlightComment( comment : String ) : void {
-            trace( 'PageComponent.changeHighlightComment' , comment );
-
             _overlayHelper.changeHighlightComment( comment );
         }
 
