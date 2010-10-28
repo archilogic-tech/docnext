@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.flex.remoting.RemotingDestination;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-
 @Component
 @RemotingDestination
 public class DocumentService {
@@ -47,19 +45,21 @@ public class DocumentService {
         return documentConverter.toDto( document );
     }
 
-    public List< byte[] > getPage( long id , int page ) {
-        return Lists.newArrayList( getPageHelper( id , page , 1 , 0 , 0 ) , getPageHelper( id , page , 1 , 0 , 1 ) ,
-                getPageHelper( id , page , 1 , 1 , 0 ) , getPageHelper( id , page , 1 , 1 , 1 ) );
+    public String getAnnotation( long id , int page ) {
+        return packManager.readAnnotation( id , page );
     }
 
-    public int getPageCount( long id ) {
-        return packManager.readPages( id );
+    public String getImageText( long id , int page ) {
+        return packManager.readImageText( id , page );
     }
 
-    private byte[] getPageHelper( long id , int page , int level , int px , int py ) {
+    public String getInfo( long id ) {
+        return packManager.readInfoJson( id );
+    }
+
+    public byte[] getPage( long id , int page ) {
         try {
-            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "iPad" , id , page ,
-                    level , px , py ) ) );
+            return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "web" , id , page ) ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
@@ -67,6 +67,10 @@ public class DocumentService {
 
     public String getPublisher( long id ) {
         return packManager.readPublisher( id );
+    }
+
+    public byte[] getRegions( long id , int page ) {
+        return packManager.readRegions( id , page );
     }
 
     public List< Integer > getSinglePageInfo( long id ) {

@@ -28,6 +28,7 @@ public class SimpleImageCreator implements ImageCreator {
     private static final int IPHONE_DEVICE_WIDTH = 320;
     private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
     private static final int THUMBNAIL_SIZE = 256;
+    private static final int WEB_HEIGHT = 1600;
 
     @Autowired
     private PropBean prop;
@@ -103,6 +104,7 @@ public class SimpleImageCreator implements ImageCreator {
                         IPAD_DEVICE_HEIGHT );
                 createImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
                         IPHONE_DEVICE_HEIGHT );
+                createWeb( outDir , mi , page );
                 createThumbnail( outDir , mi , page );
             }
         } catch (MagickException e) {
@@ -131,17 +133,29 @@ public class SimpleImageCreator implements ImageCreator {
         }
     }
 
+    protected void createWeb( String outDir , MagickImage image , int page ) throws MagickException {
+        String filename = String.format( "%sweb-%d.jpg" , outDir , page );
+        Dimension d = image.getDimension();
+        double ratio = WEB_HEIGHT / (double) d.height ;
+        int w = ( int ) Math.round( (int) d.width * ratio );
+        int h = ( int ) Math.round( (int) d.height * ratio );
+        createOneImage(filename, image, w, h);
+    }
+
     protected void createThumbnail( String outDir , MagickImage image , int page ) throws MagickException {
+        String filename = String.format( "%sthumb-%d.jpg" , outDir , page );
         Dimension d = image.getDimension();
         double ratio = THUMBNAIL_SIZE / (double) Math.max( (int) d.width , (int) d.height );
         int w = ( int ) Math.round( (int) d.width * ratio );
         int h = ( int ) Math.round( (int) d.height * ratio );
+        createOneImage(filename, image, w, h);
+    }
 
+    protected void createOneImage( String outFilename , MagickImage image , int w, int h ) throws MagickException {
         MagickImage scaled = image.scaleImage( w, h );
-        scaled.setFileName( String.format( "%sthumb-%d.jpg" , outDir , page ) );
+        scaled.setFileName( outFilename );
         scaled.writeImage( new magick.ImageInfo() );
         scaled.destroyImages();
-
     }
 
     protected void cropImage( MagickImage image , String destPath , int x , int y ,

@@ -13,7 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ThumbnailCreator implements ImageCreator {
+public class ThumbnailCreator {
+    private class ImageInfo {
+        double unitWidth;
+        double unitHeight;
+
+        ImageInfo( double unitWidth , double unitHeight ) {
+            this.unitWidth = unitWidth;
+            this.unitHeight = unitHeight;
+        }
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger( ThumbnailCreator.class );
 
     private static final int IPAD_MAX_LEVEL = 2;
@@ -23,6 +33,7 @@ public class ThumbnailCreator implements ImageCreator {
     private static final int IPHONE_DEVICE_WIDTH = 320;
     private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
     private static final int THUMBNAIL_SIZE = 256;
+    private static final int WEB_HEIGHT = 1600;
 
     @Autowired
     private PropBean prop;
@@ -36,8 +47,7 @@ public class ThumbnailCreator implements ImageCreator {
         int sampleWidth = size[ 0 ];
         int sampleHeight = size[ 1 ];
 
-        return new ImageInfo( 1.0 * sampleWidth / SAMPLE_RESOLUTION ,
-                1.0 * sampleHeight / SAMPLE_RESOLUTION , getPages( pdfPath ) );
+        return new ImageInfo( 1.0 * sampleWidth / SAMPLE_RESOLUTION , 1.0 * sampleHeight / SAMPLE_RESOLUTION );
     }
 
     private void convertAndResize( String ppmPath , String pngPath , int width , int height , double imageWidth ,
@@ -52,7 +62,7 @@ public class ThumbnailCreator implements ImageCreator {
     /**
      * @return width / height ratio
      */
-    public ImageInfo create( String outDir , String pdfPath , String prefix ) {
+    public double create( String outDir , String pdfPath , String prefix ) {
         LOGGER.info( "Begin create thumbanil" );
         long t = System.currentTimeMillis();
 
@@ -60,19 +70,20 @@ public class ThumbnailCreator implements ImageCreator {
 
         ImageInfo info = calcBaseResolution( pdfPath , prefix );
 
-        for ( int page = 0 , pages = info.getPages() ; page < pages ; page++ ) {
+        for ( int page = 0 , pages = getPages( pdfPath ) ; page < pages ; page++ ) {
             LOGGER.info( "Proc page: " + page );
 
             createImage( outDir + "iPad" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
                     IPAD_DEVICE_HEIGHT );
             createImage( outDir + "iPhone" , pdfPath , prefix , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
                     IPHONE_DEVICE_HEIGHT );
+            createWeb( outDir , pdfPath , prefix , info , page );
             createThumbnail( outDir , pdfPath , prefix , info , page );
         }
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return info;
+        return info.unitWidth / info.unitHeight;
     }
 
     private void createByResolution( String pdfPath , String prefix , int page , int resolution ) {
@@ -85,15 +96,15 @@ public class ThumbnailCreator implements ImageCreator {
         int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
 
         double maxResolution;
-        if ( info.getUnitWidth() * deviceHeight > info.getUnitHeight() * deviceWidth ) {
-            maxResolution = deviceWidth / info.getUnitWidth() * maxFactor;
+        if ( info.unitWidth * deviceHeight > info.unitHeight * deviceWidth ) {
+            maxResolution = deviceWidth / info.unitWidth * maxFactor;
         } else {
-            maxResolution = deviceHeight / info.getUnitHeight() * maxFactor;
+            maxResolution = deviceHeight / info.unitHeight * maxFactor;
         }
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( maxResolution ) );
         convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , deviceWidth * maxFactor ,
-                deviceHeight * maxFactor , info.getUnitWidth() * maxResolution , info.getUnitHeight() * maxResolution );
+                deviceHeight * maxFactor , info.unitWidth * maxResolution , info.unitHeight * maxResolution );
 
         for ( int level = 0 ; level < maxLevel ; level++ ) {
             LOGGER.info( "Proc level: " + level );
@@ -115,15 +126,24 @@ public class ThumbnailCreator implements ImageCreator {
     }
 
     private void createThumbnail( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) {
-        double resolution = THUMBNAIL_SIZE / Math.max( info.getUnitWidth() , info.getUnitHeight() );
+        double resolution = THUMBNAIL_SIZE / Math.max( info.unitWidth , info.unitHeight );
 
-        int w = ( int ) Math.round( info.getUnitWidth() * resolution );
-        int h = ( int ) Math.round( info.getUnitHeight() * resolution );
+        int w = ( int ) Math.round( info.unitWidth * resolution );
+        int h = ( int ) Math.round( info.unitHeight * resolution );
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
-        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , w , h , w , h );
-        cropAndResize( getPngPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , 0 , 0 , w , h ,
-                w , h );
+        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , w , h , w ,
+                h );
+    }
+
+    private void createWeb( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) {
+        double resolution = WEB_HEIGHT / info.unitHeight;
+
+        int w = ( int ) Math.round( info.unitWidth * resolution );
+        int h = ( int ) Math.round( info.unitHeight * resolution );
+
+        createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
+        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sweb-%d.jpg" , outDir , page ) , w , h , w , h );
     }
 
     private void cropAndResize( String pngPath , String destPath , int x , int y , int cropWidth , int cropHeight ,
