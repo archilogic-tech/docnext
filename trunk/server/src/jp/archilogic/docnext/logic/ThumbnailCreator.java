@@ -37,6 +37,8 @@ public class ThumbnailCreator {
 
     @Autowired
     private PropBean prop;
+    @Autowired
+    private ProgressManager progressManager;
 
     private ImageInfo calcBaseResolution( String pdfPath , String prefix ) {
         final int SAMPLE_RESOLUTION = 100;
@@ -62,7 +64,7 @@ public class ThumbnailCreator {
     /**
      * @return width / height ratio
      */
-    public double create( String outDir , String pdfPath , String prefix ) {
+    public double create( String outDir , String pdfPath , String prefix , long id ) {
         LOGGER.info( "Begin create thumbanil" );
         long t = System.currentTimeMillis();
 
@@ -79,6 +81,8 @@ public class ThumbnailCreator {
                     IPHONE_DEVICE_HEIGHT );
             createWeb( outDir , pdfPath , prefix , info , page );
             createThumbnail( outDir , pdfPath , prefix , info , page );
+
+            progressManager.setCreatedThumbnail( id , page + 1 );
         }
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
