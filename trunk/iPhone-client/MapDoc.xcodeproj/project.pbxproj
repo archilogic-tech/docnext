@@ -57,6 +57,7 @@
 		72479B4A11DB1D58005EF63A /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4311DB1D58005EF63A /* mztools.c */; };
 		72479B4B11DB1D58005EF63A /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4511DB1D58005EF63A /* unzip.c */; };
 		72479B4C11DB1D58005EF63A /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 72479B4711DB1D58005EF63A /* zip.c */; };
+		724FABE812793DB000E8827A /* CrashController.m in Sources */ = {isa = PBXBuildFile; fileRef = 724FABE712793DB000E8827A /* CrashController.m */; };
 		7251520011F99FA500A89BA6 /* ImageSearchViewController-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 725151FE11F99FA500A89BA6 /* ImageSearchViewController-land.xib */; };
 		7251520111F99FA500A89BA6 /* ImageSearchViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */; };
 		7251520611F99FE700A89BA6 /* ImageSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7251520311F99FE700A89BA6 /* ImageSearchViewController.m */; };
@@ -221,6 +222,8 @@
 		72479B4611DB1D58005EF63A /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = Library/ZipArchive/minizip/unzip.h; sourceTree = "<group>"; };
 		72479B4711DB1D58005EF63A /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zip.c; path = Library/ZipArchive/minizip/zip.c; sourceTree = "<group>"; };
 		72479B4811DB1D58005EF63A /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = Library/ZipArchive/minizip/zip.h; sourceTree = "<group>"; };
+		724FABE612793DB000E8827A /* CrashController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CrashController.h; path = Library/CrashKit/CrashController.h; sourceTree = "<group>"; };
+		724FABE712793DB000E8827A /* CrashController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CrashController.m; path = Library/CrashKit/CrashController.m; sourceTree = "<group>"; };
 		725151FE11F99FA500A89BA6 /* ImageSearchViewController-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ImageSearchViewController-land.xib"; path = "Resources-iPad/ImageSearchViewController-land.xib"; sourceTree = "<group>"; };
 		725151FF11F99FA500A89BA6 /* ImageSearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ImageSearchViewController.xib; path = "Resources-iPad/ImageSearchViewController.xib"; sourceTree = "<group>"; };
 		7251520211F99FE700A89BA6 /* ImageSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSearchViewController.h; path = Image/Search/ImageSearchViewController.h; sourceTree = "<group>"; };
@@ -637,6 +640,15 @@
 			name = minizip;
 			sourceTree = "<group>";
 		};
+		724FABDB12793DA300E8827A /* CrashKit */ = {
+			isa = PBXGroup;
+			children = (
+				724FABE612793DB000E8827A /* CrashController.h */,
+				724FABE712793DB000E8827A /* CrashController.m */,
+			);
+			name = CrashKit;
+			sourceTree = "<group>";
+		};
 		72562C1E11FE99B300DC4528 /* Balloon */ = {
 			isa = PBXGroup;
 			children = (
@@ -709,6 +721,7 @@
 		72C77C9811D9E02500316C0D /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				724FABDB12793DA300E8827A /* CrashKit */,
 				72479B3511DB1D37005EF63A /* ZipArchive */,
 				72EF9C2411DAD6B100E8E5E7 /* JSON */,
 				72C77E4E11D9FC4800316C0D /* FlowCover */,
@@ -1027,6 +1040,7 @@
 				72A6732A1254461E0043673E /* UIGoToPageLinkIndicator.m in Sources */,
 				72A6732B1254461E0043673E /* UIHighlightIndicator.m in Sources */,
 				72A6732C1254461E0043673E /* UIURILinkIndicator.m in Sources */,
+				724FABE812793DB000E8827A /* CrashController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

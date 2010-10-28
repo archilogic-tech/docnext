@@ -10,6 +10,7 @@
 #import "MapDocViewController.h"
 #import "HistoryObject.h"
 #import "FileUtil.h"
+#import "CrashController.h"
 
 @implementation MapDocAppDelegate
 
@@ -64,6 +65,8 @@
     [window addSubview:viewController.view];
     [window makeKeyAndVisible];
     viewController.window = window;
+
+    [CrashController sharedInstance].appName = @"docnext-iPhone-client";
 
 	return YES;
 }
