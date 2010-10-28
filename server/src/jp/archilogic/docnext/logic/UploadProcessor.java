@@ -10,11 +10,13 @@ import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.UnsupportedFormatException;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
+import jp.archilogic.docnext.logic.ProgressManager.Step;
 import jp.archilogic.docnext.util.FileUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.artofsolving.jodconverter.DocumentConverter;
@@ -56,6 +58,8 @@ public class UploadProcessor {
         @Override
         public void run() {
             try {
+                progressManager.setStep( doc.id , Step.INITIALIZING );
+
                 FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
 
                 String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
@@ -70,9 +74,12 @@ public class UploadProcessor {
                                 + ".pdf";
                 pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
+                progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
+                progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
+
                 double ratio =
                         thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
-                                + doc.id );
+                                + doc.id , doc.id );
 
                 packManager.copyThumbnails( doc.id );
                 packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
@@ -83,6 +90,8 @@ public class UploadProcessor {
                 parseText( cleanedPath );
 
                 packManager.repack( doc.id );
+
+                progressManager.clearCompleted( doc.id );
 
                 doc.processing = false;
                 documentDao.update( doc );
@@ -126,8 +135,12 @@ public class UploadProcessor {
     private PDFTextParser pdfTextParser;
     @Autowired
     private PDFAnnotationParser pdfAnnotationParser;
+    @Autowired
+    private TaskExecutor taskExecutor;
+    @Autowired
+    private ProgressManager progressManager;
 
     public void proc( String tempPath , Document doc ) {
-        new UploadTask( tempPath , doc ).run();
+        taskExecutor.execute( new UploadTask( tempPath , doc ) );
     }
 }
