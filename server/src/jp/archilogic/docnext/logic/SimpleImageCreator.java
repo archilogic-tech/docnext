@@ -3,10 +3,7 @@ package jp.archilogic.docnext.logic;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.util.ProcUtil;
 
 import magick.MagickException;
@@ -14,25 +11,12 @@ import magick.MagickImage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SimpleImageCreator implements ImageCreator {
+public class SimpleImageCreator extends ThumbnailCreator implements ImageCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger( SimpleImageCreator.class );
 
-    private static final int IPAD_MAX_LEVEL = 2;
-    private static final int IPAD_DEVICE_WIDTH = 768;
-    private static final int IPAD_DEVICE_HEIGHT = 1024 - 20;
-    private static final int IPHONE_MAX_LEVEL = 3;
-    private static final int IPHONE_DEVICE_WIDTH = 320;
-    private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
-    private static final int THUMBNAIL_SIZE = 256;
-    private static final int WEB_HEIGHT = 1600;
-
-    @Autowired
-    private PropBean prop;
-    
     static {
         System.setProperty( "jmagick.systemclassloader" , "no" );
     }
@@ -80,39 +64,41 @@ public class SimpleImageCreator implements ImageCreator {
     /**
      * @return width / height ratio
      */
-    public ImageInfo create( String outDir , String pdfPath , String prefix ) {
+    public double create( String outDir , String pdfPath , String prefix , long id) {
         LOGGER.info( "Begin create image" );
         long t = System.currentTimeMillis();
 
         new File( outDir ).mkdir();
 
         ImageInfo info = createAllPpms( pdfPath , prefix );
-        createAllPages(outDir, prefix, info);
+        createAllPages(outDir, prefix, info, id);
 
         LOGGER.info( "End create image. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return info;
+        return info.getUnitWidth() / info.getUnitHeight();
     }
 
-    protected void createAllPages( String outDir, String prefix, ImageInfo info ) {
+    protected void createAllPages( String outDir, String prefix, ImageInfo info , long id ) {
         try {
             for ( int page = 0 , pages = info.getPages() ; page < pages ; page++ ) {
                 LOGGER.info( "Proc page: " + page );
                 MagickImage mi = new MagickImage(new magick.ImageInfo( getPpmPath(prefix, page)));
 
-                createImage( outDir + "iPad" , mi , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+                createMultiLevelImage( outDir + "iPad" , mi , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
                         IPAD_DEVICE_HEIGHT );
-                createImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
+                createMultiLevelImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
                         IPHONE_DEVICE_HEIGHT );
-                createWeb( outDir , mi , page );
-                createThumbnail( outDir , mi , page );
+                createWebImage( outDir , mi , page );
+                createThumbnailImage( outDir , mi , page );
+
+                progressManager.setCreatedThumbnail( id , page + 1 );
             }
         } catch (MagickException e) {
         	throw new RuntimeException("Can't create image.", e);
         }
     }
 
-    protected void createImage( String outPath , MagickImage image , int page ,
+    protected void createMultiLevelImage( String outPath , MagickImage image , int page ,
             int maxLevel , int deviceWidth , int deviceHeight ) throws MagickException {
         for ( int level = 0 ; level < maxLevel ; level++ ) {
             LOGGER.info( "Proc level: " + level );
@@ -133,7 +119,7 @@ public class SimpleImageCreator implements ImageCreator {
         }
     }
 
-    protected void createWeb( String outDir , MagickImage image , int page ) throws MagickException {
+    protected void createWebImage( String outDir , MagickImage image , int page ) throws MagickException {
         String filename = String.format( "%sweb-%d.jpg" , outDir , page );
         Dimension d = image.getDimension();
         double ratio = WEB_HEIGHT / (double) d.height ;
@@ -142,7 +128,7 @@ public class SimpleImageCreator implements ImageCreator {
         createOneImage(filename, image, w, h);
     }
 
-    protected void createThumbnail( String outDir , MagickImage image , int page ) throws MagickException {
+    protected void createThumbnailImage( String outDir , MagickImage image , int page ) throws MagickException {
         String filename = String.format( "%sthumb-%d.jpg" , outDir , page );
         Dimension d = image.getDimension();
         double ratio = THUMBNAIL_SIZE / (double) Math.max( (int) d.width , (int) d.height );
@@ -172,40 +158,4 @@ public class SimpleImageCreator implements ImageCreator {
         LOGGER.debug( "Convert image:" + destPath);
     }
 
-    protected int[] getImageSize( String path ) {
-        String[] sizes =
-                ProcUtil.doProc( String.format( "%s -ping %s" , prop.identify , path ) ).split( " " )[ 2 ].split( "x" );
-        return new int[] { Integer.parseInt( sizes[ 0 ] ) , Integer.parseInt( sizes[ 1 ] ) };
-    }
-
-    protected int getPages( String pdfPath ) {
-        Matcher matcher =
-                Pattern.compile( "Pages: +([0-9]+)" ).matcher(
-                        ProcUtil.doProc( String.format( "%s %s" , prop.pdfInfo , pdfPath ) , true ) );
-
-        if ( !matcher.find() ) {
-            throw new RuntimeException( "No pages found" );
-        }
-
-        return Integer.parseInt( matcher.group( 1 ) );
-    }
-
-    protected String getPpmPath( String prefix , int page ) {
-        String path = String.format( "%s-%06d.ppm" , prefix , page + 1 );
-        if ( new File( path ).exists() ) {
-            return path;
-        }
-
-        path = String.format( "%s-%d.ppm" , prefix , page + 1 );
-        if ( new File( path ).exists() ) {
-            return path;
-        }
-
-        path = String.format( "%s-%02d.ppm" , prefix , page + 1 );
-        if ( new File( path ).exists() ) {
-            return path;
-        }
-
-        throw new RuntimeException( "Could not find ppm file" );
-    }
 }

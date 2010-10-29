@@ -62,10 +62,16 @@
 		</property>
 	</bean>
 
-	<!-- <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"> 
-		<property name="corePoolSize" value="1" /> <property name="maxPoolSize" value="1" 
-		/> <property name="queueCapacity" value="100" /> </bean> -->
-		
-	<bean id="imageCreator"
-		class="jp.archilogic.docnext.logic.SimpleImageCreator" />
+    <bean
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="1" />
+        <property name="maxPoolSize" value="1" />
+        <property name="queueCapacity" value="100" />
+    </bean>
+
+    <bean id="thumbnailCreator"
+          class="jp.archilogic.docnext.logic.SimpleImageCreator" />
+    <!-- bean id="thumbnailCreator"
+          class="jp.archilogic.docnext.logic.ThumbnailImageCreator" / -->
+
 </beans>
