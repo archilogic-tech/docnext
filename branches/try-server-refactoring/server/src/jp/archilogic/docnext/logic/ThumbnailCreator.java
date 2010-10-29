@@ -26,17 +26,19 @@ public class ThumbnailCreator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( ThumbnailCreator.class );
 
-    private static final int IPAD_MAX_LEVEL = 2;
-    private static final int IPAD_DEVICE_WIDTH = 768;
-    private static final int IPAD_DEVICE_HEIGHT = 1024 - 20;
-    private static final int IPHONE_MAX_LEVEL = 3;
-    private static final int IPHONE_DEVICE_WIDTH = 320;
-    private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
-    private static final int THUMBNAIL_SIZE = 256;
-    private static final int WEB_HEIGHT = 1600;
+    protected static final int IPAD_MAX_LEVEL = 2;
+    protected static final int IPAD_DEVICE_WIDTH = 768;
+    protected static final int IPAD_DEVICE_HEIGHT = 1024 - 20;
+    protected static final int IPHONE_MAX_LEVEL = 3;
+    protected static final int IPHONE_DEVICE_WIDTH = 320;
+    protected static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
+    protected static final int THUMBNAIL_SIZE = 256;
+    protected static final int WEB_HEIGHT = 1600;
 
     @Autowired
-    private PropBean prop;
+    protected PropBean prop;
+    @Autowired
+    protected ProgressManager progressManager;
 
     private ImageInfo calcBaseResolution( String pdfPath , String prefix ) {
         final int SAMPLE_RESOLUTION = 100;
@@ -62,7 +64,7 @@ public class ThumbnailCreator {
     /**
      * @return width / height ratio
      */
-    public double create( String outDir , String pdfPath , String prefix ) {
+    public double create( String outDir , String pdfPath , String prefix , long id ) {
         LOGGER.info( "Begin create thumbanil" );
         long t = System.currentTimeMillis();
 
@@ -79,6 +81,8 @@ public class ThumbnailCreator {
                     IPHONE_DEVICE_HEIGHT );
             createWeb( outDir , pdfPath , prefix , info , page );
             createThumbnail( outDir , pdfPath , prefix , info , page );
+
+            progressManager.setCreatedThumbnail( id , page + 1 );
         }
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
@@ -152,7 +156,7 @@ public class ThumbnailCreator {
                 cropWidth , cropHeight , x , y , resizeWidth , resizeHeight , destPath ) );
     }
 
-    private int[] getImageSize( String path ) {
+    protected int[] getImageSize( String path ) {
         String[] sizes =
                 ProcUtil.doProc( String.format( "%s -ping %s" , prop.identify , path ) ).split( " " )[ 2 ].split( "x" );
         return new int[] { Integer.parseInt( sizes[ 0 ] ) , Integer.parseInt( sizes[ 1 ] ) };
@@ -174,7 +178,7 @@ public class ThumbnailCreator {
         return String.format( "%s-%06d.png" , prefix , page + 1 );
     }
 
-    private String getPpmPath( String prefix , int page ) {
+    protected String getPpmPath( String prefix , int page ) {
         String path = String.format( "%s-%06d.ppm" , prefix , page + 1 );
         if ( new File( path ).exists() ) {
             return path;

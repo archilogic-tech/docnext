@@ -11,6 +11,7 @@ package jp.archilogic.docnext.logic;
  *
  */
 public interface ImageCreator {
-    
-	ImageInfo create( String outDir , String pdfPath , String prefix );
+    double create( String outDir , String pdfPath , String prefix , long id );
+
+    int getPages( String pdfPath );
 }
