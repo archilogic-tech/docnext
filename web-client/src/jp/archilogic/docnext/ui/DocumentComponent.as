@@ -683,7 +683,7 @@ package jp.archilogic.docnext.ui {
 
         private function startFlip( front : PageComponent , back : PageComponent , isForward : Boolean ,
                                     beginFlip : Function , endFlip : Function , deltaX : Number = 0 ) : void {
-            var MAX_STEP : int = 30;
+            var N_STEP : int = 8;
 
             var w : Number = getCurrentForePage().width;
             var h : Number = getCurrentForePage().height;
@@ -698,11 +698,11 @@ package jp.archilogic.docnext.ui {
 
             var step : int = 0;
             systemManager.addEventListener( Event.ENTER_FRAME , function( e : Event ) : void {
-                if ( step < MAX_STEP ) {
+                if ( step < N_STEP ) {
                     var sign : int = isForward ? 1 : -1;
 
                     render.graphics.clear();
-                    var t : Number = easeInOutQuart( step / ( MAX_STEP - 1 ) );
+                    var t : Number = easeInOutQuart( step / ( N_STEP - 1 ) );
                     var point : Point =
                         calcBezierPoint( new Point( -w * sign , h ) , new Point( w * sign , h ) ,
                                                     new Point( w / 2 * sign , 0 ) , t );
