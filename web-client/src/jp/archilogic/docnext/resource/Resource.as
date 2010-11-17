@@ -1,6 +1,24 @@
 package jp.archilogic.docnext.resource {
 
     public class Resource {
+        [Embed( source='/../resource/button_bookmark.png' )]
+        public static const BUTTON_BOOKMARK : Class;
+
+        [Embed( source='/../resource/button_home.png' )]
+        public static const BUTTON_HOME : Class;
+
+        [Embed( source='/../resource/button_search.png' )]
+        public static const BUTTON_SEARCH : Class;
+
+        [Embed( source='/../resource/button_text.png' )]
+        public static const BUTTON_TEXT : Class;
+
+        [Embed( source='/../resource/button_thumbnail.png' )]
+        public static const BUTTON_THUMBNAIL : Class;
+
+        [Embed( source='/../resource/button_toc.png' )]
+        public static const BUTTON_TOC : Class;
+
         [Embed( source='/../resource/button_zoom_in_down.png' )]
         public static const BUTTON_ZOOM_IN_DOWN : Class;
 

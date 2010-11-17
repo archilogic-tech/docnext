@@ -31,11 +31,15 @@ package jp.archilogic.docnext.helper {
                     switch ( anno.action.action ) {
                         case 'URI':
                             addAnnotation( rect , function( e : MouseEvent ) : void {
+                                e.stopPropagation();
+
                                 navigateToURL( new URLRequest( anno.action.uri ) );
                             } );
                             break;
                         case 'GoToPage':
                             addAnnotation( rect , function( e : MouseEvent ) : void {
+                                e.stopPropagation();
+
                                 Alert.show( 'May I jump to the page?' , 'Confirm' , Alert.YES | Alert.NO , null ,
                                             function( e_ : CloseEvent ) : void {
                                     if ( e_.detail == Alert.YES ) {
