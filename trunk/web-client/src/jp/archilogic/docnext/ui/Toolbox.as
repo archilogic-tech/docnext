@@ -2,8 +2,8 @@ package jp.archilogic.docnext.ui {
     import flash.events.Event;
     import flash.events.MouseEvent;
     import mx.containers.Canvas;
+    import mx.controls.Alert;
     import mx.events.FlexEvent;
-    import jp.archilogic.docnext.type.MouseMode;
 
     public class Toolbox extends Canvas {
         public function Toolbox() {
@@ -23,9 +23,15 @@ package jp.archilogic.docnext.ui {
         private var _changeHighlightColorHandler : Function;
         private var _removeHighlightHandler : Function;
         private var _changeHighlightCommentHandler : Function;
+        private var _changeMenuVisibilityHandler : Function;
+        private var _selectingHandler : Function;
 
         public function set changeHighlightCommentHandler( value : Function ) : * {
             _changeHighlightCommentHandler = value;
+        }
+
+        public function set changeMenuVisiblityHandler( value : Function ) : * {
+            _changeMenuVisibilityHandler = value;
         }
 
         public function set changeToHighlightHandler( value : Function ) : * {
@@ -55,19 +61,12 @@ package jp.archilogic.docnext.ui {
             _ui.copyButton.enabled = _ui.changeToHighlightButton.enabled = value;
         }
 
-        public function mouseModeHander() : MouseMode {
-            switch ( _ui.mouseModeToggleButtonBar.selectedIndex ) {
-                case 0:
-                    return MouseMode.SCROLL;
-                case 1:
-                    return MouseMode.SELECT;
-                default:
-                    throw new Error();
-            }
-        }
-
         public function set removeHighlightHandler( value : Function ) : * {
             _removeHighlightHandler = value;
+        }
+
+        public function set selectingHandler( value : Function ) : * {
+            _selectingHandler = value;
         }
 
         public function setPage( current : int , total : int ) : void {
@@ -81,6 +80,23 @@ package jp.archilogic.docnext.ui {
 
         public function set zoomOutHandler( value : Function ) : * {
             _zoomOutHandler = value;
+        }
+
+        private function alignComponentSize() : void {
+            var maxWidth : Number =
+                Math.max( _ui.textButton.width , _ui.tocButton.width , _ui.thumbnailButton.width ,
+                          _ui.bookmarkButton.width , _ui.searchButton.width );
+
+            _ui.textButton.width = maxWidth;
+            _ui.tocButton.width = maxWidth;
+            _ui.thumbnailButton.width = maxWidth;
+            _ui.bookmarkButton.width = maxWidth;
+            _ui.searchButton.width = maxWidth;
+        }
+
+        private function beginSelectionButtonClickHandler( e : MouseEvent ) : void {
+            _selectingHandler( true );
+            _changeMenuVisibilityHandler( false );
         }
 
         private function blueHighlightButtonClickHandler( e : MouseEvent ) : void {
@@ -98,6 +114,13 @@ package jp.archilogic.docnext.ui {
         private function creationCompleteHandler( e : FlexEvent ) : void {
             _ui.removeEventListener( FlexEvent.CREATION_COMPLETE , creationCompleteHandler );
 
+            _ui.textButton.addEventListener( MouseEvent.CLICK , temp );
+            _ui.tocButton.addEventListener( MouseEvent.CLICK , temp );
+            _ui.thumbnailButton.addEventListener( MouseEvent.CLICK , temp );
+            _ui.bookmarkButton.addEventListener( MouseEvent.CLICK , temp );
+            _ui.searchButton.addEventListener( MouseEvent.CLICK , temp );
+            _ui.beginSelectionButton.addEventListener( MouseEvent.CLICK , beginSelectionButtonClickHandler );
+
             _ui.zoomInButton.addEventListener( MouseEvent.CLICK , zoomInButtonClickHandler );
             _ui.zoomOutButton.addEventListener( MouseEvent.CLICK , zoomOutButtonClickHandler );
             _ui.copyButton.addEventListener( MouseEvent.CLICK , copyButtonClickHanlder );
@@ -107,6 +130,8 @@ package jp.archilogic.docnext.ui {
             _ui.blueHighlightButton.addEventListener( MouseEvent.CLICK , blueHighlightButtonClickHandler );
             _ui.removeHighlightButton.addEventListener( MouseEvent.CLICK , removeHighlightButtonClickHandler );
             _ui.highlightCommentTextInput.addEventListener( Event.CHANGE , highlightCommentTextInputChangeHandler );
+
+            alignComponentSize();
         }
 
         private function greenHighlightButtonClickHandler( e : MouseEvent ) : void {
@@ -123,6 +148,10 @@ package jp.archilogic.docnext.ui {
 
         private function removeHighlightButtonClickHandler( e : MouseEvent ) : void {
             _removeHighlightHandler();
+        }
+
+        private function temp( e : MouseEvent ) : void {
+            Alert.show( 'Under construction' );
         }
 
         private function zoomInButtonClickHandler( e : MouseEvent ) : void {

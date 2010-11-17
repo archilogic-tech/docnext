@@ -10,7 +10,6 @@ package jp.archilogic.docnext.ui {
     import mx.controls.Image;
     import mx.events.FlexEvent;
     import __AS3__.vec.Vector;
-    import jp.archilogic.docnext.helper.MouseActionHelper;
     import jp.archilogic.docnext.helper.OverlayHelper;
 
     public class PageComponent extends Image {
@@ -18,19 +17,15 @@ package jp.archilogic.docnext.ui {
             super();
 
             _overlayHelper = new OverlayHelper( this );
-            _mouseActionHelper = new MouseActionHelper( scroller , this );
 
             addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
                 removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
 
                 _hasCreationCompleted = true;
-
-                _mouseActionHelper.systemManager = systemManager;
             } );
         }
 
         private var _overlayHelper : OverlayHelper;
-        private var _mouseActionHelper : MouseActionHelper;
         private var _hasCreationCompleted : Boolean = false;
 
         public function set annotation( value : Array ) : * {
@@ -62,7 +57,7 @@ package jp.archilogic.docnext.ui {
         }
 
         public function set currentTargetHandler( value : Function ) : * {
-            _overlayHelper.currentTargetHandler = _mouseActionHelper.currentTargetHandler = value;
+            _overlayHelper.currentTargetHandler = value;
         }
 
         public function get docId() : Number {
@@ -101,10 +96,6 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.isSelectHighlightHandler = value;
         }
 
-        public function set isSelectingHandler( value : Function ) : * {
-            _mouseActionHelper.isSelectingHandler = value;
-        }
-
         public function loadData( data : ByteArray ) : void {
             var loader : Loader = new Loader();
 
@@ -123,10 +114,6 @@ package jp.archilogic.docnext.ui {
             } );
 
             loader.loadBytes( data );
-        }
-
-        public function set mouseModeHandler( value : Function ) : * {
-            _mouseActionHelper.mouseModeHandler = value;
         }
 
         public function get page() : int {

@@ -2,6 +2,7 @@ package jp.archilogic.docnext.controller {
     import com.asual.swfaddress.SWFAddress;
     import mx.controls.Alert;
     import mx.rpc.Fault;
+    import caurina.transitions.Tweener;
     import jp.archilogic.Delegate;
     import jp.archilogic.ServiceUtil;
     import jp.archilogic.docnext.dto.DocumentResDto;
@@ -14,7 +15,6 @@ package jp.archilogic.docnext.controller {
         override protected function creationComplete() : void {
             view.toolbox.zoomInHandler = zoomInHandler;
             view.toolbox.zoomOutHandler = zoomOutHandler;
-            view.documentComponent.mouseModeHandler = view.toolbox.mouseModeHander;
             view.documentComponent.setPageHandler = setPageHandler;
             view.documentComponent.isSelectingHandler = view.toolbox.isSelectingHandler;
             view.toolbox.copyHandler = copyHandler;
@@ -24,6 +24,10 @@ package jp.archilogic.docnext.controller {
             view.toolbox.removeHighlightHandler = removeHighlightHandler;
             view.toolbox.changeHighlightCommentHandler = changeHighlightCommentHandler;
             view.documentComponent.initHighlightCommentHandler = initHighlightCommentHandler;
+            view.documentComponent.isMenuVisibleHandler = isMenuVisibleHandler;
+            view.documentComponent.changeMenuVisiblityHandler = changeMenuVisiblityHandler;
+            view.toolbox.changeMenuVisiblityHandler = changeMenuVisiblityHandler;
+            view.toolbox.selectingHandler = selectingHandler;
 
             var id : Number = view.parameters[ 'id' ];
 
@@ -50,6 +54,20 @@ package jp.archilogic.docnext.controller {
             view.documentComponent.changeHighlightComment( comment );
         }
 
+        private function changeMenuVisiblityHandler( value : Boolean ) : void {
+            if ( value ) {
+                view.toolbox.alpha = 0;
+                view.toolbox.visible = true;
+            }
+
+            Tweener.addTween( view.toolbox , { alpha: value ? 1 : 0 , time: 0.5 , onComplete: function() : void {
+                        if ( !value ) {
+                            view.toolbox.visible = false;
+                            view.toolbox.alpha = 0;
+                        }
+                    } } );
+        }
+
         private function changeToHighlightHandler() : void {
             view.documentComponent.changeToHighlight();
         }
@@ -62,8 +80,16 @@ package jp.archilogic.docnext.controller {
             view.toolbox.initHighlightComment( comment );
         }
 
+        private function isMenuVisibleHandler() : Boolean {
+            return view.toolbox.visible;
+        }
+
         private function removeHighlightHandler() : void {
             view.documentComponent.removeHighlight();
+        }
+
+        private function selectingHandler( value : Boolean ) : void {
+            view.documentComponent.selecting = value;
         }
 
         private function setPageHandler( current : int , total : int ) : void {

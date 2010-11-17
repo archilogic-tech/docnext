@@ -12,7 +12,6 @@ package jp.archilogic.docnext.util {
     public class DocumentLoadUtil {
         public static function loadPage( docId : Number , index : int , ratio : Number ,
                                          pages : Vector.<PageComponent> , scroller : Canvas ,
-                                         mouseModeHandler : Function , isSelectingHandler : Function ,
                                          isSelectHighlightHandler : Function , initHighlightCommentHandler : Function ,
                                          currentTargetHandler : Function , changePageHandler : Function ,
                                          loadCompleteHandler : Function = null ) : void {
@@ -24,8 +23,6 @@ package jp.archilogic.docnext.util {
                 page.isSelectHighlightHandler = isSelectHighlightHandler;
                 page.initHighlightCommentHandler = initHighlightCommentHandler;
                 page.changePageHandler = changePageHandler;
-                page.mouseModeHandler = mouseModeHandler;
-                page.isSelectingHandler = isSelectingHandler;
                 page.currentTargetHandler = currentTargetHandler;
 
                 page.addEventListener( Event.COMPLETE , function() : void {
