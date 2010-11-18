@@ -31,6 +31,11 @@
 
                 if( prog.step == 'COMPLETED' || prog.step == 'FAILED' ) {
                   clearInterval( timer );
+                  
+                  if ( prog.step == 'FAILED' ) {
+                    alert( prog.error );
+                  }
+                  
                   location.href = './';
                 }
 
