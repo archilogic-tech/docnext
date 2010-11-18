@@ -13,10 +13,15 @@ import com.google.common.collect.Maps;
 
 @Component
 public class ProgressManager {
+    public enum ErrorType {
+        UNKNOWN , ENCRYPTED;
+    }
+
     public class Progress {
         public Step step;
         public int createdThumbnail;
         public int totalThumbnail;
+        public ErrorType error;
 
         public Progress() {
         }
@@ -30,11 +35,13 @@ public class ProgressManager {
         public String step;
         public int createdThumbnail;
         public int totalThumbnail;
+        public String error;
 
         public ProgressJSON( Progress progress ) {
             step = progress.step.toString();
             createdThumbnail = progress.createdThumbnail;
             totalThumbnail = progress.totalThumbnail;
+            error = progress.error != null ? progress.error.toString() : "no error";
         }
     }
 
@@ -54,10 +61,20 @@ public class ProgressManager {
     public String getProgressJSON( long id ) {
         Progress progress = _data.get( id );
 
+        // clear Progress which is set by setError
+        if ( progress != null && progress.step == Step.FAILED ) {
+            _data.remove( id );
+        }
+
         if ( progress == null ) {
             Document document = documentDao.findById( id );
 
-            progress = new Progress( document != null && !document.processing ? Step.COMPLETED : Step.FAILED );
+            if ( document != null && !document.processing ) {
+                progress = new Progress( Step.COMPLETED );
+            } else {
+                progress = new Progress( Step.FAILED );
+                progress.error = ErrorType.UNKNOWN;
+            }
         }
 
         return JSON.encode( new ProgressJSON( progress ) );
@@ -71,6 +88,12 @@ public class ProgressManager {
         }
 
         progress.createdThumbnail = created;
+    }
+
+    public void setError( long id , ErrorType error ) {
+        setStep( id , Step.FAILED );
+
+        _data.get( id ).error = error;
     }
 
     public void setStep( long id , Step step ) {
