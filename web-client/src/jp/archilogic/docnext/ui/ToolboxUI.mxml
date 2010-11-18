@@ -41,7 +41,6 @@
             <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
                             sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
             <mx:HBox visible="false">
-                <mx:Button id="copyButton" label="Copy" />
                 <mx:Button id="changeToHighlightButton" label="Change to highlight" />
                 <mx:Button id="redHighlightButton" label="R" />
                 <mx:Button id="greenHighlightButton" label="G" />

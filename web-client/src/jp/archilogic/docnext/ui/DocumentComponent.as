@@ -71,12 +71,6 @@ package jp.archilogic.docnext.ui {
             _isSelectingHandler( false );
         }
 
-        public function copy() : void {
-            if ( _currentTarget.hasSelectedText() ) {
-                System.setClipboard( _currentTarget.selectedText );
-            }
-        }
-
         public function set initHighlightCommentHandler( value : Function ) : * {
             _initHighlightCommentHandler = value;
         }

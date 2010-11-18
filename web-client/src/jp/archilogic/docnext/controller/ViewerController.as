@@ -17,7 +17,6 @@ package jp.archilogic.docnext.controller {
             view.toolbox.zoomOutHandler = zoomOutHandler;
             view.documentComponent.setPageHandler = setPageHandler;
             view.documentComponent.isSelectingHandler = view.toolbox.isSelectingHandler;
-            view.toolbox.copyHandler = copyHandler;
             view.toolbox.changeToHighlightHandler = changeToHighlightHandler;
             view.documentComponent.isSelectHighlightHandler = view.toolbox.isSelectHighlightHandler;
             view.toolbox.chnageHighlightColorHandler = changeHighlightColorHandler;
@@ -70,10 +69,6 @@ package jp.archilogic.docnext.controller {
 
         private function changeToHighlightHandler() : void {
             view.documentComponent.changeToHighlight();
-        }
-
-        private function copyHandler() : void {
-            view.documentComponent.copy();
         }
 
         private function initHighlightCommentHandler( comment : String ) : void {
