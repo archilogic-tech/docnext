@@ -18,7 +18,6 @@ package jp.archilogic.docnext.ui {
 
         private var _zoomInHandler : Function;
         private var _zoomOutHandler : Function;
-        private var _copyHandler : Function;
         private var _changeToHighlightHandler : Function;
         private var _changeHighlightColorHandler : Function;
         private var _removeHighlightHandler : Function;
@@ -42,10 +41,6 @@ package jp.archilogic.docnext.ui {
             _changeHighlightColorHandler = value;
         }
 
-        public function set copyHandler( value : Function ) : * {
-            _copyHandler = value;
-        }
-
         public function initHighlightComment( comment : String ) : void {
             _ui.highlightCommentTextInput.text = comment;
         }
@@ -58,7 +53,7 @@ package jp.archilogic.docnext.ui {
         }
 
         public function isSelectingHandler( value : Boolean ) : void {
-            _ui.copyButton.enabled = _ui.changeToHighlightButton.enabled = value;
+            _ui.changeToHighlightButton.enabled = value;
         }
 
         public function set removeHighlightHandler( value : Function ) : * {
@@ -107,10 +102,6 @@ package jp.archilogic.docnext.ui {
             _changeToHighlightHandler();
         }
 
-        private function copyButtonClickHanlder( e : MouseEvent ) : void {
-            _copyHandler();
-        }
-
         private function creationCompleteHandler( e : FlexEvent ) : void {
             _ui.removeEventListener( FlexEvent.CREATION_COMPLETE , creationCompleteHandler );
 
@@ -123,7 +114,6 @@ package jp.archilogic.docnext.ui {
 
             _ui.zoomInButton.addEventListener( MouseEvent.CLICK , zoomInButtonClickHandler );
             _ui.zoomOutButton.addEventListener( MouseEvent.CLICK , zoomOutButtonClickHandler );
-            _ui.copyButton.addEventListener( MouseEvent.CLICK , copyButtonClickHanlder );
             _ui.changeToHighlightButton.addEventListener( MouseEvent.CLICK , changeToHighlightButtonClickHandler );
             _ui.redHighlightButton.addEventListener( MouseEvent.CLICK , redHighlightButtonClickHandler );
             _ui.greenHighlightButton.addEventListener( MouseEvent.CLICK , greenHighlightButtonClickHandler );

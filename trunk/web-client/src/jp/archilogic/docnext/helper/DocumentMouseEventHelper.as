@@ -5,8 +5,10 @@ package jp.archilogic.docnext.helper {
     import flash.geom.Point;
     import mx.core.Container;
     import mx.core.UIComponent;
+    import caurina.transitions.Tweener;
     import jp.archilogic.docnext.ui.DocumentComponentArrowIndicator;
     import jp.archilogic.docnext.ui.PageComponent;
+    import jp.archilogic.docnext.ui.SelectionContextMenu;
 
     public class DocumentMouseEventHelper {
         private static const CLICK_THRESHOLD : Number = 5;
@@ -17,6 +19,7 @@ package jp.archilogic.docnext.helper {
             target.addEventListener( MouseEvent.CLICK , clickHandler );
             target.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
             target.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
+            target.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
         }
 
         private var _scroller : Container;
@@ -31,6 +34,8 @@ package jp.archilogic.docnext.helper {
         private var _selecting : Boolean;
         private var _selectingTarget : PageComponent;
         private var _selectingEdge : int;
+        private var _hasSelection : Boolean;
+        private var _selectionMenu : SelectionContextMenu;
 
         private var _isClick : Boolean;
         private var _mouseDownPoint : Point;
@@ -78,6 +83,12 @@ package jp.archilogic.docnext.helper {
             }
         }
 
+        private function dismissSelectionContextMenuFunc() : void {
+            _selecting = false;
+            _selectingTarget.initSelection();
+            removeSelectionMenu();
+        }
+
         private function hypot( x : Point , y : Point ) : Number {
             return Math.sqrt( Math.pow( x.x - y.x , 2 ) + Math.pow( x.y - y.y , 2 ) );
         }
@@ -88,7 +99,12 @@ package jp.archilogic.docnext.helper {
 
             if ( !_isMenuVisibleFunc() ) {
                 if ( _selecting ) {
+                    if ( _selectionMenu ) {
+                        removeSelectionMenu();
+                    }
+
                     _selectingTarget = travPage( e );
+                    _hasSelection = false;
 
                     if ( _selectingTarget ) {
                         _selectingEdge =
@@ -124,6 +140,8 @@ package jp.archilogic.docnext.helper {
                                                                             _selectingTarget.mouseY ) );
                             _selectingTarget.showSelection( Math.min( _selectingEdge , index ) ,
                                                                       Math.max( _selectingEdge , index ) );
+
+                            _hasSelection = true;
                         }
                     } else {
                         _scroller.horizontalScrollPosition = _mouseDownScrollPos.x - e.stageX + _mouseDownPoint.x;
@@ -131,6 +149,29 @@ package jp.archilogic.docnext.helper {
                     }
                 }
             }
+        }
+
+        private function mouseUpHandler( e : MouseEvent ) : void {
+            if ( _selecting && _hasSelection ) {
+                if ( _selectionMenu ) {
+                    Tweener.removeTweens( _selectionMenu );
+                    _scroller.removeChild( _selectionMenu );
+                }
+
+                _selectionMenu = new SelectionContextMenu( _selectingTarget , dismissSelectionContextMenuFunc );
+
+                _selectionMenu.alpha = 0;
+                _scroller.addChild( _selectionMenu );
+
+                Tweener.addTween( _selectionMenu , { alpha: 1 , time: 0.5 } );
+            }
+        }
+
+        private function removeSelectionMenu() : void {
+            Tweener.addTween( _selectionMenu , { alpha: 0 , time: 0.5 , onComplete: function() : void {
+                        _scroller.removeChild( _selectionMenu );
+                        _selectionMenu = null;
+                    } } );
         }
 
         private function travPage( e : Event ) : PageComponent {

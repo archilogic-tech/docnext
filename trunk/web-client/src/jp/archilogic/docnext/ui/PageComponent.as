@@ -80,10 +80,6 @@ package jp.archilogic.docnext.ui {
             return _overlayHelper.hasRegions();
         }
 
-        public function hasSelectedText() : Boolean {
-            return _overlayHelper.hasSelectedText();
-        }
-
         public function set initHighlightCommentHandler( value : Function ) : * {
             _overlayHelper.initHighlightCommentHandler = value;
         }
