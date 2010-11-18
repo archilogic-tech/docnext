@@ -6,7 +6,6 @@ package jp.archilogic.docnext.helper {
     import flash.utils.Dictionary;
     import mx.containers.Canvas;
     import mx.events.FlexEvent;
-    import mx.utils.ObjectUtil;
     import __AS3__.vec.Vector;
     import jp.archilogic.docnext.ui.Balloon;
     import jp.archilogic.docnext.ui.PageComponent;
@@ -29,6 +28,7 @@ package jp.archilogic.docnext.helper {
         private var _container : PageComponent;
 
         private var _annotationHelper : OverlayAnnotationHelper;
+        private var _contextMenuHelper : ContextMenuHelper;
 
         private var _docId : Number;
         private var _page : int;
@@ -50,9 +50,7 @@ package jp.archilogic.docnext.helper {
 
         private var _scale : Number;
 
-        private var _isSelectHighlightHandler : Function;
-        private var _initHighlightCommentHandler : Function;
-        private var _currentTargetHandler : Function;
+        private var _isMenuVisibleFunc : Function;
 
         private var _foo : Number = 0;
         private var _bar : Number = 0;
@@ -98,17 +96,23 @@ package jp.archilogic.docnext.helper {
 
             saveState();
 
-            addHighlight( info , _highlightInfos.length - 1 );
+            var index : int = _highlightInfos.length - 1;
+
+            addHighlight( info , index );
 
             initSelection();
+
+            emphasizeHighlight( index );
+            _currentHighlightIndex = index;
+            _contextMenuHelper.showHighlightContextMenu( this , '' , dismissContextMenuFunc );
         }
 
         public function clearEmphasize() : void {
             emphasizeHighlight( -1 );
         }
 
-        public function set currentTargetHandler( value : Function ) : * {
-            _currentTargetHandler = value;
+        public function set contextMenuHelper( value : ContextMenuHelper ) : * {
+            _contextMenuHelper = value;
         }
 
         public function get docId() : Number {
@@ -151,10 +155,6 @@ package jp.archilogic.docnext.helper {
             return _currentSelectionBegin != -1 && _currentSelectionEnd != -1;
         }
 
-        public function set initHighlightCommentHandler( value : Function ) : * {
-            _initHighlightCommentHandler = value;
-        }
-
         public function initSelection() : void {
             for each ( var indicator : Canvas in _currentSelections ) {
                 _container.removeChild( indicator );
@@ -165,9 +165,10 @@ package jp.archilogic.docnext.helper {
             _currentSelectionEnd = -1;
         }
 
-        public function set isSelectHighlightHandler( value : Function ) : * {
-            _isSelectHighlightHandler = value;
+        public function set isMenuVisibleFunc( value : Function ) : * {
+            _isMenuVisibleFunc = value;
         }
+
 
         public function get page() : int {
             return _page;
@@ -219,8 +220,6 @@ package jp.archilogic.docnext.helper {
             }
 
             _currentHighlightIndex = -1;
-
-            _isSelectHighlightHandler( false );
         }
 
         public function set scale( value : Number ) : * {
@@ -292,14 +291,18 @@ package jp.archilogic.docnext.helper {
         private function addHighlight( info : Object , index : int ) : void {
             _highlights[ index ] = new Dictionary();
 
+            var self : OverlayHelper = this;
             addOverlay( info.begin , info.end , info.color , _highlights[ index ] , function( e : MouseEvent ) : void {
-                emphasizeHighlight( index );
-                _currentHighlightIndex = index;
+                if ( !_isMenuVisibleFunc() ) {
+                    e.stopPropagation();
 
-                _initHighlightCommentHandler( _balloons[ _currentHighlightIndex ] ? _balloons[ _currentHighlightIndex ].text : '' );
+                    emphasizeHighlight( index );
+                    _currentHighlightIndex = index;
 
-                _isSelectHighlightHandler( true );
-                _currentTargetHandler( _container );
+                    _contextMenuHelper.showHighlightContextMenu( self ,
+                                                                 _balloons[ _currentHighlightIndex ] ? _balloons[ _currentHighlightIndex ].text : '' ,
+                                                                 dismissContextMenuFunc );
+                }
             } );
 
             if ( info.text ) {
@@ -384,6 +387,12 @@ package jp.archilogic.docnext.helper {
 
             return new Rectangle( actual.x + rect.x * actual.width , actual.y + rect.y * actual.height ,
                                   rect.width * actual.width , rect.height * actual.height );
+        }
+
+        private function dismissContextMenuFunc() : void {
+            clearEmphasize();
+
+            _contextMenuHelper.removeHighlightContextMenu();
         }
 
         private function emphasizeHighlight( targetIndex : int ) : void {

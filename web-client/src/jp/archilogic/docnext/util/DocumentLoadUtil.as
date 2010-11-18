@@ -6,24 +6,23 @@ package jp.archilogic.docnext.util {
     import flash.utils.Endian;
     import mx.containers.Canvas;
     import __AS3__.vec.Vector;
+    import jp.archilogic.docnext.helper.ContextMenuHelper;
     import jp.archilogic.docnext.service.DocumentService;
     import jp.archilogic.docnext.ui.PageComponent;
 
     public class DocumentLoadUtil {
         public static function loadPage( docId : Number , index : int , ratio : Number ,
                                          pages : Vector.<PageComponent> , scroller : Canvas ,
-                                         isSelectHighlightHandler : Function , initHighlightCommentHandler : Function ,
-                                         currentTargetHandler : Function , changePageHandler : Function ,
-                                         loadCompleteHandler : Function = null ) : void {
+                                         contextMenuHelper : ContextMenuHelper , isMenuVisibleFunc : Function ,
+                                         changePageHandler : Function , loadCompleteHandler : Function = null ) : void {
             DocumentService.getPage( docId , index , function( result : ByteArray ) : void {
                 var page : PageComponent = new PageComponent( scroller );
                 page.docId = docId;
                 page.page = index;
                 page.ratio = ratio;
-                page.isSelectHighlightHandler = isSelectHighlightHandler;
-                page.initHighlightCommentHandler = initHighlightCommentHandler;
+                page.contextMenuHelper = contextMenuHelper;
+                page.isMenuVisbleFunc = isMenuVisibleFunc;
                 page.changePageHandler = changePageHandler;
-                page.currentTargetHandler = currentTargetHandler;
 
                 page.addEventListener( Event.COMPLETE , function() : void {
                     page.removeEventListener( Event.COMPLETE , arguments.callee );

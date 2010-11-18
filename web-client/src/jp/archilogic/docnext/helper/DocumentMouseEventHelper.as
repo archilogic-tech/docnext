@@ -5,24 +5,18 @@ package jp.archilogic.docnext.helper {
     import flash.geom.Point;
     import mx.core.Container;
     import mx.core.UIComponent;
-    import caurina.transitions.Tweener;
     import jp.archilogic.docnext.ui.DocumentComponentArrowIndicator;
     import jp.archilogic.docnext.ui.PageComponent;
-    import jp.archilogic.docnext.ui.SelectionContextMenu;
 
     public class DocumentMouseEventHelper {
         private static const CLICK_THRESHOLD : Number = 5;
 
-        public function DocumentMouseEventHelper( target : IEventDispatcher ) {
+        public function DocumentMouseEventHelper() {
             _selecting = false;
-
-            target.addEventListener( MouseEvent.CLICK , clickHandler );
-            target.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
-            target.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
-            target.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
         }
 
         private var _scroller : Container;
+        private var _contextMenuHelper : ContextMenuHelper;
 
         // menu var
         private var _isMenuVisibleFunc : Function;
@@ -35,7 +29,8 @@ package jp.archilogic.docnext.helper {
         private var _selectingTarget : PageComponent;
         private var _selectingEdge : int;
         private var _hasSelection : Boolean;
-        private var _selectionMenu : SelectionContextMenu;
+
+        private var _currentPagesFunc : Function;
 
         private var _isClick : Boolean;
         private var _mouseDownPoint : Point;
@@ -51,6 +46,25 @@ package jp.archilogic.docnext.helper {
 
         public function set changePageFunc( value : Function ) : * {
             _changePageFunc = value;
+        }
+
+        public function set contextMenuHelper( value : ContextMenuHelper ) : * {
+            _contextMenuHelper = value;
+        }
+
+        public function set currentPagesFunc( value : Function ) : * {
+            _currentPagesFunc = value;
+        }
+
+        public function init( target : IEventDispatcher ) : void {
+            target.addEventListener( MouseEvent.CLICK , clickHandler );
+            target.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
+            target.addEventListener( MouseEvent.MOUSE_MOVE , mouseMoveHandler );
+            target.addEventListener( MouseEvent.MOUSE_UP , mouseUpHandler );
+        }
+
+        public function get isMenuVisbleFunc() : Function {
+            return _isMenuVisibleFunc;
         }
 
         public function set isMenuVisibleFunc( value : Function ) : * {
@@ -86,7 +100,8 @@ package jp.archilogic.docnext.helper {
         private function dismissSelectionContextMenuFunc() : void {
             _selecting = false;
             _selectingTarget.initSelection();
-            removeSelectionMenu();
+
+            _contextMenuHelper.removeSelectionContextMenu();
         }
 
         private function hypot( x : Point , y : Point ) : Number {
@@ -97,12 +112,21 @@ package jp.archilogic.docnext.helper {
             _isClick = true;
             _mouseDownPoint = new Point( e.stageX , e.stageY );
 
+            if ( _contextMenuHelper.isShowingSelectionContextMenu ) {
+                _contextMenuHelper.removeSelectionContextMenu();
+            }
+
+            if ( _contextMenuHelper.isShowingHighlightContextMenu ) {
+                _contextMenuHelper.removeHighlightContextMenu();
+            }
+
+            for each ( var page : PageComponent in _currentPagesFunc() ) {
+                page.initSelection();
+                page.clearEmphasize();
+            }
+
             if ( !_isMenuVisibleFunc() ) {
                 if ( _selecting ) {
-                    if ( _selectionMenu ) {
-                        removeSelectionMenu();
-                    }
-
                     _selectingTarget = travPage( e );
                     _hasSelection = false;
 
@@ -153,25 +177,8 @@ package jp.archilogic.docnext.helper {
 
         private function mouseUpHandler( e : MouseEvent ) : void {
             if ( _selecting && _hasSelection ) {
-                if ( _selectionMenu ) {
-                    Tweener.removeTweens( _selectionMenu );
-                    _scroller.removeChild( _selectionMenu );
-                }
-
-                _selectionMenu = new SelectionContextMenu( _selectingTarget , dismissSelectionContextMenuFunc );
-
-                _selectionMenu.alpha = 0;
-                _scroller.addChild( _selectionMenu );
-
-                Tweener.addTween( _selectionMenu , { alpha: 1 , time: 0.5 } );
+                _contextMenuHelper.showSelectionContextMenu( _selectingTarget , dismissSelectionContextMenuFunc );
             }
-        }
-
-        private function removeSelectionMenu() : void {
-            Tweener.addTween( _selectionMenu , { alpha: 0 , time: 0.5 , onComplete: function() : void {
-                        _scroller.removeChild( _selectionMenu );
-                        _selectionMenu = null;
-                    } } );
         }
 
         private function travPage( e : Event ) : PageComponent {

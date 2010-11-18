@@ -18,46 +18,11 @@ package jp.archilogic.docnext.ui {
 
         private var _zoomInHandler : Function;
         private var _zoomOutHandler : Function;
-        private var _changeToHighlightHandler : Function;
-        private var _changeHighlightColorHandler : Function;
-        private var _removeHighlightHandler : Function;
-        private var _changeHighlightCommentHandler : Function;
         private var _changeMenuVisibilityHandler : Function;
         private var _selectingHandler : Function;
 
-        public function set changeHighlightCommentHandler( value : Function ) : * {
-            _changeHighlightCommentHandler = value;
-        }
-
         public function set changeMenuVisiblityHandler( value : Function ) : * {
             _changeMenuVisibilityHandler = value;
-        }
-
-        public function set changeToHighlightHandler( value : Function ) : * {
-            _changeToHighlightHandler = value;
-        }
-
-        public function set chnageHighlightColorHandler( value : Function ) : * {
-            _changeHighlightColorHandler = value;
-        }
-
-        public function initHighlightComment( comment : String ) : void {
-            _ui.highlightCommentTextInput.text = comment;
-        }
-
-        public function isSelectHighlightHandler( value : Boolean ) : void {
-            _ui.redHighlightButton.enabled =
-                _ui.greenHighlightButton.enabled =
-                _ui.blueHighlightButton.enabled =
-                _ui.removeHighlightButton.enabled = _ui.highlightCommentTextInput.enabled = value;
-        }
-
-        public function isSelectingHandler( value : Boolean ) : void {
-            _ui.changeToHighlightButton.enabled = value;
-        }
-
-        public function set removeHighlightHandler( value : Function ) : * {
-            _removeHighlightHandler = value;
         }
 
         public function set selectingHandler( value : Function ) : * {
@@ -94,14 +59,6 @@ package jp.archilogic.docnext.ui {
             _changeMenuVisibilityHandler( false );
         }
 
-        private function blueHighlightButtonClickHandler( e : MouseEvent ) : void {
-            _changeHighlightColorHandler( 0x0000ff );
-        }
-
-        private function changeToHighlightButtonClickHandler( e : MouseEvent ) : void {
-            _changeToHighlightHandler();
-        }
-
         private function creationCompleteHandler( e : FlexEvent ) : void {
             _ui.removeEventListener( FlexEvent.CREATION_COMPLETE , creationCompleteHandler );
 
@@ -114,30 +71,8 @@ package jp.archilogic.docnext.ui {
 
             _ui.zoomInButton.addEventListener( MouseEvent.CLICK , zoomInButtonClickHandler );
             _ui.zoomOutButton.addEventListener( MouseEvent.CLICK , zoomOutButtonClickHandler );
-            _ui.changeToHighlightButton.addEventListener( MouseEvent.CLICK , changeToHighlightButtonClickHandler );
-            _ui.redHighlightButton.addEventListener( MouseEvent.CLICK , redHighlightButtonClickHandler );
-            _ui.greenHighlightButton.addEventListener( MouseEvent.CLICK , greenHighlightButtonClickHandler );
-            _ui.blueHighlightButton.addEventListener( MouseEvent.CLICK , blueHighlightButtonClickHandler );
-            _ui.removeHighlightButton.addEventListener( MouseEvent.CLICK , removeHighlightButtonClickHandler );
-            _ui.highlightCommentTextInput.addEventListener( Event.CHANGE , highlightCommentTextInputChangeHandler );
 
             alignComponentSize();
-        }
-
-        private function greenHighlightButtonClickHandler( e : MouseEvent ) : void {
-            _changeHighlightColorHandler( 0x00ff00 );
-        }
-
-        private function highlightCommentTextInputChangeHandler( e : Event ) : void {
-            _changeHighlightCommentHandler( _ui.highlightCommentTextInput.text );
-        }
-
-        private function redHighlightButtonClickHandler( e : MouseEvent ) : void {
-            _changeHighlightColorHandler( 0xff0000 );
-        }
-
-        private function removeHighlightButtonClickHandler( e : MouseEvent ) : void {
-            _removeHighlightHandler();
         }
 
         private function temp( e : MouseEvent ) : void {
