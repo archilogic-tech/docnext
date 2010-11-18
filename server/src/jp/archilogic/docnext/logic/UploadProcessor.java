@@ -10,6 +10,7 @@ import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.UnsupportedFormatException;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
+import jp.archilogic.docnext.logic.ProgressManager.ErrorType;
 import jp.archilogic.docnext.logic.ProgressManager.Step;
 import jp.archilogic.docnext.util.FileUtil;
 
@@ -64,6 +65,11 @@ public class UploadProcessor {
 
                 String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
                 String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
+
+                if ( !pdfAnnotationParser.canParse( tempPdfPath ) ) {
+                    progressManager.setError( doc.id , ErrorType.ENCRYPTED );
+                    return;
+                }
 
                 packManager.createStruct( doc.id );
 
