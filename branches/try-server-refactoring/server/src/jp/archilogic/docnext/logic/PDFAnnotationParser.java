@@ -7,10 +7,11 @@ import jp.archilogic.docnext.dto.Region;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
@@ -60,11 +61,32 @@ public class PDFAnnotationParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( PDFAnnotationParser.class );
 
+    public boolean canParse( String src ) {
+        try {
+            PDDocument document = PDDocument.load( src );
+
+            if ( document.isEncrypted() ) {
+                document.openProtection( new StandardDecryptionMaterial( null ) );
+            }
+
+            return true;
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        } catch ( BadSecurityHandlerException e ) {
+            throw new RuntimeException( e );
+        } catch ( CryptographyException e ) {
+            // the document has a password, which length > 0
+            return false;
+        }
+    }
+
     public void clean( String src , String dst ) {
         try {
             PDDocument document = PDDocument.load( src );
+
             if ( document.isEncrypted() ) {
-                document.decrypt( "" );
+                document.openProtection( new StandardDecryptionMaterial( null ) );
+                document.setAllSecurityToBeRemoved( true );
             }
 
             List< ? > allPages = document.getDocumentCatalog().getAllPages();
@@ -78,11 +100,11 @@ public class PDFAnnotationParser {
             document.close();
         } catch ( IOException e ) {
             throw new RuntimeException( e );
-        } catch ( CryptographyException e ) {
-            throw new RuntimeException( e );
-        } catch ( InvalidPasswordException e ) {
-            throw new RuntimeException( e );
         } catch ( COSVisitorException e ) {
+            throw new RuntimeException( e );
+        } catch ( BadSecurityHandlerException e ) {
+            throw new RuntimeException( e );
+        } catch ( CryptographyException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -143,7 +165,7 @@ public class PDFAnnotationParser {
         try {
             PDDocument document = PDDocument.load( src );
             if ( document.isEncrypted() ) {
-                document.decrypt( "" );
+                document.openProtection( new StandardDecryptionMaterial( null ) );
             }
 
             List< List< PageAnnotationInfo >> ret = Lists.newArrayList();
@@ -158,9 +180,9 @@ public class PDFAnnotationParser {
             return ret;
         } catch ( IOException e ) {
             throw new RuntimeException( e );
-        } catch ( CryptographyException e ) {
+        } catch ( BadSecurityHandlerException e ) {
             throw new RuntimeException( e );
-        } catch ( InvalidPasswordException e ) {
+        } catch ( CryptographyException e ) {
             throw new RuntimeException( e );
         }
     }
