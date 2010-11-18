@@ -10,6 +10,7 @@ package jp.archilogic.docnext.ui {
     import mx.controls.Image;
     import mx.events.FlexEvent;
     import __AS3__.vec.Vector;
+    import jp.archilogic.docnext.helper.ContextMenuHelper;
     import jp.archilogic.docnext.helper.OverlayHelper;
 
     public class PageComponent extends Image {
@@ -36,14 +37,6 @@ package jp.archilogic.docnext.ui {
             return Bitmap( source ).bitmapData;
         }
 
-        public function changeHighlightColor( color : uint ) : void {
-            _overlayHelper.changeHighlightColor( color );
-        }
-
-        public function changeHighlightComment( comment : String ) : void {
-            _overlayHelper.changeHighlightComment( comment );
-        }
-
         public function set changePageHandler( value : Function ) : * {
             _overlayHelper.changePageHandler = value;
         }
@@ -56,8 +49,8 @@ package jp.archilogic.docnext.ui {
             _overlayHelper.clearEmphasize();
         }
 
-        public function set currentTargetHandler( value : Function ) : * {
-            _overlayHelper.currentTargetHandler = value;
+        public function set contextMenuHelper( value : ContextMenuHelper ) : void {
+            _overlayHelper.contextMenuHelper = value;
         }
 
         public function get docId() : Number {
@@ -80,16 +73,12 @@ package jp.archilogic.docnext.ui {
             return _overlayHelper.hasRegions();
         }
 
-        public function set initHighlightCommentHandler( value : Function ) : * {
-            _overlayHelper.initHighlightCommentHandler = value;
-        }
-
         public function initSelection() : void {
             _overlayHelper.initSelection();
         }
 
-        public function set isSelectHighlightHandler( value : Function ) : * {
-            _overlayHelper.isSelectHighlightHandler = value;
+        public function set isMenuVisbleFunc( value : Function ) : * {
+            _overlayHelper.isMenuVisibleFunc = value;
         }
 
         public function loadData( data : ByteArray ) : void {
@@ -126,10 +115,6 @@ package jp.archilogic.docnext.ui {
 
         public function set regions( value : Vector.<Rectangle> ) : * {
             _overlayHelper.regions = value;
-        }
-
-        public function removeHighlight() : void {
-            _overlayHelper.removeHighlight();
         }
 
         public function set scale( value : Number ) : * {

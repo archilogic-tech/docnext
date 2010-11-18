@@ -19,6 +19,14 @@ package jp.archilogic.docnext.ui {
         private var _page : PageComponent;
         private var _dismissFunc : Function;
 
+        private function changeToHighlightButtonClickHandler( e : MouseEvent ) : void {
+            e.stopPropagation();
+
+            _page.changeSelectionToHighlight();
+
+            _dismissFunc();
+        }
+
         private function copyButtonClickHandler( e : MouseEvent ) : void {
             e.stopPropagation();
 
@@ -29,6 +37,7 @@ package jp.archilogic.docnext.ui {
 
         private function creationCompleteHandler( e : FlexEvent ) : void {
             _ui.copyButton.addEventListener( MouseEvent.CLICK , copyButtonClickHandler );
+            _ui.changeToHighlightButton.addEventListener( MouseEvent.CLICK , changeToHighlightButtonClickHandler );
             _ui.addEventListener( MouseEvent.MOUSE_DOWN , mouseDownHandler );
         }
 

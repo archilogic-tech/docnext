@@ -7,7 +7,6 @@ package jp.archilogic.docnext.ui {
     import flash.events.KeyboardEvent;
     import flash.geom.Point;
     import flash.geom.Rectangle;
-    import flash.system.System;
     import mx.collections.ArrayCollection;
     import mx.containers.Canvas;
     import mx.core.IIMESupport;
@@ -15,6 +14,7 @@ package jp.archilogic.docnext.ui {
     import mx.events.FlexEvent;
     import __AS3__.vec.Vector;
     import jp.archilogic.docnext.dto.DocumentResDto;
+    import jp.archilogic.docnext.helper.ContextMenuHelper;
     import jp.archilogic.docnext.helper.DocumentMouseEventHelper;
     import jp.archilogic.docnext.helper.PageHeadHelper;
     import jp.archilogic.docnext.helper.ResizeHelper;
@@ -23,15 +23,16 @@ package jp.archilogic.docnext.ui {
 
     public class DocumentComponent extends Canvas {
         public function DocumentComponent() {
-            super();
-
             _ui = new DocumentComponentUI();
             _ui.addEventListener( FlexEvent.CREATION_COMPLETE , creationCompleteHandler );
             addChild( _ui );
 
-            _mouseEventHelper = new DocumentMouseEventHelper( this );
+            _contextMenuHelper = new ContextMenuHelper( this );
+
+            _mouseEventHelper = new DocumentMouseEventHelper();
+            _mouseEventHelper.contextMenuHelper = _contextMenuHelper;
             _mouseEventHelper.changePageFunc = changePageArrowClickHanlder;
-            _mouseEventHelper.scroller = _ui.scroller;
+            _mouseEventHelper.currentPagesFunc = getCurrentPages;
 
             addEventListener( Event.ADDED_TO_STAGE , addToStageHandler );
         }
@@ -46,55 +47,31 @@ package jp.archilogic.docnext.ui {
         private var _baseScale : Number;
         private var _zoomExponent : int;
         private var _setPageHandler : Function;
-        private var _isSelectingHandler : Function;
-        private var _isSelectHighlightHandler : Function;
-        private var _initHighlightCommentHandler : Function;
         private var _isAnimating : Boolean;
-        private var _currentTarget : PageComponent;
         private var _mouseEventHelper : DocumentMouseEventHelper;
-
-        public function changeHighlightColor( color : uint ) : void {
-            _currentTarget.changeHighlightColor( color );
-        }
-
-        public function changeHighlightComment( comment : String ) : void {
-            _currentTarget.changeHighlightComment( comment );
-        }
+        private var _contextMenuHelper : ContextMenuHelper;
 
         public function set changeMenuVisiblityHandler( value : Function ) : * {
             _mouseEventHelper.changeMenuVisiblityFunc = value;
-        }
-
-        public function changeToHighlight() : void {
-            _currentTarget.changeSelectionToHighlight();
-
-            _isSelectingHandler( false );
-        }
-
-        public function set initHighlightCommentHandler( value : Function ) : * {
-            _initHighlightCommentHandler = value;
         }
 
         public function set isMenuVisibleHandler( value : Function ) : * {
             _mouseEventHelper.isMenuVisibleFunc = value;
         }
 
-        public function set isSelectHighlightHandler( value : Function ) : * {
-            _isSelectHighlightHandler = value;
-        }
-
-        public function set isSelectingHandler( value : Function ) : * {
-            _isSelectingHandler = value;
-        }
-
         public function load( dto : DocumentResDto ) : void {
             _dto = dto;
 
+            var self : DocumentComponent = this;
             DocumentService.getInfo( dto.id , function( json : String ) : void {
                 _info = JSON.decode( json );
 
                 DocumentService.getSinglePageInfo( dto.id , function( singlePages : ArrayCollection ) : void {
                     _pageHeadHelper = new PageHeadHelper( singlePages.toArray() , _info.pages );
+
+                    _mouseEventHelper.scroller = _ui.scroller;
+                    _mouseEventHelper.arrowIndicator = _ui.arrowIndicator;
+                    _mouseEventHelper.init( self );
 
                     _pages = new Vector.<PageComponent>( _info.pages );
 
@@ -122,10 +99,6 @@ package jp.archilogic.docnext.ui {
                     loadPage( 3 );
                 } );
             } );
-        }
-
-        public function removeHighlight() : void {
-            _currentTarget.removeHighlight();
         }
 
         public function set selecting( value : Boolean ) : void {
@@ -466,9 +439,6 @@ package jp.archilogic.docnext.ui {
         }
 
         private function changePageCleanUp() : void {
-            _isSelectingHandler( false );
-            _isSelectHighlightHandler( false );
-
             loadNeighborPage();
         }
 
@@ -483,6 +453,7 @@ package jp.archilogic.docnext.ui {
                 _ui.scroller.maxVerticalScrollPosition > 0 ? ( _ui.scroller.verticalScrollPosition ) / _ui.scroller.maxVerticalScrollPosition : 0.5;
 
             var scale : Number = _baseScale * Math.pow( 2 , _zoomExponent / 3.0 );
+
             _ui.wrapper.scaleX = _ui.wrapper.scaleY = scale;
 
             getCurrentForePage().scale = scale;
@@ -507,18 +478,12 @@ package jp.archilogic.docnext.ui {
             _ui.arrowIndicator.hasRightFunc = hasRight;
             _ui.arrowIndicator.isAnimatingFunc = isAnimatingFunc;
 
-            _mouseEventHelper.arrowIndicator = _ui.arrowIndicator;
-
             new ResizeHelper( this , resizeHandler );
         }
 
         private function set currentHead( value : int ) : * {
             _currentHead = value;
             _setPageHandler( _pageHeadHelper.headToPage( _currentHead ) , _info.pages );
-        }
-
-        private function currentTargetHandler( page : PageComponent ) : void {
-            _currentTarget = page;
         }
 
         private function easeInOutCubic( t : Number ) : Number {
@@ -547,6 +512,18 @@ package jp.archilogic.docnext.ui {
             }
 
             return _pages[ _pageHeadHelper.headToPage( _currentHead ) ];
+        }
+
+        private function getCurrentPages() : Vector.<PageComponent> {
+            var ret : Vector.<PageComponent> = new Vector.<PageComponent>();
+
+            ret.push( getCurrentForePage() );
+
+            if ( getCurrentRearPage() ) {
+                ret.push( getCurrentRearPage() );
+            }
+
+            return ret;
         }
 
         private function getCurrentRearPage() : PageComponent {
@@ -580,8 +557,6 @@ package jp.archilogic.docnext.ui {
         private function initLoadComplete( page : PageComponent ) : void {
             currentHead = 0;
             _zoomExponent = 0;
-            _isSelectingHandler( false );
-            _isSelectHighlightHandler( false );
 
             fitWrapperSize( page );
         }
@@ -620,8 +595,8 @@ package jp.archilogic.docnext.ui {
             if ( index >= 0 && index < _info.pages && !_pages[ index ] ) {
                 _loadingCount++;
 
-                DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _ui.scroller ,  _isSelectHighlightHandler ,
-                                           _initHighlightCommentHandler , currentTargetHandler , changePageHandler ,
+                DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _ui.scroller , _contextMenuHelper ,
+                                           _mouseEventHelper.isMenuVisbleFunc , changePageHandler ,
                                            function( page : PageComponent ) : void {
                     _loadingCount--;
 

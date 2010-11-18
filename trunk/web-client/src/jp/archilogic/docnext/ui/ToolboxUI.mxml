@@ -35,24 +35,15 @@
                 <mx:Label fontWeight="bold" text="Search" />
             </mx:Box>
         </mx:HBox>
-        <mx:HBox>
-            <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
-                            sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
-            <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
-                            sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
-            <mx:HBox visible="false">
-                <mx:Button id="changeToHighlightButton" label="Change to highlight" />
-                <mx:Button id="redHighlightButton" label="R" />
-                <mx:Button id="greenHighlightButton" label="G" />
-                <mx:Button id="blueHighlightButton" label="B" />
-                <mx:Button id="removeHighlightButton" label="Remove highlight" />
-                <code:PromptingTextInput id="highlightCommentTextInput" width="100%" prompt="comment" />
-            </mx:HBox>
-        </mx:HBox>
     </mx:Box>
     <mx:Spacer height="100%" />
-    <mx:Box width="100%" backgroundColor="#000000" backgroundAlpha="0.8" paddingTop="10" paddingBottom="10"
-            paddingLeft="10" paddingRight="10">
+    <mx:HBox width="100%" backgroundColor="#000000" backgroundAlpha="0.8" paddingTop="10" paddingBottom="10"
+             paddingLeft="10" paddingRight="10">
         <mx:Button id="beginSelectionButton" label="Begin selection" />
-    </mx:Box>
+        <mx:Spacer width="100%" />
+        <ui:ImageButton id="zoomOutButton" sourceNormal="{Resource.BUTTON_ZOOM_OUT}"
+                        sourceOver="{Resource.BUTTON_ZOOM_OUT_OVER}" sourceDown="{Resource.BUTTON_ZOOM_OUT_DOWN}" />
+        <ui:ImageButton id="zoomInButton" sourceNormal="{Resource.BUTTON_ZOOM_IN}"
+                        sourceOver="{Resource.BUTTON_ZOOM_IN_OVER}" sourceDown="{Resource.BUTTON_ZOOM_IN_DOWN}" />
+    </mx:HBox>
 </mx:Box>
