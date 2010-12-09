@@ -1,0 +1,27 @@
+//
+//  DownloadStatusObject.h
+//  MapDoc
+//
+//  Created by Yoskaku Toyama on 10/07/20.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface DownloadStatusObject : NSObject {
+    id<NSObject> docId;
+    int downloadedPage;
+    int downloadedPx;
+    int downloadedPy;
+}
+
+@property(nonatomic, assign) id<NSObject> docId;
+@property(nonatomic) int downloadedPage;
+@property(nonatomic) int downloadedPx;
+@property(nonatomic) int downloadedPy;
+
++ (DownloadStatusObject *)objectWithDictionary:(NSDictionary *)dictionary;
+
+- (NSDictionary *)toDictionary;
+
+@end
