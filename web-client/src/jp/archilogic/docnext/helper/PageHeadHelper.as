@@ -1,5 +1,4 @@
 package jp.archilogic.docnext.helper {
-    import mx.collections.ArrayCollection;
     import __AS3__.vec.Vector;
 
     public class PageHeadHelper {
@@ -31,6 +30,10 @@ package jp.archilogic.docnext.helper {
 
         public function isValidHead( head : int ) : Boolean {
             return head >= 0 && head < _heads.length;
+        }
+
+        public function get length() : int {
+            return _heads.length;
         }
 
         public function pageToHead( page : int ) : int {
