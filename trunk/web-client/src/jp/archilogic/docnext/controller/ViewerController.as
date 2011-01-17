@@ -1,13 +1,12 @@
 package jp.archilogic.docnext.controller {
-    import com.asual.swfaddress.SWFAddress;
     import mx.controls.Alert;
     import mx.rpc.Fault;
+    import __AS3__.vec.Vector;
     import caurina.transitions.Tweener;
     import jp.archilogic.Delegate;
     import jp.archilogic.ServiceUtil;
     import jp.archilogic.docnext.dto.DocumentResDto;
     import jp.archilogic.docnext.service.DocumentService;
-    import jp.archilogic.docnext.util.ConstUtil;
 
     public class ViewerController extends Delegate {
         public var view : Viewer;
@@ -21,21 +20,9 @@ package jp.archilogic.docnext.controller {
             view.toolbox.changeMenuVisiblityHandler = changeMenuVisiblityHandler;
             view.toolbox.selectingHandler = selectingHandler;
 
-            var id : Number = view.parameters[ 'id' ];
+            var ids : String = view.parameters[ 'id' ];
 
-            DocumentService.findById( id , function( dto : DocumentResDto ) : void {
-                SWFAddress.setTitle( ConstUtil.TITLE_VIEWER_PREFIX + encodeURIComponent( dto.name ) );
-
-                view.documentComponent.load( dto );
-            } , function( fault : Fault ) : void {
-                if ( fault.faultCode == 'NotFound' ) {
-                    Alert.show( '対象のドキュメントは存在しません' );
-                } else if ( fault.faultCode == 'PrivateDocument' ) {
-                    Alert.show( '対象のドキュメントは非公開です' );
-                } else {
-                    ServiceUtil.defaultFaultHandler( fault );
-                }
-            } );
+            findDocumentHelper( ids.split( ',' ) , 0 , new Vector.<DocumentResDto> );
         }
 
         private function changeMenuVisiblityHandler( value : Boolean ) : void {
@@ -50,6 +37,31 @@ package jp.archilogic.docnext.controller {
                             view.toolbox.alpha = 0;
                         }
                     } } );
+        }
+
+        /**
+         * Only check existance currently
+         * TODO set title?
+         */
+        private function findDocumentHelper( ids : Array /* of Number or String */ , position : int ,
+                                             dtos : Vector.<DocumentResDto> ) : void {
+            if ( position < ids.length ) {
+                DocumentService.findById( ids[ position ] , function( dto : DocumentResDto ) : void {
+                    dtos.push( dto );
+
+                    findDocumentHelper( ids , position + 1 , dtos );
+                } , function( fault : Fault ) : void {
+                    if ( fault.faultCode == 'NotFound' ) {
+                        Alert.show( '対象のドキュメントは存在しません' );
+                    } else if ( fault.faultCode == 'PrivateDocument' ) {
+                        Alert.show( '対象のドキュメントは非公開です' );
+                    } else {
+                        ServiceUtil.defaultFaultHandler( fault );
+                    }
+                } );
+            } else {
+                view.documentComponent.load( dtos );
+            }
         }
 
         private function isMenuVisibleHandler() : Boolean {

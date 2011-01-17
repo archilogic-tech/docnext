@@ -38,12 +38,13 @@ package jp.archilogic.docnext.ui {
         }
 
         private var _ui : DocumentComponentUI;
+        private var _currentDocPos : int;
         private var _currentHead : int;
-        private var _pages : Vector.<PageComponent> /* of PageComponent */;
+        private var _pages : Vector.<Vector.<PageComponent>>;
         private var _loadingCount : int;
-        private var _dto : DocumentResDto;
-        private var _info : Object;
-        private var _pageHeadHelper : PageHeadHelper;
+        private var _dtos : Vector.<DocumentResDto>;
+        private var _infos : Vector.<Object>;
+        private var _pageHeadHelpers : Vector.<PageHeadHelper>;
         private var _baseScale : Number;
         private var _zoomExponent : int;
         private var _setPageHandler : Function;
@@ -59,46 +60,13 @@ package jp.archilogic.docnext.ui {
             _mouseEventHelper.isMenuVisibleFunc = value;
         }
 
-        public function load( dto : DocumentResDto ) : void {
-            _dto = dto;
+        public function load( dtos : Vector.<DocumentResDto> ) : void {
+            _dtos = dtos;
+            _infos = new Vector.<Object>( _dtos.length );
+            _pageHeadHelpers = new Vector.<PageHeadHelper>( _dtos.length );
+            _pages = new Vector.<Vector.<PageComponent>>( _dtos.length );
 
-            var self : DocumentComponent = this;
-            DocumentService.getInfo( dto.id , function( json : String ) : void {
-                _info = JSON.decode( json );
-
-                DocumentService.getSinglePageInfo( dto.id , function( singlePages : ArrayCollection ) : void {
-                    _pageHeadHelper = new PageHeadHelper( singlePages.toArray() , _info.pages );
-
-                    _mouseEventHelper.scroller = _ui.scroller;
-                    _mouseEventHelper.arrowIndicator = _ui.arrowIndicator;
-                    _mouseEventHelper.init( self );
-
-                    _pages = new Vector.<PageComponent>( _info.pages );
-
-                    _loadingCount = 0;
-
-                    loadPage( 0 , function( page : PageComponent ) : void {
-                        if ( _info.pages > 1 && !_pageHeadHelper.isSingleHead( 0 ) ) {
-                            addPage( page , true , function( page_ : PageComponent ) : void {
-                                loadPage( 1 , function( page__ : PageComponent ) : void {
-                                    addPage( page__ , false , initLoadComplete );
-                                } );
-                            } );
-                        } else {
-                            addPage( page , false , function( page_ : PageComponent ) : void {
-                                if ( _info.pages > 1 ) {
-                                    loadPage( 1 );
-                                }
-
-                                initLoadComplete( page_ );
-                            } );
-                        }
-                    } );
-
-                    loadPage( 2 );
-                    loadPage( 3 );
-                } );
-            } );
+            loadHelepr( 0 );
         }
 
         public function set selecting( value : Boolean ) : void {
@@ -140,7 +108,7 @@ package jp.archilogic.docnext.ui {
                 } );
             } );
 
-            // for cenering
+            // for centering
             if ( isFore ) {
                 page.x = page.contentWidth;
             } else {
@@ -178,41 +146,57 @@ package jp.archilogic.docnext.ui {
         }
 
         private function changeHead( head : int ) : void {
-            if ( !_pageHeadHelper.isValidHead( head ) || head == _currentHead || _isAnimating || _loadingCount > 0 ) {
+            var nextDocPos : int = _currentDocPos;
+
+            if ( head < 0 && _currentDocPos - 1 >= 0 ) {
+                nextDocPos--;
+                head += _pageHeadHelpers[ nextDocPos ].length;
+            }
+
+            if ( head >= _pageHeadHelpers[ _currentDocPos ].length && _currentDocPos + 1 < _infos.length ) {
+                nextDocPos++;
+                head -= _pageHeadHelpers[ _currentDocPos ].length;
+            }
+
+            if ( !_pageHeadHelpers[ nextDocPos ].isValidHead( head ) ||
+                nextDocPos == _currentDocPos && head == _currentHead || _isAnimating || _loadingCount > 0 ) {
                 return;
             }
 
-            var current : Boolean = _pageHeadHelper.isSingleHead( _currentHead );
-            var next : Boolean = _pageHeadHelper.isSingleHead( head );
+            var current : Boolean = _pageHeadHelpers[ _currentDocPos ].isSingleHead( _currentHead );
+            var next : Boolean = _pageHeadHelpers[ nextDocPos ].isSingleHead( head );
 
             if ( current ) {
                 if ( next ) {
-                    changePage1to1( head );
+                    changePage1to1( head , nextDocPos );
                 } else {
-                    changePage1to2( head );
+                    changePage1to2( head , nextDocPos );
                 }
             } else {
                 if ( next ) {
-                    changePage2to1( head );
+                    changePage2to1( head , nextDocPos );
                 } else {
-                    changePage2to2( head );
+                    changePage2to2( head , nextDocPos );
                 }
             }
         }
 
-        private function changePage1to1( head : int ) : void {
+        private function changePage1to1( head : int , docPos : int ) : void {
             var prev : PageComponent = getCurrentForePage();
 
+            var prevDocPos : int = _currentDocPos;
             var prevHead : int = _currentHead;
 
+            _currentDocPos = docPos;
             currentHead = head;
             var next : PageComponent = getCurrentForePage();
 
             if ( !next ) {
-                loadPage( _pageHeadHelper.headToPage( head ) , function( page : PageComponent ) : void {
-                    changePage1to1( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) , function( page : PageComponent ) : void {
+                    changePage1to1( head , docPos );
                 } );
 
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
@@ -226,7 +210,6 @@ package jp.archilogic.docnext.ui {
                         _ui.wrapper.removeChild( prev );
                     }
                 } , function() : void {
-
                     next.initSelection();
                     next.clearEmphasize();
 
@@ -237,31 +220,35 @@ package jp.archilogic.docnext.ui {
             } , true );
         }
 
-        private function changePage1to2( head : int ) : void {
-            var isForward : Boolean = head > _currentHead;
+        private function changePage1to2( head : int , docPos : int ) : void {
+            var isForward : Boolean = docPos > _currentDocPos || docPos >= _currentDocPos && head > _currentHead;
 
             var prev : PageComponent = getCurrentForePage();
 
+            var prevDocPos : int = _currentDocPos;
             var prevHead : int = _currentHead;
 
+            _currentDocPos = docPos;
             currentHead = head;
             var nextFore : PageComponent = getCurrentForePage();
             var nextRear : PageComponent = getCurrentRearPage();
 
             if ( !nextFore ) {
-                loadPage( _pageHeadHelper.headToPage( head ) , function( page : PageComponent ) : void {
-                    changePage1to2( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) , function( page : PageComponent ) : void {
+                    changePage1to2( head , docPos );
                 } );
 
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
 
             if ( !nextRear ) {
-                loadPage( _pageHeadHelper.headToPage( head ) + 1 , function( page : PageComponent ) : void {
-                    changePage1to2( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) + 1 , function( page : PageComponent ) : void {
+                    changePage1to2( head , docPos );
                 } );
 
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
@@ -309,22 +296,25 @@ package jp.archilogic.docnext.ui {
             } , true );
         }
 
-        private function changePage2to1( head : int ) : void {
-            var isForward : Boolean = head > _currentHead;
+        private function changePage2to1( head : int , docPos : int ) : void {
+            var isForward : Boolean = docPos > _currentDocPos || docPos >= _currentDocPos && head > _currentHead;
 
             var prevFore : PageComponent = getCurrentForePage();
             var prevRear : PageComponent = getCurrentRearPage();
 
+            var prevDocPos : int = _currentDocPos;
             var prevHead : int = _currentHead;
 
+            _currentDocPos = docPos;
             currentHead = head;
             var next : PageComponent = getCurrentForePage();
 
             if ( !next ) {
-                loadPage( _pageHeadHelper.headToPage( head ) , function( page : PageComponent ) : void {
-                    changePage2to1( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) , function( page : PageComponent ) : void {
+                    changePage2to1( head , docPos );
                 } );
 
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
@@ -368,32 +358,36 @@ package jp.archilogic.docnext.ui {
             } , true );
         }
 
-        private function changePage2to2( head : int ) : void {
-            var isForward : Boolean = head > _currentHead;
+        private function changePage2to2( head : int , docPos : int ) : void {
+            var isForward : Boolean = docPos > _currentDocPos || docPos >= _currentDocPos && head > _currentHead;
 
             var prevFore : PageComponent = getCurrentForePage();
             var prevRear : PageComponent = getCurrentRearPage();
 
+            var prevDocPos : int = docPos;
             var prevHead : int = _currentHead;
 
+            _currentDocPos = docPos;
             currentHead = head;
             var nextFore : PageComponent = getCurrentForePage();
             var nextRear : PageComponent = getCurrentRearPage();
 
             if ( !nextFore ) {
-                loadPage( _pageHeadHelper.headToPage( head ) , function( page : PageComponent ) : void {
-                    changePage2to2( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) , function( page : PageComponent ) : void {
+                    changePage2to2( head , docPos );
                 } );
 
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
 
             if ( !nextRear ) {
-                loadPage( _pageHeadHelper.headToPage( head ) + 1 , function( page : PageComponent ) : void {
-                    changePage2to2( head );
+                loadPage( _pageHeadHelpers[ docPos ].headToPage( head ) + 1 , function( page : PageComponent ) : void {
+                    changePage2to2( head , docPos );
                 } );
 
+                _currentDocPos = docPos;
                 currentHead = prevHead;
                 return;
             }
@@ -443,7 +437,7 @@ package jp.archilogic.docnext.ui {
         }
 
         private function changePageHandler( page : int ) : void {
-            changeHead( _pageHeadHelper.pageToHead( page ) );
+            changeHead( _pageHeadHelpers[ _currentDocPos ].pageToHead( page ) );
         }
 
         private function changeScale() : void {
@@ -483,14 +477,14 @@ package jp.archilogic.docnext.ui {
 
         private function set currentHead( value : int ) : * {
             _currentHead = value;
-            _setPageHandler( _pageHeadHelper.headToPage( _currentHead ) , _info.pages );
-        }
-
-        private function easeInOutCubic( t : Number ) : Number {
-            return t < 0.5 ? 4 * t * t * t : 4 * ( t - 1 ) * ( t - 1 ) * ( t - 1 ) + 1;
+            _setPageHandler( _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead ) ,
+                                                                            _infos[ _currentDocPos ].pages );
         }
 
         private function easeInOutQuart( t : Number ) : Number {
+            // cubic
+            // return t < 0.5 ? 4 * t * t * t : 4 * ( t - 1 ) * ( t - 1 ) * ( t - 1 ) + 1;
+
             return t < 0.5 ? 8 * t * t * t * t : -8 * ( t - 1 ) * ( t - 1 ) * ( t - 1 ) * ( t - 1 ) + 1;
         }
 
@@ -511,7 +505,7 @@ package jp.archilogic.docnext.ui {
                 return null;
             }
 
-            return _pages[ _pageHeadHelper.headToPage( _currentHead ) ];
+            return _pages[ _currentDocPos ][ _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead ) ];
         }
 
         private function getCurrentPages() : Vector.<PageComponent> {
@@ -527,15 +521,12 @@ package jp.archilogic.docnext.ui {
         }
 
         private function getCurrentRearPage() : PageComponent {
-            if ( !_pages ) {
+            if ( !_pages || !_pages[ _currentDocPos ] ||
+                _pageHeadHelpers[ _currentDocPos ].isSingleHead( _currentHead ) ) {
                 return null;
             }
 
-            if ( _pageHeadHelper.isSingleHead( _currentHead ) ) {
-                return null;
-            }
-
-            return _pages[ _pageHeadHelper.headToPage( _currentHead ) + 1 ];
+            return _pages[ _currentDocPos ][ _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead ) + 1 ];
         }
 
         private function hasLeft() : Boolean {
@@ -543,11 +534,12 @@ package jp.archilogic.docnext.ui {
         }
 
         private function hasNext() : Boolean {
-            return _pageHeadHelper.isValidHead( _currentHead + 1 );
+            return _currentDocPos + 1 < _infos.length ||
+                _pageHeadHelpers[ _currentDocPos ].isValidHead( _currentHead + 1 );
         }
 
         private function hasPrev() : Boolean {
-            return _pageHeadHelper.isValidHead( _currentHead - 1 );
+            return _currentDocPos - 1 >= 0 || _pageHeadHelpers[ _currentDocPos ].isValidHead( _currentHead - 1 );
         }
 
         private function hasRight() : Boolean {
@@ -556,9 +548,14 @@ package jp.archilogic.docnext.ui {
 
         private function initLoadComplete( page : PageComponent ) : void {
             currentHead = 0;
+            _currentDocPos = 0;
             _zoomExponent = 0;
 
             fitWrapperSize( page );
+
+            _mouseEventHelper.scroller = _ui.scroller;
+            _mouseEventHelper.arrowIndicator = _ui.arrowIndicator;
+            _mouseEventHelper.init( this );
         }
 
         private function set isAnimating( value : Boolean ) : * {
@@ -575,13 +572,56 @@ package jp.archilogic.docnext.ui {
             return _isAnimating;
         }
 
-        private function loadNeighborPage() : void {
-            var page : int = _pageHeadHelper.headToPage( _currentHead );
+        private function loadHelepr( position : int ) : void {
+            if ( position < _dtos.length ) {
+                DocumentService.getInfo( _dtos[ position ].id , function( json : String ) : void {
+                    _infos[ position ] = JSON.decode( json );
 
-            for ( var index : int = 0 ; index < _info.pages ; index++ ) {
+                    DocumentService.getSinglePageInfo( _dtos[ position ].id ,
+                                                       function( singlePages : ArrayCollection ) : void {
+                        _pageHeadHelpers[ position ] =
+                            new PageHeadHelper( singlePages.toArray() , _infos[ position ].pages );
+                        _pages[ position ] = new Vector.<PageComponent>( _infos[ position ].pages );
+
+                        loadHelepr( position + 1 );
+                    } );
+                } );
+            } else {
+                _loadingCount = 0;
+
+                loadPage( 0 , function( page : PageComponent ) : void {
+                    if ( _infos[ 0 ].pages > 1 && !_pageHeadHelpers[ 0 ].isSingleHead( 0 ) ) {
+                        addPage( page , true , function( page_ : PageComponent ) : void {
+                            loadPage( 1 , function( page__ : PageComponent ) : void {
+                                addPage( page__ , false , initLoadComplete );
+                            } );
+                        } );
+                    } else {
+                        addPage( page , false , function( page_ : PageComponent ) : void {
+                            if ( _infos[ 0 ].pages > 1 ) {
+                                loadPage( 1 );
+                            }
+
+                            initLoadComplete( page_ );
+                        } );
+                    }
+                } );
+
+                loadPage( 2 );
+                loadPage( 3 );
+            }
+        }
+
+        /**
+         * Ignore neighbor document, currently
+         */
+        private function loadNeighborPage() : void {
+            var page : int = _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead );
+
+            for ( var index : int = 0 ; index < _infos[ _currentDocPos ].pages ; index++ ) {
                 if ( index < page - 2 || index > page + 3 ) {
-                    delete _pages[ index ];
-                    _pages[ index ] = null;
+                    delete _pages[ _currentDocPos ][ index ];
+                    _pages[ _currentDocPos ][ index ] = null;
                 }
             }
 
@@ -592,10 +632,11 @@ package jp.archilogic.docnext.ui {
         }
 
         private function loadPage( index : int , next : Function = null ) : void {
-            if ( index >= 0 && index < _info.pages && !_pages[ index ] ) {
+            if ( index >= 0 && index < _infos[ _currentDocPos ].pages && !_pages[ _currentDocPos ][ index ] ) {
                 _loadingCount++;
 
-                DocumentLoadUtil.loadPage( _dto.id , index , _info.ratio , _pages , _ui.scroller , _contextMenuHelper ,
+                DocumentLoadUtil.loadPage( _dtos[ _currentDocPos ].id , index , _infos[ _currentDocPos ].ratio ,
+                                           _pages[ _currentDocPos ] , _ui.scroller , _contextMenuHelper ,
                                            _mouseEventHelper.isMenuVisbleFunc , changePageHandler ,
                                            function( page : PageComponent ) : void {
                     _loadingCount--;
