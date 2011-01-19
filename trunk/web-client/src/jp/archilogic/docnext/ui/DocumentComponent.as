@@ -364,7 +364,7 @@ package jp.archilogic.docnext.ui {
             var prevFore : PageComponent = getCurrentForePage();
             var prevRear : PageComponent = getCurrentRearPage();
 
-            var prevDocPos : int = docPos;
+            var prevDocPos : int = _currentDocPos;
             var prevHead : int = _currentHead;
 
             _currentDocPos = docPos;
@@ -387,7 +387,7 @@ package jp.archilogic.docnext.ui {
                     changePage2to2( head , docPos );
                 } );
 
-                _currentDocPos = docPos;
+                _currentDocPos = prevDocPos;
                 currentHead = prevHead;
                 return;
             }
