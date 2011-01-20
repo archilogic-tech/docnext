@@ -71,7 +71,10 @@
 - (void)resume {
     DownloadStatusObject *downloadStatus = [_datasource downloadStatus];
     
-    [self downloadNextPage:downloadStatus.docId page:downloadStatus.downloadedPage px:downloadStatus.downloadedPx
+    [self downloadNextPage:downloadStatus.metaDocumentId
+				documentId:downloadStatus.docId
+					  page:downloadStatus.downloadedPage
+						px:downloadStatus.downloadedPx
                         py:downloadStatus.downloadedPy];
 }
 
@@ -139,15 +142,17 @@
     }
 }
 
-- (void)updateDownloadStatus:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
+- (void)updateDownloadStatus:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
     DownloadStatusObject *downloadStatus = [[DownloadStatusObject alloc] init];
     downloadStatus.docId = docId;
+	downloadStatus.metaDocumentId = metaDocumentId;
     downloadStatus.downloadedPage = page;
     downloadStatus.downloadedPx = px;
     downloadStatus.downloadedPy = py;
-    
+	
     [_datasource saveDownloadStatus:downloadStatus];
 	[downloadStatus release];
+//	assert(0);
 }
 
 #pragma mark ASIHTTPRequest didFinishSelector
@@ -206,7 +211,7 @@
 	
 	// Take care this way is depended on the fact 2x2 is max
 	// TODO 意味を理解して修正すること
-	[self updateDownloadStatus:docId page:-1 px:1 py:1];
+	[self updateDownloadStatus:metaDocumentId documentId:docId page:-1 px:1 py:1];
 	
 	// 誌面画像のダウンロードを別スレッドで開始する
     [self downloadPage:metaDocumentId documentId:docId page:0 px:0 py:0];
@@ -236,7 +241,7 @@
     int px = [[request.userInfo objectForKey:@"px"] intValue];
     int py = [[request.userInfo objectForKey:@"py"] intValue];
 
-    [self updateDownloadStatus:docId page:page px:px py:py];
+    [self updateDownloadStatus:metaDocumentId documentId:docId page:page px:px py:py];
     [self downloadNextPage:metaDocumentId documentId:docId page:page px:px py:py];
 }
 

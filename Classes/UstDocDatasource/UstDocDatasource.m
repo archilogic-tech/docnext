@@ -24,6 +24,10 @@
 		_localStorage = [[StandardLocalStorageManager alloc] init];
         _downloadManager = [[UstDocDownloadManager alloc] init];
 		_downloadManager.datasource = self;
+
+		// TODO for debug
+		[self deleteDownloadStatus];
+
         if ( [self hasDownloading] ) {
             [_downloadManager resume];
         }
