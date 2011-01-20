@@ -10,23 +10,29 @@
 
 @implementation HistoryObject
 
-@synthesize documentId;
-@synthesize page;
+@synthesize documentContext = _documentContext;
+
+// TODO このクラスは、DocumentContextに近いので、廃止する
 
 + (HistoryObject *)objectWithDictionary:(NSDictionary *)dictionary {
     HistoryObject *ret = [[HistoryObject new] autorelease];
     
-    ret.documentId = [dictionary objectForKey:@"documentId"];
-    ret.page = [[dictionary objectForKey:@"page"] intValue];
-    
+	DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = [dictionary objectForKey:@"documentId"];
+	dc.currentPage = [[dictionary objectForKey:@"page"] intValue];
+	//dc.documentOffset = [[dictionary objectForKey:@"documentOffset"] intValue];
+    ret.documentContext = dc;
+	[dc release];
+	
     return ret;
 }
 
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *ret = [NSMutableDictionary dictionaryWithCapacity:0];
     
-    [ret setObject:[NSString stringWithFormat:@"%@" , documentId] forKey:@"documentId"];
-    [ret setObject:[NSString stringWithFormat:@"%d" , page] forKey:@"page"];
+    [ret setObject:[NSString stringWithFormat:@"%@" , _documentContext.documentId] forKey:@"documentId"];
+    [ret setObject:[NSString stringWithFormat:@"%d" , _documentContext.currentPage] forKey:@"page"];
+    //[ret setObject:[NSString stringWithFormat:@"%d" , _documentContext.documentOffset] forKey:@"documentOffset"];
     
     return ret;
 }

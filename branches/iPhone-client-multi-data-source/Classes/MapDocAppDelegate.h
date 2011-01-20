@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "UITouchAwareWindow.h"
-#import "SampleDatasource.h"
-#import "UstDocDatasource.h"
+//#import "UstDocDatasource.h"
+#import "DocumentDownloadManager.h"
 
 @class MapDocViewController;
 
@@ -18,11 +18,14 @@
     MapDocViewController *viewController;
     
     UIAlertView *loading;
-	UstDocDatasource *_datasource;
+	id<NSObject,DocumentViewerDatasource> _datasource;
 }
 
 @property (nonatomic, retain) IBOutlet UITouchAwareWindow *window;
 @property (nonatomic, retain) IBOutlet MapDocViewController *viewController;
+
+@property (nonatomic, readonly) id<NSObject,DocumentViewerDatasource> datasource;
+
 
 @end
 

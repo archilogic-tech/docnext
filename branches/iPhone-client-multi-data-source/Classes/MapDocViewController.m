@@ -17,9 +17,6 @@
 #import "DocumentViewerConst.h"
 #import "ASIHTTPRequest.h"
 #import "Reachability.h"
-#import "SampleConst.h"
-
-#import "SampleDatasource.h"
 
 @interface MapDocViewController ()
 - (void)addSubview:(BOOL)animated;
@@ -35,26 +32,29 @@
 
 	BrowserViewController *c = [BrowserViewController createViewController:self.interfaceOrientation datasource:_datasource];
 	c.parent = self;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	_datasource.downloadManagerDelegate = c;
 	
 	[self.current.view removeFromSuperview];
     self.current = c;
     [self addSubview:animated];
 }
 
+
 - (void)showBookshelf:(BOOL)animated {
 
     BookshelfViewController *c = [BookshelfViewController createViewController:self.interfaceOrientation datasource:_datasource];
     c.parent = self;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	_datasource.downloadManagerDelegate = c;
     
 	[self.current.view removeFromSuperview];
     self.current = c;
     [self addSubview:animated];
 }
 
+#define UstDocReachabilityHost (@"ustdoc.com")
+
 - (void)showHome:(BOOL)animated {
-    if ( [[Reachability reachabilityWithHostName:MediaDoReachabilityHost] currentReachabilityStatus] != NotReachable ) {
+    if ( [[Reachability reachabilityWithHostName:UstDocReachabilityHost] currentReachabilityStatus] != NotReachable ) {
 //	if (NO) {
         [self showBrowser:animated];
     } else {
@@ -66,80 +66,92 @@
     
 	BookshelfDeletionViewController *c = [BookshelfDeletionViewController createViewController:self.interfaceOrientation datasource:_datasource];
     c.parent = self;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	_datasource.downloadManagerDelegate = c;
     
 	[self.current.view removeFromSuperview];
     self.current = c;
     [self addSubview:YES];
 }
 
-- (void)showImage:(id)documentId page:(int)page {
+//- (void)showImage:(id)documentId page:(int)page {
+- (void)showImage:(DocumentContext*)documentContext {
 
 	ImageViewController *ic = [ImageViewController createViewController:self.interfaceOrientation
 															 datasource:_datasource
 																 window:window];
 	ic.parent = self;
-    ic.documentId = documentId;
-	[ic setIndexByPage:page];
-	((SampleDatasource*)_datasource).downloadManagerDelegate = ic;
+	ic.documentContext = documentContext;
+	
+//	ic.documentId = documentId;
+//	[ic setIndexByPage:page];
+	_datasource.downloadManagerDelegate = ic;
     
 	[self.current.view removeFromSuperview];
     self.current = ic;
     [self addSubview:YES];
 }
 
-- (void)showTOC:(id)documentId prevPage:(int)prevPage {
+- (void)showTOC:(DocumentContext*)documentContext {
+//	- (void)showTOC:(id)documentId prevPage:(int)prevPage {
     
 	TOCViewController *tc = [TOCViewController createViewController:self.interfaceOrientation
 														 datasource:_datasource];
 	
 	
 	tc.parent = self;
-	tc.documentId = documentId;
-	tc.prevPage = prevPage;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = tc;
+	tc.documentContext = documentContext;
+//	tc.documentId = documentId;
+//	tc.prevPage = prevPage;
+	_datasource.downloadManagerDelegate = tc;
 
     [self.current.view removeFromSuperview];
     self.current = tc;
     [self addSubview:YES];
 }
 
-- (void)showThumbnail:(id)documentId page:(int)page {
+- (void)showThumbnail:(DocumentContext*)documentContext {
+//- (void)showThumbnail:(id)documentId page:(int)page {
     
 	ThumbnailViewController *c = [ThumbnailViewController createViewController:self.interfaceOrientation datasource:_datasource];
 	c.parent = self;
-	c.documentId = documentId;
-	c.page = page;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	c.documentContext = documentContext;
+//	c.documentId = documentId;
+//	c.page = page;
+	_datasource.downloadManagerDelegate = c;
 
 	[self.current.view removeFromSuperview];
 	self.current = c;
     [self addSubview:YES];
 }
 
-- (void)showBookmark:(id)documentId page:(int)page {
+- (void)showBookmark:(DocumentContext*)documentContext {
+//- (void)showBookmark:(id)documentId page:(int)page {
     
-	NSString *title = [_datasource toc:documentId page:page].text;
+//	NSString *title = [_datasource toc:documentId page:page].text;
 
     BookmarkViewController *c = [BookmarkViewController createViewController:self.interfaceOrientation datasource:_datasource];
 	c.parent = self;
-	c.currentDocumentId = documentId;
-	c.currentPage = page;
-	c.currentTitle = title;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	c.documentContext = documentContext;
+//	c.currentDocumentId = documentId;
+//	c.currentPage = page;
+//	c.currentTitle = title;
+	_datasource.downloadManagerDelegate = c;
 
 	[self.current.view removeFromSuperview];
 	self.current = c;
     [self addSubview:YES];
 }
 
-- (void)showText:(id)documentId page:(int)page {
+- (void)showText:(DocumentContext*)documentContext {
+//	- (void)showText:(id)documentId page:(int)page {
     
-	TextViewController *c = [TextViewController createViewController:self.interfaceOrientation datasource:_datasource];
+	TextViewController *c = [TextViewController createViewController:self.interfaceOrientation];
 	c.parent = self;
-	c.documentId = documentId;
-	c.currentPage = page;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = c;
+	c.documentContext = documentContext;
+
+//c.documentId = documentId;
+//	c.currentPage = page;
+	_datasource.downloadManagerDelegate = c;
 
 	[self.current.view removeFromSuperview];
 	self.current = c;
@@ -179,7 +191,7 @@
     
     self.current = [self.current createViewController:willInterfaceOrientation];
     self.current.parent = self;
-	((SampleDatasource*)_datasource).downloadManagerDelegate = self.current;
+	_datasource.downloadManagerDelegate = self.current;
     
     [self.view addSubview:self.current.view];
     self.current.view.alpha = 0;

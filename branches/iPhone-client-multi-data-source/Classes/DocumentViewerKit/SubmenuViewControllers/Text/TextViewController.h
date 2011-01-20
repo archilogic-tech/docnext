@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MapDocViewController.h"
 #import "ASIHTTPRequest.h"
+#import "DocumentContext.h"
 
 @interface TextViewController : IUIViewController <UIScrollViewDelegate> {
     UILabel *titleLabel;
@@ -18,12 +19,15 @@
     UISegmentedControl *directionSegment;
     UIView *scrollViewHolder;
 
-    id<NSObject> documentId;
+//    id<NSObject> documentId;
+//    int currentPage;
+//    int totalPage;
+//	id<NSObject,DocumentViewerDatasource> _datasource;
+
     UIScrollView *current;
     UIScrollView *prev;
-    int currentPage;
-    int totalPage;
-	id<NSObject,DocumentViewerDatasource> _datasource;
+
+	DocumentContext *_documentContext;
 }
 
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
@@ -32,14 +36,12 @@
 @property(nonatomic,retain) IBOutlet UISegmentedControl *colorSegment;
 @property(nonatomic,retain) IBOutlet UISegmentedControl *directionSegment;
 @property(nonatomic,retain) IBOutlet UIView *scrollViewHolder;
-@property(nonatomic,copy) id<NSObject> documentId;
 @property(nonatomic,retain) UIScrollView *current;
 @property(nonatomic,retain) UIScrollView *prev;
-@property(nonatomic) int currentPage;
 
-@property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
+@property (nonatomic, retain) DocumentContext *documentContext;
 
-+ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<NSObject,DocumentViewerDatasource>)datasource;
++ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation;
 
 
 - (IBAction)imageViewButtonClick:(id)sender;

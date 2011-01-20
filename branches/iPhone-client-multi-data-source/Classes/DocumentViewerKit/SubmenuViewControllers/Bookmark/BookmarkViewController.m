@@ -18,10 +18,11 @@
 
 @synthesize tableView;
 @synthesize bookmarks;
-@synthesize currentDocumentId;
-@synthesize currentPage;
-@synthesize currentTitle;
+//@synthesize currentDocumentId;
+//@synthesize currentPage;
+//@synthesize currentTitle;
 
+@synthesize documentContext = _documentContext;
 @synthesize datasource = _datasource;
 
 + (BookmarkViewController *)createViewController:(UIInterfaceOrientation)orientation
@@ -36,14 +37,18 @@
 
 
 - (IBAction)backButtonClick:(id)sender {
-    [parent showImage:self.currentDocumentId page:self.currentPage];
+	[parent showImage:_documentContext];
+//    [parent showImage:self.currentDocumentId page:self.currentPage];
 }
 
 - (IBAction)addButtonClick:(id)sender {
     BookmarkObject *bookmark = [[BookmarkObject new] autorelease];
-    bookmark.documentId = self.currentDocumentId;
-    bookmark.page = self.currentPage;
-    bookmark.contentName = self.currentTitle;
+
+	bookmark.documentContext = _documentContext;
+	bookmark.contentName = [_documentContext title];
+//    bookmark.documentId = self.currentDocumentId;
+//    bookmark.page = self.currentPage;
+//    bookmark.contentName = self.currentTitle;
     
     for ( BookmarkObject *already in self.bookmarks ) {
         if ( [bookmark equals:already] ) {
@@ -62,8 +67,9 @@
 
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 	BookmarkViewController *c = [BookmarkViewController createViewController:orientation datasource:_datasource];
-	c.currentDocumentId = self.currentDocumentId;
-	c.currentPage = self.currentPage;
+	c.documentContext = _documentContext;
+//	c.currentDocumentId = self.currentDocumentId;
+//	c.currentPage = self.currentPage;
 	return c;
 }
 
@@ -113,8 +119,8 @@
     
     BookmarkObject *bookmark = (BookmarkObject *)[self.bookmarks objectAtIndex:indexPath.row];
 
-    NSString *title = [_datasource title:bookmark.documentId];
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@ - %d page" , title , bookmark.contentName , (bookmark.page + 1)];
+	NSString *title = [bookmark.documentContext title];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@ - %d page" , title , bookmark.contentName , (bookmark.documentContext.currentPage + 1)];
     
     return cell;
 }
@@ -144,7 +150,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     BookmarkObject *bookmark = (BookmarkObject *)[self.bookmarks objectAtIndex:indexPath.row];
-    [parent showImage:bookmark.documentId page:bookmark.page];
+	[parent showImage:bookmark.documentContext];
+//    [parent showImage:bookmark.documentId page:bookmark.page];
 }
 
 - (void)viewDidLoad {
@@ -162,9 +169,10 @@
 - (void)dealloc {
     [tableView release];
     [bookmarks release];
-    [currentTitle release];
+//    [currentTitle release];
 	[_datasource release];
-	[currentDocumentId release];
+	[_documentContext release];
+//	[currentDocumentId release];
     
     [super dealloc];
 }

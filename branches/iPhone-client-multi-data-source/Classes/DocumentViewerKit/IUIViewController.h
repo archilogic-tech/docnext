@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DownloadManagerDelegate.h"
+#import "DocumentDownloadManager.h"
 
 @class MapDocViewController;
 

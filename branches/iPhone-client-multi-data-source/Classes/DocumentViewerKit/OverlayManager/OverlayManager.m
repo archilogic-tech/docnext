@@ -21,6 +21,7 @@
 @synthesize markerView;
 @synthesize balloonContainerView;
 
+@synthesize documentContext = _documentContext;
 @synthesize datasource = _datasource;
 
 #pragma mark lifecycle
@@ -41,6 +42,7 @@
     [selectionLeft release];
     [selectionRight release];
     [_datasource release];
+	[_documentContext release];
 	
     [super dealloc];
 }
@@ -65,7 +67,8 @@
 
 - (Region *)region:(int)atIndex {
     if ( regions == nil ) {
-        regions = [[_datasource regions:docId page:page] retain];
+//        regions = [[_datasource regions:docId page:page] retain];
+		regions = [[_documentContext region] retain];
     }
     
     return [regions objectAtIndex:atIndex];
@@ -73,7 +76,8 @@
 
 - (int)getNearestIndex:(CGPoint)point {
     if ( regions == nil ) {
-        regions = [[_datasource regions:docId page:page] retain];
+		//        regions = [[_datasource regions:docId page:page] retain];
+		regions = [[_documentContext region] retain];
     }
     
     if ( regions.count == 0 ) {
@@ -213,9 +217,11 @@
 
 #pragma mark public
 
-- (void)setParam:(id)_docId page:(int)_page size:(CGSize)size {
-    docId = _docId;
-    page = _page;
+- (void)setParam:(DocumentContext*)documentContext size:(CGSize)size {
+	[_documentContext release];
+	_documentContext = [documentContext retain];
+//    docId = _docId;
+//    page = _page;
     
     // clear cache
     [separationHolder release];
@@ -224,7 +230,7 @@
     regions = nil;
     
     // TODO cache ratio or not?
-	double ratio = [_datasource ratio:docId];
+	double ratio = [_documentContext ratio];
     actual = [self calcActualRect:ratio size:size];
 }
 

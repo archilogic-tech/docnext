@@ -30,28 +30,29 @@
 @synthesize colorSegment;
 @synthesize directionSegment;
 @synthesize scrollViewHolder;
-@synthesize documentId;
 @synthesize current;
 @synthesize prev;
-@synthesize currentPage;
+//@synthesize documentId;
+//@synthesize currentPage;
 
-@synthesize datasource = _datasource;
+//@synthesize datasource = _datasource;
+@synthesize documentContext = _documentContext;
 
 #pragma mark public
 
 + (TextViewController *)createViewController:(UIInterfaceOrientation)orientation
-								  datasource:(id<NSObject,DocumentViewerDatasource>)datasource
 {
     TextViewController *ret = [[[TextViewController alloc] initWithNibName:
                                 [IUIViewController buildNibName:@"Text" orientation:orientation] bundle:nil] autorelease];
     [ret setLandspace:orientation];
-	ret.datasource = datasource;
+//	ret.datasource = datasource;
     return ret;
 }
 
 
 - (IBAction)imageViewButtonClick:(id)sender {
-    [parent showImage:documentId page:currentPage];
+	[parent showImage:_documentContext];
+//    [parent showImage:documentId page:currentPage];
 }
 
 - (IBAction)toggleConfigViewButtonClick:(id)sender {
@@ -74,20 +75,21 @@
 
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 
-	TextViewController *c = [TextViewController createViewController:orientation datasource:_datasource];
-	c.documentId = self.documentId;
-	c.currentPage = self.currentPage;
+	TextViewController *c = [TextViewController createViewController:orientation];// datasource:_datasource];
+	c.documentContext = _documentContext;
+//	c.documentId = self.documentId;
+//	c.currentPage = self.currentPage;
 	return c;
 }
 
 #pragma mark private
 
 - (void)movePage:(BOOL)isNext {
-    if ( isNext ? currentPage + 1 >= totalPage : currentPage - 1 < 0 ) {
+    if ( isNext ? _documentContext.currentPage + 1 >= [_documentContext totalPage] : _documentContext.currentPage - 1 < 0 ) {
         return;
     }
     
-    currentPage += isNext ? 1 : -1;
+    _documentContext.currentPage += isNext ? 1 : -1;
     
     self.titleLabel.text = @"Loading...";
     [self addConfiguredTextView:@"" rubys:[NSArray array] textSizes:[NSArray array]];
@@ -178,9 +180,10 @@
 #pragma mark load
 
 - (void)loadCurrent {
-    self.titleLabel.text = [_datasource toc:documentId page:currentPage].text;
+    self.titleLabel.text = [_documentContext title];//  [_datasource toc:documentId page:currentPage].text;
     
-    NSString *text = [_datasource texts:documentId page:currentPage];
+	NSString *text = [_documentContext texts];
+//    NSString *text = [_datasource texts:documentId page:currentPage];
     MarkupParseResult *result = [[[MarkupParser new] autorelease] parse:text];
     
     [self addConfiguredTextView:result.text rubys:result.rubys textSizes:result.textSizes];
@@ -212,7 +215,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    totalPage = [_datasource pages:documentId];
+//    totalPage = [_datasource pages:documentId];
     
     [self loadCurrent];
 }
@@ -222,8 +225,10 @@
     [configView release];
     [scrollViewHolder release];
     [current release];
-	[_datasource release];
-	[documentId release];
+	
+//	[_datasource release];
+	[_documentContext release];
+//	[documentId release];
     [super dealloc];
 }
 

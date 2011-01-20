@@ -8,18 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import "UstDocDatasource.h"
-#import "DownloadManagerDelegate.h"
+//#import "DownloadManagerDelegate.h"
+#import "DocumentDownloadManager.h"
+
 
 @class UstDocDatasource;
 
-@interface UstDocDownloadManager : NSObject {
+@interface UstDocDownloadManager : NSObject<DocumentDownloadManager> {
     id<NSObject,DownloadManagerDelegate> delegate;
-	UstDocDatasource *_datasource;
+	id<NSObject,DocumentViewerDatasource> _datasource;
 
 }
 
 @property(nonatomic,assign) id<NSObject,DownloadManagerDelegate> delegate;
-@property(nonatomic,retain) UstDocDatasource *datasource;
+@property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 /*!
     @method     startMetaInfoDownload:baseUrl:
@@ -29,6 +31,9 @@
     @param      baseUrl ベースURL
 */
 - (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl;
+
+- (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl index:(int)idx;
+
 
 /*!
     @method     resume

@@ -15,11 +15,13 @@
 @implementation TOCViewController
 
 @synthesize tableView;
-@synthesize documentId;
-@synthesize prevPage;
+//@synthesize documentId;
+//@synthesize prevPage;
 @synthesize tocs;
 
 @synthesize datasource = _datasource;
+@synthesize documentContext = _documentContext;
+
 
 + (TOCViewController *)createViewController:(UIInterfaceOrientation)orientation
 								 datasource:(id<NSObject,DocumentViewerDatasource>)datasource
@@ -32,13 +34,15 @@
 }
 
 - (IBAction)backButtonClick:(id)sender {
-    [parent showImage:self.documentId page:self.prevPage];
+//    [parent showImage:self.documentId page:self.prevPage];
+	[parent showImage:_documentContext];
 }
  
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 	TOCViewController *c = [TOCViewController createViewController:orientation datasource:_datasource];
-	c.documentId = self.documentId;
-	c.prevPage = self.prevPage;
+	c.documentContext = _documentContext;
+//	c.documentId = self.documentId;
+//	c.prevPage = self.prevPage;
 	return c;
 }
 
@@ -63,7 +67,8 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
     
-    cell.textLabel.text = ((TOCObject *)[self.tocs objectAtIndex:indexPath.row]).text;
+	TOCObject *toc = (TOCObject *)[self.tocs objectAtIndex:indexPath.row];
+    cell.textLabel.text = toc.text;
     
     return cell;
 }
@@ -72,8 +77,12 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+//	[self.parent showImage:documentId page:page];
+
     int page = ((TOCObject *)[self.tocs objectAtIndex:indexPath.row]).page;
-    [self.parent showImage:documentId page:page];
+    _documentContext.currentPage = page;
+	[self.parent showImage:_documentContext];
+	
 }
 
 
@@ -83,15 +92,17 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
 
-	self.tocs = [_datasource tocs:self.documentId];
+	self.tocs = [_documentContext titles];
+//	self.tocs = [_datasource tocs:self.documentId];
     [self.tableView reloadData];
 }
 
 - (void)dealloc {
     [tableView release];
     [tocs release];
-	[documentId release];
+//	[documentId release];
     [_datasource release];
+	[_documentContext release];
 	
     [super dealloc];
 }

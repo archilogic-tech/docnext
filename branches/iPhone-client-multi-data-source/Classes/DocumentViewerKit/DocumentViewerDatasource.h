@@ -10,6 +10,10 @@
 #import "TOCObject.h"
 #import "HistoryObject.h"
 #import "DownloadStatusObject.h"
+#import "DocumentDownloadManager.h"
+
+@protocol DownloadManagerDelegate;
+
 
 /*!
     @protocol    DocumentViewerDatasource
@@ -17,6 +21,9 @@
     @discussion  テスト
 */
 @protocol DocumentViewerDatasource
+
+@property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
+
 
 /*!
     @method     existsDocument:
@@ -65,7 +72,7 @@
     @param      documentId 文書ID
     @result     文書の最大倍率?
 */
-- (double)ratio:(id)documentId;
+- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId;
 
 /*!
     @method     tocs:

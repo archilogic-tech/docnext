@@ -18,25 +18,26 @@
 #import "SeparationHolder.h"
 #import "HighlightObject.h"
 #import "ObjPoint.h"
-#import "SampleDatasource.h"
 
 @interface ImageViewController ()
+
 - (TiledScrollView *)buildContentView;
 - (void)saveHistory;
-- (int)calcIndexByPage:(int)page;
-- (void)buildPageHeads;
 - (void)toggleConfigView;
 - (void)toggleHighlightMenu;
 - (void)toggleHighlightCommentMenu;
 - (void)movePageToCurrent:(BOOL)isLeft;
 - (UIColor *)highlightColor:(int)index;
 - (void)addAnnotations;
-- (void)loadSinglePageInfo;
 - (void)loadHighlights;
 - (void)saveHighlights;
-- (NSArray *)loadAnnotations;
 - (void)saveFreehand;
 - (void)loadFreehand;
+
+//- (int)currentIndexByPage:(int)page;
+//- (void)buildPageHeads;
+//- (void)loadSinglePageInfo;
+
 @end
 
 @implementation ImageViewController
@@ -50,16 +51,19 @@
 @synthesize highlightCommentMenuView;
 @synthesize highlightCommentTextField;
 @synthesize window;
-@synthesize documentId;
+
+//@synthesize documentId;
 
 @synthesize datasource = _datasource;
 @synthesize delegate = _delegate;
+@synthesize documentContext = _documentContext;
 
 #pragma mark lifecycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+	
     tapDetector = [TapDetector new];
     tapDetector.delegate = self;
     
@@ -76,12 +80,22 @@
     window.touchesObserver = self;
 }
 
+
+
+
+
 - (void)loadDocumentWithDocumentId:(id)docid
 {
     [self saveHistory];
-	self.documentId = docid;
-	titleLabel.text = [_datasource toc:self.documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
-    [overlayManager setParam:self.documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] size:tiledScrollView.frame.size];
+
+	DocumentContext *c = [[DocumentContext alloc] init];
+	c.documentId = docid;
+	_documentContext = c;
+	
+	titleLabel.text = [_documentContext title];
+
+	[overlayManager setParam:_documentContext size:tiledScrollView.frame.size];
+
     [self loadHighlights];
     [self addAnnotations];
     [self loadFreehand];
@@ -104,14 +118,17 @@
     [balloonContainerView release];
     [tapDetector release];
     [prevTiledScrollView release];
-    [singlePageInfo release];
-    [pageHeads release];
-    [isSinglePage release];
     [overlayManager release];
     [highlights release];
-	[documentId release];
-    
+
+	[_documentContext release];
 	[_datasource release];
+	
+	//    [singlePageInfo release];
+	//  [pageHeads release];
+	//    [isSinglePage release];
+	//	[documentId release];
+    
 	
     [super dealloc];
 }
@@ -136,22 +153,27 @@
 
 - (IBAction)tocViewButtonClick:(id)sender {
 	//HGMTODO
-    [parent showTOC:self.documentId prevPage:[[pageHeads objectAtIndex:currentIndex] intValue]];
+
+    [parent showTOC:_documentContext];
+//	[parent showTOC:self.documentId prevPage:[self currentPageByIndex:currentIndex]];
 }
 
 - (IBAction)thumbnailViewButtonClick:(id)sender {
 	//HGMTODO
-    [parent showThumbnail:self.documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+	[parent showThumbnail:_documentContext];
+//    [parent showThumbnail:self.documentId page:[self currentPageByIndex:currentIndex]];
 }
 
 - (IBAction)bookmarkViewButtonClick:(id)sender {
 	//HGMTODO
-    [parent showBookmark:self.documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+	[parent showBookmark:_documentContext];
+//    [parent showBookmark:self.documentId page:[self currentPageByIndex:currentIndex]];
 }
 
 - (IBAction)textViewButtonClick:(id)sender {
 	//HGMTODO
-    [parent showText:self.documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+	[parent showText:_documentContext];
+//    [parent showText:self.documentId page:[self currentPageByIndex:currentIndex]];
 }
 
 - (IBAction)tweetButtonClick:(id)sender {
@@ -174,7 +196,7 @@
     searchViewController = [[ImageSearchViewController alloc]
                             initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
     searchViewController.parent = self;
-    searchViewController.docId = documentId;
+    searchViewController.docId = _documentContext.documentId;
     
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
         popover = [[UIPopoverController alloc] initWithContentViewController:searchViewController];
@@ -203,7 +225,8 @@
 }
 
 - (IBAction)copyButtonClick {
-	NSString *text = [_datasource imageText:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+	NSString *text = [_datasource imageText:_documentContext.documentId
+									   page:_documentContext.currentPage];
     
 	[[UIPasteboard generalPasteboard] setString:[text substringWithRange:[overlayManager selection]]];
     
@@ -279,10 +302,10 @@
 }
 
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
-    int next = [self calcIndexByPage:page];
-    if ( next != currentIndex ) {
-        BOOL isLeft = next > currentIndex;
-        currentIndex = next;
+    int next = [self currentIndexByPage:page];
+    if ( next != _documentContext.currentIndex ) {
+        BOOL isLeft = next > _documentContext.currentIndex;
+        _documentContext.currentIndex = next;
         [self movePageToCurrent:isLeft];
     }
 
@@ -308,34 +331,27 @@
 
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 	ImageViewController *c = [ImageViewController createViewController:orientation datasource:_datasource window:window];
-	c.documentId = documentId;
-	[c setIndexByPage:[[pageHeads objectAtIndex:currentIndex] intValue]];
+
+	c.documentContext = _documentContext;
+//	c.documentId = documentId;
+//	[c setIndexByPage:[self currentPageByIndex:currentIndex]];
 
     return c;
 }
 
 #pragma mark private
 
-- (int)calcIndexByPage:(int)page {
-    for ( int index = 0 ; index < [pageHeads count] ; index++ ) {
-        int head = [[pageHeads objectAtIndex:index] intValue];
-        if ( head == page ) {
-            return index;
-        }
-        if ( head > page ) {
-            return index - 1;
-        }
-    }
-    
-    return [pageHeads count] - 1;
-}
 
 - (void)setIndexByPage:(int)page {
+	_documentContext.currentPage = page;
+	
+	/*
 	totalPage = [_datasource pages:documentId];
     [self loadSinglePageInfo];
     [self buildPageHeads];
+	 //   currentIndex = [self currentIndexByPage:page];
+	 */
     
-    currentIndex = [self calcIndexByPage:page];
 }
 
 - (void)addOverlay:(TiledScrollView *)view {
@@ -370,7 +386,8 @@
         w /= 2;
         baseScale = 0.5;
         
-        if ( [[isSinglePage objectAtIndex:currentIndex] boolValue] ) {
+		if ([_documentContext isSinglePage]) {
+//        if ( [[isSinglePage objectAtIndex:currentIndex] boolValue] ) {
             frame = CGRectMake(w / 2, 0, w, frame.size.height);
         }
     }
@@ -400,8 +417,10 @@
 
 - (void)saveHistory {
     HistoryObject *history = [[HistoryObject new] autorelease];
-    history.documentId = documentId;
-    history.page = [[pageHeads objectAtIndex:currentIndex] intValue];
+	history.documentContext = _documentContext;
+    
+//	history.documentId = documentId;
+//    history.page = [self currentPageByIndex:currentIndex];
 
     [_datasource saveHistory:history];
 }
@@ -412,7 +431,11 @@
 	for ( NSNumber *key in highlights ) {
 		[buf addObject:[[highlights objectForKey:key] toDictionary]];
 	}
-	[_datasource saveHighlights:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] data:buf];
+
+	// TODO
+	[_datasource saveHighlights:_documentContext.documentId
+						   page:_documentContext.currentPage
+						   data:buf];
 }
 
 - (void)saveFreehand {
@@ -426,40 +449,15 @@
 		[buf addObject:strokeBuf];
 	}
 
-	[_datasource saveFreehand:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue] data:buf];
+	[_datasource saveFreehand:_documentContext.documentId
+						 page:_documentContext.currentPage
+						 data:buf];
 }
 
 
 
 
-- (BOOL)isSinglePage:(int)page {
-    for ( NSString *value in singlePageInfo ) {
-        if ( [value intValue] == page ) {
-            return YES;
-        }
-    }
-    
-    return NO;
-}
 
-- (void)buildPageHeads {
-    NSMutableArray *_pageHeads = [NSMutableArray arrayWithCapacity:0];
-    NSMutableArray *_isSinglePage = [NSMutableArray arrayWithCapacity:0];
-    
-    for ( int page = 0 ; page < totalPage ; ) {
-        [_pageHeads addObject:[NSNumber numberWithInt:page]];
-        if ( isLandscape && ![self isSinglePage:page] && page + 1 < totalPage && ![self isSinglePage:(page + 1)] ) {
-            [_isSinglePage addObject:[NSNumber numberWithBool:NO]];
-            page += 2;
-        } else {
-            [_isSinglePage addObject:[NSNumber numberWithBool:YES]];
-            page += 1;
-        }
-    }
-    
-    pageHeads = [_pageHeads retain];
-    isSinglePage = [_isSinglePage retain];
-}
 
 - (void)toggleConfigView {
     double dst = configView.alpha > 0 ? 0 : 1;
@@ -507,7 +505,9 @@
 }
 
 - (void)addAnnotations {
-    for ( NSDictionary *dict in [self loadAnnotations] ) {
+
+	NSArray *a = [_documentContext annotations];
+	for ( NSDictionary *dict in a ) {
         NSDictionary *action = [dict objectForKey:@"action"];
         NSString *actionType = [action objectForKey:@"action"];
 
@@ -522,8 +522,11 @@
 }
 
 - (void)movePageToCurrent:(BOOL)isLeft {
-	titleLabel.text = [_datasource toc:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]].text;
-	
+/*
+	titleLabel.text = [_datasource toc:_documentContext.documentId
+								  page:_documentContext.currentPage].text;
+*/
+	titleLabel.text = [_documentContext title];
     [overlayManager clearSelection];
 
     prevTiledScrollView = tiledScrollView;
@@ -543,9 +546,8 @@
     
     [self saveHistory];
     
-    [overlayManager setParam:documentId
-						page:[[pageHeads objectAtIndex:currentIndex] intValue]
-						size:tiledScrollView.frame.size];
+	[overlayManager setParam:_documentContext size:tiledScrollView.frame.size];
+
     [self loadHighlights];
     [self addAnnotations];
     [self loadFreehand];
@@ -562,37 +564,29 @@
 }
 
 #pragma mark load
-
+/*
 - (void)loadSinglePageInfo {
 	singlePageInfo = [[_datasource singlePageInfo:documentId] retain];
 }
-
+*/
 - (void)loadHighlights {
-	NSArray *a = [_datasource highlights:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
-
-    
-	for ( NSDictionary *dic in a) { 
-	
-	//NSData *data = [FileUtil read:[NSString stringWithFormat:@"%@/%d.highlight.json" , self.documentId , [[pageHeads objectAtIndex:currentIndex] intValue]]];
-	//   for ( NSDictionary *dic in [[NSString stringWithData:data] JSONValue] 
+	NSArray *a = [_documentContext highlights];
+  	for ( NSDictionary *dic in a) { 
         HighlightObject *highlight = [HighlightObject objectWithDictionary:dic];
-        
+
         int serial = [overlayManager showHighlight:[highlight range] color:[self highlightColor:highlight.color] selecting:NO];
         [overlayManager changeHighlightComment:serial text:highlight.text];
-        
+
         [highlights setObject:highlight forKey:[NSNumber numberWithInt:serial]];
     }
 }
 
-- (NSArray *)loadAnnotations {
-	NSArray *a = [_datasource annotations:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
-	return a;
-}
 
-- (void)loadFreehand {
+- (void)loadFreehand
+{
     NSMutableArray *points = [NSMutableArray arrayWithCapacity:0];
-    
-	NSArray *a = [_datasource freehand:documentId page:[[pageHeads objectAtIndex:currentIndex] intValue]];
+
+    NSArray *a = [_documentContext freehand];
     for ( NSArray *strokeJSON in a) {
         NSMutableArray *stroke = [NSMutableArray arrayWithCapacity:0];
         for ( NSDictionary *point in strokeJSON ) {
@@ -610,10 +604,11 @@
 	resolution += [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
     
 	// HGMTODO
-	if ([pageHeads count] < 1) return nil;
+	//	if ([pageHeads count] < 1) return nil;
 	
-    int page = [[pageHeads objectAtIndex:currentIndex] intValue];
-    if ( isLandscape && ![[isSinglePage objectAtIndex:currentIndex] boolValue] ) {
+    int page = _documentContext.currentPage;
+	BOOL isLandscape = UIInterfaceOrientationIsLandscape(self.interfaceOrientation);
+    if ( isLandscape && ![_documentContext isSinglePage]) {
         if ( column >= pow( 2 , resolution ) ) {
             column -= pow( 2 , resolution );
         } else {
@@ -626,20 +621,30 @@
     }
 	
     NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
-	return [_datasource getTileImageWithDocument:documentId type:type page:page column:column row:row resolution:resolution];
+
+	return [_documentContext getTileImageWithType:type page:page column:column row:row resolution:resolution];
+/*	
+	return [_datasource getTileImageWithDocument:_documentContext.documentId
+											type:type
+											page:page
+										  column:column
+											 row:row
+									  resolution:resolution];
+ */
 }
 
+
+
 - (void)tiledScrollViewDidSlide:(TiledScrollViewSlideDirection)direction {
-    BOOL isLeft = direction == TiledScrollViewSlideDirectionLeft;
+
+    BOOL isLeft = (direction == TiledScrollViewSlideDirectionLeft);
     int delta = isLeft ? 1 : -1;
     
-    if ( currentIndex + delta < 0 || currentIndex + delta >= [pageHeads count] ) {
-        return;
-    }
-    
-    currentIndex += delta;
-    
-    [self movePageToCurrent:isLeft];
+	if (![_documentContext isValidIndex:_documentContext.currentIndex+delta]) return;
+	
+	_documentContext.currentIndex += delta;
+//    currentIndex += delta;
+	[self movePageToCurrent:isLeft];
 }
 
 - (void)tiledScrollViewScaleChanging:(float)scale {
@@ -776,10 +781,10 @@
 
                     break;
                 case ImageViewLinkModeGoToPage: {
-                    int next = [self calcIndexByPage:linkPage];
-                    BOOL isLeft = next > currentIndex ? YES : NO;
+                    int next = [self currentIndexByPage:linkPage];
+                    BOOL isLeft = next > _documentContext.currentIndex ? YES : NO;
 
-                    currentIndex = next;
+                    _documentContext.currentIndex = next;
                     [self movePageToCurrent:isLeft];
                     
                     break;

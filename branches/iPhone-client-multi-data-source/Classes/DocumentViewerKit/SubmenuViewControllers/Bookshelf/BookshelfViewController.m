@@ -41,8 +41,9 @@
         [[[[UIAlertView alloc] initWithTitle:@"No history" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
         return;
     }
-
-    [parent showImage:history.documentId page:history.page];
+	[parent showImage:history.documentContext];
+	
+//    [parent showImage:history.documentId page:history.page];
 }
 
 #pragma mark -

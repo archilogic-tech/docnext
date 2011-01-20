@@ -12,6 +12,7 @@
 #import "UIScaleButton.h"
 #import "MarkerView.h"
 #import "DocumentViewerDatasource.h"
+#import "DocumentContext.h"
 
 @protocol OverlayManagerDelegate
 
@@ -24,8 +25,10 @@
 @end
 
 @interface OverlayManager : NSObject {
-    id<NSObject> docId;
-    int page;
+	DocumentContext *_documentContext;
+    
+//	id<NSObject> docId;
+//   int page;
     
     // cache values
     NSArray *regions;
@@ -53,9 +56,13 @@
 @property(nonatomic,assign) MarkerView *markerView;
 @property(nonatomic,assign) UIView *balloonContainerView;
 
+
+@property(nonatomic, retain) DocumentContext *documentContext;
+
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-- (void)setParam:(id)docId page:(int)page size:(CGSize)size;
+- (void)setParam:(DocumentContext*)documentContext size:(CGSize)size;
+//- (void)setParam:(id)docId page:(int)page size:(CGSize)size;
 - (BOOL)selectNearest:(CGPoint)point;
 - (BOOL)hasSelection;
 - (NSRange)selection;
