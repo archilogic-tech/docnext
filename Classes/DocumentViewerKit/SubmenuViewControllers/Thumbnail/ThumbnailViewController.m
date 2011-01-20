@@ -18,10 +18,9 @@
 @synthesize titleLabel;
 @synthesize pageLabel;
 @synthesize pageSlider;
-@synthesize documentId;
-@synthesize page;
 
 @synthesize datasource = _datasource;
+@synthesize documentContext = _documentContext;
 
 + (ThumbnailViewController *)createViewController:(UIInterfaceOrientation)orientation
 									   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
@@ -43,43 +42,51 @@
         self.flowCoverView.offset = cover;
         [self.flowCoverView draw];
         
-        self.page = cover;
+//        self.page = cover;
+		_documentContext.currentPage = cover;
         [self setLabels:cover];
     }
 }
 
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 	ThumbnailViewController *c = [ThumbnailViewController createViewController:orientation datasource:_datasource];
-	c.documentId = self.documentId;
-	c.page = self.page;
+	c.documentContext = _documentContext;
+//	c.documentId = self.documentId;
+//	c.page = self.page;
 	return c;
 }
 
 #pragma mark FlowCoverViewDelegate
 
 - (int)flowCoverNumberImages:(FlowCoverView *)view {
-	return [_datasource pages:documentId];
+	return [_documentContext totalPage];//[_datasource pages:documentId];
 }
 
 - (UIImage *)flowCover:(FlowCoverView *)view cover:(int)cover {
+////////////////////////////
 
-	return [_datasource thumbnail:documentId cover:cover];
+	return [_documentContext thumbnailWithIndex:cover];
+//	return [_datasource thumbnail:_documentContext.documentId cover:cover];
 }
 
 - (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {
-    [parent showImage:documentId page:cover];
+	_documentContext.currentPage = cover;
+	[parent showImage:_documentContext];
+//    [parent showImage:documentId page:cover];
 }
 
 - (void)flowCover:(FlowCoverView *)view changeCurrent:(int)cover {
-    self.page = cover;
+//    self.page = cover;
+	_documentContext.currentPage = cover;
     [self setLabels:cover];
     
     [self.pageSlider setValue:cover animated:YES];
 }
 
 - (void)setLabels:(int)index {
-	self.titleLabel.text = [_datasource toc:documentId page:index].text;
-    self.pageLabel.text = [NSString stringWithFormat:@"%d / %d" , index + 1 , [_datasource pages:documentId]];
+	self.titleLabel.text = [_documentContext titleWithIndex:index];
+//	self.titleLabel.text = [_datasource toc:documentId page:index].text;
+    self.pageLabel.text = [NSString stringWithFormat:@"%d / %d" , index + 1 , [_documentContext totalPage]];
 }
 
 - (void)timerTicked:(NSTimer *)_timer {
@@ -89,24 +96,35 @@
         self.flowCoverView.offset = cover;
         [self.flowCoverView draw];
         
-        self.page = cover;
+//        self.page = cover;
+		_documentContext.currentPage = cover;
         [self setLabels:cover];
     }
 }
+/*
+- (void)setDocumentContext:(DocumentContext *)dc
+{
+	[_documentContext release];
+	_documentContext = [dc retain];
+
+	
+}
+*/
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.flowCoverView.delegate = self;
     
-    self.flowCoverView.offset = page;
+//    self.flowCoverView.offset = page;
+    self.flowCoverView.offset = _documentContext.currentPage;
     [self.flowCoverView draw];
     
     self.pageSlider.minimumValue = 0.0;
-    self.pageSlider.maximumValue = [_datasource pages:documentId] - 1.0;
-    self.pageSlider.value = page;
+    self.pageSlider.maximumValue = [_documentContext totalPage] - 1.0;
+    self.pageSlider.value = _documentContext.currentPage;
 
-    [self setLabels:page];
+    [self setLabels:_documentContext.currentPage];
 }
 
 - (void)dealloc {
@@ -115,7 +133,8 @@
     [pageLabel release];
     [pageSlider release];
 	[_datasource release];
-	[documentId release];
+	[_documentContext release];
+//	[documentId release];
     
     [super dealloc];
 }

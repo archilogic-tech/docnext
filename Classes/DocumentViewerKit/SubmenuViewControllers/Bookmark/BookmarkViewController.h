@@ -9,26 +9,30 @@
 #import <UIKit/UIKit.h>
 #import "MapDocViewController.h"
 #import "DocumentViewerDatasource.h"
+#import "DocumentContext.h"
 
 @interface BookmarkViewController : IUIViewController<UITableViewDataSource , UITableViewDelegate> {
     UITableView *tableView;
 
     NSMutableArray *bookmarks;
     
-    id<NSObject> currentDocumentId;
-    int currentPage;
-    NSString *currentTitle;
+//    id<NSObject> currentDocumentId;
+//    int currentPage;
+//    NSString *currentTitle;
+
 	id<NSObject,DocumentViewerDatasource> _datasource;
+	DocumentContext *_documentContext;
 }
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 @property(nonatomic,retain) NSMutableArray *bookmarks;
 
-@property(nonatomic,copy) id<NSObject> currentDocumentId;
-@property(nonatomic) int currentPage;
-@property(nonatomic,retain) NSString *currentTitle;
+//@property(nonatomic,copy) id<NSObject> currentDocumentId;
+//@property(nonatomic) int currentPage;
+//@property(nonatomic,retain) NSString *currentTitle;
 
-@property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
+@property (nonatomic, retain) DocumentContext *documentContext;
+@property (nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 
 + (BookmarkViewController *)createViewController:(UIInterfaceOrientation)orientation

@@ -16,7 +16,7 @@
 @implementation UstDocDatasource
 
 
-- (id) init
+- (id)init
 {
 	if ((self = [super init]) != nil) {
 		// do something...
@@ -55,34 +55,52 @@
 #pragma mark custom
 
 // 書籍のメタ情報を取得するメソッド
-- (NSDictionary*)info:(id)documentId {
-	return [_localStorage objectWithDocumentId:documentId forKey:@"info"];
-}
 
-- (BOOL)existsDocument:(id)documentId {
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:documentId forKey:@"info"];
+}
+/*
+- (BOOL)existsDocument:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
 	return [_localStorage existsWithDocumentId:documentId forKey:@"info"];
 }
-
-- (int)pages:(id<NSObject>)documentId {
-    return [[[self info:documentId] objectForKey:@"pages"] intValue];
+*/
+- (BOOL)existsDocument:(id<NSObject>)metaDocumentId {
+	return [_localStorage existsWithMetaDocumentId:metaDocumentId];
+//	return YES;
+//	return [_localStorage existsWithDocumentId:documentId forKey:@"info"];
 }
 
-- (NSString *)title:(id)documentId {
-    return [[self info:documentId] objectForKey:@"title"];
+- (int)pages:(id<NSObject>)metaDocumentId
+{
+	int sum = 0;
+	for (NSString *did in metaDocumentId) {
+		sum += [[[self info:metaDocumentId documentId:did] objectForKey:@"pages"] intValue];
+	}
+	return sum;
 }
 
-- (NSString *)publisher:(id)documentId {
-    return [[self info:documentId] objectForKey:@"publisher"];
+
+- (int)pages:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId
+{
+	return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"pages"] intValue];
 }
 
-- (double)ratio:(id)documentId {
-    return [[[self info:documentId] objectForKey:@"ratio"] doubleValue];
+- (NSString *)title:(id<NSObject>)metaDocumentId documentId:(id)documentId {
+    return [[self info:metaDocumentId documentId:documentId] objectForKey:@"title"];
 }
 
-- (NSArray *)tocs:(id)documentId {
+- (NSString *)publisher:(id<NSObject>)metaDocumentId documentId:(id)documentId {
+    return [[self info:metaDocumentId documentId:documentId] objectForKey:@"publisher"];
+}
+
+- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId {
+    return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"ratio"] doubleValue];
+}
+
+- (NSArray *)tocs:(id<NSObject>)metaDocumentId documentId:(id)documentId {
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
     
-	NSDictionary *d = [_localStorage objectWithDocumentId:documentId forKey:@"toc"];
+	NSDictionary *d = [_localStorage objectWithDocumentId:metaDocumentId documentId:documentId forKey:@"toc"];
     for ( NSDictionary *dic in d) {
         [ret addObject:[TOCObject objectWithDictionary:dic]];
     }
@@ -90,8 +108,8 @@
     return ret;
 }
 
-- (TOCObject *)toc:(id)documentId page:(int)page {
-    NSArray *tocs = [self tocs:documentId];
+- (TOCObject *)toc:(id<NSObject>)metaDocumentId documentId:(id)documentId page:(int)page {
+    NSArray *tocs = [self tocs:metaDocumentId documentId:documentId];
     
     for ( int index = [tocs count] - 1 ; index >= 0 ; index-- ) {
         TOCObject *toc = [tocs objectAtIndex:index];
@@ -108,14 +126,14 @@
 
 
 
-- (NSString *)imageText:(id)docId page:(int)page
+- (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"texts/%d.image.txt", page];
 	NSData *data = [_localStorage dataWithDocumentId:docId forKey:key];
 	return [NSString stringWithData:data];
 }
 
-- (NSArray *)regions:(id)docId page:(int)page {
+- (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
     static int SIZEOF_DOUBLE = 8;
     static int N_REGION_FIELDS = 4;
     
@@ -173,12 +191,16 @@
 							  forKey:@"downloadedIds"];
 }
 
-- (UIView *) getTileImageWithDocument:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
+
+
+// 生ドキュメント固有情報系 ////////////////////////////////////////////////////////////
+
+- (UIView *) getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
 {
 	NSString *key = [NSString stringWithFormat:@"images/%@-%d-%d-%d-%d.jpg", type, page, resolution, column, row];
 	
 	if ([_localStorage existsWithDocumentId:documentId forKey:key]) {
-		
+
 		NSData *d = [_localStorage dataWithDocumentId:documentId forKey:key];
 		UIImageView *tile = [[[UIImageView alloc] initWithImage:[UIImage imageWithData:d]] autorelease];
 		
@@ -200,32 +222,37 @@
 }
 
 
-- (NSArray*)singlePageInfo:(id)docId {
-	return [_localStorage objectWithDocumentId:docId forKey:@"singlePageInfo"];
+- (NSArray*)singlePageInfo:(id<NSObject>)metaDocumentId documentId:(id)docId {
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"singlePageInfo"];
 }
 
-- (UIImage*)thumbnail:(id)docId cover:(int)cover {
+- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId cover:(int)cover {
 	NSString *key = [NSString stringWithFormat:@"images/thumb-%d.jpg", cover];
-	NSData *data = [_localStorage dataWithDocumentId:docId forKey:key];
+	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
 	return [UIImage imageWithData:data];
 }
 
 
-- (NSString*)texts:(id)docId page:(int)page {
+- (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
 	NSString *key = [NSString stringWithFormat:@"texts/%d", page];
-	NSString *text = [NSString stringWithData:[_localStorage dataWithDocumentId:docId forKey:key]];
+	NSString *text = [NSString stringWithData:[_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key]];
 	return text;
 }
 
 
 
 
-// ユーザそうさ系
-
-- (void)deleteCache:(id)docId {
-	[_localStorage removeWithDocumentId:docId];
+// ユーザ操作系ドキュメント関連
+- (void)deleteCache:(id<NSObject>)metaDocumentId documentId:(id)docId {
+	[_localStorage removeWithDocumentId:metaDocumentId documentId:docId];
+	return;
 	
-    if ( [[self history].documentId compare:docId] == NSOrderedSame ) {
+	// TODO 細かく消さなくてはならないのか?
+	/*
+	
+	HistoryObject* history = [self history];
+//	id<NSObject> did = history.documentContext.documentId;
+    if ( [history.documentContext.documentId compare:docId] == NSOrderedSame ) {
 		[_localStorage removeForKey:@"history"];
     }
     
@@ -233,7 +260,7 @@
 	NSDictionary *d = [_localStorage objectForKey:@"bookmarks"];
     for ( NSDictionary *dic in d) {
         BookmarkObject *obj = [BookmarkObject objectWithDictionary:dic];
-        if ( [obj.documentId compare:docId] != NSOrderedSame ) {
+        if ( [obj.documentContext.documentId compare:docId] != NSOrderedSame ) {
             [bookmarks addObject:dic];
         }
     }
@@ -247,38 +274,37 @@
         }
     }
     [self saveDownloadedIds:downloadedIds];
+	 */
 }
 
-
-
-- (NSArray*)highlights:(id)docId page:(int)page
+- (NSArray*)highlights:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"%d.highlight", page];
-	return [_localStorage objectWithDocumentId:docId forKey:key];
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
 }
 
-- (BOOL)saveHighlights:(id)docId page:(int)page data:(NSArray *)data
+- (BOOL)saveHighlights:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page data:(NSArray *)data
 {
 	NSString *key = [NSString stringWithFormat:@"%d.highlight", page];
-	return [_localStorage saveObjectWithDocumentId:docId object:data forKey:key];
+	return [_localStorage saveObjectWithDocumentId:metaDocumentId documentId:docId object:data forKey:key];
 }
 
-- (NSArray*)annotations:(id)docId page:(int)page
+- (NSArray*)annotations:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"images/%d.anno", page];
-	return [_localStorage objectWithDocumentId:docId forKey:key];
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
 }
 
-- (NSArray*)freehand:(id)docId page:(int)page
+- (NSArray*)freehand:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
-	return [_localStorage objectWithDocumentId:docId forKey:key];
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
 }
 
-- (BOOL)saveFreehand:(id)docId page:(int)page data:(NSArray *)data
+- (BOOL)saveFreehand:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page data:(NSArray *)data
 {
 	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
-	return [_localStorage saveObjectWithDocumentId:docId object:data forKey:key];
+	return [_localStorage saveObjectWithDocumentId:metaDocumentId documentId:docId object:data forKey:key];
 }
 
 - (HistoryObject *)history {

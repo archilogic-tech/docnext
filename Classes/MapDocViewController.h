@@ -26,10 +26,17 @@
 
 - (void)showHome:(BOOL)animated;
 - (void)showBookshelfDeletion;
-- (void)showImage:(id)documentId page:(int)page;
-- (void)showTOC:(id)documentId prevPage:(int)prevPage;
-- (void)showThumbnail:(id)documentId page:(int)page;
-- (void)showBookmark:(id)documentId page:(int)page;
-- (void)showText:(id)documentId page:(int)page;
+//- (void)showImage:(id)documentId page:(int)page;
+//- (void)showTOC:(id)documentId prevPage:(int)prevPage;
+//- (void)showThumbnail:(id)documentId page:(int)page;
+//- (void)showBookmark:(id)documentId page:(int)page;
+//- (void)showText:(id)documentId page:(int)page;
+
+
+- (void)showImage:(DocumentContext*)documentContext;
+- (void)showTOC:(DocumentContext*)documentContext;
+- (void)showThumbnail:(DocumentContext*)documentContext;
+- (void)showBookmark:(DocumentContext*)documentContext;
+- (void)showText:(DocumentContext*)documentContext;
 
 @end

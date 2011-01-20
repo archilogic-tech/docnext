@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "DocumentViewerDatasource.h"
-#import "DownloadManagerDelegate.h"
 #import "StandardLocalStorageManager.h"
 #import "UstDocDownloadManager.h"
 #import "BookmarkObject.h"
@@ -25,7 +24,7 @@
 	StandardLocalStorageManager *_localStorage;
 }
 
-@property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
+//@property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
 
 - (NSString *)getFullPath:(NSString *)fileName;
 

@@ -10,19 +10,31 @@
 #import "MapDocViewController.h"
 #import "HistoryObject.h"
 
+// to be removed.
+#import "UstDocDatasource.h"
+
+
 @implementation MapDocAppDelegate
 
 @synthesize window;
 @synthesize viewController;
+@synthesize datasource = _datasource;
 
 - (id)parseId:(NSURL *)url {
-    return [[url path] substringFromIndex:1];
+	NSString *tmp = [[url path] substringFromIndex:1];
+	NSArray *a = [tmp componentsSeparatedByString:@","];
+	return a;
+//	return ([a count] > 1) ? a : [a objectAtIndex:0];
 }
 
 - (void)view:(id)docId
 {
     if ( [_datasource existsDocument:docId] ) {
-        [viewController showImage:docId page:0];
+		DocumentContext *dc = [[DocumentContext alloc] init];
+		dc.documentId = docId;
+		[viewController showImage:dc];
+		[dc release];
+//		[viewController showImage:docId page:0];
     } else {
         if ( [_datasource hasDownloading] ) {
             [[[[UIAlertView alloc] initWithTitle:@"Downloading file exist" message:nil delegate:nil cancelButtonTitle:@"OK"
@@ -69,14 +81,9 @@
                                              delegate:nil cancelButtonTitle:nil otherButtonTitles:nil] autorelease];
         [loading show];
         
-		//DownloadManager *dm = [DownloadManager instance];
-        //dm.delegate = self;
-		//dm.baseUrl = baseUrl;
 		_datasource.downloadManagerDelegate = self;
         [_datasource startDownload:docId baseUrl:baseUrl];
     }
-
-
 }
 
 
@@ -87,7 +94,8 @@
         return;
     }
 
-    [viewController showImage:history.documentId page:history.page];
+	[viewController showImage:history.documentContext];
+//    [viewController showImage:history.documentId page:history.page];
 }
 
 - (void)deleteCache:(id)docId {
@@ -99,6 +107,7 @@
 - (void)downloaded {
     [viewController showBookshelfDeletion];
 }
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     // Override point for customization after app launch
@@ -163,7 +172,12 @@
 #pragma mark DownloadManagerDelegate
 
 - (void)didMetaInfoDownloadFinished:(id)docId {
-    [viewController showImage:docId page:0];
+
+    DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = docId;
+	
+	[viewController showImage:dc];
+	[dc release];
     
     [loading dismissWithClickedButtonIndex:0 animated:YES];
     loading = nil;

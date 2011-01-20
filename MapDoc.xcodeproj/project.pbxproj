@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		151BB16412961361009A313E /* TOCObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 151BB16312961361009A313E /* TOCObject.m */; };
+		15A3D85212E6E58800C26549 /* DocumentContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 15A3D85112E6E58800C26549 /* DocumentContext.m */; };
 		15E581C112954D7700C69201 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5811812954D7700C69201 /* UIBalloon.m */; };
 		15E581C212954D7700C69201 /* ObjBezier.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5811E12954D7700C69201 /* ObjBezier.m */; };
 		15E581C312954D7700C69201 /* ObjPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812012954D7700C69201 /* ObjPoint.m */; };
@@ -97,8 +98,6 @@
 		15E5821812954D7700C69201 /* UIScaleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B012954D7700C69201 /* UIScaleButton.m */; };
 		15E5821912954D7700C69201 /* UITouchAwareWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B212954D7700C69201 /* UITouchAwareWindow.m */; };
 		15E5821A12954D7700C69201 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B512954D7700C69201 /* VolonoiDiagramBuilder.m */; };
-		15E5821B12954D7700C69201 /* MediaDoDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B812954D7700C69201 /* MediaDoDownloadManager.m */; };
-		15E5821C12954D7700C69201 /* SampleDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581BB12954D7700C69201 /* SampleDatasource.m */; };
 		15E5821D12954D7700C69201 /* UstDocDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581BE12954D7700C69201 /* UstDocDatasource.m */; };
 		15E5821E12954D7700C69201 /* UstDocDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581C012954D7700C69201 /* UstDocDownloadManager.m */; };
 		15E5822412954D8F00C69201 /* RemoteImageOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5822112954D8F00C69201 /* RemoteImageOperation.m */; };
@@ -146,7 +145,9 @@
 /* Begin PBXFileReference section */
 		151BB16212961361009A313E /* TOCObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCObject.h; sourceTree = "<group>"; };
 		151BB16312961361009A313E /* TOCObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCObject.m; sourceTree = "<group>"; };
-		15C41FE51293C7CD009E6371 /* DownloadManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DownloadManagerDelegate.h; sourceTree = "<group>"; };
+		155A7F0E12E58CE800F810AB /* DocumentDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentDownloadManager.h; sourceTree = "<group>"; };
+		15A3D85012E6E58800C26549 /* DocumentContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentContext.h; sourceTree = "<group>"; };
+		15A3D85112E6E58800C26549 /* DocumentContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentContext.m; sourceTree = "<group>"; };
 		15E5811712954D7700C69201 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBalloon.h; sourceTree = "<group>"; };
 		15E5811812954D7700C69201 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBalloon.m; sourceTree = "<group>"; };
 		15E5811912954D7700C69201 /* DocumentViewerConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentViewerConst.h; sourceTree = "<group>"; };
@@ -287,11 +288,6 @@
 		15E581B212954D7700C69201 /* UITouchAwareWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITouchAwareWindow.m; sourceTree = "<group>"; };
 		15E581B412954D7700C69201 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
 		15E581B512954D7700C69201 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
-		15E581B712954D7700C69201 /* MediaDoDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaDoDownloadManager.h; sourceTree = "<group>"; };
-		15E581B812954D7700C69201 /* MediaDoDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaDoDownloadManager.m; sourceTree = "<group>"; };
-		15E581B912954D7700C69201 /* SampleConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleConst.h; sourceTree = "<group>"; };
-		15E581BA12954D7700C69201 /* SampleDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleDatasource.h; sourceTree = "<group>"; };
-		15E581BB12954D7700C69201 /* SampleDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SampleDatasource.m; sourceTree = "<group>"; };
 		15E581BD12954D7700C69201 /* UstDocDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UstDocDatasource.h; sourceTree = "<group>"; };
 		15E581BE12954D7700C69201 /* UstDocDatasource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UstDocDatasource.m; sourceTree = "<group>"; };
 		15E581BF12954D7700C69201 /* UstDocDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UstDocDownloadManager.h; sourceTree = "<group>"; };
@@ -312,7 +308,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* MapDocAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDocAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* MapDocAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapDocAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* MapDoc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapDoc.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* docnext.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = docnext.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* MapDocViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDocViewController.h; sourceTree = "<group>"; };
@@ -395,17 +391,17 @@
 			isa = PBXGroup;
 			children = (
 				15E5811512954D7700C69201 /* DocumentViewerKit */,
-				15E581B612954D7700C69201 /* MediaDoDatasource */,
 				15E581BC12954D7700C69201 /* UstDocDatasource */,
 				15E5821F12954D8F00C69201 /* RemoteImageView */,
 				15E5824412954E3100C69201 /* LocalStorageManager */,
 				15E5823312954DFC00C69201 /* DownloadStatusObject.h */,
 				15E5823412954DFC00C69201 /* DownloadStatusObject.m */,
-				15C41FE51293C7CD009E6371 /* DownloadManagerDelegate.h */,
 				1D3623240D0F684500981E51 /* MapDocAppDelegate.h */,
 				1D3623250D0F684500981E51 /* MapDocAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* MapDocViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */,
+				15A3D85012E6E58800C26549 /* DocumentContext.h */,
+				15A3D85112E6E58800C26549 /* DocumentContext.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -421,6 +417,7 @@
 				15E5813612954D7700C69201 /* Marker */,
 				15E5814112954D7700C69201 /* OverlayManager */,
 				15E5811912954D7700C69201 /* DocumentViewerConst.h */,
+				155A7F0E12E58CE800F810AB /* DocumentDownloadManager.h */,
 				15E5811A12954D7700C69201 /* DocumentViewerDatasource.h */,
 				15E5811B12954D7700C69201 /* DocumentViewerDelegate.h */,
 				15E5812B12954D7700C69201 /* ImageViewController.h */,
@@ -703,18 +700,6 @@
 			path = VolonoiDiagram;
 			sourceTree = "<group>";
 		};
-		15E581B612954D7700C69201 /* MediaDoDatasource */ = {
-			isa = PBXGroup;
-			children = (
-				15E581B912954D7700C69201 /* SampleConst.h */,
-				15E581BA12954D7700C69201 /* SampleDatasource.h */,
-				15E581BB12954D7700C69201 /* SampleDatasource.m */,
-				15E581B712954D7700C69201 /* MediaDoDownloadManager.h */,
-				15E581B812954D7700C69201 /* MediaDoDownloadManager.m */,
-			);
-			path = MediaDoDatasource;
-			sourceTree = "<group>";
-		};
 		15E581BC12954D7700C69201 /* UstDocDatasource */ = {
 			isa = PBXGroup;
 			children = (
@@ -761,7 +746,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* MapDoc.app */,
+				1D6058910D05DD3D006BFB54 /* docnext.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -903,7 +888,7 @@
 			);
 			name = MapDoc;
 			productName = MapDoc;
-			productReference = 1D6058910D05DD3D006BFB54 /* MapDoc.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* docnext.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1060,8 +1045,6 @@
 				15E5821812954D7700C69201 /* UIScaleButton.m in Sources */,
 				15E5821912954D7700C69201 /* UITouchAwareWindow.m in Sources */,
 				15E5821A12954D7700C69201 /* VolonoiDiagramBuilder.m in Sources */,
-				15E5821B12954D7700C69201 /* MediaDoDownloadManager.m in Sources */,
-				15E5821C12954D7700C69201 /* SampleDatasource.m in Sources */,
 				15E5821D12954D7700C69201 /* UstDocDatasource.m in Sources */,
 				15E5821E12954D7700C69201 /* UstDocDownloadManager.m in Sources */,
 				15E5822412954D8F00C69201 /* RemoteImageOperation.m in Sources */,
@@ -1069,6 +1052,7 @@
 				15E5823512954DFC00C69201 /* DownloadStatusObject.m in Sources */,
 				15E5824712954E3100C69201 /* StandardLocalStorageManager.m in Sources */,
 				151BB16412961361009A313E /* TOCObject.m in Sources */,
+				15A3D85212E6E58800C26549 /* DocumentContext.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

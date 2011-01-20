@@ -24,7 +24,24 @@
 
 - (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl
 {
-	NSString *url = [NSString stringWithFormat:@"%@download?documentId=%@" , ServerEndpoint , docId];
+	[self startMetaInfoDownload:docId baseUrl:baseUrl index:0];
+}
+
+
+- (void)startMetaInfoDownload:(id)metaDocumentId baseUrl:(NSString*)baseUrl index:(int)idx
+{
+	int currentDownloadIndex = idx;
+	
+//	NSString *did = nil;
+//	if ([metaDocumentId isKindOfClass:[NSArray class]]) {
+	NSString *did = [metaDocumentId objectAtIndex:currentDownloadIndex];
+/*
+	} else {
+		did = docId;
+	}
+*/	
+	
+	NSString *url = [NSString stringWithFormat:@"%@download?documentId=%@" , ServerEndpoint , did];
 	NSLog(@"%@ downloading...", url);
     
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
@@ -43,7 +60,9 @@
 	request.downloadDestinationPath = tempFileName;
 
     request.userInfo = [NSMutableDictionary dictionaryWithCapacity:0];
-	[request.userInfo setValue:docId forKey:@"id"];
+	[request.userInfo setValue:metaDocumentId forKey:@"metaDocumentId"];
+	[request.userInfo setValue:did forKey:@"documentId"];
+	[request.userInfo setValue:[NSNumber numberWithInt:currentDownloadIndex] forKey:@"currentDownloadIndex"];
 	[request.userInfo setValue:baseUrl forKey:@"baseUrl"];
 	[request.userInfo setValue:tempFileName forKey:@"tempFileName"];
     [request startAsynchronous];
@@ -56,7 +75,7 @@
                         py:downloadStatus.downloadedPy];
 }
 
-- (void)downloadPage:(id)docId page:(int)page px:(int)px py:(int)py
+- (void)downloadPage:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page px:(int)px py:(int)py
 {
 	NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
     int level = [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
@@ -69,10 +88,12 @@
 	request.didFailSelector = @selector(didPageDownloadFailed:);
 	
 	// 直接正しいところに書き込む
-	request.downloadDestinationPath = [_datasource getFullPath:[NSString stringWithFormat:@"%@/images/%@-%d-%d-%d-%d.jpg" , docId , type , page , level , px , py]];
+	NSString *dest = [NSString stringWithFormat:@"%@/%@/images/%@-%d-%d-%d-%d.jpg" , [(NSArray*)metaDocumentId componentsJoinedByString:@","] , docId , type , page , level , px , py];
+	request.downloadDestinationPath = [_datasource getFullPath:dest];
 	
     request.userInfo = [NSMutableDictionary dictionaryWithCapacity:0];
-    [request.userInfo setValue:docId forKey:@"id"];
+    [request.userInfo setValue:metaDocumentId forKey:@"metaDocumentId"];
+    [request.userInfo setValue:docId forKey:@"documentId"];
     [request.userInfo setValue:[NSNumber numberWithInt:page] forKey:@"page"];
     [request.userInfo setValue:[NSNumber numberWithInt:px] forKey:@"px"];
     [request.userInfo setValue:[NSNumber numberWithInt:py] forKey:@"py"];
@@ -91,8 +112,8 @@
     [_datasource saveDownloadedIds:downloaded];
 }
 
-- (void)downloadNextPage:(id)docId page:(int)page px:(int)px py:(int)py {
-    int pages = [_datasource pages:docId];
+- (void)downloadNextPage:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
+    int pages = [_datasource pages:metaDocumentId];
     
 	// ダウンロードの進捗を伝える
 	if ( [delegate respondsToSelector:@selector(pageDownloadProgressed:downloaded:)] ) {
@@ -111,28 +132,40 @@
         }
     } else {
         if ( page + 1 < pages ) {
-            [self downloadPage:docId page:(page + 1) px:0 py:0];
+            [self downloadPage:metaDocumentId documentId:docId page:(page + 1) px:0 py:0];
         } else {
             [self downloadComplete:docId];
         }
     }
 }
 
-- (void)updateDownloadStatus:(id)docId page:(int)page px:(int)px py:(int)py {
-    DownloadStatusObject *downloadStatus = [[DownloadStatusObject new] autorelease];
+- (void)updateDownloadStatus:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
+    DownloadStatusObject *downloadStatus = [[DownloadStatusObject alloc] init];
     downloadStatus.docId = docId;
     downloadStatus.downloadedPage = page;
     downloadStatus.downloadedPx = px;
     downloadStatus.downloadedPy = py;
     
     [_datasource saveDownloadStatus:downloadStatus];
+	[downloadStatus release];
 }
 
 #pragma mark ASIHTTPRequest didFinishSelector
 
 - (void)didMetaInfoDownloadFailed:(ASIHTTPRequest *)request
 {
-    id<NSObject> docId = [request.userInfo objectForKey:@"id"];
+	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
+    id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
+	int currentDownloadIndex = [[request.userInfo objectForKey:@"currentDownloadIndex"] intValue];
+
+//	NSString *did = docId;
+/*
+	if ([docId isKindOfClass:[NSArray class]]) {
+		did = [(NSArray*)docId objectAtIndex:currentDownloadIndex];
+	} else {
+		did = (NSString*)docId;
+	}
+*/	
 	
 	// TODO きちんとエラー情報を渡すこと
 	if ( [delegate respondsToSelector:@selector(didMetaInfoDownloadFailed:error:)] ) {
@@ -141,18 +174,29 @@
 	NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
 }
 
-- (void)didMetaInfoDownloadFinished:(ASIHTTPRequest *)request {
+- (void)didMetaInfoDownloadFinished:(ASIHTTPRequest *)request
+{
+    id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
+    id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
+	int currentDownloadIndex = [[request.userInfo objectForKey:@"currentDownloadIndex"] intValue];
 	
-	id<NSObject> docId = [request.userInfo objectForKey:@"id"];
-    
+	NSString *dirName = [NSString stringWithFormat:@"%@/%@/" ,
+						 [(NSArray*)metaDocumentId componentsJoinedByString:@","],
+						 docId];
+
+	dirName = [_datasource getFullPath:dirName];
+	[[NSFileManager defaultManager] createDirectoryAtPath:dirName withIntermediateDirectories:YES attributes:nil error:nil];
+	
+
+	////////// zip処理 /////////////////////////////
+	
     NSString *zipName = [request.userInfo objectForKey:@"tempFileName"];
 	
 	// メタ情報を展開してローカルのストレージにキャッシュする
-    NSString *dirName = [NSString stringWithFormat:@"%@/" , docId];
-	[_datasource deleteCache:docId];
+	[_datasource deleteCache:metaDocumentId documentId:docId];
     ZipArchive *zip = [[ZipArchive new] autorelease];
     if ( [zip UnzipOpenFile:zipName] ) {
-        [zip UnzipFileTo:[_datasource getFullPath:dirName] overWrite:YES];
+        [zip UnzipFileTo:dirName overWrite:YES];
         [zip UnzipCloseFile];
     } else {
 		// error
@@ -161,28 +205,44 @@
 	[[NSFileManager defaultManager] removeItemAtPath:zipName error:nil];
 	
 	// Take care this way is depended on the fact 2x2 is max
-    [self updateDownloadStatus:docId page:-1 px:1 py:1];
+	// TODO 意味を理解して修正すること
+	[self updateDownloadStatus:docId page:-1 px:1 py:1];
 	
-    [self downloadPage:docId page:0 px:0 py:0];
+	// 誌面画像のダウンロードを別スレッドで開始する
+    [self downloadPage:metaDocumentId documentId:docId page:0 px:0 py:0];
     
+	currentDownloadIndex++;
+	if ([metaDocumentId isKindOfClass:[NSArray class]]) {
+		int count = [(NSArray*)metaDocumentId count];
+		if (currentDownloadIndex < count) {
+			// まだ全META情報のダウンロードが完了していないので次を開始行う
+			NSString *baseUrl = [request.userInfo objectForKey:@"baseUrl"];
+			[self startMetaInfoDownload:metaDocumentId baseUrl:baseUrl index:currentDownloadIndex];
+			return;
+
+		}
+//		did = [(NSArray*)docId objectAtIndex:currentDownloadIndex];
+	}
+
     if ( [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {
-        [delegate didMetaInfoDownloadFinished:docId];
+        [delegate didMetaInfoDownloadFinished:metaDocumentId];
     }
 }
 
 - (void)didPageDownloadFinished:(ASIHTTPRequest *)request {
-    id docId = [request.userInfo objectForKey:@"id"];
-    int page = [[request.userInfo objectForKey:@"page"] intValue];
+    id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
+	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
+	int page = [[request.userInfo objectForKey:@"page"] intValue];
     int px = [[request.userInfo objectForKey:@"px"] intValue];
     int py = [[request.userInfo objectForKey:@"py"] intValue];
 
     [self updateDownloadStatus:docId page:page px:px py:py];
-    [self downloadNextPage:docId page:page px:px py:py];
+    [self downloadNextPage:metaDocumentId documentId:docId page:page px:px py:py];
 }
 
 - (void)didPageDownloadFailed:(ASIHTTPRequest *)request
 {
-    id docId = [request.userInfo objectForKey:@"id"];
+    id docId = [request.userInfo objectForKey:@"documentId"];
 	
 	// TODO きちんとエラー情報を渡すこと
 	if ( [delegate respondsToSelector:@selector(didPageDownloadFailed:error:)] ) {

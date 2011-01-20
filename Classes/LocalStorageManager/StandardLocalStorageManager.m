@@ -23,9 +23,10 @@
         NSLog( @"Documents directory not found!" );
         return nil;
     }
-//	NSLog(@"DIR : %@", documentsDirectory);
 
-    return [documentsDirectory stringByAppendingPathComponent:fileName];
+	NSString *result = [documentsDirectory stringByAppendingPathComponent:fileName];
+	NSLog(@"DIR : %@", result);
+    return result;
 }
 
 - (BOOL)write:(NSData *)data toFile:(NSString *)fileName
@@ -52,6 +53,16 @@
 	return [self exists:fileName];
 }
 
+- (BOOL)existsWithMetaDocumentId:(id<NSObject>)metaDocumentId
+{
+	NSString *fileName = [NSString stringWithFormat:@"%@/", [(NSArray*)metaDocumentId componentsJoinedByString:@","] ];
+	fileName = [self getFullPath:fileName];
+	BOOL r = YES;
+	return [[NSFileManager defaultManager] fileExistsAtPath:fileName isDirectory:&r];
+//	return [self exists:fileName] |	[self exists:[fileName stringByAppendingString:@".json"]];
+}
+
+
 - (BOOL)existsWithDocumentId:(id<NSObject>)docId forKey:(id)key
 {
 	NSString *fileName = [NSString stringWithFormat:@"%@/%@", docId, key];
@@ -68,19 +79,19 @@
 	return YES;
 }
 
-- (BOOL)removeWithDocumentId:(id<NSObject>)docId forKey:(id)key
+- (BOOL)removeWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@.json", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	[self remove:fileName];
 
-	fileName = [NSString stringWithFormat:@"%@/%@", docId, key];
+	fileName = [NSString stringWithFormat:@"%@/%@/%@", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	[self remove:fileName];
 	return YES;
 }
 
-- (BOOL)removeWithDocumentId:(id<NSObject>)docId
+- (BOOL)removeWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/", docId];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId];
 	return [self remove:fileName];
 }
 
@@ -102,16 +113,16 @@
 	return [[NSString stringWithData:data] JSONValue];
 }
 
-- (BOOL)saveObjectWithDocumentId:(id<NSObject>)docId object:(id)object forKey:(id)key
+- (BOOL)saveObjectWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId object:(id)object forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@.json", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	return [self write:[[object JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding]
 				toFile:fileName];
 }
 
-- (id)objectWithDocumentId:(id<NSObject>)docId forKey:(id)key
+- (id)objectWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@.json", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","] , docId, key];
 	NSData *data = [self read:fileName];
 	return [[NSString stringWithData:data] JSONValue];
 }
@@ -131,16 +142,16 @@
 	return obj;
 }
 
-- (BOOL)saveDataWithDocumentId:(id<NSObject>)docId data:(NSData*)data forKey:(id)key
+- (BOOL)saveDataWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId data:(NSData*)data forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	return [self write:data
 				toFile:fileName];
 }
 
-- (NSData*)dataWithDocumentId:(id<NSObject>)docId forKey:(id)key
+- (NSData*)dataWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	NSData *data = [self read:fileName];
 	return data;
 }

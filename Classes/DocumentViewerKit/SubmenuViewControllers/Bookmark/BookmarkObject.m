@@ -10,15 +10,18 @@
 
 @implementation BookmarkObject
 
-@synthesize documentId;
-@synthesize page;
 @synthesize contentName;
+@synthesize documentContext = _documentContext;
 
 + (BookmarkObject *)objectWithDictionary:(NSDictionary *)dictionary {
     BookmarkObject *ret = [[BookmarkObject new] autorelease];
-    
-    ret.documentId = [dictionary objectForKey:@"documentId"];
-    ret.page = [[dictionary objectForKey:@"page"] intValue];
+
+	DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = [dictionary objectForKey:@"documentId"];
+	dc.currentPage = [[dictionary objectForKey:@"page"] intValue];
+	ret.documentContext = dc;
+	[dc release];
+	
     ret.contentName = [dictionary objectForKey:@"contentName"];
     
     return ret;
@@ -26,21 +29,26 @@
 
 - (NSDictionary *)toDictionary {
     NSMutableDictionary *ret = [NSMutableDictionary dictionaryWithCapacity:0];
-    
-    [ret setObject:[NSString stringWithFormat:@"%@" , documentId] forKey:@"documentId"];
-    [ret setObject:[NSString stringWithFormat:@"%d" , page] forKey:@"page"];
+
+	
+    [ret setObject:[NSString stringWithFormat:@"%@" , _documentContext.documentId] forKey:@"documentId"];
+    [ret setObject:[NSString stringWithFormat:@"%d" , _documentContext.currentPage] forKey:@"page"];
     [ret setObject:contentName forKey:@"contentName"];
     
     return ret;
 }
 
 - (BOOL)equals:(BookmarkObject *)obj {
-    return [self.documentId compare:obj.documentId] == NSOrderedSame && self.page == obj.page;
+
+	return ([_documentContext isEqual:obj.documentContext]);
+//    return ([_documentContext compare:obj.documentContext] == NSOrderedSame);
+	
+//	return [self.documentId compare:obj.documentId] == NSOrderedSame && self.page == obj.page;
 }
 
 - (void)dealloc {
     [contentName release];
-	[documentId release];
+	[_documentContext release];
     
     [super dealloc];
 }

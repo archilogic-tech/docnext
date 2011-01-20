@@ -20,6 +20,8 @@
 #import "DocumentViewerDatasource.h"
 #import "DocumentViewerDelegate.h"
 
+#import "DocumentContext.h"
+
 @class ImageSearchViewController;
 
 typedef enum {
@@ -71,13 +73,19 @@ typedef enum {
     NSString *linkURI;
     int linkPage;
 
+	// 現在表示している情報
+	DocumentContext *_documentContext;
+	
+	
     // メタ情報系
-    id<NSObject> documentId;
-    int currentIndex;
-    int totalPage;
-    NSArray *singlePageInfo;
-    NSArray *pageHeads;
-    NSArray *isSinglePage;
+	//    id<NSObject> documentId;
+	//int currentDocumentIndex;
+    //int currentIndex;
+
+ //   int totalPage;
+ //   NSArray *singlePageInfo;
+ //   NSArray *pageHeads;
+ //   NSArray *isSinglePage;
 
 	id<NSObject,DocumentViewerDatasource> _datasource;					
 	id<NSObject,DocumentViewerDelegate> _delegate;
@@ -92,10 +100,11 @@ typedef enum {
 @property(nonatomic,retain) IBOutlet UIView *highlightCommentMenuView;
 @property(nonatomic,retain) IBOutlet UITextField *highlightCommentTextField;
 @property(nonatomic,assign) UITouchAwareWindow *window;
-@property(nonatomic,copy) id<NSObject> documentId;
+//@property(nonatomic,copy) id<NSObject> documentId;
 
 @property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
 @property (nonatomic, assign) id<NSObject,DocumentViewerDelegate> delegate;
+@property (nonatomic, retain) DocumentContext *documentContext;
 
 
 /*!
@@ -130,7 +139,7 @@ typedef enum {
 - (IBAction)highlightDeleteClick;
 
 
-- (void)setIndexByPage:(int)page;
+//- (void)setIndexByPage:(int)page;
 - (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
 - (void)cancelSearch;
 
