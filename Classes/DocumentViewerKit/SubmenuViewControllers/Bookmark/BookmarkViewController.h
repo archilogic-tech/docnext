@@ -7,14 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MapDocViewController.h"
 #import "DocumentViewerDatasource.h"
 #import "DocumentContext.h"
 
 @interface BookmarkViewController : UIViewController<UITableViewDataSource , UITableViewDelegate> {
-
-	// from IUIViewController
-    UIProgressView *progressView;
 
 	UITableView *tableView;
 

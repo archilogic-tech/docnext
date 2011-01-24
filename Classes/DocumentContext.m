@@ -38,10 +38,20 @@
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	
 	[_documentId release];
 	[_datasource release];
 	[super dealloc];
 }
+
+- (BOOL)isEqualToMetaDocumentId:(id<NSObject>)did
+{
+	NSString *d1 = [_documentId componentsJoinedByString:@","];
+	NSString *d2 = [(NSArray*)did componentsJoinedByString:@","];
+	return [d1 isEqualToString:d2];
+}
+
 
 
 - (void)didInterfaceOrientationChanged:(NSNotification*)n
@@ -73,9 +83,13 @@
 	} else {
 		_documentId = [[NSArray alloc] initWithObjects:docId, nil];
 	}
-
-
 	_currentPage = 0;
+
+	// メタ情報を読み込んでおく
+	// TODO 暫定的に最初の文書の情報を利用する
+	[_metaDocumentInfoCache release];
+	id<NSObject> did = [_documentId objectAtIndex:0];
+	_metaDocumentInfoCache = [[_datasource info:_documentId documentId:did] retain];
 	
 	// 文書IDが変わったら、論理ページを構築しなおす
 	[self loadSinglePageInfo];
@@ -210,10 +224,8 @@
 	for (NSString *did in _documentId) {
 		NSArray *tmp = [_datasource tocs:_documentId documentId:did];
 		[result addObjectsFromArray:tmp];
-//		[result addObject:tmp];
 	}
 	return result;
-	//return [_datasource tocs:_documentId];
 }
 
 - (int)relativePage:(int*)page
@@ -232,14 +244,26 @@
 	return -1;
 }
 
+// 文書メタ情報
+
+
+// メタ情報
 - (NSString*)publisher
 {
-	// TODO 暫定的に最初の文書の情報を利用する
-	id<NSObject> did = [_documentId objectAtIndex:0];
-
-	NSString *r = [_datasource publisher:_documentId documentId:did];
+	NSString *r = [_metaDocumentInfoCache objectForKey:@"publisher"];
 	return r;
 }
+
+- (double)ratio
+{
+	double r = [[_metaDocumentInfoCache objectForKey:@"ratio"] doubleValue];
+	return r;
+}
+
+
+
+
+
 
 
 - (NSString*)titleWithPage:(int)page
@@ -346,14 +370,6 @@
 	return nil;
 }
 
-- (double)ratio
-{
-	// 暫定で0だけ
-	id<NSObject> did = [_documentId objectAtIndex:0];
-	double ratio = (double)[_datasource ratio:_documentId documentId:did];
-	return ratio;
-}
-
 - (void)loadSinglePageInfo
 {
 	NSMutableArray *singlePageInfoList = [[NSMutableArray alloc] init];
@@ -374,7 +390,6 @@
 		if (relativeIndex < [tmp count]) {
 
 			return [_datasource thumbnail:_documentId documentId:[_documentId objectAtIndex:documentOffset] cover:relativeIndex];
-//			return [[tmp objectAtIndex:_currentIndex] boolValue];
 		}
 		relativeIndex -= (count);
 		documentOffset++;
@@ -426,7 +441,8 @@
 	NSMutableArray *pageHeadsList = [[NSMutableArray alloc] init];
 	NSMutableArray *isSinglePageList = [[NSMutableArray alloc] init];
 
-	for (int documentOffset = 0; documentOffset < [_documentId count]; documentOffset++) {
+	int documentCount = [_documentId count];
+	for (int documentOffset = 0; documentOffset < documentCount; documentOffset++) {
 		NSMutableArray *pageHeads = [NSMutableArray array];
 		NSMutableArray *isSinglePage = [NSMutableArray array];
 		
@@ -480,17 +496,24 @@
 	return nil;
 }
 
-
-
-
-
-////////////////////////////////////////////////////////////////
-/*
-- (NSComparisonResult)compare:(DocumentContext *)anotherDocumentContext
-{
-	// TBD
-	assert(0);
++ (DocumentContext *)objectWithDictionary:(NSDictionary *)dictionary {
+	
+	DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = [dictionary objectForKey:@"documentId"];
+	dc.currentPage = [[dictionary objectForKey:@"page"] intValue];
+	[dc autorelease];
+	
+    return dc;
 }
-*/
+
+- (NSDictionary *)toDictionary {
+    NSMutableDictionary *ret = [NSMutableDictionary dictionaryWithCapacity:0];
+    
+    [ret setObject:_documentId forKey:@"documentId"];
+    [ret setObject:[NSString stringWithFormat:@"%d" , _currentPage] forKey:@"page"];
+    
+    return ret;
+}
+
 
 @end

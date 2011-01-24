@@ -7,14 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
+#define LibraryURL (@"http://ustdoc.com/docman_optimage/library.html")
+
 @interface BrowserViewController : UIViewController<UIWebViewDelegate> {
-
-	// from IUIViewController
-    UIProgressView *progressView;
-
 	UIWebView *webView;
 	id<NSObject,DocumentViewerDatasource> _datasource;
 }

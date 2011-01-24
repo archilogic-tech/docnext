@@ -8,10 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "Region.h"
-//#import "DocumentViewerDatasource.h"
 
 @protocol DocumentViewerDatasource;
-
 
 @interface DocumentContext : NSObject {
 	id<NSObject,DocumentViewerDatasource> _datasource;
@@ -26,12 +24,20 @@
 	NSArray *_singlePageInfo;
 	NSArray *_pageHeads;
 	NSArray *_isSinglePage;
+
+
+	NSDictionary *_metaDocumentInfoCache;
 }
 
 @property (nonatomic, retain) id<NSObject> documentId;
 @property (nonatomic) int documentOffset;
 @property (nonatomic) int currentPage;
 @property (nonatomic) int currentIndex;
+
+- (BOOL)isEqualToMetaDocumentId:(id<NSObject>)did;
+
++ (DocumentContext *)objectWithDictionary:(NSDictionary *)dictionary;
+- (NSDictionary *)toDictionary;
 
 - (id)init;
 - (void)dealloc;

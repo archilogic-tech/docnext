@@ -8,13 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
 @interface BookshelfDeletionViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
-
-	// from IUIViewController
-    UIProgressView *progressView;
 
 	UITableView *tableView;
     

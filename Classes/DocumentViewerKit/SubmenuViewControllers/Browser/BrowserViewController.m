@@ -19,7 +19,7 @@
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
     
 	BrowserViewController *ret = [[[BrowserViewController alloc] initWithNibName:
-                                   [IUIViewController buildNibName:@"Browser" orientation:o] bundle:nil] autorelease];
+                                   [Util buildNibName:@"Browser" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
@@ -27,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	NSString *libraryURL = [_datasource libraryURL];
+	NSString *libraryURL = LibraryURL;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:libraryURL]]];
 }
 

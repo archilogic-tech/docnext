@@ -59,7 +59,6 @@
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 - (void)setParam:(DocumentContext*)documentContext size:(CGSize)size;
-//- (void)setParam:(id)docId page:(int)page size:(CGSize)size;
 - (BOOL)selectNearest:(CGPoint)point;
 - (BOOL)hasSelection;
 - (NSRange)selection;

@@ -7,13 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
 @interface BookshelfViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
-
-	// from IUIViewController
-    UIProgressView *progressView;
 
 	UITableView *tableView;
 

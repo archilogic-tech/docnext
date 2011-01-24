@@ -25,7 +25,7 @@
     }
 
 	NSString *result = [documentsDirectory stringByAppendingPathComponent:fileName];
-//	NSLog(@"DIR : %@", result);
+	NSLog(@"DIR : %@", result);
     return result;
 }
 
@@ -89,9 +89,14 @@
 	return YES;
 }
 
-- (BOOL)removeWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId
+- (BOOL)removeWithDocumentId:(id<NSObject>)metaDocumentId// documentId:(id<NSObject>)docId
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@/", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId];
+	NSString *mdid = (NSString*)metaDocumentId;
+	if ([mdid isKindOfClass:[NSArray class]]) {
+		mdid = [(NSArray*)mdid componentsJoinedByString:@","];
+	}
+	
+	NSString *fileName = [NSString stringWithFormat:@"%@/", mdid];
 	return [self remove:fileName];
 }
 

@@ -5,4 +5,7 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
+	#import "Util.h"
 #endif
+
+#define	APP_VERSION	@"0.0.1"

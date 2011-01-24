@@ -7,7 +7,6 @@
 //
 
 #import "BookshelfViewController.h"
-#import "MapDocViewController.h"
 #import "BookshelfTableViewCell.h"
 #import "ImageViewController.h"
 #import "NSString+Data.h"
@@ -22,7 +21,7 @@
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
 	
     BookshelfViewController *ret = [[[BookshelfViewController alloc] initWithNibName:
-                                     [IUIViewController buildNibName:@"Bookshelf" orientation:o] bundle:nil] autorelease];
+                                     [Util buildNibName:@"Bookshelf" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }

@@ -14,7 +14,6 @@
 #import "NSString+Search.h"
 #import "RangeObject.h"
 #import "ImageSearchViewController.h"
-#import "UIBalloon.h"
 #import "SeparationHolder.h"
 #import "HighlightObject.h"
 #import "ObjPoint.h"
@@ -52,11 +51,7 @@
 @synthesize highlightCommentMenuView;
 @synthesize highlightCommentTextField;
 
-//@synthesize window;
-//@synthesize documentId;
-
 @synthesize datasource = _datasource;
-@synthesize delegate = _delegate;
 @synthesize documentContext = _documentContext;
 
 #pragma mark lifecycle
@@ -64,33 +59,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    UITapGestureRecognizer *rec = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
-	[self.view addGestureRecognizer:rec];
-	[rec release];
-	
-    rec = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
-	rec.numberOfTapsRequired = 2;
-	[self.view addGestureRecognizer:rec];
-	[rec release];
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
+	[self.view addGestureRecognizer:singleTap];
+
+    UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
+	doubleTap.numberOfTapsRequired = 2;
+	[self.view addGestureRecognizer:doubleTap];
+	[singleTap requireGestureRecognizerToFail:doubleTap];
+
+	[singleTap release];
+	[doubleTap release];
 
 	UILongPressGestureRecognizer *rec2 = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleLongPressGesture:)];
 	[self.view addGestureRecognizer:rec2];
 	[rec2 release];
 	
-//    tapDetector = [TapDetector new];
-//    tapDetector.delegate = self;
-    
     overlayManager = [OverlayManager new];
     overlayManager.delegate = self;
 	overlayManager.datasource = _datasource;
     
     highlights = [[NSMutableDictionary alloc] init];
-    
-//    tiledScrollView = [[self buildContentView] retain];
-//    [tiledScrollViewContainer addSubview:tiledScrollView];
-    
-    
-//    window.touchesObserver = self;
 }
 
 
@@ -151,8 +139,6 @@
 
 
 - (void)dealloc {
-//    window.touchesObserver = nil;
-    
     [configView release];
     [_freehandSwitch release];
     [tiledScrollView release];
@@ -180,7 +166,7 @@
 {
     UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
 	ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:
-                                 [IUIViewController buildNibName:@"Image" orientation:o] bundle:nil] autorelease];
+                                 [Util buildNibName:@"Image" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
@@ -189,7 +175,6 @@
 	//HGMTODO
 
     [self.navigationController popToRootViewControllerAnimated:YES];
-	//[parent showHome:YES];
 }
 
 - (IBAction)tocViewButtonClick:(id)sender
@@ -449,13 +434,7 @@
 }
 
 - (void)saveHistory {
-    HistoryObject *history = [[HistoryObject new] autorelease];
-	history.documentContext = _documentContext;
-    
-//	history.documentId = documentId;
-//    history.page = [self currentPageByIndex:currentIndex];
-
-    [_datasource saveHistory:history];
+    [_datasource saveHistory:_documentContext];
 }
 
 - (void)saveHighlights {
@@ -652,16 +631,7 @@
     }
 	
     NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
-
 	return [_documentContext getTileImageWithType:type page:page column:column row:row resolution:resolution];
-/*	
-	return [_datasource getTileImageWithDocument:_documentContext.documentId
-											type:type
-											page:page
-										  column:column
-											 row:row
-									  resolution:resolution];
- */
 }
 
 
@@ -689,34 +659,13 @@
     prevTiledScrollView = nil;
 }
 
-#pragma mark TapDetectorDelegate 
-
+#pragma mark UIGestureRecognizer handler
 
 - (void)handleSingleTapGesture:(UIGestureRecognizer *)gestureRecognizer
 {
 	NSLog(@"single");
 	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
-	[self tapDetectorGotSingleTapAtPoint:p];
-}
 
-- (void)handleDoubleTapGesture:(UIGestureRecognizer *)gestureRecognizer
-{
-	NSLog(@"double");
-	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
-	[self tapDetectorGotDoubleTapAtPoint:p];
-}
-
-- (void)handleSingleLongPressGesture:(UIGestureRecognizer *)gestureRecognizer
-{
-	NSLog(@"long");
-	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
-	[self tapDetectorGotSingleLongTapAtPoint:p];
-	
-//	[self tapDetectorGotDoubleTapAtPoint:p];
-}
-
-
-- (void)tapDetectorGotSingleTapAtPoint:(CGPoint)tapPoint {
     if ( isIgnoreTap ) {
         isIgnoreTap = NO;
     } else {
@@ -734,7 +683,11 @@
     }
 }
 
-- (void)tapDetectorGotDoubleTapAtPoint:(CGPoint)tapPoint {
+- (void)handleDoubleTapGesture:(UIGestureRecognizer *)gestureRecognizer
+{
+	NSLog(@"double");
+	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+
     float scale = tiledScrollView.zoomScale;
     float toScale;
     if ( scale < tiledScrollView.maximumZoomScale ) {
@@ -742,7 +695,7 @@
     } else {
         toScale = 1;
     }
-
+	
     CGSize boundsSize = tiledScrollView.bounds.size;
     
     [UIView beginAnimations:nil context:nil];
@@ -750,19 +703,23 @@
 	[UIView setAnimationDuration:0.3];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
 	[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:tiledScrollView cache:YES];
-
+	
     tiledScrollView.zoomScale = toScale;
-    tiledScrollView.contentOffset = CGPointMake(MAX(MIN(tapPoint.x * toScale - boundsSize.width / 2 ,
-                                                             boundsSize.width * (toScale - 1)) , 0),
-                                                     MAX(MIN(tapPoint.y * toScale - boundsSize.height / 2 ,
-                                                             boundsSize.height * (toScale - 1)) , 0));
+    tiledScrollView.contentOffset = CGPointMake(MAX(MIN(p.x * toScale - boundsSize.width / 2 ,
+														boundsSize.width * (toScale - 1)) , 0),
+												MAX(MIN(p.y * toScale - boundsSize.height / 2 ,
+														boundsSize.height * (toScale - 1)) , 0));
     [overlayManager applyScaleView:toScale];
-
+	
     [UIView commitAnimations];
 }
 
-- (void)tapDetectorGotSingleLongTapAtPoint:(CGPoint)tapPoint {
-    BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
+- (void)handleSingleLongPressGesture:(UIGestureRecognizer *)gestureRecognizer
+{
+	NSLog(@"long");
+	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+
+	BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
     
     if ( isLand ) {
         [[[[UIAlertView alloc] initWithTitle:@"Selecting function is disabled currently on landscape orientation"
@@ -770,54 +727,15 @@
                            otherButtonTitles:nil] autorelease] show];
         return;
     }
-
-    if ( ![overlayManager selectNearest:tapPoint] ) {
+	
+    if ( ![overlayManager selectNearest:p] ) {
         [[[[UIAlertView alloc] initWithTitle:@"No text found"
                                      message:nil delegate:nil cancelButtonTitle:@"OK"
                            otherButtonTitles:nil] autorelease] show];
     }
+	
 }
 
-#pragma mark TouchObserver
-
-
-/*
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( !_freehandSwitch.on ) {
-        if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
-            [tapDetector touchesBegan:touches withEvent:event];
-        }
-    }
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( !_freehandSwitch.on ) {
-        [tapDetector touchesMoved:touches withEvent:event];
-        
-        UIView *target = [[touches anyObject] view];
-        if ( !target || [target isDescendantOfView:tiledScrollView] ) {
-            if ( configView.alpha > 0 ) {
-                [self toggleConfigView];
-            }
-            if ( highlightMenuView.alpha > 0 ) {
-                [self toggleHighlightMenu];
-            }
-            if ( highlightCommentMenuView.alpha > 0 ) {
-                [self toggleHighlightCommentMenu];
-            }
-        }
-    }
-}
-
- 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if ( !_freehandSwitch.on ) {
-        if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
-            [tapDetector touchesEnded:touches withEvent:event];
-        }
-    }
-}
-*/
  
 #pragma mark UIActionSheetDelegate
 

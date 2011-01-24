@@ -13,7 +13,6 @@
 #import "BookmarkObject.h"
 
 #define ServerEndpoint (@"http://ustdoc.com/docman_optimage/dispatch/viewer/")
-#define LibraryURL (@"http://ustdoc.com/docman_optimage/library.html")
 #define ReachabilityHost (@"ustdoc.com")
 
 @class UstDocDownloadManager;
@@ -22,18 +21,10 @@
 	NSOperationQueue *_imageFetchQueue;
 	UstDocDownloadManager *_downloadManager;
 	StandardLocalStorageManager *_localStorage;
+
+	NSMutableDictionary *_imageCache;
 }
 
 - (NSString *)getFullPath:(NSString *)fileName;
-
-// temporary
-- (NSString*)libraryURL;
-
-// ダウンロード系
-- (void)startDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl;
-- (BOOL)hasDownloading;
-- (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus;
-- (BOOL)deleteDownloadStatus;
-- (DownloadStatusObject *)downloadStatus;
 
 @end

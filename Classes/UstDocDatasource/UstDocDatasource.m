@@ -29,19 +29,29 @@
 		[self deleteDownloadStatus];
 
         if ( [self hasDownloading] ) {
-            [_downloadManager resume];
+			[_downloadManager resume];
         }
+
+		_imageCache = [[NSMutableDictionary alloc] init];
 	}
 	return self;
 }
 
 - (void)dealloc
 {
+	[_imageCache release];
+
 	[_imageFetchQueue release];
 	[_downloadManager release];
 	[_localStorage release];
 	[super dealloc];
 }
+
+- (void)didReceiveMemoryWarning
+{
+	[_imageCache removeAllObjects];
+}
+
 
 - (id<NSObject,DownloadManagerDelegate>)downloadManagerDelegate
 {
@@ -53,6 +63,24 @@
 	_downloadManager.delegate = d;
 }
 
+- (void)updateSystemFromVersion:(NSString*)currentVersion toVersion:(NSString*)newVersion
+{
+	if (!currentVersion) {
+		// 初回起動、すごく古いものを最初利用したいたときの起動
+		// Documentsディレクトリのすべてのファイルを消す
+		NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains( NSDocumentDirectory , NSUserDomainMask , YES ) objectAtIndex:0];
+
+		NSFileManager *fm = [NSFileManager defaultManager];
+		NSError *error = nil;
+		for (NSString *fname in [fm contentsOfDirectoryAtPath:documentsDirectory error:&error]) {
+			
+			NSString *path = [NSString stringWithFormat:@"%@/%@", documentsDirectory, fname];
+			if (![fm removeItemAtPath:path error:&error]) {
+				NSLog(@"delete failed : %@, %@", fname, error);
+			}
+		}
+	}
+}
 
 
 
@@ -63,15 +91,9 @@
 - (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
 	return [_localStorage objectWithDocumentId:metaDocumentId documentId:documentId forKey:@"info"];
 }
-/*
-- (BOOL)existsDocument:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
-	return [_localStorage existsWithDocumentId:documentId forKey:@"info"];
-}
-*/
+
 - (BOOL)existsDocument:(id<NSObject>)metaDocumentId {
 	return [_localStorage existsWithMetaDocumentId:metaDocumentId];
-//	return YES;
-//	return [_localStorage existsWithDocumentId:documentId forKey:@"info"];
 }
 
 - (int)pages:(id<NSObject>)metaDocumentId
@@ -82,7 +104,6 @@
 	}
 	return sum;
 }
-
 
 - (int)pages:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId
 {
@@ -100,6 +121,7 @@
 - (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId {
     return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"ratio"] doubleValue];
 }
+
 
 - (NSArray *)tocs:(id<NSObject>)metaDocumentId documentId:(id)documentId {
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
@@ -197,19 +219,26 @@
 - (UIView *) getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
 {
 	NSString *key = [NSString stringWithFormat:@"images/%@-%d-%d-%d-%d.jpg", type, page, resolution, column, row];
-	
-	if ([_localStorage existsWithDocumentId:documentId forKey:key]) {
+
+	UIImage *img = [_imageCache objectForKey:key];
+	if (img) {
+		UIImageView *tile = [[[UIImageView alloc] initWithImage:img] autorelease];
+        tile.tag = TiledScrollViewTileLocal;
+        return tile;
+	} else if ([_localStorage existsWithDocumentId:documentId forKey:key]) {
 
 		NSData *d = [_localStorage dataWithDocumentId:documentId forKey:key];
-		UIImageView *tile = [[[UIImageView alloc] initWithImage:[UIImage imageWithData:d]] autorelease];
+		img = [UIImage imageWithData:d];
 		
-		// HGMTODO
-		// これは指定しないといけないのか?
+		[_imageCache setObject:img forKey:key];
+		
+		UIImageView *tile = [[[UIImageView alloc] initWithImage:img] autorelease];
         tile.tag = TiledScrollViewTileLocal;
         return tile;
     } else {
         UIRemoteImageView *tile = [[[UIRemoteImageView alloc ] initWithFrame:CGRectZero] autorelease];
 
+		// TODO ServerEndpoingは、ハードコーディングするのではなく文書のメタ情報が保持するべき
 		NSString *url = [NSString stringWithFormat:@"%@getPage?type=%@&documentId=%@&page=%d&level=%d&px=%d&py=%d" ,
 						 ServerEndpoint , (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone") ,
 						 documentId , page , resolution , column , row];
@@ -242,38 +271,37 @@
 
 
 // ユーザ操作系ドキュメント関連
-- (void)deleteCache:(id<NSObject>)metaDocumentId documentId:(id)docId {
-	[_localStorage removeWithDocumentId:metaDocumentId documentId:docId];
-	return;
-	
-	// TODO 細かく消さなくてはならないのか?
-	/*
-	
-	HistoryObject* history = [self history];
-//	id<NSObject> did = history.documentContext.documentId;
-    if ( [history.documentContext.documentId compare:docId] == NSOrderedSame ) {
+- (void)deleteCache:(id<NSObject>)metaDocumentId {
+	[_localStorage removeWithDocumentId:metaDocumentId];
+
+	// historyを消す
+	DocumentContext* history = [self history];
+    if ( [history isEqualToMetaDocumentId:metaDocumentId] ) {
 		[_localStorage removeForKey:@"history"];
     }
     
+	// ブックマークから消す
     NSMutableArray *bookmarks = [NSMutableArray arrayWithCapacity:0];
 	NSDictionary *d = [_localStorage objectForKey:@"bookmarks"];
     for ( NSDictionary *dic in d) {
         BookmarkObject *obj = [BookmarkObject objectWithDictionary:dic];
-        if ( [obj.documentContext.documentId compare:docId] != NSOrderedSame ) {
+        if ( ![obj.documentContext isEqualToMetaDocumentId:metaDocumentId] ) {
             [bookmarks addObject:dic];
         }
     }
 	[_localStorage saveObject:bookmarks forKey:@"bookmarks"];
     
+	// ダウンロード済みIDリストから消す
     NSMutableArray *downloadedIds = [NSMutableArray arrayWithArray:[self downloadedIds]];
-    for ( id downloadedId in downloadedIds ) {
-        if ( [downloadedId compare:docId] == NSOrderedSame ) {
+
+    NSString *mdid = [(NSArray*)metaDocumentId componentsJoinedByString:@","];
+	for ( id downloadedId in downloadedIds ) {
+        if ( [downloadedId compare:mdid] == NSOrderedSame ) {
             [downloadedIds removeObject:downloadedId];
             break;
         }
     }
     [self saveDownloadedIds:downloadedIds];
-	 */
 }
 
 - (NSArray*)highlights:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
@@ -306,11 +334,13 @@
 	return [_localStorage saveObjectWithDocumentId:metaDocumentId documentId:docId object:data forKey:key];
 }
 
-- (HistoryObject *)history {
-	return [HistoryObject objectWithDictionary:[_localStorage objectForKey:@"history"]];
+- (DocumentContext *)history {
+	NSDictionary *dic = [_localStorage objectForKey:@"history"];
+	if (!dic) return nil;
+	return [DocumentContext objectWithDictionary:dic];
 }
 
-- (BOOL)saveHistory:(HistoryObject *)history {
+- (BOOL)saveHistory:(DocumentContext *)history {
 	return [_localStorage saveObject:[history toDictionary] forKey:@"history"];
 }
 
@@ -324,13 +354,13 @@
 	return [_localStorage saveObject:bookmark forKey:@"bookmarks"];
 }
 
-- (NSString*)libraryURL
-{
-	return LibraryURL;
-}
-
 - (void)startDownload:(id)docId baseUrl:(NSString*)baseUrl
 {
+	if ( [self hasDownloading] ) {
+		[[[[UIAlertView alloc] initWithTitle:@"Downloading file exist" message:nil delegate:nil cancelButtonTitle:@"OK"
+						   otherButtonTitles:nil] autorelease] show];
+		return;
+	}
 	[_downloadManager startMetaInfoDownload:docId baseUrl:baseUrl];
 }
 
@@ -338,7 +368,6 @@
 {
 	return [_localStorage existsForKey:@"downloadStatus"];
 }
-
 
 - (NSString *)getFullPath:(NSString *)fileName
 {

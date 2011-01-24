@@ -15,7 +15,6 @@
 	UIWindow *window;
     MapDocViewController *viewController;
     
-    UIAlertView *loading;
 	id<NSObject,DocumentViewerDatasource> _datasource;
 }
 

@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "HistoryObject.h"
 
 /*!
     @class       StandardLocalStorageManager 
