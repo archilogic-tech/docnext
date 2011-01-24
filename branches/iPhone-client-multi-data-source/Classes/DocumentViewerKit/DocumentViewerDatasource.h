@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TOCObject.h"
-#import "HistoryObject.h"
+#import "DocumentContext.h"
 #import "DownloadStatusObject.h"
 #import "DocumentDownloadManager.h"
 
@@ -23,6 +23,15 @@
 @protocol DocumentViewerDatasource
 
 @property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
+
+
+// ダウンロード系
+- (void)startDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl;
+- (BOOL)hasDownloading;
+- (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus;
+- (BOOL)deleteDownloadStatus;
+- (DownloadStatusObject *)downloadStatus;
+
 
 
 /*!
@@ -131,7 +140,7 @@
     @discussion 
     @param      docId 削除するダウンロード済み文書のID
 */
-- (void)deleteCache:(id)docId;
+- (void)deleteCache:(id<NSObject>)metaDocumentId;
 
 /*!
     @method     getTileImageWithDocument:type:page:column:row:resolution:
@@ -146,6 +155,10 @@
     @result     UIViewを返す。ここで返されるオブジェクトがそのまま表示される。
 */
 - (UIView*)getTileImageWithDocument:(id)documentId type:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+
+- (void)didReceiveMemoryWarning;
+- (void)updateSystemFromVersion:(NSString*)currentVersion toVersion:(NSString*)newVersion;
 
 
 // HGMTODO 以下、別の場所に移すので、文書化しない!!
@@ -164,14 +177,15 @@
 - (NSArray *)downloadedIds;
 - (BOOL)saveDownloadedIds:(NSArray *)downloadedIds;
 
-- (HistoryObject *)history;
-- (BOOL)saveHistory:(HistoryObject *)history;
+- (DocumentContext *)history;
+- (BOOL)saveHistory:(DocumentContext *)history;
 
 - (NSArray *)bookmark;
 - (BOOL)saveBookmark:(NSArray *)bookmark;
 
 - (UIImage*)thumbnail:(id)docId cover:(int)cover;
 - (NSString*)texts:(id)docId page:(int)page;
+
 
 
 

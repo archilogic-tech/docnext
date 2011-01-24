@@ -15,7 +15,8 @@
 
 @protocol DownloadManagerDelegate
 
-@optional
+
+- (void)didMetaInfoDownloadStarted:(id<NSObject>)metaDocumentId;
 
 /*!
  @method     didMetaInfoDownloadFinished:
@@ -23,7 +24,7 @@
  @discussion 
  @param      docId 文書ID
  */
-- (void)didMetaInfoDownloadFinished:(id)docId;
+- (void)didMetaInfoDownloadFinished:(id<NSObject>)metaDocumentId;
 
 
 /*!
@@ -33,7 +34,11 @@
  @param      docId ドキュメントID
  @param      error エラー情報
  */
-- (void)didMetaInfoDownloadFailed:(id)docId error:(NSError*)error;
+- (void)didMetaInfoDownloadFailed:(id<NSObject>)metaDocumentId error:(NSError*)error;
+
+
+- (void)didPageDownloadStarted:(id<NSObject>)metaDocumentId;
+
 
 /*!
  @method     pageDownloadProgressed:downloaded:
@@ -42,7 +47,7 @@
  @param      docId 文書ID
  @param      downloaded 
  */
-- (void)pageDownloadProgressed:(id)docId downloaded:(float)downloaded;
+- (void)pageDownloadProgressed:(id<NSObject>)metaDocumentId downloaded:(float)downloaded;
 
 /*!
  @method     didAllPagesDownloadFinished:
@@ -50,7 +55,7 @@
  @discussion 
  @param      docId 文書ID
  */
-- (void)didAllPagesDownloadFinished:(id)docId;
+- (void)didAllPagesDownloadFinished:(id<NSObject>)metaDocumentId;
 
 /*!
  @method     didPageDownloadFailed:error:
@@ -59,7 +64,7 @@
  @param      docId ドキュメントID
  @param      error エラー情報
  */
-- (void)didPageDownloadFailed:(id)docId error:(NSError*)error;
+- (void)didPageDownloadFailed:(id<NSObject>)metaDocumentId error:(NSError*)error;
 
 @end
 

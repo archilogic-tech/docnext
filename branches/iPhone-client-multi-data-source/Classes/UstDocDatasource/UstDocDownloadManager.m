@@ -22,24 +22,17 @@
 @synthesize delegate;
 @synthesize datasource = _datasource;
 
-- (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl
+- (void)startMetaInfoDownload:(id<NSObject>)metaDocumentId baseUrl:(NSString*)baseUrl
 {
-	[self startMetaInfoDownload:docId baseUrl:baseUrl index:0];
+	[self startMetaInfoDownload:metaDocumentId baseUrl:baseUrl index:0];
 }
 
 
-- (void)startMetaInfoDownload:(id)metaDocumentId baseUrl:(NSString*)baseUrl index:(int)idx
+- (void)startMetaInfoDownload:(id<NSObject>)metaDocumentId baseUrl:(NSString*)baseUrl index:(int)idx
 {
 	int currentDownloadIndex = idx;
 	
-//	NSString *did = nil;
-//	if ([metaDocumentId isKindOfClass:[NSArray class]]) {
 	NSString *did = [metaDocumentId objectAtIndex:currentDownloadIndex];
-/*
-	} else {
-		did = docId;
-	}
-*/	
 	
 	NSString *url = [NSString stringWithFormat:@"%@download?documentId=%@" , ServerEndpoint , did];
 	NSLog(@"%@ downloading...", url);
@@ -66,11 +59,15 @@
 	[request.userInfo setValue:baseUrl forKey:@"baseUrl"];
 	[request.userInfo setValue:tempFileName forKey:@"tempFileName"];
     [request startAsynchronous];
+
+	[delegate didMetaInfoDownloadStarted:metaDocumentId];
 }
 
 - (void)resume {
     DownloadStatusObject *downloadStatus = [_datasource downloadStatus];
-    
+
+	[delegate didPageDownloadStarted:downloadStatus.metaDocumentId];
+
     [self downloadNextPage:downloadStatus.metaDocumentId
 				documentId:downloadStatus.docId
 					  page:downloadStatus.downloadedPage
@@ -102,16 +99,19 @@
     [request.userInfo setValue:[NSNumber numberWithInt:py] forKey:@"py"];
     
     [request startAsynchronous];
+
 }
 
-- (void)downloadComplete:(id)docId {
-    if (delegate &&  [delegate respondsToSelector:@selector(didAllPagesDownloadFinished:)] ) {
-        [delegate didAllPagesDownloadFinished:docId];
+- (void)downloadComplete:(id<NSObject>)metaDocumentId {
+
+    NSString *mdid = [(NSArray*)metaDocumentId componentsJoinedByString:@","];
+	if (delegate && [delegate respondsToSelector:@selector(didAllPagesDownloadFinished:)] ) {
+        [delegate didAllPagesDownloadFinished:mdid];
     }
     [_datasource deleteDownloadStatus];
-    
+
     NSMutableArray *downloaded = [NSMutableArray arrayWithArray:[_datasource downloadedIds]];
-    [downloaded addObject:[NSString stringWithFormat:@"%@" , docId]];
+    [downloaded addObject:[NSString stringWithFormat:@"%@" , mdid]];
     [_datasource saveDownloadedIds:downloaded];
 }
 
@@ -119,12 +119,12 @@
     int pages = [_datasource pages:metaDocumentId];
     
 	// ダウンロードの進捗を伝える
-	// TODO NSNotificationに変更する
-/*	
+	// TODO NSNotificationに変更しようと思ったが、これで十分そう
 	if ( [delegate respondsToSelector:@selector(pageDownloadProgressed:downloaded:)] ) {
-		[delegate pageDownloadProgressed:docId downloaded:(1.0 * ( page + 1.0 ) / pages)];
+		float val = (1.0 * ( page + 1.0 ) / pages);
+		[delegate pageDownloadProgressed:docId downloaded:val];
 	}
-*/	
+	
     if ( [[UIScreen mainScreen] scale] == 2.0 ) {
         if ( px < 1 ) {
             [self downloadPage:docId page:page px:(px + 1) py:py];
@@ -133,13 +133,19 @@
         } else if ( page + 1 < pages ) {
             [self downloadPage:docId page:(page + 1) px:0 py:0];
         } else {
-            [self downloadComplete:docId];
+			int index = [(NSArray*)metaDocumentId indexOfObject:docId];
+			if (index == [metaDocumentId count]-1) {
+				[self downloadComplete:metaDocumentId];
+			}
         }
     } else {
         if ( page + 1 < pages ) {
             [self downloadPage:metaDocumentId documentId:docId page:(page + 1) px:0 py:0];
         } else {
-            [self downloadComplete:docId];
+			int index = [(NSArray*)metaDocumentId indexOfObject:docId];
+			if (index == [metaDocumentId count]-1) {
+				[self downloadComplete:metaDocumentId];
+			}
         }
     }
 }
@@ -165,15 +171,6 @@
     id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
 	int currentDownloadIndex = [[request.userInfo objectForKey:@"currentDownloadIndex"] intValue];
 
-//	NSString *did = docId;
-/*
-	if ([docId isKindOfClass:[NSArray class]]) {
-		did = [(NSArray*)docId objectAtIndex:currentDownloadIndex];
-	} else {
-		did = (NSString*)docId;
-	}
-*/	
-	
 	// TODO きちんとエラー情報を渡すこと
 	if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFailed:error:)] ) {
 		[delegate didMetaInfoDownloadFailed:docId error:[request error]];
@@ -191,16 +188,16 @@
 						 [(NSArray*)metaDocumentId componentsJoinedByString:@","],
 						 docId];
 
-	dirName = [_datasource getFullPath:dirName];
-	[[NSFileManager defaultManager] createDirectoryAtPath:dirName withIntermediateDirectories:YES attributes:nil error:nil];
-	
-
 	////////// zip処理 /////////////////////////////
-	
     NSString *zipName = [request.userInfo objectForKey:@"tempFileName"];
 	
 	// メタ情報を展開してローカルのストレージにキャッシュする
-	[_datasource deleteCache:metaDocumentId documentId:docId];
+	// 毎回全部消してしまうのはまずい
+	//[_datasource deleteCache:metaDocumentId];
+
+	dirName = [_datasource getFullPath:dirName];
+	[[NSFileManager defaultManager] createDirectoryAtPath:dirName withIntermediateDirectories:YES attributes:nil error:nil];
+	
     ZipArchive *zip = [[ZipArchive new] autorelease];
     if ( [zip UnzipOpenFile:zipName] ) {
         [zip UnzipFileTo:dirName overWrite:YES];
@@ -216,6 +213,8 @@
 	[self updateDownloadStatus:metaDocumentId documentId:docId page:-1 px:1 py:1];
 	
 	// 誌面画像のダウンロードを別スレッドで開始する
+	[delegate didPageDownloadStarted:metaDocumentId];
+
     [self downloadPage:metaDocumentId documentId:docId page:0 px:0 py:0];
     
 	currentDownloadIndex++;
@@ -268,6 +267,8 @@
 {
 	NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
 }
+
+
 
 
 

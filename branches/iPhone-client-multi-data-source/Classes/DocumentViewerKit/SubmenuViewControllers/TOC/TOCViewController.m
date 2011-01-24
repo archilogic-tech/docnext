@@ -8,7 +8,6 @@
 
 #import "TOCViewController.h"
 #import "DocumentViewerConst.h"
-#import "ASIHTTPRequest.h"
 #import "NSString+Data.h"
 #import "TOCObject.h"
 
@@ -25,7 +24,7 @@
 {
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
     TOCViewController *ret = [[[TOCViewController alloc] initWithNibName:
-                               [IUIViewController buildNibName:@"TOC" orientation:o] bundle:nil] autorelease];
+                               [Util buildNibName:@"TOC" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
@@ -33,15 +32,6 @@
 - (IBAction)backButtonClick:(id)sender {
 	[self.navigationController popViewControllerAnimated:YES];
 }
- /*
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-	TOCViewController *c = [TOCViewController createViewController:orientation datasource:_datasource];
-	c.documentContext = _documentContext;
-//	c.documentId = self.documentId;
-//	c.prevPage = self.prevPage;
-	return c;
-}
-*/
 
 #pragma mark -
 #pragma mark Table view data source
@@ -89,7 +79,6 @@
     self.tableView.dataSource = self;
 
 	self.tocs = [_documentContext titles];
-//	self.tocs = [_datasource tocs:self.documentId];
     [self.tableView reloadData];
 }
 

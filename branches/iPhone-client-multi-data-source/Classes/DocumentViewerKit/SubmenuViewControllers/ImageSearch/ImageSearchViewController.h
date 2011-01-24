@@ -28,14 +28,10 @@
 	id<NSObject> _documentContext;
 	id<ImageSearchDelegate> _delegate;
 
-	//    ImageViewController *parent;
-	//    id docId;
 }
 
 @property(nonatomic,retain) IBOutlet UISearchBar *searchBar;
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
-//@property(nonatomic,assign) ImageViewController *parent;
-//@property(nonatomic,assign) id docId;
 
 @property (nonatomic, retain) id<DocumentViewerDatasource> datasource;
 @property (nonatomic, retain) id<NSObject> documentContext;

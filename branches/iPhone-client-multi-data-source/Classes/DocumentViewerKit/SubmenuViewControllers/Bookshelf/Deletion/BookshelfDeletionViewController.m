@@ -8,7 +8,6 @@
 
 #import "BookshelfDeletionViewController.h"
 #import "BookshelfTableViewCell.h"
-#import "MapDocViewController.h"
 
 @implementation BookshelfDeletionViewController
 
@@ -21,7 +20,7 @@
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
 	
     BookshelfDeletionViewController *ret = [[[BookshelfDeletionViewController alloc] initWithNibName:
-                                             [IUIViewController buildNibName:@"BookshelfDeletion" orientation:o] bundle:nil] autorelease];
+                                             [Util buildNibName:@"BookshelfDeletion" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
@@ -29,7 +28,6 @@
 
 - (IBAction)backButtonClick:(id)sender {
 	[self.navigationController popViewControllerAnimated:YES];
-//    [parent showHome:YES];
 }
 
 - (IBAction)movieButtonClick:(id)sender {
@@ -173,8 +171,9 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
 
         NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
+
 		[_datasource deleteCache:metaDocumentId];
-        
+
         [downloadedIds removeObjectAtIndex:indexPath.row];
         
         [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];

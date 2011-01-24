@@ -28,7 +28,7 @@
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
     
 	BookmarkViewController *ret = [[[BookmarkViewController alloc] initWithNibName:
-                                    [IUIViewController buildNibName:@"Bookmark" orientation:o] bundle:nil] autorelease];
+                                    [Util buildNibName:@"Bookmark" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
@@ -37,9 +37,6 @@
 - (IBAction)backButtonClick:(id)sender {
 
 	[self.navigationController popViewControllerAnimated:YES];
-
-//	[parent showImage:_documentContext];
-//    [parent showImage:self.currentDocumentId page:self.currentPage];
 }
 
 - (IBAction)addButtonClick:(id)sender {

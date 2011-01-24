@@ -22,16 +22,9 @@
 @property(nonatomic,assign) id<NSObject,DownloadManagerDelegate> delegate;
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-/*!
-    @method     startMetaInfoDownload:baseUrl:
-    @abstract   文書メタ情報のダウンロードを開始する
-    @discussion 
-    @param      docId 文書ID
-    @param      baseUrl ベースURL
-*/
-- (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl;
+- (void)startMetaInfoDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl;
 
-- (void)startMetaInfoDownload:(id)docId baseUrl:(NSString*)baseUrl index:(int)idx;
+- (void)startMetaInfoDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl index:(int)idx;
 
 
 /*!

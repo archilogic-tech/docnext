@@ -32,10 +32,7 @@
 @synthesize scrollViewHolder;
 @synthesize current;
 @synthesize prev;
-//@synthesize documentId;
-//@synthesize currentPage;
 
-//@synthesize datasource = _datasource;
 @synthesize documentContext = _documentContext;
 
 #pragma mark public
@@ -44,17 +41,27 @@
 {
 	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
     TextViewController *ret = [[[TextViewController alloc] initWithNibName:
-                                [IUIViewController buildNibName:@"Text" orientation:o] bundle:nil] autorelease];
-//    [ret setLandspace:orientation];
-//	ret.datasource = datasource;
+                                [Util buildNibName:@"Text" orientation:o] bundle:nil] autorelease];
     return ret;
 }
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
+}
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+
+    // TODO willRotateに移す
+	[self loadCurrent];
+}
+
 
 
 - (IBAction)imageViewButtonClick:(id)sender {
 	[self.navigationController popViewControllerAnimated:YES];
-//	[parent showImage:_documentContext];
-//    [parent showImage:documentId page:currentPage];
 }
 
 - (IBAction)toggleConfigViewButtonClick:(id)sender {
@@ -74,16 +81,7 @@
     [self loadCurrent];
     [self toggleConfigViewButtonClick:nil];
 }
-/*
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 
-	TextViewController *c = [TextViewController createViewController:orientation];// datasource:_datasource];
-	c.documentContext = _documentContext;
-//	c.documentId = self.documentId;
-//	c.currentPage = self.currentPage;
-	return c;
-}
-*/
 #pragma mark private
 
 - (void)movePage:(BOOL)isNext {
@@ -139,7 +137,16 @@
     [self.current removeFromSuperview];
 
     self.prev = self.current;
-    self.current = [[[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.scrollViewHolder.frame.size.width , self.scrollViewHolder.frame.size.height)] autorelease];
+
+	
+	self.current = [[[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.scrollViewHolder.frame.size.width , self.scrollViewHolder.frame.size.height)] autorelease];
+	self.current.autoresizesSubviews = YES;
+    self.current.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |
+										UIViewAutoresizingFlexibleWidth |
+										UIViewAutoresizingFlexibleRightMargin |
+										UIViewAutoresizingFlexibleTopMargin |
+										UIViewAutoresizingFlexibleHeight |
+										UIViewAutoresizingFlexibleBottomMargin;
     
     self.current.delegate = self;
     self.current.indicatorStyle = ([self getBackgroundColor] & 0xff) > 0x80 ? UIScrollViewIndicatorStyleBlack : UIScrollViewIndicatorStyleWhite;

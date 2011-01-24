@@ -10,16 +10,10 @@
 #import "DocumentContext.h"
 
 @interface HistoryObject : NSObject {
-//    id<NSObject> documentId;
-//    int page;
-
 	DocumentContext *_documentContext;
 }
 
 @property (nonatomic, retain) DocumentContext *documentContext;
-
-//@property(nonatomic, assign) id<NSObject> documentId;
-//@property(nonatomic) int page;
 
 + (HistoryObject *)objectWithDictionary:(NSDictionary *)dictionary;
 - (NSDictionary *)toDictionary;

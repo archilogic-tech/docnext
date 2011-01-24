@@ -6,13 +6,14 @@
 //  Copyright __MyCompanyName__ 2010. All rights reserved.
 //
 
+#import "MapDocViewController.h"
+
 #import "ImageViewController.h"
 #import "TextViewController.h"
 #import "TOCViewController.h"
 #import "ThumbnailViewController.h"
 #import "BookmarkViewController.h"
 #import "BrowserViewController.h"
-#import "BookshelfViewController.h"
 #import "BookshelfDeletionViewController.h"
 #import "DocumentViewerConst.h"
 #import "ASIHTTPRequest.h"
@@ -24,52 +25,58 @@
 
 @implementation MapDocViewController
 
-@synthesize window;
 @synthesize datasource = _datasource;
 
-- (void)showBrowser:(BOOL)animated {
+
+- (void)dealloc {
+	[_datasource release];
+	[_downloadProgressView release];
+	
+    [super dealloc];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+	self.navigationBarHidden = YES;
+	
+	// HGMTODO
+	// debug
+	//NSString *url = @"mapdoc://test.md-dc.jp/book/dl/exec/0000005x/0000002a/docnext/7ocw89xfgxf9y4b1/?p=000ghnpc&v=00001bte";
+	//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+	
+	// ライブラリviewを表示する
+	//[self showHome:NO];
+	
 	BrowserViewController *c = [BrowserViewController createViewController:_datasource];
-	[self pushViewController:c animated:animated];
+	[self pushViewController:c animated:NO];
+
+	// ダウンロードバーの表示
+	_downloadProgressView = [[UIProgressView alloc] init];
+	CGRect r = CGRectMake(10, self.view.frame.size.height-20, self.view.frame.size.width-20, 9);
+	_downloadProgressView.frame = r;
+	_downloadProgressView.progress= 0.5;
+	_downloadProgressView.alpha = 0;
+	[self.view addSubview:_downloadProgressView];
+	[self.view bringSubviewToFront:_downloadProgressView];
 }
 
-- (void)showBookshelf:(BOOL)animated {
-
-    BookshelfViewController *c = [BookshelfViewController createViewController:_datasource];
-    
-//	[self.current.view removeFromSuperview];
-//    self.current = c;
-    [self addSubview:animated];
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
 }
 
-#define UstDocReachabilityHost (@"ustdoc.com")
-
-- (void)showHome:(BOOL)animated {
-	[self popToRootViewControllerAnimated:YES];
-/*	
-	if ( [[Reachability reachabilityWithHostName:UstDocReachabilityHost] currentReachabilityStatus] != NotReachable ) {
-//	if (NO) {
-        [self showBrowser:animated];
-    } else {
-        [self showBookshelf:animated];
-    }
- */
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    willInterfaceOrientation = toInterfaceOrientation;
 }
 
-- (void)showBookshelfDeletion {
-    
-	BookshelfDeletionViewController *c = [BookshelfDeletionViewController createViewController:_datasource];
-    
-//	[self.current.view removeFromSuperview];
-//    self.current = c;
-    [self addSubview:YES];
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	//    [self addSubviewFade];
 }
 
-- (void)showImage:(DocumentContext*)documentContext {
 
-	ImageViewController *ic = [ImageViewController createViewController:_datasource];
-	ic.documentContext = documentContext;
-	[self pushViewController:ic animated:YES];
-}
+
 
 
 - (void)addSubview:(BOOL)animated {
@@ -123,42 +130,64 @@
 	 */
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
+
+
+#pragma mark DownloadManagerDelegate
+
+- (void)didMetaInfoDownloadStarted:(id <NSObject>)metaDocumentId
+{
+	_loading = [[[UIAlertView alloc] initWithTitle:@"\n\nLoading...\nThis process will take few minutes..." message:nil
+													  delegate:nil cancelButtonTitle:nil otherButtonTitles:nil] autorelease];
+	[_loading show];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    willInterfaceOrientation = toInterfaceOrientation;
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	//    [self addSubviewFade];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-	self.navigationBarHidden = YES;
+- (void)didMetaInfoDownloadFinished:(id)docId {
 	
-	// HGMTODO
-	// debug
-	//NSString *url = @"mapdoc://test.md-dc.jp/book/dl/exec/0000005x/0000002a/docnext/7ocw89xfgxf9y4b1/?p=000ghnpc&v=00001bte";
-	//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+    DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = docId;
+	
+	ImageViewController *ic = [ImageViewController createViewController:_datasource];
+	ic.documentContext = dc;
+	[self pushViewController:ic animated:YES];
+	[dc release];
 
-	// ライブラリviewを表示する
-	//[self showHome:NO];
-
-	[self showBrowser:NO];
-
+    [_loading dismissWithClickedButtonIndex:0 animated:YES];
+    _loading = nil;
 }
 
-- (void)dealloc {
-//    [current release];
-	[_datasource release];
-	
-    [super dealloc];
+- (void)didMetaInfoDownloadFailed:(id)docId error:(NSError*)error
+{
+	// メタ情報のダウンロード失敗
+	NSLog(@"metainfo download failed : %@", docId);
+    [_loading dismissWithClickedButtonIndex:0 animated:NO];
+
+	_loading = [[[UIAlertView alloc] initWithTitle:@"\n\nDocument download failed." message:nil
+										  delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil] autorelease];
+	[_loading show];
+}
+
+- (void)didPageDownloadStarted:(id <NSObject>)metaDocumentId
+{
+	_downloadProgressView.progress = 0;
+	_downloadProgressView.alpha = 1.0f;
+}
+
+- (void)didPageDownloadFailed:(id <NSObject>)metaDocumentId error:(NSError *)error
+{
+	_downloadProgressView.alpha = 0.0f;
+
+	// 自動で再開させるので、ユーザへの通知は行わない
+}
+
+- (void)pageDownloadProgressed:(id <NSObject>)metaDocumentId downloaded:(float)downloaded
+{
+	_downloadProgressView.progress = downloaded;
+	[_downloadProgressView layoutSubviews];
+}
+
+- (void)didAllPagesDownloadFinished:(id <NSObject>)metaDocumentId
+{
+	_downloadProgressView.alpha = 0.0f;
 }
 
 @end

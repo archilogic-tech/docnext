@@ -7,13 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MapDocViewController.h"
 #import "DocumentContext.h"
 
 @interface TOCViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
-
-	// from IUIViewController
-    UIProgressView *progressView;
 
 	UITableView *tableView;
     
