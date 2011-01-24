@@ -105,7 +105,7 @@
 }
 
 - (void)downloadComplete:(id)docId {
-    if ( [delegate respondsToSelector:@selector(didAllPagesDownloadFinished:)] ) {
+    if (delegate &&  [delegate respondsToSelector:@selector(didAllPagesDownloadFinished:)] ) {
         [delegate didAllPagesDownloadFinished:docId];
     }
     [_datasource deleteDownloadStatus];
@@ -119,10 +119,12 @@
     int pages = [_datasource pages:metaDocumentId];
     
 	// ダウンロードの進捗を伝える
+	// TODO NSNotificationに変更する
+/*	
 	if ( [delegate respondsToSelector:@selector(pageDownloadProgressed:downloaded:)] ) {
 		[delegate pageDownloadProgressed:docId downloaded:(1.0 * ( page + 1.0 ) / pages)];
 	}
-	
+*/	
     if ( [[UIScreen mainScreen] scale] == 2.0 ) {
         if ( px < 1 ) {
             [self downloadPage:docId page:page px:(px + 1) py:py];
@@ -173,7 +175,7 @@
 */	
 	
 	// TODO きちんとエラー情報を渡すこと
-	if ( [delegate respondsToSelector:@selector(didMetaInfoDownloadFailed:error:)] ) {
+	if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFailed:error:)] ) {
 		[delegate didMetaInfoDownloadFailed:docId error:[request error]];
 	}
 	NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
@@ -229,7 +231,7 @@
 //		did = [(NSArray*)docId objectAtIndex:currentDownloadIndex];
 	}
 
-    if ( [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {
+    if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {
         [delegate didMetaInfoDownloadFinished:metaDocumentId];
     }
 }
@@ -250,10 +252,13 @@
     id docId = [request.userInfo objectForKey:@"documentId"];
 	
 	// TODO きちんとエラー情報を渡すこと
+	// NSNotifacationにする
+	/*
 	if ( [delegate respondsToSelector:@selector(didPageDownloadFailed:error:)] ) {
 		[delegate didPageDownloadFailed:docId error:[request error]];
 	}
 	NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
+	 */
 }
 
 

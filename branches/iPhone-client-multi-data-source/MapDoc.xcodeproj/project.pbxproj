@@ -15,9 +15,7 @@
 		15E581C412954D7700C69201 /* UIFreehandView.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812212954D7700C69201 /* UIFreehandView.m */; };
 		15E581C512954D7700C69201 /* HighlightObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812412954D7700C69201 /* HighlightObject.m */; };
 		15E581C612954D7700C69201 /* HistoryObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812612954D7700C69201 /* HistoryObject.m */; };
-		15E581C712954D7700C69201 /* ImageViewController-iPad-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5812712954D7700C69201 /* ImageViewController-iPad-land.xib */; };
 		15E581C812954D7700C69201 /* ImageViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5812812954D7700C69201 /* ImageViewController-iPad.xib */; };
-		15E581C912954D7700C69201 /* ImageViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5812912954D7700C69201 /* ImageViewController-iPhone-land.xib */; };
 		15E581CA12954D7700C69201 /* ImageViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5812A12954D7700C69201 /* ImageViewController-iPhone.xib */; };
 		15E581CB12954D7700C69201 /* ImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812C12954D7700C69201 /* ImageViewController.m */; };
 		15E581CC12954D7700C69201 /* IUIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812F12954D7700C69201 /* IUIViewController.m */; };
@@ -94,9 +92,7 @@
 		15E5821412954D7700C69201 /* TOCViewController-iPhone-land.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E581A912954D7700C69201 /* TOCViewController-iPhone-land.xib */; };
 		15E5821512954D7700C69201 /* TOCViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E581AA12954D7700C69201 /* TOCViewController-iPhone.xib */; };
 		15E5821612954D7700C69201 /* TOCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581AC12954D7700C69201 /* TOCViewController.m */; };
-		15E5821712954D7700C69201 /* TapDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581AE12954D7700C69201 /* TapDetector.m */; };
 		15E5821812954D7700C69201 /* UIScaleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B012954D7700C69201 /* UIScaleButton.m */; };
-		15E5821912954D7700C69201 /* UITouchAwareWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B212954D7700C69201 /* UITouchAwareWindow.m */; };
 		15E5821A12954D7700C69201 /* VolonoiDiagramBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581B512954D7700C69201 /* VolonoiDiagramBuilder.m */; };
 		15E5821D12954D7700C69201 /* UstDocDatasource.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581BE12954D7700C69201 /* UstDocDatasource.m */; };
 		15E5821E12954D7700C69201 /* UstDocDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E581C012954D7700C69201 /* UstDocDownloadManager.m */; };
@@ -105,8 +101,6 @@
 		15E5822C12954DBD00C69201 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822712954DBD00C69201 /* icon.png */; };
 		15E5822D12954DBD00C69201 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822812954DBD00C69201 /* MainWindow-iPad.xib */; };
 		15E5822E12954DBD00C69201 /* MainWindow-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822912954DBD00C69201 /* MainWindow-iPhone.xib */; };
-		15E5822F12954DBD00C69201 /* MapDocViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822A12954DBD00C69201 /* MapDocViewController-iPad.xib */; };
-		15E5823012954DBD00C69201 /* MapDocViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822B12954DBD00C69201 /* MapDocViewController-iPhone.xib */; };
 		15E5823512954DFC00C69201 /* DownloadStatusObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5823412954DFC00C69201 /* DownloadStatusObject.m */; };
 		15E5824712954E3100C69201 /* StandardLocalStorageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5824612954E3100C69201 /* StandardLocalStorageManager.m */; };
 		1D3623260D0F684500981E51 /* MapDocAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MapDocAppDelegate.m */; };
@@ -299,8 +293,6 @@
 		15E5822712954DBD00C69201 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		15E5822812954DBD00C69201 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "MainWindow-iPad.xib"; sourceTree = "<group>"; };
 		15E5822912954DBD00C69201 /* MainWindow-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "MainWindow-iPhone.xib"; sourceTree = "<group>"; };
-		15E5822A12954DBD00C69201 /* MapDocViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "MapDocViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5822B12954DBD00C69201 /* MapDocViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "MapDocViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5823312954DFC00C69201 /* DownloadStatusObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DownloadStatusObject.h; sourceTree = "<group>"; };
 		15E5823412954DFC00C69201 /* DownloadStatusObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DownloadStatusObject.m; sourceTree = "<group>"; };
 		15E5824512954E3100C69201 /* StandardLocalStorageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StandardLocalStorageManager.h; sourceTree = "<group>"; };
@@ -308,7 +300,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* MapDocAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDocAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* MapDocAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapDocAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* MapDoc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapDoc.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* docnext.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = docnext.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* MapDocViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDocViewController.h; sourceTree = "<group>"; };
@@ -406,6 +398,21 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		1525732C12ED0A1C008DF7A5 /* obsoleted */ = {
+			isa = PBXGroup;
+			children = (
+				15E5812712954D7700C69201 /* ImageViewController-iPad-land.xib */,
+				15E5812912954D7700C69201 /* ImageViewController-iPhone-land.xib */,
+				15E581B112954D7700C69201 /* UITouchAwareWindow.h */,
+				15E581B212954D7700C69201 /* UITouchAwareWindow.m */,
+				15E581AD12954D7700C69201 /* TapDetector.h */,
+				15E581AE12954D7700C69201 /* TapDetector.m */,
+				15E5812E12954D7700C69201 /* IUIViewController.h */,
+				15E5812F12954D7700C69201 /* IUIViewController.m */,
+			);
+			name = obsoleted;
+			sourceTree = "<group>";
+		};
 		15E5811512954D7700C69201 /* DocumentViewerKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -422,9 +429,7 @@
 				15E5811B12954D7700C69201 /* DocumentViewerDelegate.h */,
 				15E5812B12954D7700C69201 /* ImageViewController.h */,
 				15E5812C12954D7700C69201 /* ImageViewController.m */,
-				15E5812712954D7700C69201 /* ImageViewController-iPad-land.xib */,
 				15E5812812954D7700C69201 /* ImageViewController-iPad.xib */,
-				15E5812912954D7700C69201 /* ImageViewController-iPhone-land.xib */,
 				15E5812A12954D7700C69201 /* ImageViewController-iPhone.xib */,
 				15E5812312954D7700C69201 /* HighlightObject.h */,
 				15E5812412954D7700C69201 /* HighlightObject.m */,
@@ -435,14 +440,9 @@
 				15E5812D12954D7700C69201 /* IScale.h */,
 				15E5813F12954D7700C69201 /* NSString+Search.h */,
 				15E5814012954D7700C69201 /* NSString+Search.m */,
-				15E581AD12954D7700C69201 /* TapDetector.h */,
-				15E581AE12954D7700C69201 /* TapDetector.m */,
-				15E5812E12954D7700C69201 /* IUIViewController.h */,
-				15E5812F12954D7700C69201 /* IUIViewController.m */,
 				15E581AF12954D7700C69201 /* UIScaleButton.h */,
 				15E581B012954D7700C69201 /* UIScaleButton.m */,
-				15E581B112954D7700C69201 /* UITouchAwareWindow.h */,
-				15E581B212954D7700C69201 /* UITouchAwareWindow.m */,
+				1525732C12ED0A1C008DF7A5 /* obsoleted */,
 				15E581B312954D7700C69201 /* VolonoiDiagram */,
 			);
 			path = DocumentViewerKit;
@@ -607,12 +607,12 @@
 		15E5816E12954D7700C69201 /* Browser */ = {
 			isa = PBXGroup;
 			children = (
+				15E5817312954D7700C69201 /* BrowserViewController.h */,
+				15E5817412954D7700C69201 /* BrowserViewController.m */,
 				15E5816F12954D7700C69201 /* BrowserViewController-iPad-land.xib */,
 				15E5817012954D7700C69201 /* BrowserViewController-iPad.xib */,
 				15E5817112954D7700C69201 /* BrowserViewController-iPhone-land.xib */,
 				15E5817212954D7700C69201 /* BrowserViewController-iPhone.xib */,
-				15E5817312954D7700C69201 /* BrowserViewController.h */,
-				15E5817412954D7700C69201 /* BrowserViewController.m */,
 			);
 			path = Browser;
 			sourceTree = "<group>";
@@ -620,9 +620,9 @@
 		15E5817512954D7700C69201 /* ImageSearch */ = {
 			isa = PBXGroup;
 			children = (
-				15E5817612954D7700C69201 /* ImageSearchViewController-land.xib */,
 				15E5817712954D7700C69201 /* ImageSearchViewController.h */,
 				15E5817812954D7700C69201 /* ImageSearchViewController.m */,
+				15E5817612954D7700C69201 /* ImageSearchViewController-land.xib */,
 				15E5817912954D7700C69201 /* ImageSearchViewController.xib */,
 				15E5817A12954D7700C69201 /* SearchResult.h */,
 				15E5817B12954D7700C69201 /* SearchResult.m */,
@@ -633,6 +633,12 @@
 		15E5817E12954D7700C69201 /* Text */ = {
 			isa = PBXGroup;
 			children = (
+				15E5819712954D7700C69201 /* TextViewController.h */,
+				15E5819812954D7700C69201 /* TextViewController.m */,
+				15E5819312954D7700C69201 /* TextViewController-iPad-land.xib */,
+				15E5819412954D7700C69201 /* TextViewController-iPad.xib */,
+				15E5819512954D7700C69201 /* TextViewController-iPhone-land.xib */,
+				15E5819612954D7700C69201 /* TextViewController-iPhone.xib */,
 				15E5817F12954D7700C69201 /* HTextView.h */,
 				15E5818012954D7700C69201 /* HTextView.m */,
 				15E5818112954D7700C69201 /* ITextView.h */,
@@ -653,12 +659,6 @@
 				15E5819012954D7700C69201 /* TextSizeMarker.m */,
 				15E5819112954D7700C69201 /* TextViewConfig.h */,
 				15E5819212954D7700C69201 /* TextViewConfig.m */,
-				15E5819312954D7700C69201 /* TextViewController-iPad-land.xib */,
-				15E5819412954D7700C69201 /* TextViewController-iPad.xib */,
-				15E5819512954D7700C69201 /* TextViewController-iPhone-land.xib */,
-				15E5819612954D7700C69201 /* TextViewController-iPhone.xib */,
-				15E5819712954D7700C69201 /* TextViewController.h */,
-				15E5819812954D7700C69201 /* TextViewController.m */,
 				15E5819912954D7700C69201 /* VTextView.h */,
 				15E5819A12954D7700C69201 /* VTextView.m */,
 			);
@@ -668,12 +668,12 @@
 		15E5819B12954D7700C69201 /* Thumbnail */ = {
 			isa = PBXGroup;
 			children = (
+				15E581A012954D7700C69201 /* ThumbnailViewController.h */,
+				15E581A112954D7700C69201 /* ThumbnailViewController.m */,
 				15E5819C12954D7700C69201 /* ThumbnailViewController-iPad-land.xib */,
 				15E5819D12954D7700C69201 /* ThumbnailViewController-iPad.xib */,
 				15E5819E12954D7700C69201 /* ThumbnailViewController-iPhone-land.xib */,
 				15E5819F12954D7700C69201 /* ThumbnailViewController-iPhone.xib */,
-				15E581A012954D7700C69201 /* ThumbnailViewController.h */,
-				15E581A112954D7700C69201 /* ThumbnailViewController.m */,
 			);
 			path = Thumbnail;
 			sourceTree = "<group>";
@@ -681,12 +681,12 @@
 		15E581A412954D7700C69201 /* TOC */ = {
 			isa = PBXGroup;
 			children = (
+				15E581AB12954D7700C69201 /* TOCViewController.h */,
+				15E581AC12954D7700C69201 /* TOCViewController.m */,
 				15E581A712954D7700C69201 /* TOCViewController-iPad-land.xib */,
 				15E581A812954D7700C69201 /* TOCViewController-iPad.xib */,
 				15E581A912954D7700C69201 /* TOCViewController-iPhone-land.xib */,
 				15E581AA12954D7700C69201 /* TOCViewController-iPhone.xib */,
-				15E581AB12954D7700C69201 /* TOCViewController.h */,
-				15E581AC12954D7700C69201 /* TOCViewController.m */,
 			);
 			path = TOC;
 			sourceTree = "<group>";
@@ -728,8 +728,6 @@
 				15E5822712954DBD00C69201 /* icon.png */,
 				15E5822812954DBD00C69201 /* MainWindow-iPad.xib */,
 				15E5822912954DBD00C69201 /* MainWindow-iPhone.xib */,
-				15E5822A12954DBD00C69201 /* MapDocViewController-iPad.xib */,
-				15E5822B12954DBD00C69201 /* MapDocViewController-iPhone.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -746,7 +744,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* MapDoc.app */,
+				1D6058910D05DD3D006BFB54 /* docnext.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -888,7 +886,7 @@
 			);
 			name = MapDoc;
 			productName = MapDoc;
-			productReference = 1D6058910D05DD3D006BFB54 /* MapDoc.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* docnext.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -920,9 +918,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15E581C712954D7700C69201 /* ImageViewController-iPad-land.xib in Resources */,
 				15E581C812954D7700C69201 /* ImageViewController-iPad.xib in Resources */,
-				15E581C912954D7700C69201 /* ImageViewController-iPhone-land.xib in Resources */,
 				15E581CA12954D7700C69201 /* ImageViewController-iPhone.xib in Resources */,
 				15E581D812954D7700C69201 /* button_bookmark.png in Resources */,
 				15E581D912954D7700C69201 /* button_home.png in Resources */,
@@ -965,8 +961,6 @@
 				15E5822C12954DBD00C69201 /* icon.png in Resources */,
 				15E5822D12954DBD00C69201 /* MainWindow-iPad.xib in Resources */,
 				15E5822E12954DBD00C69201 /* MainWindow-iPhone.xib in Resources */,
-				15E5822F12954DBD00C69201 /* MapDocViewController-iPad.xib in Resources */,
-				15E5823012954DBD00C69201 /* MapDocViewController-iPhone.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1041,9 +1035,7 @@
 				15E5820F12954D7700C69201 /* ThumbnailViewController.m in Sources */,
 				15E5821012954D7700C69201 /* TiledScrollView.m in Sources */,
 				15E5821612954D7700C69201 /* TOCViewController.m in Sources */,
-				15E5821712954D7700C69201 /* TapDetector.m in Sources */,
 				15E5821812954D7700C69201 /* UIScaleButton.m in Sources */,
-				15E5821912954D7700C69201 /* UITouchAwareWindow.m in Sources */,
 				15E5821A12954D7700C69201 /* VolonoiDiagramBuilder.m in Sources */,
 				15E5821D12954D7700C69201 /* UstDocDatasource.m in Sources */,
 				15E5821E12954D7700C69201 /* UstDocDownloadManager.m in Sources */,

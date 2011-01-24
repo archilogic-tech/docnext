@@ -17,12 +17,17 @@
 
 @synthesize datasource = _datasource;
 
-- (void)apply:(id)docId {
+- (void)apply:(id<NSObject>)docId {
 	
-	self.imageView.image = [_datasource thumbnail:docId cover:0];
-    self.titleLabel.text = [_datasource title:docId];
-    self.publisherLabel.text = [_datasource publisher:docId];
-    self.pagesLabel.text = [NSString stringWithFormat:@"%d page" , [_datasource pages:docId]];
+	DocumentContext *dc = [[DocumentContext alloc] init];
+	dc.documentId = docId;
+	
+	self.imageView.image = [dc thumbnailWithIndex:0];//  [_datasource thumbnail:docId cover:0];
+    self.titleLabel.text = [dc titleWithPage:0]; //[_datasource title:docId];
+    self.publisherLabel.text = [dc publisher];
+    self.pagesLabel.text = [NSString stringWithFormat:@"%d page" , [dc totalPage]];
+
+	[dc release];
 }
 
 - (void)dealloc {

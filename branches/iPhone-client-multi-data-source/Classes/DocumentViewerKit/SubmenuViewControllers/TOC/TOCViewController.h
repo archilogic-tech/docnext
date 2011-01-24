@@ -10,11 +10,13 @@
 #import "MapDocViewController.h"
 #import "DocumentContext.h"
 
-@interface TOCViewController : IUIViewController <UITableViewDataSource , UITableViewDelegate> {
-    UITableView *tableView;
+@interface TOCViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	UITableView *tableView;
     
-    //id<NSObject> documentId;
-    //int prevPage;
     NSArray *tocs;
 
 	DocumentContext *_documentContext;
@@ -22,14 +24,12 @@
 }
 
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
-//@property(nonatomic,copy) id<NSObject> documentId;
-//@property(nonatomic) int prevPage;
 @property(nonatomic,retain) NSArray *tocs;
 
 @property (nonatomic, retain) DocumentContext *documentContext;
 @property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-+ (TOCViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<DocumentViewerDatasource>)datasource;
++ (TOCViewController *)createViewController:(id<DocumentViewerDatasource>)datasource;
 
 - (IBAction)backButtonClick:(id)sender;
 

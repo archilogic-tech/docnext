@@ -12,6 +12,7 @@
 @protocol DocumentViewerDatasource;
 
 
+
 @protocol DownloadManagerDelegate
 
 @optional
@@ -61,6 +62,7 @@
 - (void)didPageDownloadFailed:(id)docId error:(NSError*)error;
 
 @end
+
 
 
 @protocol DocumentDownloadManager

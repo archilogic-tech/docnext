@@ -15,7 +15,6 @@
 @synthesize currentIndex = _currentIndex;
 
 
-//done
 - (id)init
 {
 	if ((self = [super init])) {
@@ -37,7 +36,6 @@
 	return self;
 }
 
-// done
 - (void)dealloc
 {
 	[_documentId release];
@@ -45,7 +43,7 @@
 	[super dealloc];
 }
 
-//done
+
 - (void)didInterfaceOrientationChanged:(NSNotification*)n
 {
 	UIInterfaceOrientation o = [[n object] orientation];
@@ -62,12 +60,9 @@
 
 - (id<NSObject>)documentId
 {
-	if ([_documentId count] < 2) return [_documentId objectAtIndex:0];
 	return _documentId;
 }
 
-
-// done
 - (void)setDocumentId:(id <NSObject>)docId
 {
 	[_documentId release];
@@ -87,7 +82,7 @@
 	[self buildPageHeads];
 }
 
-//done
+
 - (BOOL)isValidIndex:(int)i
 {
 	if (i < 0) return NO;
@@ -107,7 +102,7 @@
  */
 }
 
-// done
+
 - (BOOL)isValidPage:(int)i
 {
 	for (int j = 0; j < [_documentId count]; j++) {
@@ -120,7 +115,6 @@
 }
 
 
-// done
 - (int)currentPageByIndex:(int)i
 {
 	int page = 0;
@@ -136,7 +130,7 @@
 	return [[_pageHeads objectAtIndex:i] intValue];
 }
 
-// done
+
 - (int)currentIndexByPage:(int)page
 {
 	int index = 0;
@@ -156,6 +150,7 @@
 	//    return [_pageHeads count] - 1;
 }
 
+
 - (void)setCurrentPage:(int)n
 {
 	if (![self isValidPage:n]) {
@@ -173,7 +168,7 @@
 	_currentPage = [self currentPageByIndex:n];
 }
 
-//done
+
 - (int)totalPageWithDocumentOffset:(int)i
 {
 	NSString *did = [_documentId objectAtIndex:i];
@@ -181,7 +176,7 @@
 	return totalPage;
 }
 
-//done
+
 - (int)totalPage
 {
 	int sum = 0;
@@ -191,7 +186,7 @@
 	return sum;
 }
 
-// done
+
 - (BOOL)isSinglePage
 {
 //	int documentOffset = 0;
@@ -209,7 +204,6 @@
 //	return ( [[_isSinglePage objectAtIndex:_currentIndex] boolValue] );
 }
 
-// done
 - (NSArray*)titles
 {
 	NSMutableArray *result = [NSMutableArray array];
@@ -222,34 +216,51 @@
 	//return [_datasource tocs:_documentId];
 }
 
-// done
-- (NSString*)titleWithIndex:(int)index
+- (int)relativePage:(int*)page
 {
-	int relativePage = _currentPage;
+	int relativePage = *page;
+	int offset = 0;
 	for (NSString *did in _documentId) {
 		int count = [_datasource pages:_documentId documentId:did];
 		if (relativePage < count) {
-			// relativePageがfixした
-			TOCObject *toc = (TOCObject*)[_datasource toc:_documentId documentId:did page:relativePage];
-			NSString *tmp = toc.text;
-			return tmp;
+			*page = relativePage;
+			return offset;
 		}
 		relativePage -= (count);
+		offset++;
 	}
-	return nil;
-/*
-	NSString *tmp = [_datasource toc:_documentId page:absolutePage].text;
-	return tmp;
- */
+	return -1;
 }
 
-// done
+- (NSString*)publisher
+{
+	// TODO 暫定的に最初の文書の情報を利用する
+	id<NSObject> did = [_documentId objectAtIndex:0];
+
+	NSString *r = [_datasource publisher:_documentId documentId:did];
+	return r;
+}
+
+
+- (NSString*)titleWithPage:(int)page
+{
+	int relativePage = page;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+	
+	id<NSObject> did = [_documentId objectAtIndex:documentOffset];
+	
+	TOCObject *toc = (TOCObject*)[_datasource toc:_documentId documentId:did page:relativePage];
+	NSString *tmp = toc.text;
+	return tmp;
+}
+
 - (NSString*)title
 {
-	return [self titleWithIndex:_currentIndex];
+	return [self titleWithPage:_currentIndex];
 }
 
-// done
+
 - (NSString*)texts
 {
 	int relativePage = _currentPage;
@@ -264,9 +275,6 @@
 	}
 	return nil;
 }
-
-
-
 
 - (NSArray*)freehand
 {
@@ -285,7 +293,6 @@
 	return nil;
 }
 
-// done
 - (NSArray*)annotations
 {
 	int relativePage = _currentPage;
@@ -303,7 +310,6 @@
 	return nil;
 }
 
-// done
 - (NSArray*)highlights
 {
 	int relativePage = _currentPage;
@@ -322,7 +328,7 @@
 }
 
 
-// done
+
 - (NSArray*)region
 {
 	int relativePage = _currentPage;
@@ -340,7 +346,6 @@
 	return nil;
 }
 
-// done
 - (double)ratio
 {
 	// 暫定で0だけ
@@ -349,7 +354,6 @@
 	return ratio;
 }
 
-// done
 - (void)loadSinglePageInfo
 {
 	NSMutableArray *singlePageInfoList = [[NSMutableArray alloc] init];
@@ -361,7 +365,6 @@
 	_singlePageInfo = singlePageInfoList;
 }
 
-// done
 - (UIImage*)thumbnailWithIndex:(int)index
 {
 	int documentOffset = 0;
@@ -377,16 +380,24 @@
 		documentOffset++;
 	}
 	return nil;
-	
-	
-	
 }
 
+- (NSString*)imageTextWithPage:(int)page
+{
+	int relativePage = page;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+	
+	id<NSObject> did = [_documentId objectAtIndex:documentOffset];
+
+	NSString *text = [_datasource imageText:_documentId documentId:did page:relativePage];
+	return text;
+}
 
 /////////////////////////////////////////////////////////
 
 
-// done
+
 - (BOOL)isSinglePage:(int)page
 {
 	NSString *pageStr = [[NSNumber numberWithInt:page] stringValue];
@@ -410,7 +421,6 @@
     return NO;
 }
 
-// done
 - (void)buildPageHeads
 {
 	NSMutableArray *pageHeadsList = [[NSMutableArray alloc] init];
@@ -448,6 +458,7 @@
 	_currentIndex = [self currentIndexByPage:_currentPage];
 }
 
+
 - (UIView*)getTileImageWithType:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
 {
 	int relativePage = page;
@@ -467,7 +478,6 @@
 		relativePage -= (count);
 	}
 	return nil;
-	
 }
 
 

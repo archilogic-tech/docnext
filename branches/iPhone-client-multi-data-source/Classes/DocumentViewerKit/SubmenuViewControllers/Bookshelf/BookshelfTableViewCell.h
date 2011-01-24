@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "DocumentViewerDatasource.h"
+#import "DocumentContext.h"
 
 @interface BookshelfTableViewCell : UITableViewCell {
     UIImageView *imageView;
@@ -16,6 +17,8 @@
     UILabel *pagesLabel;
 
 	id<NSObject,DocumentViewerDatasource> _datasource;
+
+	DocumentContext *_documentContext;
 }
 
 @property(nonatomic,retain) IBOutlet UIImageView *imageView;
@@ -25,6 +28,6 @@
 
 @property(nonatomic,assign) id<NSObject,DocumentViewerDatasource> datasource;
 
-- (void)apply:(id)docId;
+- (void)apply:(id<NSObject>)docId;
 
 @end

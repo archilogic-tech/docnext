@@ -24,139 +24,53 @@
 
 @implementation MapDocViewController
 
-@synthesize current;
 @synthesize window;
 @synthesize datasource = _datasource;
 
 - (void)showBrowser:(BOOL)animated {
-
-	BrowserViewController *c = [BrowserViewController createViewController:self.interfaceOrientation datasource:_datasource];
-	c.parent = self;
-	_datasource.downloadManagerDelegate = c;
-	
-	[self.current.view removeFromSuperview];
-    self.current = c;
-    [self addSubview:animated];
+	BrowserViewController *c = [BrowserViewController createViewController:_datasource];
+	[self pushViewController:c animated:animated];
 }
-
 
 - (void)showBookshelf:(BOOL)animated {
 
-    BookshelfViewController *c = [BookshelfViewController createViewController:self.interfaceOrientation datasource:_datasource];
-    c.parent = self;
-	_datasource.downloadManagerDelegate = c;
+    BookshelfViewController *c = [BookshelfViewController createViewController:_datasource];
     
-	[self.current.view removeFromSuperview];
-    self.current = c;
+//	[self.current.view removeFromSuperview];
+//    self.current = c;
     [self addSubview:animated];
 }
 
 #define UstDocReachabilityHost (@"ustdoc.com")
 
 - (void)showHome:(BOOL)animated {
-    if ( [[Reachability reachabilityWithHostName:UstDocReachabilityHost] currentReachabilityStatus] != NotReachable ) {
+	[self popToRootViewControllerAnimated:YES];
+/*	
+	if ( [[Reachability reachabilityWithHostName:UstDocReachabilityHost] currentReachabilityStatus] != NotReachable ) {
 //	if (NO) {
         [self showBrowser:animated];
     } else {
         [self showBookshelf:animated];
     }
+ */
 }
 
 - (void)showBookshelfDeletion {
     
-	BookshelfDeletionViewController *c = [BookshelfDeletionViewController createViewController:self.interfaceOrientation datasource:_datasource];
-    c.parent = self;
-	_datasource.downloadManagerDelegate = c;
+	BookshelfDeletionViewController *c = [BookshelfDeletionViewController createViewController:_datasource];
     
-	[self.current.view removeFromSuperview];
-    self.current = c;
+//	[self.current.view removeFromSuperview];
+//    self.current = c;
     [self addSubview:YES];
 }
 
-//- (void)showImage:(id)documentId page:(int)page {
 - (void)showImage:(DocumentContext*)documentContext {
 
-	ImageViewController *ic = [ImageViewController createViewController:self.interfaceOrientation
-															 datasource:_datasource
-																 window:window];
-	ic.parent = self;
+	ImageViewController *ic = [ImageViewController createViewController:_datasource];
 	ic.documentContext = documentContext;
-	
-//	ic.documentId = documentId;
-//	[ic setIndexByPage:page];
-	_datasource.downloadManagerDelegate = ic;
-    
-	[self.current.view removeFromSuperview];
-    self.current = ic;
-    [self addSubview:YES];
+	[self pushViewController:ic animated:YES];
 }
 
-- (void)showTOC:(DocumentContext*)documentContext {
-//	- (void)showTOC:(id)documentId prevPage:(int)prevPage {
-    
-	TOCViewController *tc = [TOCViewController createViewController:self.interfaceOrientation
-														 datasource:_datasource];
-	
-	
-	tc.parent = self;
-	tc.documentContext = documentContext;
-//	tc.documentId = documentId;
-//	tc.prevPage = prevPage;
-	_datasource.downloadManagerDelegate = tc;
-
-    [self.current.view removeFromSuperview];
-    self.current = tc;
-    [self addSubview:YES];
-}
-
-- (void)showThumbnail:(DocumentContext*)documentContext {
-//- (void)showThumbnail:(id)documentId page:(int)page {
-    
-	ThumbnailViewController *c = [ThumbnailViewController createViewController:self.interfaceOrientation datasource:_datasource];
-	c.parent = self;
-	c.documentContext = documentContext;
-//	c.documentId = documentId;
-//	c.page = page;
-	_datasource.downloadManagerDelegate = c;
-
-	[self.current.view removeFromSuperview];
-	self.current = c;
-    [self addSubview:YES];
-}
-
-- (void)showBookmark:(DocumentContext*)documentContext {
-//- (void)showBookmark:(id)documentId page:(int)page {
-    
-//	NSString *title = [_datasource toc:documentId page:page].text;
-
-    BookmarkViewController *c = [BookmarkViewController createViewController:self.interfaceOrientation datasource:_datasource];
-	c.parent = self;
-	c.documentContext = documentContext;
-//	c.currentDocumentId = documentId;
-//	c.currentPage = page;
-//	c.currentTitle = title;
-	_datasource.downloadManagerDelegate = c;
-
-	[self.current.view removeFromSuperview];
-	self.current = c;
-    [self addSubview:YES];
-}
-
-- (void)showText:(DocumentContext*)documentContext {
-//	- (void)showText:(id)documentId page:(int)page {
-    
-	TextViewController *c = [TextViewController createViewController:self.interfaceOrientation];
-	c.parent = self;
-	c.documentContext = documentContext;
-
-//c.documentId = documentId;
-//	c.currentPage = page;
-	_datasource.downloadManagerDelegate = c;
-
-	[self.current.view removeFromSuperview];
-	self.current = c;
-    [self addSubview:YES];
-}
 
 - (void)addSubview:(BOOL)animated {
     if ( animated ) {
@@ -166,7 +80,7 @@
         [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
     }
 	
-	[self.view addSubview:self.current.view];
+//	[self.view addSubview:self.current.view];
     
     if ( animated ) {
         [UIView commitAnimations];
@@ -181,16 +95,18 @@
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(fadeOutAnimationDidStop:finished:context:)];
 	
-    self.current.view.alpha = 0;
+//    self.current.view.alpha = 0;
     
 	[UIView commitAnimations];
 }
 
 - (void)fadeOutAnimationDidStop:(NSString *)animationId finished:(NSNumber *)finished context:(void *)context {
-    [self.current.view removeFromSuperview];
+//    [self.current.view removeFromSuperview];
     
-    self.current = [self.current createViewController:willInterfaceOrientation];
-    self.current.parent = self;
+//    self.current = [self.current createViewController:willInterfaceOrientation];
+//    self.current.parent = self;
+
+	/*
 	_datasource.downloadManagerDelegate = self.current;
     
     [self.view addSubview:self.current.view];
@@ -204,6 +120,7 @@
     self.current.view.alpha = 1;
     
 	[UIView commitAnimations];
+	 */
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -211,27 +128,34 @@
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     willInterfaceOrientation = toInterfaceOrientation;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self addSubviewFade];
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	//    [self addSubviewFade];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+	self.navigationBarHidden = YES;
+	
 	// HGMTODO
 	// debug
 	//NSString *url = @"mapdoc://test.md-dc.jp/book/dl/exec/0000005x/0000002a/docnext/7ocw89xfgxf9y4b1/?p=000ghnpc&v=00001bte";
 	//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
 
 	// ライブラリviewを表示する
-	[self showHome:NO];
+	//[self showHome:NO];
+
+	[self showBrowser:NO];
+
 }
 
 - (void)dealloc {
-    [current release];
+//    [current release];
 	[_datasource release];
 	
     [super dealloc];

@@ -9,6 +9,8 @@
 #import "MapDocAppDelegate.h"
 #import "MapDocViewController.h"
 #import "HistoryObject.h"
+#import "ImageViewController.h"
+#import "BookshelfDeletionViewController.h"
 
 // to be removed.
 #import "UstDocDatasource.h"
@@ -24,7 +26,6 @@
 	NSString *tmp = [[url path] substringFromIndex:1];
 	NSArray *a = [tmp componentsSeparatedByString:@","];
 	return a;
-//	return ([a count] > 1) ? a : [a objectAtIndex:0];
 }
 
 - (void)view:(id)docId
@@ -32,9 +33,12 @@
     if ( [_datasource existsDocument:docId] ) {
 		DocumentContext *dc = [[DocumentContext alloc] init];
 		dc.documentId = docId;
-		[viewController showImage:dc];
+
+		ImageViewController *ic = [ImageViewController createViewController:_datasource];
+		ic.documentContext = dc;
+		[self.viewController pushViewController:ic animated:YES];
 		[dc release];
-//		[viewController showImage:docId page:0];
+
     } else {
         if ( [_datasource hasDownloading] ) {
             [[[[UIAlertView alloc] initWithTitle:@"Downloading file exist" message:nil delegate:nil cancelButtonTitle:@"OK"
@@ -87,14 +91,20 @@
 }
 
 
-- (void)continueView {
+- (void)continueView
+{
     HistoryObject *history = [_datasource history];
     if ( !history ) {
         [[[[UIAlertView alloc] initWithTitle:@"No history" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
         return;
     }
+	
+	ImageViewController *ic = [ImageViewController createViewController:_datasource];
+	ic.documentContext = history.documentContext;
+	[self.viewController pushViewController:ic animated:YES];
+	
 
-	[viewController showImage:history.documentContext];
+//	[viewController showImage:history.documentContext];
 //    [viewController showImage:history.documentId page:history.page];
 }
 
@@ -105,7 +115,18 @@
 }
 
 - (void)downloaded {
-    [viewController showBookshelfDeletion];
+	BookshelfDeletionViewController *c = [BookshelfDeletionViewController createViewController:_datasource];
+
+	UINavigationController *nc = self.viewController;
+    [nc pushViewController:c animated:YES];
+//	[c release];
+	/*
+	[self.current.view removeFromSuperview];
+    self.current = c;
+    [self addSubview:YES];
+	*/
+    
+//	[viewController showBookshelfDeletion];
 }
 
 

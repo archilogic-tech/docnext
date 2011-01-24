@@ -11,8 +11,12 @@
 #import "ASIHTTPRequest.h"
 #import "DocumentContext.h"
 
-@interface TextViewController : IUIViewController <UIScrollViewDelegate> {
-    UILabel *titleLabel;
+@interface TextViewController : UIViewController <UIScrollViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	UILabel *titleLabel;
     UIView *configView;
     UISegmentedControl *fontSizeSegment;
     UISegmentedControl *colorSegment;
@@ -41,7 +45,7 @@
 
 @property (nonatomic, retain) DocumentContext *documentContext;
 
-+ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation;
++ (TextViewController *)createViewController;
 
 
 - (IBAction)imageViewButtonClick:(id)sender;

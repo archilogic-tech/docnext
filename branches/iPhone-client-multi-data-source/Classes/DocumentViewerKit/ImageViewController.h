@@ -10,12 +10,12 @@
 #import "MapDocViewController.h"
 #import "TiledScrollView.h"
 #import "SeparationHolder.h"
-#import "UITouchAwareWindow.h"
 #import "MarkerView.h"
-#import "TapDetector.h"
 #import "UIScaleButton.h"
 #import "OverlayManager.h"
 #import "UIFreehandView.h"
+
+#import "ImageSearchViewController.h"
 
 #import "DocumentViewerDatasource.h"
 #import "DocumentViewerDelegate.h"
@@ -35,10 +35,12 @@ typedef enum {
     @abstract    DocumentViewerのベースとなるクラス
     @discussion  +createViewController を呼ぶことで、制御がDocumentViewerに移る。
 */
-@interface ImageViewController : IUIViewController <TiledScrollViewDataSource, TapDetectorDelegate,
+@interface ImageViewController : UIViewController <TiledScrollViewDataSource, ImageSearchDelegate,
                                                     OverlayManagerDelegate, UIActionSheetDelegate,
                                                     UIFreehandViewDelegate>
 {
+	// from IUIViewController
+    UIProgressView *progressView;
 
 	// UI系
     UIView *configView;
@@ -56,14 +58,11 @@ typedef enum {
     MarkerView *markerView;
     UIFreehandView *_freehandView;
     UIView *balloonContainerView;
-    UITouchAwareWindow *window;
 
     UIPopoverController *popover;
-    ImageSearchViewController *searchViewController;
 
     BOOL isIgnoreTap;
 
-    TapDetector *tapDetector;
     OverlayManager *overlayManager;
     int currentHighlightSerial;
 
@@ -78,6 +77,7 @@ typedef enum {
 	
 	
     // メタ情報系
+	//    ImageSearchViewController *searchViewController;
 	//    id<NSObject> documentId;
 	//int currentDocumentIndex;
     //int currentIndex;
@@ -86,10 +86,14 @@ typedef enum {
  //   NSArray *singlePageInfo;
  //   NSArray *pageHeads;
  //   NSArray *isSinglePage;
+ //    UITouchAwareWindow *window;
+ //    TapDetector *tapDetector;
 
 	id<NSObject,DocumentViewerDatasource> _datasource;					
 	id<NSObject,DocumentViewerDelegate> _delegate;
 }
+
+//@property(nonatomic,retain) IBOutlet UIProgressView *progressView;
 
 @property(nonatomic,retain) IBOutlet UIView *configView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
@@ -99,7 +103,7 @@ typedef enum {
 @property(nonatomic,retain) IBOutlet UIView *highlightMenuView;
 @property(nonatomic,retain) IBOutlet UIView *highlightCommentMenuView;
 @property(nonatomic,retain) IBOutlet UITextField *highlightCommentTextField;
-@property(nonatomic,assign) UITouchAwareWindow *window;
+//@property(nonatomic,assign) UITouchAwareWindow *window;
 //@property(nonatomic,copy) id<NSObject> documentId;
 
 @property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
@@ -107,19 +111,12 @@ typedef enum {
 @property (nonatomic, retain) DocumentContext *documentContext;
 
 
-/*!
-    @method     createViewController:datasource:window:
-    @abstract   DocumentViewerを開始する
-    @discussion 
-    @param      orientation デバイスの向き
-    @param      datasource データソース
-    @param      window 親Window(windowを渡すのはやめる可能性あり)
-    @result     生成されたImageViewControllerを返す
-*/
++ (ImageViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
+/*
 + (ImageViewController *)createViewController:(UIInterfaceOrientation)orientation
 								   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
                                        window:(UITouchAwareWindow *)window;
-	
+*/	
 
 - (IBAction)homeButtonClick:(id)sender;
 - (IBAction)tocViewButtonClick:(id)sender;
@@ -139,8 +136,7 @@ typedef enum {
 - (IBAction)highlightDeleteClick;
 
 
-//- (void)setIndexByPage:(int)page;
-- (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
-- (void)cancelSearch;
+//- (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex;
+//- (void)cancelSearch;
 
 @end

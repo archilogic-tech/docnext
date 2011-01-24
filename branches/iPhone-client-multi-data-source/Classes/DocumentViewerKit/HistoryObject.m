@@ -16,14 +16,13 @@
 
 + (HistoryObject *)objectWithDictionary:(NSDictionary *)dictionary {
     HistoryObject *ret = [[HistoryObject new] autorelease];
-    
+
 	DocumentContext *dc = [[DocumentContext alloc] init];
 	dc.documentId = [dictionary objectForKey:@"documentId"];
 	dc.currentPage = [[dictionary objectForKey:@"page"] intValue];
-	//dc.documentOffset = [[dictionary objectForKey:@"documentOffset"] intValue];
     ret.documentContext = dc;
 	[dc release];
-	
+
     return ret;
 }
 

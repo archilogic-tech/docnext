@@ -40,18 +40,20 @@
 
 #pragma mark public
 
-+ (TextViewController *)createViewController:(UIInterfaceOrientation)orientation
++ (TextViewController *)createViewController
 {
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
     TextViewController *ret = [[[TextViewController alloc] initWithNibName:
-                                [IUIViewController buildNibName:@"Text" orientation:orientation] bundle:nil] autorelease];
-    [ret setLandspace:orientation];
+                                [IUIViewController buildNibName:@"Text" orientation:o] bundle:nil] autorelease];
+//    [ret setLandspace:orientation];
 //	ret.datasource = datasource;
     return ret;
 }
 
 
 - (IBAction)imageViewButtonClick:(id)sender {
-	[parent showImage:_documentContext];
+	[self.navigationController popViewControllerAnimated:YES];
+//	[parent showImage:_documentContext];
 //    [parent showImage:documentId page:currentPage];
 }
 
@@ -72,7 +74,7 @@
     [self loadCurrent];
     [self toggleConfigViewButtonClick:nil];
 }
-
+/*
 - (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
 
 	TextViewController *c = [TextViewController createViewController:orientation];// datasource:_datasource];
@@ -81,7 +83,7 @@
 //	c.currentPage = self.currentPage;
 	return c;
 }
-
+*/
 #pragma mark private
 
 - (void)movePage:(BOOL)isNext {

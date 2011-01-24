@@ -22,14 +22,14 @@
 @synthesize datasource = _datasource;
 @synthesize documentContext = _documentContext;
 
-+ (ThumbnailViewController *)createViewController:(UIInterfaceOrientation)orientation
-									   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
++ (ThumbnailViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
 
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+	
 	ThumbnailViewController *ret = [[[ThumbnailViewController alloc] initWithNibName:
-                                     [IUIViewController buildNibName:@"Thumbnail" orientation:orientation] bundle:nil] autorelease];
+                                     [IUIViewController buildNibName:@"Thumbnail" orientation:o] bundle:nil] autorelease];
 
-    [ret setLandspace:orientation];
 	ret.datasource = datasource;
     return ret;
 }
@@ -48,14 +48,6 @@
     }
 }
 
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-	ThumbnailViewController *c = [ThumbnailViewController createViewController:orientation datasource:_datasource];
-	c.documentContext = _documentContext;
-//	c.documentId = self.documentId;
-//	c.page = self.page;
-	return c;
-}
-
 #pragma mark FlowCoverViewDelegate
 
 - (int)flowCoverNumberImages:(FlowCoverView *)view {
@@ -71,8 +63,11 @@
 
 - (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {
 	_documentContext.currentPage = cover;
+	[self.navigationController popViewControllerAnimated:YES];
+/*	
 	[parent showImage:_documentContext];
 //    [parent showImage:documentId page:cover];
+ */
 }
 
 - (void)flowCover:(FlowCoverView *)view changeCurrent:(int)cover {
@@ -84,7 +79,7 @@
 }
 
 - (void)setLabels:(int)index {
-	self.titleLabel.text = [_documentContext titleWithIndex:index];
+	self.titleLabel.text = [_documentContext titleWithPage:index];
 //	self.titleLabel.text = [_datasource toc:documentId page:index].text;
     self.pageLabel.text = [NSString stringWithFormat:@"%d / %d" , index + 1 , [_documentContext totalPage]];
 }
@@ -132,6 +127,7 @@
     [titleLabel release];
     [pageLabel release];
     [pageSlider release];
+	
 	[_datasource release];
 	[_documentContext release];
 //	[documentId release];

@@ -24,8 +24,6 @@
 	StandardLocalStorageManager *_localStorage;
 }
 
-//@property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
-
 - (NSString *)getFullPath:(NSString *)fileName;
 
 // temporary

@@ -125,15 +125,10 @@
 }
 
 
-
-
-
-
-
 - (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"texts/%d.image.txt", page];
-	NSData *data = [_localStorage dataWithDocumentId:docId forKey:key];
+	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
 	return [NSString stringWithData:data];
 }
 
@@ -144,7 +139,7 @@
     NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
     
 	NSString *key = [NSString stringWithFormat:@"texts/%d.regions", page];
-    NSData *data = [_localStorage dataWithDocumentId:docId forKey:key];
+    NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
 	
     int len = data.length;
     for ( int pos = 0 ; pos < len ; pos += SIZEOF_DOUBLE * N_REGION_FIELDS ) {

@@ -11,8 +11,12 @@
 #import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
-@interface BookshelfDeletionViewController : IUIViewController <UITableViewDataSource , UITableViewDelegate> {
-    UITableView *tableView;
+@interface BookshelfDeletionViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	UITableView *tableView;
     
     NSMutableArray *downloadedIds;
     
@@ -25,7 +29,7 @@
 
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-+ (BookshelfDeletionViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<DocumentViewerDatasource>)datasource;
++ (BookshelfDeletionViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
 
 - (IBAction)backButtonClick:(id)sender;
 - (IBAction)movieButtonClick:(id)sender;

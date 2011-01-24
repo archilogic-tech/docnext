@@ -7,6 +7,7 @@
 //
 
 #import "ImageSearchViewController.h"
+
 #import "NSString+Data.h"
 #import "NSString+Search.h"
 #import "RangeObject.h"
@@ -16,10 +17,10 @@
 
 @synthesize searchBar;
 @synthesize tableView;
-@synthesize parent;
-@synthesize docId;
 
 @synthesize datasource = _datasource;
+@synthesize documentContext = _documentContext;
+@synthesize delegate = _delegate;
 
 - (NSArray *)buildRangesElem:(NSArray *)hitRanges text:(NSString *)text {
     NSMutableArray *rangesElem = [NSMutableArray arrayWithCapacity:0];
@@ -38,15 +39,15 @@
     return rangesElem;
 }
 
-- (void)doSearch {
-    int _pages = [_datasource pages:docId];
+- (void)doSearch
+{
+	int _pages = [_documentContext totalPage];
     for ( int page = 0 ; page < _pages ; page++ ) {
-        NSString *text = [_datasource imageText:docId page:page];
-        
+//        NSString *text = [_datasource imageText:docId page:page];
+		NSString *text = [_documentContext imageTextWithPage:page];
         NSArray *res = [text search:searchBar.text];
         if ( res.count > 0 ) {
             [pages addObject:[NSNumber numberWithInt:page]];
-            
             [ranges addObject:[self buildRangesElem:res text:text]];
         }
     }
@@ -69,7 +70,8 @@
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [parent cancelSearch];
+	[_delegate didImageSearchCanceled];
+//    [parent cancelSearch];
 }
 
 #pragma mark -
@@ -86,7 +88,9 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     int page = [[pages objectAtIndex:section] intValue];
-    return [NSString stringWithFormat:@"%@ - %d page" , [_datasource toc:docId page:page].text , (page + 1)];
+
+    NSString *title = [_documentContext titleWithPage:page];
+	return [NSString stringWithFormat:@"%@ - %d page", title, (page + 1)];
 }
 
 // Customize the appearance of table view cells.
@@ -111,17 +115,22 @@
     for ( SearchResult *res in [ranges objectAtIndex:indexPath.section] ) {
         [_ranges addObject:res.range];
     }
-    
-    [parent selectSearchResult:[[pages objectAtIndex:indexPath.section] intValue] ranges:_ranges selectedIndex:indexPath.row];
+	int page = [[pages objectAtIndex:indexPath.section] intValue];
+	[_delegate didImageSearchCompleted:page ranges:_ranges selectedIndex:indexPath.row];
 }
 
 - (void)viewDidLoad {
     searchBar.delegate = self;
     tableView.dataSource = self;
     tableView.delegate = self;
-    
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
     [searchBar becomeFirstResponder];
 }
+
 
 - (void)dealloc {
     [searchBar release];
