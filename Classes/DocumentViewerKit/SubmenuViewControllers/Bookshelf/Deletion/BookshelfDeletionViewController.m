@@ -16,24 +16,20 @@
 
 @synthesize datasource = _datasource;
 
-+ (BookshelfDeletionViewController *)createViewController:(UIInterfaceOrientation)orientation
-											   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
++ (BookshelfDeletionViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+	
     BookshelfDeletionViewController *ret = [[[BookshelfDeletionViewController alloc] initWithNibName:
-                                             [IUIViewController buildNibName:@"BookshelfDeletion" orientation:orientation] bundle:nil] autorelease];
-    [ret setLandspace:orientation];
+                                             [IUIViewController buildNibName:@"BookshelfDeletion" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
 
 
-
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-	return [BookshelfDeletionViewController createViewController:orientation datasource:_datasource];
-}
-
 - (IBAction)backButtonClick:(id)sender {
-    [parent showHome:YES];
+	[self.navigationController popViewControllerAnimated:YES];
+//    [parent showHome:YES];
 }
 
 - (IBAction)movieButtonClick:(id)sender {
@@ -131,6 +127,16 @@
     NSLog(@"MovieSourceTypeAvailable");
 }
 
+
+
+
+
+
+
+
+
+
+
 #pragma mark -
 #pragma mark Table view data source
 
@@ -150,9 +156,11 @@
     if (cell == nil) {
         cell = (BookshelfTableViewCell *)[[[[UIViewController alloc] initWithNibName:@"BookshelfTableViewCell" bundle:nil] autorelease] view];
 		cell.datasource = _datasource;
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-    [cell apply:[downloadedIds objectAtIndex:indexPath.row]];
+	NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
+    [cell apply:metaDocumentId];
     
     return cell;
 }
@@ -163,11 +171,13 @@
 
 - (void)tableView:(UITableView *)_tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [_datasource deleteCache:[downloadedIds objectAtIndex:indexPath.row]];
+
+        NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
+		[_datasource deleteCache:metaDocumentId];
         
         [downloadedIds removeObjectAtIndex:indexPath.row];
         
-        [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
+        [_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }   
 }
 
@@ -175,6 +185,7 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)_tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	// なにもしない?
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

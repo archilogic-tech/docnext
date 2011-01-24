@@ -9,6 +9,7 @@
 #import "BookshelfViewController.h"
 #import "MapDocViewController.h"
 #import "BookshelfTableViewCell.h"
+#import "ImageViewController.h"
 #import "NSString+Data.h"
 
 @implementation BookshelfViewController
@@ -16,34 +17,20 @@
 @synthesize tableView;
 @synthesize datasource = _datasource;
 
-+ (BookshelfViewController *)createViewController:(UIInterfaceOrientation)orientation
-									   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
++ (BookshelfViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+	
     BookshelfViewController *ret = [[[BookshelfViewController alloc] initWithNibName:
-                                     [IUIViewController buildNibName:@"Bookshelf" orientation:orientation] bundle:nil] autorelease];
-    [ret setLandspace:orientation];
+                                     [IUIViewController buildNibName:@"Bookshelf" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
 
-
-
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-	
-    return [BookshelfViewController createViewController:orientation datasource:_datasource];
-}
-
-- (IBAction)continueReadingClick:(id)sender {
-
-    
-	HistoryObject *history = [_datasource history];
-    if ( !history ) {
-        [[[[UIAlertView alloc] initWithTitle:@"No history" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
-        return;
-    }
-	[parent showImage:history.documentContext];
-	
-//    [parent showImage:history.documentId page:history.page];
+- (IBAction)continueReadingClick:(id)sender
+{
+	NSString *urlStr = @"mapdoc://continue";
+	[[UIApplication sharedApplication]  openURL:[NSURL URLWithString:urlStr]];
 }
 
 #pragma mark -
@@ -90,8 +77,11 @@
 #pragma mark -
 #pragma mark Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [parent showImage:[downloadedIds objectAtIndex:indexPath.row]  page:0];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+	NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
+	NSString *urlStr = [NSString stringWithFormat:@"mapdoc://view/%@", metaDocumentId];
+	[[UIApplication sharedApplication]  openURL:[NSURL URLWithString:urlStr]];
 }
 
 - (void)viewDidLoad {

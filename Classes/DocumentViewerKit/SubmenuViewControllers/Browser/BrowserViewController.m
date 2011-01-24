@@ -14,18 +14,14 @@
 @synthesize webView;
 @synthesize datasource = _datasource;
 
-+ (BrowserViewController *)createViewController:(UIInterfaceOrientation)orientation
-									 datasource:(id<NSObject,DocumentViewerDatasource>)datasource
++ (BrowserViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
-    BrowserViewController *ret = [[[BrowserViewController alloc] initWithNibName:
-                                   [IUIViewController buildNibName:@"Browser" orientation:orientation] bundle:nil] autorelease];
-    [ret setLandspace:orientation];
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+    
+	BrowserViewController *ret = [[[BrowserViewController alloc] initWithNibName:
+                                   [IUIViewController buildNibName:@"Browser" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
-}
-
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-    return [BrowserViewController createViewController:orientation datasource:_datasource];
 }
 
 - (void)viewDidLoad {

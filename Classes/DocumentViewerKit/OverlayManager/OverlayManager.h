@@ -27,9 +27,6 @@
 @interface OverlayManager : NSObject {
 	DocumentContext *_documentContext;
     
-//	id<NSObject> docId;
-//   int page;
-    
     // cache values
     NSArray *regions;
     SeparationHolder *separationHolder;

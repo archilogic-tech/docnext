@@ -20,6 +20,8 @@
 	DocumentContext *_documentContext;
 }
 
+@property(nonatomic,retain) IBOutlet UIProgressView *progressView;
+
 //@property(nonatomic, copy) id documentId;
 //@property(nonatomic) int page;
 @property (nonatomic, retain) NSString *contentName;

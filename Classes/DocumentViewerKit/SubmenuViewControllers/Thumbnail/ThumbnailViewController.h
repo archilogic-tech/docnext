@@ -11,30 +11,34 @@
 #import "MapDocViewController.h"
 #import "DocumentContext.h"
 
-@interface ThumbnailViewController : IUIViewController <FlowCoverViewDelegate> {
-    FlowCoverView *flowCoverView;
+@interface ThumbnailViewController : UIViewController <FlowCoverViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	FlowCoverView *flowCoverView;
     UILabel *titleLabel;
     UILabel *pageLabel;
     UISlider *pageSlider;
     
     NSTimer *timer;
-//    id<NSObject> documentId;
-//    int page;
 	DocumentContext *_documentContext;
 	id<NSObject,DocumentViewerDatasource> _datasource;
+
+	//    id<NSObject> documentId;
+	//    int page;
 }
+
 
 @property(nonatomic,retain) IBOutlet FlowCoverView *flowCoverView;
 @property(nonatomic,retain) IBOutlet UILabel *titleLabel;
 @property(nonatomic,retain) IBOutlet UILabel *pageLabel;
 @property(nonatomic,retain) IBOutlet UISlider *pageSlider;
-//@property(nonatomic,copy) id<NSObject> documentId;
-//@property(nonatomic) int page;
 
 @property (nonatomic, retain) DocumentContext *documentContext;
 @property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-+ (ThumbnailViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<DocumentViewerDatasource>)datasource;
++ (ThumbnailViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
 
 - (IBAction)pageSliderChanged:(id)sender;
 

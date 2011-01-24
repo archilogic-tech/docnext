@@ -7,11 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "IUIViewController.h"
+//#import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
-@interface BookshelfViewController : IUIViewController <UITableViewDataSource , UITableViewDelegate> {
-    UITableView *tableView;
+@interface BookshelfViewController : UIViewController <UITableViewDataSource , UITableViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	UITableView *tableView;
 
     NSMutableArray *downloadedIds;
 	id<NSObject,DocumentViewerDatasource> _datasource;
@@ -20,7 +24,7 @@
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
-+ (BookshelfViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<DocumentViewerDatasource>)datasource;
++ (BookshelfViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
 
 - (IBAction)continueReadingClick:(id)sender;
 

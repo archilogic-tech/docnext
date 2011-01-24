@@ -10,8 +10,12 @@
 #import "IUIViewController.h"
 #import "DocumentViewerDatasource.h"
 
-@interface BrowserViewController : IUIViewController<UIWebViewDelegate> {
-    UIWebView *webView;
+@interface BrowserViewController : UIViewController<UIWebViewDelegate> {
+
+	// from IUIViewController
+    UIProgressView *progressView;
+
+	UIWebView *webView;
 	id<NSObject,DocumentViewerDatasource> _datasource;
 }
 
@@ -19,6 +23,6 @@
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 
-+ (BrowserViewController *)createViewController:(UIInterfaceOrientation)orientation datasource:(id<DocumentViewerDatasource>)datasource;
++ (BrowserViewController *)createViewController:(id<DocumentViewerDatasource>)datasource;
 
 @end

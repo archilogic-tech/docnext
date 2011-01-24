@@ -9,18 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "TiledScrollView.h"
 #import "IUIViewController.h"
-#import "UITouchAwareWindow.h"
 #import "DocumentViewerDatasource.h"
 
-@interface MapDocViewController : UIViewController {
-    IUIViewController *current;
-    UITouchAwareWindow *window;
+@interface MapDocViewController : UINavigationController {
+//    UIViewController *current;
+    UIWindow *window;
     UIInterfaceOrientation willInterfaceOrientation;
 	id<NSObject,DocumentViewerDatasource> _datasource;
 }
 
-@property(nonatomic,retain) IUIViewController *current;
-@property(nonatomic,assign) UITouchAwareWindow *window;
+@property(nonatomic,retain) UIViewController *current;
+@property(nonatomic,assign) UIWindow *window;
 @property(nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 

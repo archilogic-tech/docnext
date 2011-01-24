@@ -19,6 +19,11 @@
 #import "HighlightObject.h"
 #import "ObjPoint.h"
 
+#import "TOCViewController.h"
+#import "ThumbnailViewController.h"
+#import "BookmarkViewController.h"
+#import "TextViewController.h"
+
 @interface ImageViewController ()
 
 - (TiledScrollView *)buildContentView;
@@ -34,10 +39,6 @@
 - (void)saveFreehand;
 - (void)loadFreehand;
 
-//- (int)currentIndexByPage:(int)page;
-//- (void)buildPageHeads;
-//- (void)loadSinglePageInfo;
-
 @end
 
 @implementation ImageViewController
@@ -50,8 +51,8 @@
 @synthesize highlightMenuView;
 @synthesize highlightCommentMenuView;
 @synthesize highlightCommentTextField;
-@synthesize window;
 
+//@synthesize window;
 //@synthesize documentId;
 
 @synthesize datasource = _datasource;
@@ -62,26 +63,73 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    UITapGestureRecognizer *rec = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
+	[self.view addGestureRecognizer:rec];
+	[rec release];
 	
-    tapDetector = [TapDetector new];
-    tapDetector.delegate = self;
+    rec = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
+	rec.numberOfTapsRequired = 2;
+	[self.view addGestureRecognizer:rec];
+	[rec release];
+
+	UILongPressGestureRecognizer *rec2 = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleLongPressGesture:)];
+	[self.view addGestureRecognizer:rec2];
+	[rec2 release];
+	
+//    tapDetector = [TapDetector new];
+//    tapDetector.delegate = self;
     
     overlayManager = [OverlayManager new];
     overlayManager.delegate = self;
 	overlayManager.datasource = _datasource;
     
-    highlights = [[NSMutableDictionary dictionaryWithCapacity:0] retain];
+    highlights = [[NSMutableDictionary alloc] init];
     
-    tiledScrollView = [[self buildContentView] retain];
-    [tiledScrollViewContainer addSubview:tiledScrollView];
+//    tiledScrollView = [[self buildContentView] retain];
+//    [tiledScrollViewContainer addSubview:tiledScrollView];
     
     
-    window.touchesObserver = self;
+//    window.touchesObserver = self;
 }
 
 
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
 
+	[tiledScrollView release];
+	tiledScrollView = [[self buildContentView] retain];
+	[tiledScrollViewContainer addSubview:tiledScrollView];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+	// メニューを消す
+	if (configView.alpha > 0) {
+		[self toggleConfigView];
+	}
+	[tiledScrollView removeFromSuperview];
+	[tiledScrollView release];
+	tiledScrollView = nil;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+
+	// willRotateToInterfaceOrientationに移すべき
+	[tiledScrollView removeFromSuperview];
+	[tiledScrollView release];
+	tiledScrollView = [[self buildContentView] retain];
+	[tiledScrollViewContainer addSubview:tiledScrollView];
+}
 
 
 - (void)loadDocumentWithDocumentId:(id)docid
@@ -103,7 +151,7 @@
 
 
 - (void)dealloc {
-    window.touchesObserver = nil;
+//    window.touchesObserver = nil;
     
     [configView release];
     [_freehandSwitch release];
@@ -116,7 +164,6 @@
     [markerView release];
     [_freehandView release];
     [balloonContainerView release];
-    [tapDetector release];
     [prevTiledScrollView release];
     [overlayManager release];
     [highlights release];
@@ -124,56 +171,53 @@
 	[_documentContext release];
 	[_datasource release];
 	
-	//    [singlePageInfo release];
-	//  [pageHeads release];
-	//    [isSinglePage release];
-	//	[documentId release];
-    
-	
     [super dealloc];
 }
 
 #pragma mark public
 
-+ (ImageViewController *)createViewController:(UIInterfaceOrientation)orientation
-								   datasource:(id<NSObject,DocumentViewerDatasource>)datasource
-                                       window:(UITouchAwareWindow *)window {
-    ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:
-                                 [IUIViewController buildNibName:@"Image" orientation:orientation] bundle:nil] autorelease];
++ (ImageViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
+{
+    UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+	ImageViewController *ret = [[[ImageViewController alloc] initWithNibName:
+                                 [IUIViewController buildNibName:@"Image" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
-    [ret setLandspace:orientation];
-    ret.window = window;
     return ret;
 }
 
 - (IBAction)homeButtonClick:(id)sender {
 	//HGMTODO
-    [parent showHome:YES];
+
+    [self.navigationController popToRootViewControllerAnimated:YES];
+	//[parent showHome:YES];
 }
 
-- (IBAction)tocViewButtonClick:(id)sender {
-	//HGMTODO
-
-    [parent showTOC:_documentContext];
-//	[parent showTOC:self.documentId prevPage:[self currentPageByIndex:currentIndex]];
+- (IBAction)tocViewButtonClick:(id)sender
+{
+	TOCViewController *tc = [TOCViewController createViewController:_datasource];
+	tc.documentContext = _documentContext;
+	[self.navigationController pushViewController:tc animated:YES];
 }
 
-- (IBAction)thumbnailViewButtonClick:(id)sender {
-	//HGMTODO
-	[parent showThumbnail:_documentContext];
-//    [parent showThumbnail:self.documentId page:[self currentPageByIndex:currentIndex]];
+- (IBAction)thumbnailViewButtonClick:(id)sender
+{
+	ThumbnailViewController *c = [ThumbnailViewController createViewController:_datasource];
+	c.documentContext = _documentContext;
+	[self.navigationController pushViewController:c animated:YES];
 }
 
-- (IBAction)bookmarkViewButtonClick:(id)sender {
-	//HGMTODO
-	[parent showBookmark:_documentContext];
-//    [parent showBookmark:self.documentId page:[self currentPageByIndex:currentIndex]];
+- (IBAction)bookmarkViewButtonClick:(id)sender
+{
+	BookmarkViewController *c = [BookmarkViewController createViewController:_datasource];
+	c.documentContext = _documentContext;
+	[self.navigationController pushViewController:c animated:YES];
 }
 
-- (IBAction)textViewButtonClick:(id)sender {
-	//HGMTODO
-	[parent showText:_documentContext];
-//    [parent showText:self.documentId page:[self currentPageByIndex:currentIndex]];
+- (IBAction)textViewButtonClick:(id)sender
+{
+	TextViewController *c = [TextViewController createViewController];
+	c.documentContext = _documentContext;
+	[self.navigationController pushViewController:c animated:YES];
 }
 
 - (IBAction)tweetButtonClick:(id)sender {
@@ -182,7 +226,8 @@
     [[UIApplication sharedApplication] openURL:url];
 }
 
-- (IBAction)searchButtonClick:(id)sender {
+- (IBAction)searchButtonClick:(id)sender
+{
     BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
     
     if ( isLand ) {
@@ -193,18 +238,23 @@
     }
     
     NSString *orientation = isLand ? @"-land" : @"";
-    searchViewController = [[ImageSearchViewController alloc]
-                            initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
-    searchViewController.parent = self;
-    searchViewController.docId = _documentContext.documentId;
+    ImageSearchViewController *searchViewController = [[ImageSearchViewController alloc]
+													   initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
+	searchViewController.delegate = self;
+    //searchViewController.parent = self;
+	searchViewController.documentContext = _documentContext;
+ //   searchViewController.docId = _documentContext.documentId;
     
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
         popover = [[UIPopoverController alloc] initWithContentViewController:searchViewController];
         popover.popoverContentSize = isLand ? CGSizeMake(480, 320) : CGSizeMake(320, 480);
         [popover presentPopoverFromRect:((UIView *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     } else {
-        [self.view addSubview:searchViewController.view];
+		// TODO searchだからmodalの方がよいか?
+		[self.navigationController pushViewController:searchViewController animated:YES];
+        //[self.view addSubview:searchViewController.view];
     }
+	[searchViewController release];
 }
 
 - (IBAction)freehandUndoClick {
@@ -301,8 +351,11 @@
     }
 }
 
-- (void)selectSearchResult:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex {
-    int next = [self currentIndexByPage:page];
+#pragma mark ImageSearchDelegate
+
+- (void)didImageSearchCompleted:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex
+{
+    int next = [_documentContext currentIndexByPage:page];
     if ( next != _documentContext.currentIndex ) {
         BOOL isLeft = next > _documentContext.currentIndex;
         _documentContext.currentIndex = next;
@@ -313,46 +366,22 @@
 
     [self toggleConfigView];
 
-    [self cancelSearch];
+    [self didImageSearchCanceled];
 }
 
-- (void)cancelSearch {
+- (void)didImageSearchCanceled
+{
     if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
         [popover dismissPopoverAnimated:YES];
         [popover release];
         popover = nil;
     } else {
-        [searchViewController.view removeFromSuperview];
+		[self.navigationController popViewControllerAnimated:YES];
+        //[searchViewController.view removeFromSuperview];
     }
-    
-    [searchViewController release];
-    searchViewController = nil;
-}
-
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
-	ImageViewController *c = [ImageViewController createViewController:orientation datasource:_datasource window:window];
-
-	c.documentContext = _documentContext;
-//	c.documentId = documentId;
-//	[c setIndexByPage:[self currentPageByIndex:currentIndex]];
-
-    return c;
 }
 
 #pragma mark private
-
-
-- (void)setIndexByPage:(int)page {
-	_documentContext.currentPage = page;
-	
-	/*
-	totalPage = [_datasource pages:documentId];
-    [self loadSinglePageInfo];
-    [self buildPageHeads];
-	 //   currentIndex = [self currentIndexByPage:page];
-	 */
-    
-}
 
 - (void)addOverlay:(TiledScrollView *)view {
     [markerView release];
@@ -371,18 +400,22 @@
 }
 
 - (void)setExternalDependent:(TiledScrollView *)view {
-    tapDetector.basisView = view.zoomableContainerView;
+//    tapDetector.basisView = view.zoomableContainerView;
     overlayManager.scrollView = view;
     overlayManager.markerView = markerView;
     overlayManager.balloonContainerView = balloonContainerView;
 }
 
 - (TiledScrollView *)buildContentView {
+	return [self buildContentViewWithInterfaceOrientation:self.interfaceOrientation];
+}
+
+- (TiledScrollView *)buildContentViewWithInterfaceOrientation:(UIInterfaceOrientation)o {
     CGRect frame = tiledScrollViewContainer.bounds;
     float w = frame.size.width;
     float h = frame.size.height;
     float baseScale = 1.0f;
-    if ( isLandscape ) {
+	if ( UIInterfaceOrientationIsLandscape(o) ) {
         w /= 2;
         baseScale = 0.5;
         
@@ -521,6 +554,8 @@
     }
 }
 
+
+
 - (void)movePageToCurrent:(BOOL)isLeft {
 /*
 	titleLabel.text = [_datasource toc:_documentContext.documentId
@@ -564,11 +599,7 @@
 }
 
 #pragma mark load
-/*
-- (void)loadSinglePageInfo {
-	singlePageInfo = [[_datasource singlePageInfo:documentId] retain];
-}
-*/
+
 - (void)loadHighlights {
 	NSArray *a = [_documentContext highlights];
   	for ( NSDictionary *dic in a) { 
@@ -660,6 +691,31 @@
 
 #pragma mark TapDetectorDelegate 
 
+
+- (void)handleSingleTapGesture:(UIGestureRecognizer *)gestureRecognizer
+{
+	NSLog(@"single");
+	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+	[self tapDetectorGotSingleTapAtPoint:p];
+}
+
+- (void)handleDoubleTapGesture:(UIGestureRecognizer *)gestureRecognizer
+{
+	NSLog(@"double");
+	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+	[self tapDetectorGotDoubleTapAtPoint:p];
+}
+
+- (void)handleSingleLongPressGesture:(UIGestureRecognizer *)gestureRecognizer
+{
+	NSLog(@"long");
+	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+	[self tapDetectorGotSingleLongTapAtPoint:p];
+	
+//	[self tapDetectorGotDoubleTapAtPoint:p];
+}
+
+
 - (void)tapDetectorGotSingleTapAtPoint:(CGPoint)tapPoint {
     if ( isIgnoreTap ) {
         isIgnoreTap = NO;
@@ -724,6 +780,8 @@
 
 #pragma mark TouchObserver
 
+
+/*
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     if ( !_freehandSwitch.on ) {
         if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
@@ -751,6 +809,7 @@
     }
 }
 
+ 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if ( !_freehandSwitch.on ) {
         if ( [[[touches anyObject] view] isDescendantOfView:tiledScrollView] ) {
@@ -758,7 +817,8 @@
         }
     }
 }
-
+*/
+ 
 #pragma mark UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -781,7 +841,7 @@
 
                     break;
                 case ImageViewLinkModeGoToPage: {
-                    int next = [self currentIndexByPage:linkPage];
+                    int next = [_documentContext currentIndexByPage:linkPage];
                     BOOL isLeft = next > _documentContext.currentIndex ? YES : NO;
 
                     _documentContext.currentIndex = next;

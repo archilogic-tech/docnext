@@ -9,6 +9,7 @@
 #import "BookmarkViewController.h"
 #import "BookmarkObject.h"
 #import "NSString+Data.h"
+#import "ImageViewController.h"
 
 @interface BookmarkViewController()
 - (void)saveBookmarks;
@@ -18,26 +19,26 @@
 
 @synthesize tableView;
 @synthesize bookmarks;
-//@synthesize currentDocumentId;
-//@synthesize currentPage;
-//@synthesize currentTitle;
 
 @synthesize documentContext = _documentContext;
 @synthesize datasource = _datasource;
 
-+ (BookmarkViewController *)createViewController:(UIInterfaceOrientation)orientation
-									  datasource:(id<NSObject,DocumentViewerDatasource>)datasource
++ (BookmarkViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
-    BookmarkViewController *ret = [[[BookmarkViewController alloc] initWithNibName:
-                                    [IUIViewController buildNibName:@"Bookmark" orientation:orientation] bundle:nil] autorelease];
-    [ret setLandspace:orientation];
+	UIInterfaceOrientation o = [UIDevice currentDevice].orientation;
+    
+	BookmarkViewController *ret = [[[BookmarkViewController alloc] initWithNibName:
+                                    [IUIViewController buildNibName:@"Bookmark" orientation:o] bundle:nil] autorelease];
 	ret.datasource = datasource;
     return ret;
 }
 
 
 - (IBAction)backButtonClick:(id)sender {
-	[parent showImage:_documentContext];
+
+	[self.navigationController popViewControllerAnimated:YES];
+
+//	[parent showImage:_documentContext];
 //    [parent showImage:self.currentDocumentId page:self.currentPage];
 }
 
@@ -65,13 +66,16 @@
     [self.tableView reloadData];
 }
 
-- (IUIViewController *)createViewController:(UIInterfaceOrientation)orientation {
+/*
+ - (IUIViewController *)createViewController
+{
 	BookmarkViewController *c = [BookmarkViewController createViewController:orientation datasource:_datasource];
 	c.documentContext = _documentContext;
 //	c.currentDocumentId = self.currentDocumentId;
 //	c.currentPage = self.currentPage;
 	return c;
 }
+*/
 
 #pragma mark load
 
@@ -148,10 +152,16 @@
 #pragma mark -
 #pragma mark Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     BookmarkObject *bookmark = (BookmarkObject *)[self.bookmarks objectAtIndex:indexPath.row];
-	[parent showImage:bookmark.documentContext];
-//    [parent showImage:bookmark.documentId page:bookmark.page];
+
+	// TODO きれいになおす
+	NSArray *a = [self.navigationController viewControllers];
+	ImageViewController *ic = [a objectAtIndex:[a count]-2];
+	ic.documentContext = bookmark.documentContext;
+
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewDidLoad {
@@ -169,11 +179,9 @@
 - (void)dealloc {
     [tableView release];
     [bookmarks release];
-//    [currentTitle release];
 	[_datasource release];
 	[_documentContext release];
-//	[currentDocumentId release];
-    
+
     [super dealloc];
 }
 

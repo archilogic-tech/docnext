@@ -16,15 +16,11 @@
 @interface DocumentContext : NSObject {
 	id<NSObject,DocumentViewerDatasource> _datasource;
 
-	
-	NSArray /*id<NSObject>*/ *_documentId;
-//	int _documentOffset;
+	NSArray *_documentId;
 	int _currentPage;					// データファイル上のページ
 	int _currentIndex;					// アプリで扱うページ
 
 	UIInterfaceOrientation _currentOrientation;
-	
-//	NSArray *singlePageInfo;
 
 	int _totalPage;
 	NSArray *_singlePageInfo;
@@ -32,27 +28,39 @@
 	NSArray *_isSinglePage;
 }
 
-
-- (BOOL)isSinglePage;
-
-- (NSArray*)titles;
-- (NSString*)titleWithIndex:(int)index;
-- (NSString*)title;
-
-- (NSArray*)region;
-- (double)ratio;
-- (NSString*)texts;
-- (int)totalPage;
-
-//- (NSComparisonResult)compare:(DocumentContext *)anotherDocumentContext;
-
-
 @property (nonatomic, retain) id<NSObject> documentId;
 @property (nonatomic) int documentOffset;
 @property (nonatomic) int currentPage;
 @property (nonatomic) int currentIndex;
 
+- (id)init;
+- (void)dealloc;
+- (void)didInterfaceOrientationChanged:(NSNotification*)n;
+- (id<NSObject>)documentId;
+- (void)setDocumentId:(id <NSObject>)docId;
 - (BOOL)isValidIndex:(int)i;
-
+- (BOOL)isValidPage:(int)i;
+- (int)currentPageByIndex:(int)i;
+- (int)currentIndexByPage:(int)page;
+- (void)setCurrentPage:(int)n;
+- (void)setCurrentIndex:(int)n;
+- (int)totalPageWithDocumentOffset:(int)i;
+- (int)totalPage;
+- (BOOL)isSinglePage;
+- (NSArray*)titles;
+- (NSString*)titleWithPage:(int)index;
+- (NSString*)title;
+- (NSString*)texts;
+- (NSArray*)freehand;
+- (NSArray*)annotations;
+- (NSArray*)highlights;
+- (NSArray*)region;
+- (double)ratio;
+- (void)loadSinglePageInfo;
+- (UIImage*)thumbnailWithIndex:(int)index;
+- (BOOL)isSinglePage:(int)page;
+- (void)buildPageHeads;
+- (UIView*)getTileImageWithType:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
+- (NSString*)publisher;
 
 @end
