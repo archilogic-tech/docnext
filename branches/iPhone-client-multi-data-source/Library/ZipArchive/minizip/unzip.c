@@ -888,7 +888,7 @@ extern int ZEXPORT unzLocateFile (file, szFileName, iCaseSensitivity)
 // I need random access
 //
 // Further optimization could be realized by adding an ability
-// to cache the directory in memory. The goal being a single
+// to cache the directory in memory. The goal being a setHideConfigView
 // comprehensive file read to put the file I need in a memory.
 */
 

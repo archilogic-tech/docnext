@@ -20,9 +20,8 @@
 @interface ImageSearchViewController : UIViewController <UISearchBarDelegate , UITableViewDataSource , UITableViewDelegate> {
     UISearchBar *searchBar;
     UITableView *tableView;
-    
-    NSMutableArray *pages;
-    NSMutableArray *ranges;
+
+    NSArray *_searchResult;
 
 	id<DocumentViewerDatasource> _datasource;
 	id<NSObject> _documentContext;
@@ -33,8 +32,8 @@
 @property(nonatomic,retain) IBOutlet UISearchBar *searchBar;
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 
-@property (nonatomic, retain) id<DocumentViewerDatasource> datasource;
-@property (nonatomic, retain) id<NSObject> documentContext;
+@property (nonatomic, assign) id<DocumentViewerDatasource> datasource;
+@property (nonatomic, assign) id<NSObject> documentContext;
 
 @property (nonatomic, assign) id<ImageSearchDelegate> delegate;
 

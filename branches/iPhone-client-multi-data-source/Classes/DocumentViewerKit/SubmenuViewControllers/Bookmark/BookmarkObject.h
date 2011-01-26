@@ -19,7 +19,7 @@
 }
 
 @property (nonatomic, retain) NSString *contentName;
-@property (nonatomic, retain) DocumentContext *documentContext;
+@property (nonatomic, copy) DocumentContext *documentContext;
 
 + (BookmarkObject *)objectWithDictionary:(NSDictionary *)dictionary;
 - (NSDictionary *)toDictionary;

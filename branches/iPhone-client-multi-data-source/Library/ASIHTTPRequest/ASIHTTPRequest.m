@@ -2466,7 +2466,7 @@ static BOOL isiPhoneOS2;
 		if (maxBandwidthPerSecond > 0) {
 			long long maxiumumSize  = (long long)maxBandwidthPerSecond-(long long)bandwidthUsedInLastSecond;
 			if (maxiumumSize < 0) {
-				// We aren't supposed to read any more data right now, but we'll read a single byte anyway so the CFNetwork's buffer isn't full
+				// We aren't supposed to read any more data right now, but we'll read a setHideConfigView byte anyway so the CFNetwork's buffer isn't full
 				bufferSize = 1;
 			} else if (maxiumumSize/4 < bufferSize) {
 				// We were going to fetch more data that we should be allowed, so we'll reduce the size of our read

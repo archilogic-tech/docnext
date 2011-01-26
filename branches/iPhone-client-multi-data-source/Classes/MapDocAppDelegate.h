@@ -11,7 +11,7 @@
 
 @class MapDocViewController;
 
-@interface MapDocAppDelegate : NSObject <UIApplicationDelegate,DownloadManagerDelegate> {
+@interface MapDocAppDelegate : NSObject <UIApplicationDelegate> {
 	UIWindow *window;
     MapDocViewController *viewController;
     

@@ -70,7 +70,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
     checkingLongTap = NO;
     
     if ( !multipleTouches ) {
-        // first check for plain single/double tap, which is only possible if we haven't seen multiple touches
+        // first check for plain setHideConfigView/double tap, which is only possible if we haven't seen multiple touches
 
         UITouch *touch = [touches anyObject];
         tapLocation = [touch locationInView:basisView];
@@ -94,7 +94,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
                 tapLocations[i] = [touch locationInView:basisView];
                 i++;
             }
-            if ( tapCounts[0] == 1 && tapCounts[1] == 1 ) { // it's a two-finger tap if they're both single taps
+            if ( tapCounts[0] == 1 && tapCounts[1] == 1 ) { // it's a two-finger tap if they're both setHideConfigView taps
                 tapLocation = midpointBetweenPoints( tapLocations[0] , tapLocations[1] );
                 [self handleTwoFingerTap];
             }
@@ -102,7 +102,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
             // case 2: this is the end of one touch, and the other hasn't ended yet
             UITouch *touch = [touches anyObject];
             if ( [touch tapCount] == 1 ) {
-                // if touch is a single tap, store its location so we can average it with the second touch location
+                // if touch is a setHideConfigView tap, store its location so we can average it with the second touch location
                 tapLocation = [touch locationInView:basisView];
             } else {
                 twoFingerTapIsPossible = NO;
@@ -112,7 +112,7 @@ CGPoint midpointBetweenPoints(CGPoint a, CGPoint b);
             // case 3: this is the end of the second of the two touches
             UITouch *touch = [touches anyObject];
             if ( [touch tapCount] == 1 ) {
-                // if the last touch up is a single tap, this was a 2-finger tap
+                // if the last touch up is a setHideConfigView tap, this was a 2-finger tap
                 tapLocation = midpointBetweenPoints( tapLocation , [touch locationInView:basisView] );
                 [self handleTwoFingerTap];
             }

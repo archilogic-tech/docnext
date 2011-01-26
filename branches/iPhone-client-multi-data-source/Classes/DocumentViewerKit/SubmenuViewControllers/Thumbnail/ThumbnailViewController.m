@@ -83,7 +83,7 @@
 }
 
 - (UIImage *)flowCover:(FlowCoverView *)view cover:(int)cover {
-	return [_documentContext thumbnailWithIndex:cover];
+	return [_documentContext thumbnailWithPage:cover];
 }
 
 - (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {

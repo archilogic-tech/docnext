@@ -12,8 +12,42 @@
 #import "TiledScrollView.h"
 #import "NSString+Data.h"
 
+#import "RangeObject.h"
+#import "SearchResult.h"
+#import "DocumentSearchResult.h"
+#import "NSString+Search.h"
+
+
+@interface UstDocDatasource (private)
+
+- (id<NSObject,DownloadManagerDelegate>)downloadManagerDelegate;
+- (void)setDownloadManagerDelegate:(id <NSObject,DownloadManagerDelegate>)d;
+
+// 内部向け
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+- (int)pages:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId;
+- (NSArray *)tocs:(id<NSObject>)metaDocumentId documentId:(id)documentId;
+- (TOCObject *)toc:(id<NSObject>)metaDocumentId documentId:(id)documentId page:(int)page;
+- (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page;
+
+// 廃止したい
+- (BOOL)hasDownloading;
+- (DownloadStatusObject *)downloadStatus;
+- (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus;
+- (BOOL)deleteDownloadStatus;
+- (NSArray *)downloadedIds;
+- (BOOL)saveDownloadedIds:(NSArray *)downloadedIds;
+
+
+
+@end
+
 
 @implementation UstDocDatasource
+
+
+
 
 
 - (id)init
@@ -32,14 +66,14 @@
 			[_downloadManager resume];
         }
 
-		_imageCache = [[NSMutableDictionary alloc] init];
+//		_imageCache = [[NSMutableDictionary alloc] init];
 	}
 	return self;
 }
 
 - (void)dealloc
 {
-	[_imageCache release];
+//	[_imageCache release];
 
 	[_imageFetchQueue release];
 	[_downloadManager release];
@@ -49,7 +83,6 @@
 
 - (void)didReceiveMemoryWarning
 {
-	[_imageCache removeAllObjects];
 }
 
 
@@ -88,6 +121,16 @@
 
 // 書籍のメタ情報を取得するメソッド
 
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId
+{
+	NSDictionary *d = [_localStorage objectWithDocumentId:metaDocumentId forKey:@"info"];
+	if (d) return d;
+	
+	NSString *did = [(NSArray*)metaDocumentId objectAtIndex:0];
+	return [self info:metaDocumentId documentId:did];
+}
+
+
 - (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
 	return [_localStorage objectWithDocumentId:metaDocumentId documentId:documentId forKey:@"info"];
 }
@@ -99,7 +142,7 @@
 - (int)pages:(id<NSObject>)metaDocumentId
 {
 	int sum = 0;
-	for (NSString *did in metaDocumentId) {
+	for (NSString *did in (NSArray*)metaDocumentId) {
 		sum += [[[self info:metaDocumentId documentId:did] objectForKey:@"pages"] intValue];
 	}
 	return sum;
@@ -110,16 +153,37 @@
 	return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"pages"] intValue];
 }
 
-- (NSString *)title:(id<NSObject>)metaDocumentId documentId:(id)documentId {
-    return [[self info:metaDocumentId documentId:documentId] objectForKey:@"title"];
+/*
+- (NSString *)title:(id<NSObject>)metaDocumentId {
+    return [[self info:metaDocumentId] objectForKey:@"title"];
 }
 
-- (NSString *)publisher:(id<NSObject>)metaDocumentId documentId:(id)documentId {
-    return [[self info:metaDocumentId documentId:documentId] objectForKey:@"publisher"];
+- (NSString *)publisher:(id<NSObject>)metaDocumentId {
+    return [[self info:metaDocumentId] objectForKey:@"publisher"];
 }
+*/
 
 - (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId {
     return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"ratio"] doubleValue];
+}
+
+
+- (NSArray *)tocs:(id<NSObject>)metaDocumentId
+{
+	int pageSum = 0;
+	NSMutableArray *result = [NSMutableArray array];
+	for (NSString *did in metaDocumentId) {
+		NSArray *tmp = [self tocs:metaDocumentId documentId:did];
+		
+		// ページ番号を絶対番号に変更する
+		for (TOCObject *t in tmp) {
+			t.page += pageSum;
+		}
+		
+		[result addObjectsFromArray:tmp];
+		pageSum += [self pages:metaDocumentId documentId:did];
+	}
+	return result;
 }
 
 
@@ -144,6 +208,44 @@
         }
     }
     assert(0);
+}
+
++ (NSArray *)buildRangesElem:(NSArray *)hitRanges text:(NSString *)text {
+    NSMutableArray *rangesElem = [NSMutableArray arrayWithCapacity:0];
+	
+    for ( RangeObject *range in hitRanges ) {
+        SearchResult *result = [[SearchResult new] autorelease];
+        result.range = range;
+        
+        int begin = MAX( range.location - 10 , 0 );
+        int end = MIN( range.location + range.length + 10 , text.length );
+        result.highlight = [text substringWithRange:NSMakeRange(begin, end - begin)];
+        
+        [rangesElem addObject:result];
+    }
+    
+    return rangesElem;
+}
+
+
+
+- (NSArray*)imageTextSearch:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId query:(NSString*)term
+{
+	NSMutableArray *searchResult = [[NSMutableArray alloc] init];
+	
+	int _pages = [self pages:metaDocumentId documentId:documentId];
+    for ( int page = 0 ; page < _pages ; page++ ) {
+		// simple search
+		NSString *text = [self imageText:metaDocumentId documentId:documentId page:page];
+		NSArray *res = [text search:term];
+		
+        if ( res.count > 0 ) {
+			NSArray *tmp = [UstDocDatasource buildRangesElem:res text:text];
+			DocumentSearchResult *sr = [DocumentSearchResult documentSearchResultWithPage:page ranges:tmp];
+			[searchResult addObject:sr];
+        }
+    }
+	return searchResult;
 }
 
 
@@ -220,17 +322,17 @@
 {
 	NSString *key = [NSString stringWithFormat:@"images/%@-%d-%d-%d-%d.jpg", type, page, resolution, column, row];
 
-	UIImage *img = [_imageCache objectForKey:key];
+	UIImage *img = nil;//[_imageCache objectForKey:key];
 	if (img) {
 		UIImageView *tile = [[[UIImageView alloc] initWithImage:img] autorelease];
         tile.tag = TiledScrollViewTileLocal;
         return tile;
-	} else if ([_localStorage existsWithDocumentId:documentId forKey:key]) {
+	} else if ([_localStorage existsWithMetaDocumentId:metaDocumentId documentId:documentId forKey:key]) {
 
-		NSData *d = [_localStorage dataWithDocumentId:documentId forKey:key];
+		NSData *d = [_localStorage dataWithDocumentId:metaDocumentId documentId:documentId forKey:key];
 		img = [UIImage imageWithData:d];
 		
-		[_imageCache setObject:img forKey:key];
+//		[_imageCache setObject:img forKey:key];
 		
 		UIImageView *tile = [[[UIImageView alloc] initWithImage:img] autorelease];
         tile.tag = TiledScrollViewTileLocal;
@@ -250,16 +352,15 @@
 }
 
 
-- (NSArray*)singlePageInfo:(id<NSObject>)metaDocumentId documentId:(id)docId {
-	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"singlePageInfo"];
+- (NSArray*)setHideConfigViewPageList:(id<NSObject>)metaDocumentId documentId:(id)docId {
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"setHideConfigViewPageInfo"];
 }
 
-- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId cover:(int)cover {
-	NSString *key = [NSString stringWithFormat:@"images/thumb-%d.jpg", cover];
+- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
+	NSString *key = [NSString stringWithFormat:@"images/thumb-%d.jpg", page];
 	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
 	return [UIImage imageWithData:data];
 }
-
 
 - (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
 	NSString *key = [NSString stringWithFormat:@"texts/%d", page];
@@ -267,6 +368,11 @@
 	return text;
 }
 
+- (NSArray*)annotations:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
+{
+	NSString *key = [NSString stringWithFormat:@"images/%d.anno", page];
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
+}
 
 
 
@@ -304,35 +410,32 @@
     [self saveDownloadedIds:downloadedIds];
 }
 
-- (NSArray*)highlights:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
+- (NSArray*)highlights:(id<NSObject>)metaDocumentId page:(int)page
 {
 	NSString *key = [NSString stringWithFormat:@"%d.highlight", page];
-	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
+	return [_localStorage objectWithDocumentId:metaDocumentId forKey:key];
 }
 
-- (BOOL)saveHighlights:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page data:(NSArray *)data
+
+- (NSArray*)freehand:(id<NSObject>)metaDocumentId page:(int)page
+{
+	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
+	return [_localStorage objectWithDocumentId:metaDocumentId forKey:key];
+}
+
+// meta documentレベルで保存する
+- (BOOL)saveHighlights:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data
 {
 	NSString *key = [NSString stringWithFormat:@"%d.highlight", page];
-	return [_localStorage saveObjectWithDocumentId:metaDocumentId documentId:docId object:data forKey:key];
+	return [_localStorage saveObjectWithDocumentId:metaDocumentId object:data forKey:key];
 }
 
-- (NSArray*)annotations:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
-{
-	NSString *key = [NSString stringWithFormat:@"images/%d.anno", page];
-	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
-}
-
-- (NSArray*)freehand:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
+- (BOOL)saveFreehand:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data
 {
 	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
-	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
+	return [_localStorage saveObjectWithDocumentId:metaDocumentId object:data forKey:key];
 }
 
-- (BOOL)saveFreehand:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page data:(NSArray *)data
-{
-	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
-	return [_localStorage saveObjectWithDocumentId:metaDocumentId documentId:docId object:data forKey:key];
-}
 
 - (DocumentContext *)history {
 	NSDictionary *dic = [_localStorage objectForKey:@"history"];

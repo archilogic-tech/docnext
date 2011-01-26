@@ -8,4 +8,5 @@
 	#import "Util.h"
 #endif
 
+//#define DEBUG
 #define	APP_VERSION	@"0.0.1"

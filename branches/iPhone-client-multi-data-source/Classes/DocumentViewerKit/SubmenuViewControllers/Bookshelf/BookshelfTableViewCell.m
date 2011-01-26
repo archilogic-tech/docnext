@@ -22,8 +22,8 @@
 	DocumentContext *dc = [[DocumentContext alloc] init];
 	dc.documentId = docId;
 	
-	self.imageView.image = [dc thumbnailWithIndex:0];//  [_datasource thumbnail:docId cover:0];
-    self.titleLabel.text = [dc titleWithPage:0]; //[_datasource title:docId];
+	self.imageView.image = [dc thumbnailWithPage:0];//  [_datasource thumbnail:docId cover:0];
+    self.titleLabel.text = [dc documentTitle]; //[_datasource title:docId];
     self.publisherLabel.text = [dc publisher];
     self.pagesLabel.text = [NSString stringWithFormat:@"%d page" , [dc totalPage]];
 

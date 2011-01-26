@@ -24,14 +24,19 @@
 
 @property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
 
+#if 0
+
+
 
 // ダウンロード系
 - (void)startDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl;
+
+/*
 - (BOOL)hasDownloading;
 - (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus;
 - (BOOL)deleteDownloadStatus;
 - (DownloadStatusObject *)downloadStatus;
-
+*/
 
 
 /*!
@@ -125,13 +130,13 @@
 - (NSArray *)regions:(id)docId page:(int)page;
 
 /*!
-    @method     singlePageInfo:
+    @method     setHideConfigViewPageInfo:
     @abstract   ?
     @discussion 
     @param      docId 文書ID
     @result     ?
 */
-- (NSArray*)singlePageInfo:(id)docId;
+- (NSArray*)setHideConfigViewPageList:(id)docId;
 
 
 /*!
@@ -191,5 +196,7 @@
 
 // temporary
 - (NSString*)libraryURL;
+
+#endif
 
 @end
