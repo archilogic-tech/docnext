@@ -352,8 +352,8 @@
 }
 
 
-- (NSArray*)setHideConfigViewPageList:(id<NSObject>)metaDocumentId documentId:(id)docId {
-	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"setHideConfigViewPageInfo"];
+- (NSArray*)singlePageInfoList:(id<NSObject>)metaDocumentId documentId:(id)docId {
+	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"singlePageInfo"];
 }
 
 - (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
@@ -419,7 +419,7 @@
 
 - (NSArray*)freehand:(id<NSObject>)metaDocumentId page:(int)page
 {
-	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
+	NSString *key = [NSString stringWithFormat:@"%d.freehand", page];
 	return [_localStorage objectWithDocumentId:metaDocumentId forKey:key];
 }
 
@@ -432,7 +432,7 @@
 
 - (BOOL)saveFreehand:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data
 {
-	NSString *key = [NSString stringWithFormat:@"images/%d.freehand", page];
+	NSString *key = [NSString stringWithFormat:@"%d.freehand", page];
 	return [_localStorage saveObjectWithDocumentId:metaDocumentId object:data forKey:key];
 }
 

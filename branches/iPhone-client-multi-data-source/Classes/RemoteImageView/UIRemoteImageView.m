@@ -15,6 +15,7 @@
 {
 	RemoteImageOperation *op = [[RemoteImageOperation alloc] initWithParam:self url:url];
 	[queue addOperation:op];
+	[op release];
 }
 
 - (void)didFinishFetch:(UIImage *)image {

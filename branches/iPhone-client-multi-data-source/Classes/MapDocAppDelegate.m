@@ -102,7 +102,7 @@
 	NSString *fileSystemVersion = [d stringForKey:@"APP_VERSION"];
 
 	// TODO for debug...
-	fileSystemVersion = nil;
+	//fileSystemVersion = nil;
 	
 	if (!fileSystemVersion) {
 		// 初回起動
