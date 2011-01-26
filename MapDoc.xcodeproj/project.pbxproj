@@ -11,7 +11,7 @@
 		154EB1C612ED7053007B5FD6 /* ThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 154EB1C512ED7053007B5FD6 /* ThumbnailView.m */; };
 		15992ED212ED26B2001AA3C8 /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 15992ED112ED26B2001AA3C8 /* Util.m */; };
 		159FD90E12EFFD6D001C9BD7 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */; };
-		159FD90F12EFFD6D001C9BD7 /* ConfigView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */; };
+		159FD90F12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159FD90D12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib */; };
 		15A3D85212E6E58800C26549 /* DocumentContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 15A3D85112E6E58800C26549 /* DocumentContext.m */; };
 		15DA17A712EFA51600B8A503 /* DocumentSearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 15DA17A612EFA51600B8A503 /* DocumentSearchResult.m */; };
 		15E581C112954D7700C69201 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5811812954D7700C69201 /* UIBalloon.m */; };
@@ -93,6 +93,7 @@
 		15E5822E12954DBD00C69201 /* MainWindow-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E5822912954DBD00C69201 /* MainWindow-iPhone.xib */; };
 		15E5823512954DFC00C69201 /* DownloadStatusObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5823412954DFC00C69201 /* DownloadStatusObject.m */; };
 		15E5824712954E3100C69201 /* StandardLocalStorageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5824612954E3100C69201 /* StandardLocalStorageManager.m */; };
+		15F29EE612F02177001C09C1 /* ConfigViewController-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15F29EE512F02177001C09C1 /* ConfigViewController-iPad.xib */; };
 		1D3623260D0F684500981E51 /* MapDocAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MapDocAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -136,7 +137,7 @@
 		15992ED112ED26B2001AA3C8 /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
 		159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
 		159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
-		159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfigView.xib; sourceTree = "<group>"; };
+		159FD90D12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ConfigViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15A3D85012E6E58800C26549 /* DocumentContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DocumentContext.h; path = ../DocumentContext.h; sourceTree = "<group>"; };
 		15A3D85112E6E58800C26549 /* DocumentContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DocumentContext.m; path = ../DocumentContext.m; sourceTree = "<group>"; };
 		15DA17A512EFA51600B8A503 /* DocumentSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentSearchResult.h; sourceTree = "<group>"; };
@@ -295,6 +296,7 @@
 		15E5823412954DFC00C69201 /* DownloadStatusObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DownloadStatusObject.m; path = ../DownloadStatusObject.m; sourceTree = "<group>"; };
 		15E5824512954E3100C69201 /* StandardLocalStorageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StandardLocalStorageManager.h; sourceTree = "<group>"; };
 		15E5824612954E3100C69201 /* StandardLocalStorageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StandardLocalStorageManager.m; sourceTree = "<group>"; };
+		15F29EE512F02177001C09C1 /* ConfigViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ConfigViewController-iPad.xib"; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* MapDocAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDocAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* MapDocAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapDocAppDelegate.m; sourceTree = "<group>"; };
@@ -451,6 +453,17 @@
 			name = OverlayManager;
 			sourceTree = "<group>";
 		};
+		1584240612F01412007E6B40 /* DefaultConfigView */ = {
+			isa = PBXGroup;
+			children = (
+				159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */,
+				159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */,
+				159FD90D12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib */,
+				15F29EE512F02177001C09C1 /* ConfigViewController-iPad.xib */,
+			);
+			name = DefaultConfigView;
+			sourceTree = "<group>";
+		};
 		15E5811512954D7700C69201 /* DocumentViewerKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -459,6 +472,7 @@
 				15E5815312954D7700C69201 /* SubmenuViewControllers */,
 				154EB17612ED6A88007B5FD6 /* OverlayViewControllers */,
 				15E581B312954D7700C69201 /* VolonoiDiagram */,
+				1584240612F01412007E6B40 /* DefaultConfigView */,
 				15A3D85012E6E58800C26549 /* DocumentContext.h */,
 				15A3D85112E6E58800C26549 /* DocumentContext.m */,
 				15E5811912954D7700C69201 /* DocumentViewerConst.h */,
@@ -472,9 +486,6 @@
 				15E5812C12954D7700C69201 /* ImageViewController.m */,
 				15E5812812954D7700C69201 /* ImageViewController-iPad.xib */,
 				15E5812A12954D7700C69201 /* ImageViewController-iPhone.xib */,
-				159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */,
-				159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */,
-				159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */,
 				15E5812312954D7700C69201 /* HighlightObject.h */,
 				15E5812412954D7700C69201 /* HighlightObject.m */,
 				151BB16212961361009A313E /* TOCObject.h */,
@@ -968,7 +979,8 @@
 				15E5822C12954DBD00C69201 /* icon.png in Resources */,
 				15E5822D12954DBD00C69201 /* MainWindow-iPad.xib in Resources */,
 				15E5822E12954DBD00C69201 /* MainWindow-iPhone.xib in Resources */,
-				159FD90F12EFFD6D001C9BD7 /* ConfigView.xib in Resources */,
+				159FD90F12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib in Resources */,
+				15F29EE612F02177001C09C1 /* ConfigViewController-iPad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

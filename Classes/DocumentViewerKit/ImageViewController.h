@@ -90,6 +90,7 @@ typedef enum {
 @property (nonatomic, readonly) ConfigViewController *configViewController;
 @property (nonatomic, readonly) OverlayManager *overlayManager;
 @property (nonatomic, readonly) UIView *tiledScrollViewContainer;
+@property (nonatomic, readonly) TiledScrollView *tiledScrollView;
 
 
 @property(nonatomic,retain) UIView *selectionMenuView;

@@ -120,6 +120,11 @@
 	
 	[_documentId release];
 	[_datasource release];
+	[_singlePageInfoList release];
+	[_pageHeads release];
+	[_isSingleIndex release];
+	[_metaDocumentInfoCache release];
+	
 	[super dealloc];
 }
 
@@ -170,8 +175,7 @@
 	_metaDocumentInfoCache = [[_datasource info:_documentId documentId:did] retain];
 
 	
-	// 論理ページをめくる構築しなおす
-	[self loadSinglePageSet];
+	// landscape時のページを構築しなおす
 	[self buildPageHeads];
 }
 
@@ -498,7 +502,7 @@
 {
 	NSMutableArray *singlePageInfoList = [[NSMutableArray alloc] init];
 	for (NSString *did in (NSArray*)_documentId) {
-		NSArray *tmp = [_datasource setHideConfigViewPageList:_documentId documentId:did];
+		NSArray *tmp = [_datasource singlePageInfoList:_documentId documentId:did];
 		[singlePageInfoList addObject:[NSSet setWithArray:tmp]];
 	}
 	[_singlePageInfoList release];
@@ -551,7 +555,9 @@
 - (void)buildPageHeads
 {
 	NSLog(@"buildPageHeads");
-	
+
+	[self loadSinglePageSet];
+
 	NSMutableArray *pageHeadsList = [[NSMutableArray alloc] init];
 	NSMutableArray *isSingleIndexList = [[NSMutableArray alloc] init];
 
@@ -661,6 +667,16 @@
 	clone.currentPage = self.currentPage;
 	
     return  clone;
+}
+
+- (BOOL)saveHighlights:(NSArray *)data
+{
+	return [_datasource saveHighlights:_documentId page:_currentPage data:data];
+}
+
+- (BOOL)saveFreehand:(NSArray *)data
+{
+	return [_datasource saveFreehand:_documentId page:_currentPage data:data];
 }
 
 

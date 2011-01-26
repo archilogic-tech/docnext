@@ -21,11 +21,10 @@
 	UIInterfaceOrientation _currentOrientation;
 
 	int _totalPage;
+
 	NSArray *_singlePageInfoList;
 	NSArray *_pageHeads;
 	NSArray *_isSingleIndex;
-
-
 	NSDictionary *_metaDocumentInfoCache;
 }
 

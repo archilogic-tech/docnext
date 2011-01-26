@@ -35,7 +35,7 @@
 @synthesize tiledScrollViewContainer = _tiledScrollViewContainer;
 @synthesize datasource = _datasource;
 @synthesize documentContext = _documentContext;
-
+@synthesize tiledScrollView;
 
 @synthesize selectionMenuView;
 @synthesize highlightMenuView;
@@ -79,7 +79,8 @@
 	tiledScrollView = [[self buildContentView] retain];
 	[_tiledScrollViewContainer addSubview:tiledScrollView];
 
-	_configViewController = [[ConfigViewController alloc] initWithNibName:@"ConfigView" bundle:nil];
+	_configViewController = [[ConfigViewController alloc] initWithNibName:[Util buildNibName:@"Config" orientation:self.interfaceOrientation]
+																   bundle:nil];
 	_configViewController.parent = self;
 }
 
@@ -87,6 +88,7 @@
 {
 	[super viewWillAppear:animated];
 	[self movePageToCurrent:PageTransitionNone];
+	[self setHideConfigView:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -98,7 +100,8 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
 	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-
+	[_configViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	
 	// 確実に回転させる
 	[_documentContext didInterfaceOrientationChanged:self.interfaceOrientation];
 }
@@ -106,6 +109,7 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[_configViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 
 	[self movePageToCurrent:PageTransitionNone];
 }
@@ -118,6 +122,7 @@
 	_documentContext = [dc retain];
 
 	[self movePageToCurrent:PageTransitionNone];
+	[self setHideConfigView:YES];
 }
 
 - (void)dealloc {
@@ -304,10 +309,7 @@
 		[buf addObject:[[highlights objectForKey:key] toDictionary]];
 	}
 
-	// TODO ZZZ
-	[_datasource saveHighlights:_documentContext.documentId
-						   page:_documentContext.currentPage
-						   data:buf];
+	[_documentContext saveHighlights:buf];
 }
 
 
@@ -426,7 +428,6 @@
 
 - (void)movePageToCurrent:(PageTransitionAnimationType)animationType {
 
-
     if (animationType != PageTransitionNone) {
 		prevTiledScrollView = tiledScrollView;
 		[prevTiledScrollView removeFromSuperview];
@@ -493,6 +494,13 @@
         }
         [points addObject:stroke];
     }
+	/*
+	[_freehandView retain];
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0), ^{
+		[_freehandView loadPoints:points];
+		[_freehandView release];
+	});
+	 */
     [_freehandView performSelectorInBackground:@selector(loadPoints:) withObject:points];
 }
 
@@ -531,6 +539,7 @@
 	
 	_documentContext.currentIndex += delta;
 	[self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
+	[self setHideConfigView:YES];
 }
 
 - (void)tiledScrollViewScaleChanging:(float)scale {
@@ -649,12 +658,10 @@
 
                     break;
                 case ImageViewLinkModeGoToPage: {
-                    int next = [_documentContext currentIndexByPage:linkPage];
-                    BOOL isLeft = next > _documentContext.currentIndex ? YES : NO;
-
-                    _documentContext.currentIndex = next;
+					BOOL isLeft = linkPage > _documentContext.currentPage ? YES : NO;
+					_documentContext.currentPage = linkPage;
                     [self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
-                    
+					[self setHideConfigView:YES];
                     break;
                 }
                 default:
@@ -716,11 +723,24 @@
 #pragma mark UIFreehandViewDelegate
 
 - (void)pointsDidChange:(UIFreehandView *)sender {
+
     [self saveFreehand];
 }
 
 
 
+- (void)saveFreehand {
+
+	NSMutableArray *buf = [NSMutableArray arrayWithCapacity:0];
+	for ( NSArray *stroke in self.freehandView.points ) {
+		NSMutableArray *strokeBuf = [NSMutableArray arrayWithCapacity:0];
+		for ( ObjPoint *point in stroke ) {
+			[strokeBuf addObject:[point toDictionary]];
+		}
+		[buf addObject:strokeBuf];
+	}
+	[_documentContext saveFreehand:buf];
+}
 
 
 

@@ -142,39 +142,24 @@
 	[searchViewController release];
 }
 
-- (void)saveFreehand {
-	
-	NSMutableArray *buf = [NSMutableArray arrayWithCapacity:0];
-	for ( NSArray *stroke in _parent.freehandView.points ) {
-		NSMutableArray *strokeBuf = [NSMutableArray arrayWithCapacity:0];
-		for ( ObjPoint *point in stroke ) {
-			[strokeBuf addObject:[point toDictionary]];
-		}
-		[buf addObject:strokeBuf];
-	}
-	
-	[_parent.datasource saveFreehand:_parent.documentContext.documentId
-								page:_parent.documentContext.currentPage
-								data:buf];
-}
 
 
 - (IBAction)freehandUndoClick {
     [_parent.freehandView undo];
-    [self saveFreehand];
+    [_parent saveFreehand];
 }
 
 - (IBAction)freehandClearClick {
     [_parent.freehandView clear];
-    [self saveFreehand];
+    [_parent saveFreehand];
 }
 
 - (IBAction)freehandSwitchChanged {
-//    _parent.tiledScrollView.scrollEnabled = !_freehandSwitch.on;
-    _parent.tiledScrollViewContainer.userInteractionEnabled = !_freehandSwitch.on;
+    _parent.tiledScrollView.scrollEnabled = !_freehandSwitch.on;
+//    _parent.tiledScrollView.userInteractionEnabled = !_freehandSwitch.on;
     _parent.freehandView.userInteractionEnabled = _freehandSwitch.on;
     
-    [self saveFreehand];
+    [_parent saveFreehand];
 }
 
 
