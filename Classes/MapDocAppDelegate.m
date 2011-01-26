@@ -71,11 +71,6 @@
 		[dc release];
 
 	} else {
-        if ( [_datasource hasDownloading] ) {
-            [[[[UIAlertView alloc] initWithTitle:@"Downloading file exist" message:nil delegate:nil cancelButtonTitle:@"OK"
-                               otherButtonTitles:nil] autorelease] show];
-            return;
-        }
         [_datasource startDownload:docId baseUrl:baseUrl];
     }
 }

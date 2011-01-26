@@ -8,29 +8,17 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "ImageViewController.h"
-#import "UIRemoteImageView.h"
 #import "DocumentViewerConst.h"
-#import "NSString+Data.h"
-#import "NSString+Search.h"
-#import "RangeObject.h"
-#import "ImageSearchViewController.h"
-#import "SeparationHolder.h"
+
 #import "HighlightObject.h"
 #import "ObjPoint.h"
 
-#import "TOCViewController.h"
-#import "ThumbnailViewController.h"
-#import "BookmarkViewController.h"
-#import "TextViewController.h"
 
 @interface ImageViewController ()
 
 - (TiledScrollView *)buildContentView;
 - (void)saveHistory;
-- (void)toggleConfigView;
-- (void)toggleHighlightMenu;
-- (void)toggleHighlightCommentMenu;
-- (void)movePageToCurrent:(BOOL)isLeft;
+- (void)movePageToCurrent:(PageTransitionAnimationType)isLeft;
 - (UIColor *)highlightColor:(int)index;
 - (void)addAnnotations;
 - (void)loadHighlights;
@@ -42,17 +30,21 @@
 
 @implementation ImageViewController
 
-@synthesize configView;
-@synthesize freehandSwitch = _freehandSwitch;
-@synthesize titleLabel;
-@synthesize tiledScrollViewContainer;
+@synthesize freehandView = _freehandView;
+@synthesize configViewController = _configViewController;
+@synthesize tiledScrollViewContainer = _tiledScrollViewContainer;
+@synthesize datasource = _datasource;
+@synthesize documentContext = _documentContext;
+
+
 @synthesize selectionMenuView;
 @synthesize highlightMenuView;
 @synthesize highlightCommentMenuView;
+
 @synthesize highlightCommentTextField;
 
-@synthesize datasource = _datasource;
-@synthesize documentContext = _documentContext;
+@synthesize overlayManager;
+
 
 #pragma mark lifecycle
 
@@ -60,89 +52,79 @@
     [super viewDidLoad];
 
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTapGesture:)];
-	[self.view addGestureRecognizer:singleTap];
+	[_tiledScrollViewContainer addGestureRecognizer:singleTap];
 
     UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTapGesture:)];
 	doubleTap.numberOfTapsRequired = 2;
-	[self.view addGestureRecognizer:doubleTap];
+	[_tiledScrollViewContainer addGestureRecognizer:doubleTap];
 	[singleTap requireGestureRecognizerToFail:doubleTap];
 
-	[singleTap release];
 	[doubleTap release];
 
 	UILongPressGestureRecognizer *rec2 = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleLongPressGesture:)];
-	[self.view addGestureRecognizer:rec2];
+	[_tiledScrollViewContainer addGestureRecognizer:rec2];
+	[rec2 requireGestureRecognizerToFail:singleTap];
 	[rec2 release];
-	
+
+	[singleTap release];
+
     overlayManager = [OverlayManager new];
     overlayManager.delegate = self;
 	overlayManager.datasource = _datasource;
     
     highlights = [[NSMutableDictionary alloc] init];
-}
 
+	[tiledScrollView removeFromSuperview];
+	[tiledScrollView release];
+	tiledScrollView = [[self buildContentView] retain];
+	[_tiledScrollViewContainer addSubview:tiledScrollView];
+
+	_configViewController = [[ConfigViewController alloc] initWithNibName:@"ConfigView" bundle:nil];
+	_configViewController.parent = self;
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
-
-	[tiledScrollView release];
-	tiledScrollView = [[self buildContentView] retain];
-	[tiledScrollViewContainer addSubview:tiledScrollView];
+	[self movePageToCurrent:PageTransitionNone];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
 	// メニューを消す
-	if (configView.alpha > 0) {
-		[self toggleConfigView];
-	}
-	[tiledScrollView removeFromSuperview];
-	[tiledScrollView release];
-	tiledScrollView = nil;
+	[self setHideConfigView:YES];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
 	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 
+	// 確実に回転させる
+	[_documentContext didInterfaceOrientationChanged:self.interfaceOrientation];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 
-	// willRotateToInterfaceOrientationに移すべき
-	[tiledScrollView removeFromSuperview];
-	[tiledScrollView release];
-	tiledScrollView = [[self buildContentView] retain];
-	[tiledScrollViewContainer addSubview:tiledScrollView];
+	[self movePageToCurrent:PageTransitionNone];
 }
 
-
-- (void)loadDocumentWithDocumentId:(id)docid
+- (void)setDocumentContext:(DocumentContext *)dc
 {
     [self saveHistory];
-
-	DocumentContext *c = [[DocumentContext alloc] init];
-	c.documentId = docid;
-	_documentContext = c;
 	
-	titleLabel.text = [_documentContext title];
+	[_documentContext release];
+	_documentContext = [dc retain];
 
-	[overlayManager setParam:_documentContext size:tiledScrollView.frame.size];
-
-    [self loadHighlights];
-    [self addAnnotations];
-    [self loadFreehand];
+	[self movePageToCurrent:PageTransitionNone];
 }
 
-
 - (void)dealloc {
-    [configView release];
-    [_freehandSwitch release];
+    [_configViewController release];
+
     [tiledScrollView release];
-    [tiledScrollViewContainer release];
+    [_tiledScrollViewContainer release];
     [selectionMenuView release];
     [highlightMenuView release];
     [highlightCommentMenuView release];
@@ -171,102 +153,15 @@
     return ret;
 }
 
-- (IBAction)homeButtonClick:(id)sender {
-	//HGMTODO
-
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
-
-- (IBAction)tocViewButtonClick:(id)sender
-{
-	TOCViewController *tc = [TOCViewController createViewController:_datasource];
-	tc.documentContext = _documentContext;
-	[self.navigationController pushViewController:tc animated:YES];
-}
-
-- (IBAction)thumbnailViewButtonClick:(id)sender
-{
-	ThumbnailViewController *c = [ThumbnailViewController createViewController:_datasource];
-	c.documentContext = _documentContext;
-	[self.navigationController pushViewController:c animated:YES];
-}
-
-- (IBAction)bookmarkViewButtonClick:(id)sender
-{
-	BookmarkViewController *c = [BookmarkViewController createViewController:_datasource];
-	c.documentContext = _documentContext;
-	[self.navigationController pushViewController:c animated:YES];
-}
-
-- (IBAction)textViewButtonClick:(id)sender
-{
-	TextViewController *c = [TextViewController createViewController];
-	c.documentContext = _documentContext;
-	[self.navigationController pushViewController:c animated:YES];
-}
-
-- (IBAction)tweetButtonClick:(id)sender {
-    NSURL *url = [NSURL URLWithString:[[NSString stringWithFormat:@"http://twitter.com/home?status=Sample tweet"]
-                                       stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    [[UIApplication sharedApplication] openURL:url];
-}
-
-- (IBAction)searchButtonClick:(id)sender
-{
-    BOOL isLand = UIInterfaceOrientationIsLandscape( self.interfaceOrientation );
-    
-    if ( isLand ) {
-        [[[[UIAlertView alloc] initWithTitle:@"Search function is disabled currently on landscape orientation"
-                                     message:nil delegate:nil cancelButtonTitle:@"OK"
-                           otherButtonTitles:nil] autorelease] show];
-        return;
-    }
-    
-    NSString *orientation = isLand ? @"-land" : @"";
-    ImageSearchViewController *searchViewController = [[ImageSearchViewController alloc]
-													   initWithNibName:[NSString stringWithFormat:@"ImageSearchViewController%@" , orientation] bundle:nil];
-	searchViewController.delegate = self;
-    //searchViewController.parent = self;
-	searchViewController.documentContext = _documentContext;
- //   searchViewController.docId = _documentContext.documentId;
-    
-    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
-        popover = [[UIPopoverController alloc] initWithContentViewController:searchViewController];
-        popover.popoverContentSize = isLand ? CGSizeMake(480, 320) : CGSizeMake(320, 480);
-        [popover presentPopoverFromRect:((UIView *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    } else {
-		// TODO searchだからmodalの方がよいか?
-		[self.navigationController pushViewController:searchViewController animated:YES];
-        //[self.view addSubview:searchViewController.view];
-    }
-	[searchViewController release];
-}
-
-- (IBAction)freehandUndoClick {
-    [_freehandView undo];
-    [self saveFreehand];
-}
-
-- (IBAction)freehandClearClick {
-    [_freehandView clear];
-    [self saveFreehand];
-}
-
-- (IBAction)freehandSwitchChanged {
-    tiledScrollView.scrollEnabled = !_freehandSwitch.on;
-    _freehandView.userInteractionEnabled = _freehandSwitch.on;
-    
-    [self saveFreehand];
-}
 
 - (IBAction)copyButtonClick {
-	NSString *text = [_datasource imageText:_documentContext.documentId
-									   page:_documentContext.currentPage];
-    
+	NSString *text = [_documentContext imageText];
 	[[UIPasteboard generalPasteboard] setString:[text substringWithRange:[overlayManager selection]]];
-    
-    [self toggleConfigView];
+
+    [self setHideConfigView:YES];
     [overlayManager clearSelection];
+
+	isIgnoreTap = YES;
 }
 
 - (IBAction)highlightButtonClick {
@@ -282,17 +177,17 @@
     
     [self saveHighlights];
     
-    [self toggleConfigView];
+	[self setHideConfigView:YES];
     [overlayManager clearSelection];
     
-    [self toggleHighlightMenu];
+	[self setHideHighlightMenu:NO];
 }
 
 - (IBAction)highlightCommentButtonClick {
     HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
     highlightCommentTextField.text = highlight.text;
     
-    [self toggleHighlightCommentMenu];
+	[self setHideHighlightCommentMenu:NO];
 }
 
 - (IBAction)highlightCommentApplyButtonClick {
@@ -304,8 +199,8 @@
     HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
     highlight.text = highlightCommentTextField.text;
     [self saveHighlights];
-    
-    [self toggleHighlightCommentMenu];
+
+	[self setHideHighlightCommentMenu:YES];
 }
 
 - (IBAction)highlightChangeColorClick:(UIButton *)sender {
@@ -315,10 +210,8 @@
     highlight.color = sender.tag;
     [self saveHighlights];
     
-    [self toggleHighlightMenu];
-    if ( highlightCommentMenuView.alpha > 0 ) {
-        [self toggleHighlightCommentMenu];
-    }
+	[self setHideHighlightMenu:YES];
+	[self setHideHighlightCommentMenu:YES];
 }
 
 - (IBAction)highlightDeleteClick {
@@ -328,43 +221,11 @@
     [self saveHighlights];
     
     currentHighlightSerial = -1;
-    
-    
-    [self toggleHighlightMenu];
-    if ( highlightCommentMenuView.alpha > 0 ) {
-        [self toggleHighlightCommentMenu];
-    }
+
+	[self setHideHighlightMenu:YES];
+	[self setHideHighlightCommentMenu:YES];
 }
 
-#pragma mark ImageSearchDelegate
-
-- (void)didImageSearchCompleted:(int)page ranges:(NSArray *)ranges selectedIndex:(int)selectedIndex
-{
-    int next = [_documentContext currentIndexByPage:page];
-    if ( next != _documentContext.currentIndex ) {
-        BOOL isLeft = next > _documentContext.currentIndex;
-        _documentContext.currentIndex = next;
-        [self movePageToCurrent:isLeft];
-    }
-
-    [overlayManager showSearchResult:ranges selectedIndex:selectedIndex];
-
-    [self toggleConfigView];
-
-    [self didImageSearchCanceled];
-}
-
-- (void)didImageSearchCanceled
-{
-    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
-        [popover dismissPopoverAnimated:YES];
-        [popover release];
-        popover = nil;
-    } else {
-		[self.navigationController popViewControllerAnimated:YES];
-        //[searchViewController.view removeFromSuperview];
-    }
-}
 
 #pragma mark private
 
@@ -385,7 +246,6 @@
 }
 
 - (void)setExternalDependent:(TiledScrollView *)view {
-//    tapDetector.basisView = view.zoomableContainerView;
     overlayManager.scrollView = view;
     overlayManager.markerView = markerView;
     overlayManager.balloonContainerView = balloonContainerView;
@@ -396,7 +256,7 @@
 }
 
 - (TiledScrollView *)buildContentViewWithInterfaceOrientation:(UIInterfaceOrientation)o {
-    CGRect frame = tiledScrollViewContainer.bounds;
+    CGRect frame = _tiledScrollViewContainer.bounds;
     float w = frame.size.width;
     float h = frame.size.height;
     float baseScale = 1.0f;
@@ -404,8 +264,8 @@
         w /= 2;
         baseScale = 0.5;
         
-		if ([_documentContext isSinglePage]) {
-//        if ( [[isSinglePage objectAtIndex:currentIndex] boolValue] ) {
+		if ([_documentContext isSingleIndex]) {
+			// centering
             frame = CGRectMake(w / 2, 0, w, frame.size.height);
         }
     }
@@ -444,77 +304,106 @@
 		[buf addObject:[[highlights objectForKey:key] toDictionary]];
 	}
 
-	// TODO
+	// TODO ZZZ
 	[_datasource saveHighlights:_documentContext.documentId
 						   page:_documentContext.currentPage
 						   data:buf];
 }
 
-- (void)saveFreehand {
-	
-	NSMutableArray *buf = [NSMutableArray arrayWithCapacity:0];
-	for ( NSArray *stroke in _freehandView.points ) {
-		NSMutableArray *strokeBuf = [NSMutableArray arrayWithCapacity:0];
-		for ( ObjPoint *point in stroke ) {
-			[strokeBuf addObject:[point toDictionary]];
-		}
-		[buf addObject:strokeBuf];
-	}
 
-	[_datasource saveFreehand:_documentContext.documentId
-						 page:_documentContext.currentPage
-						 data:buf];
+- (BOOL)hideConfigView
+{
+	return (_configViewController.view.alpha == 0);
 }
 
+- (void)setHideConfigView:(BOOL)b
+{
+    double dst = b ? 0 : 1;
+    
+	if (b) [_configViewController viewWillDisappear:YES];
+	else [_configViewController viewWillAppear:NO];
+	
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.3];
+    [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+
+    // TODO
+	//[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+    
+    _configViewController.view.alpha = dst;
+    if ( [overlayManager hasSelection] ) {
+		[self setHideSelectionMenuView:b];
+    }
+	[self setHideHighlightMenu:YES];
+    [UIView commitAnimations];
+
+	if (b) [_configViewController viewDidDisappear:YES];
+	else [_configViewController viewDidAppear:YES];
 
 
+}
 
+- (BOOL)hideSelectionMenu
+{
+	return (selectionMenuView.alpha == 0);
+}
 
-
-- (void)toggleConfigView {
-    double dst = configView.alpha > 0 ? 0 : 1;
+- (void)setHideSelectionMenuView:(BOOL)b
+{
+    double dst = b ? 0 : 1;
     
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:0.3];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+	// TODO
+	//    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
     
-    configView.alpha = dst;
-    if ( [overlayManager hasSelection] ) {
-        selectionMenuView.alpha = dst;
-    }
-    if ( highlightMenuView.alpha > 0 ) {
-        highlightMenuView.alpha = 0;
-    }
+    selectionMenuView.alpha = dst;
     
     [UIView commitAnimations];
 }
 
-- (void)toggleHighlightMenu {
-    double dst = highlightMenuView.alpha > 0 ? 0 : 1;
-    
+
+- (BOOL)hideHighlightMenu
+{
+	return (highlightMenuView.alpha == 0);
+}
+
+- (void)setHideHighlightMenu:(BOOL)b
+{
+    double dst = b ? 0 : 1;
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:0.3];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+//    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
     
     highlightMenuView.alpha = dst;
     
     [UIView commitAnimations];
 }
 
-- (void)toggleHighlightCommentMenu {
-    double dst = highlightCommentMenuView.alpha > 0 ? 0 : 1;
+- (BOOL)hideHighlightCommentMenu
+{
+	return (highlightCommentMenuView.alpha == 0);
+}
+
+
+- (void)setHideHighlightCommentMenu:(BOOL)b
+{
+    double dst = b ? 0 : 1;
     
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:0.3];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
+
+	// TODO
+	// [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:configView cache:NO];
     
     highlightCommentMenuView.alpha = dst;
     
     [UIView commitAnimations];
 }
+
 
 - (void)addAnnotations {
 
@@ -535,33 +424,33 @@
 
 
 
-- (void)movePageToCurrent:(BOOL)isLeft {
-/*
-	titleLabel.text = [_datasource toc:_documentContext.documentId
-								  page:_documentContext.currentPage].text;
-*/
-	titleLabel.text = [_documentContext title];
-    [overlayManager clearSelection];
+- (void)movePageToCurrent:(PageTransitionAnimationType)animationType {
 
-    prevTiledScrollView = tiledScrollView;
-    [tiledScrollView removeFromSuperview];
-    
-    tiledScrollView = [[self buildContentView] retain];
-    [tiledScrollViewContainer addSubview:tiledScrollView];
-    
-    CATransition *animation = [CATransition animation];
-    animation.duration = 0.5;
-    animation.type = kCATransitionPush;
-    animation.subtype = isLeft ? kCATransitionFromLeft : kCATransitionFromRight;
-    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-    animation.delegate = self;
-    
-    [self.view.layer addAnimation:animation forKey:nil];
-    
-    [self saveHistory];
-    
+
+    if (animationType != PageTransitionNone) {
+		prevTiledScrollView = tiledScrollView;
+		[prevTiledScrollView removeFromSuperview];
+		
+		tiledScrollView = [[self buildContentView] retain];
+		[_tiledScrollViewContainer addSubview:tiledScrollView];
+
+		CATransition *animation = [CATransition animation];
+		animation.duration = 0.5;
+		animation.type = kCATransitionPush;
+		animation.subtype = (animationType == PageTransitionFromLeft) ? kCATransitionFromLeft : kCATransitionFromRight;
+		animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+		animation.delegate = self;
+		[self.view.layer addAnimation:animation forKey:nil];
+	} else {
+		[tiledScrollView removeFromSuperview];
+		[tiledScrollView release];
+		tiledScrollView = [[self buildContentView] retain];
+		[_tiledScrollViewContainer addSubview:tiledScrollView];
+	}
+
+	[overlayManager clearSelection];
 	[overlayManager setParam:_documentContext size:tiledScrollView.frame.size];
-
+	
     [self loadHighlights];
     [self addAnnotations];
     [self loadFreehand];
@@ -613,12 +502,9 @@
 {
 	resolution += [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
     
-	// HGMTODO
-	//	if ([pageHeads count] < 1) return nil;
-	
     int page = _documentContext.currentPage;
 	BOOL isLandscape = UIInterfaceOrientationIsLandscape(self.interfaceOrientation);
-    if ( isLandscape && ![_documentContext isSinglePage]) {
+    if ( isLandscape && ![_documentContext isSingleIndex]) {
         if ( column >= pow( 2 , resolution ) ) {
             column -= pow( 2 , resolution );
         } else {
@@ -644,8 +530,7 @@
 	if (![_documentContext isValidIndex:_documentContext.currentIndex+delta]) return;
 	
 	_documentContext.currentIndex += delta;
-//    currentIndex += delta;
-	[self movePageToCurrent:isLeft];
+	[self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
 }
 
 - (void)tiledScrollViewScaleChanging:(float)scale {
@@ -664,28 +549,30 @@
 - (void)handleSingleTapGesture:(UIGestureRecognizer *)gestureRecognizer
 {
 	NSLog(@"single");
+
+	// コメント入力メニューが表示されているときはなにもしない
+	if (![self hideHighlightCommentMenu]) return;
+	
 	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
 
     if ( isIgnoreTap ) {
         isIgnoreTap = NO;
     } else {
-        if ( highlightMenuView.alpha > 0 ) {
-            [self toggleHighlightMenu];
+		
+		if (![self hideHighlightMenu]) {
+            [self setHideHighlightMenu:YES];
             [overlayManager clearHighlightSelection];
             currentHighlightSerial = -1;
             
-            if ( highlightCommentMenuView.alpha > 0 ) {
-                [self toggleHighlightCommentMenu];
-            }
+			[self setHideHighlightCommentMenu:YES];
         } else {
-            [self toggleConfigView];
+			[self setHideConfigView:![self hideConfigView]];
         }
     }
 }
 
 - (void)handleDoubleTapGesture:(UIGestureRecognizer *)gestureRecognizer
 {
-	NSLog(@"double");
 	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
 
     float scale = tiledScrollView.zoomScale;
@@ -732,7 +619,10 @@
         [[[[UIAlertView alloc] initWithTitle:@"No text found"
                                      message:nil delegate:nil cancelButtonTitle:@"OK"
                            otherButtonTitles:nil] autorelease] show];
-    }
+
+	} else {
+		isIgnoreTap = YES;
+	}
 	
 }
 
@@ -763,7 +653,7 @@
                     BOOL isLeft = next > _documentContext.currentIndex ? YES : NO;
 
                     _documentContext.currentIndex = next;
-                    [self movePageToCurrent:isLeft];
+                    [self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
                     
                     break;
                 }
@@ -783,27 +673,19 @@
 #pragma mark OverlayManagerDelegate
 
 - (void)didBeginSelect {
-    if ( configView.alpha > 0 ) {
-        [self toggleConfigView];
-    }
+	[self setHideConfigView:YES];
 }
 
 - (void)didEndSelect {
-    if ( configView.alpha == 0 ) {
-        [self toggleConfigView];
-    }
+	[self setHideConfigView:NO];
 }
 
 - (void)didTouchDownHighlight:(int)serial {
     currentHighlightSerial = serial;
     isIgnoreTap = YES;
     
-    if ( configView.alpha > 0 ) {
-        [self toggleConfigView];
-    }
-    if ( highlightMenuView.alpha == 0 ) {
-        [self toggleHighlightMenu];
-    }
+	[self setHideConfigView:YES];
+	[self setHideHighlightMenu:NO];
 }
 
 - (void)didTouchDownURILink:(NSString *)uri {
@@ -836,5 +718,21 @@
 - (void)pointsDidChange:(UIFreehandView *)sender {
     [self saveFreehand];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @end

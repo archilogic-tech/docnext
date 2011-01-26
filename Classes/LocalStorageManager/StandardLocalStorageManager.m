@@ -25,7 +25,7 @@
     }
 
 	NSString *result = [documentsDirectory stringByAppendingPathComponent:fileName];
-	NSLog(@"DIR : %@", result);
+//	NSLog(@"DIR : %@", result);
     return result;
 }
 
@@ -62,10 +62,9 @@
 //	return [self exists:fileName] |	[self exists:[fileName stringByAppendingString:@".json"]];
 }
 
-
-- (BOOL)existsWithDocumentId:(id<NSObject>)docId forKey:(id)key
+- (BOOL)existsWithMetaDocumentId:(id<NSObject>)metaDocumentId documentId:docId forKey:(id)key
 {
-	NSString *fileName = [NSString stringWithFormat:@"%@/%@", docId, key];
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	return [self exists:fileName] |	[self exists:[fileName stringByAppendingString:@".json"]];
 }
 
@@ -123,6 +122,20 @@
 	NSString *fileName = [NSString stringWithFormat:@"%@/%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","], docId, key];
 	return [self write:[[object JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding]
 				toFile:fileName];
+}
+
+- (BOOL)saveObjectWithDocumentId:(id<NSObject>)metaDocumentId object:(id)object forKey:(id)key
+{
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","], key];
+	return [self write:[[object JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding]
+				toFile:fileName];
+}
+
+- (id)objectWithDocumentId:(id<NSObject>)metaDocumentId forKey:(id)key
+{
+	NSString *fileName = [NSString stringWithFormat:@"%@/%@.json", [(NSArray*)metaDocumentId componentsJoinedByString:@","] , key];
+	NSData *data = [self read:fileName];
+	return [[NSString stringWithData:data] JSONValue];
 }
 
 - (id)objectWithDocumentId:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId forKey:(id)key

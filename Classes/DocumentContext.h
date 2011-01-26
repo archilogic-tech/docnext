@@ -11,7 +11,7 @@
 
 @protocol DocumentViewerDatasource;
 
-@interface DocumentContext : NSObject {
+@interface DocumentContext : NSObject<NSCopying> {
 	id<NSObject,DocumentViewerDatasource> _datasource;
 
 	NSArray *_documentId;
@@ -21,16 +21,15 @@
 	UIInterfaceOrientation _currentOrientation;
 
 	int _totalPage;
-	NSArray *_singlePageInfo;
+	NSArray *_singlePageInfoList;
 	NSArray *_pageHeads;
-	NSArray *_isSinglePage;
+	NSArray *_isSingleIndex;
 
 
 	NSDictionary *_metaDocumentInfoCache;
 }
 
 @property (nonatomic, retain) id<NSObject> documentId;
-@property (nonatomic) int documentOffset;
 @property (nonatomic) int currentPage;
 @property (nonatomic) int currentIndex;
 
@@ -41,7 +40,7 @@
 
 - (id)init;
 - (void)dealloc;
-- (void)didInterfaceOrientationChanged:(NSNotification*)n;
+- (void)didInterfaceOrientationChanged:(UIInterfaceOrientation)n;
 - (id<NSObject>)documentId;
 - (void)setDocumentId:(id <NSObject>)docId;
 - (BOOL)isValidIndex:(int)i;
@@ -62,11 +61,13 @@
 - (NSArray*)highlights;
 - (NSArray*)region;
 - (double)ratio;
-- (void)loadSinglePageInfo;
+- (void)loadSinglePageSet;
 - (UIImage*)thumbnailWithIndex:(int)index;
 - (BOOL)isSinglePage:(int)page;
 - (void)buildPageHeads;
 - (UIView*)getTileImageWithType:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
 - (NSString*)publisher;
+
+- (NSArray*)imageTextSearch:(NSString*)term;
 
 @end

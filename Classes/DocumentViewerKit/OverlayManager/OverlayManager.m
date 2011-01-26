@@ -14,6 +14,8 @@
 #import "UIURILinkIndicator.h"
 #import "UIGoToPageLinkIndicator.h"
 
+#import "SearchResult.h"
+
 @implementation OverlayManager
 
 @synthesize delegate;
@@ -220,8 +222,6 @@
 - (void)setParam:(DocumentContext*)documentContext size:(CGSize)size {
 	[_documentContext release];
 	_documentContext = [documentContext retain];
-//    docId = _docId;
-//    page = _page;
     
     // clear cache
     [separationHolder release];
@@ -290,7 +290,7 @@
     [markerView clearSearchResultMarker];
     
     for ( int index = 0 ; index < ranges.count ; index++ ) {
-        RangeObject *range = [ranges objectAtIndex:index];
+        RangeObject *range = ((SearchResult*)[ranges objectAtIndex:index]).range;
         for ( int delta = 0 ; delta < range.length ; delta++ ) {
             Region *region = [self region:(range.location + delta)];
             [markerView addSearchResultMarker:[self convertToStageRect:region] selected:(index == selectedIndex)];

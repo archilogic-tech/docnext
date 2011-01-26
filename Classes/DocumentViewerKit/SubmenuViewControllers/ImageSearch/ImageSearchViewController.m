@@ -12,6 +12,7 @@
 #import "NSString+Search.h"
 #import "RangeObject.h"
 #import "SearchResult.h"
+#import "DocumentSearchResult.h"
 
 @implementation ImageSearchViewController
 
@@ -22,72 +23,40 @@
 @synthesize documentContext = _documentContext;
 @synthesize delegate = _delegate;
 
-- (NSArray *)buildRangesElem:(NSArray *)hitRanges text:(NSString *)text {
-    NSMutableArray *rangesElem = [NSMutableArray arrayWithCapacity:0];
-
-    for ( RangeObject *range in hitRanges ) {
-        SearchResult *result = [[SearchResult new] autorelease];
-        result.range = range;
-        
-        int begin = MAX( range.location - 10 , 0 );
-        int end = MIN( range.location + range.length + 10 , text.length );
-        result.highlight = [text substringWithRange:NSMakeRange(begin, end - begin)];
-        
-        [rangesElem addObject:result];
-    }
-    
-    return rangesElem;
-}
-
-- (void)doSearch
-{
-	int _pages = [_documentContext totalPage];
-    for ( int page = 0 ; page < _pages ; page++ ) {
-//        NSString *text = [_datasource imageText:docId page:page];
-		NSString *text = [_documentContext imageTextWithPage:page];
-        NSArray *res = [text search:searchBar.text];
-        if ( res.count > 0 ) {
-            [pages addObject:[NSNumber numberWithInt:page]];
-            [ranges addObject:[self buildRangesElem:res text:text]];
-        }
-    }
-}
-
 #pragma mark -
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar {
     [searchBar resignFirstResponder];
     
-    [pages release];
-    pages = [[NSMutableArray arrayWithCapacity:0] retain];
-    [ranges release];
-    ranges = [[NSMutableArray arrayWithCapacity:0] retain];
-
-    [self doSearch];
+	[_searchResult release];
+	_searchResult = [[_documentContext imageTextSearch:searchBar.text] retain];
     
     [tableView reloadData];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[_delegate didImageSearchCanceled];
-//    [parent cancelSearch];
 }
 
 #pragma mark -
 #pragma mark Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [pages count];
+    return [_searchResult count];
 }
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[ranges objectAtIndex:section] count];
+    DocumentSearchResult *dsr = [_searchResult objectAtIndex:section];
+	return [dsr.ranges count];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    int page = [[pages objectAtIndex:section] intValue];
+
+    
+    DocumentSearchResult *dsr = [_searchResult objectAtIndex:section];
+	int page = dsr.page;
 
     NSString *title = [_documentContext titleWithPage:page];
 	return [NSString stringWithFormat:@"%@ - %d page", title, (page + 1)];
@@ -95,6 +64,7 @@
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)_tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [_tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -102,7 +72,9 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
     
-    cell.textLabel.text = ((SearchResult *)[[ranges objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]).highlight;
+    DocumentSearchResult *dsr = [_searchResult objectAtIndex:indexPath.section];
+	SearchResult *sr = [dsr.ranges objectAtIndex:indexPath.row];
+    cell.textLabel.text = sr.highlight;
     
     return cell;
 }
@@ -111,12 +83,12 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableArray *_ranges = [NSMutableArray arrayWithCapacity:0];
-    for ( SearchResult *res in [ranges objectAtIndex:indexPath.section] ) {
-        [_ranges addObject:res.range];
-    }
-	int page = [[pages objectAtIndex:indexPath.section] intValue];
-	[_delegate didImageSearchCompleted:page ranges:_ranges selectedIndex:indexPath.row];
+
+	DocumentSearchResult *dsr = [_searchResult objectAtIndex:indexPath.section];
+
+	NSArray *a = [NSArray arrayWithArray:dsr.ranges];
+
+	[_delegate didImageSearchCompleted:dsr.page ranges:a selectedIndex:indexPath.row];
 }
 
 - (void)viewDidLoad {
@@ -135,8 +107,7 @@
 - (void)dealloc {
     [searchBar release];
     [tableView release];
-    [pages release];
-    [ranges release];
+	[_searchResult release];
     
     [super dealloc];
 }

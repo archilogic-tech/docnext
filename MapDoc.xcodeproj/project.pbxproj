@@ -10,7 +10,10 @@
 		151BB16412961361009A313E /* TOCObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 151BB16312961361009A313E /* TOCObject.m */; };
 		154EB1C612ED7053007B5FD6 /* ThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 154EB1C512ED7053007B5FD6 /* ThumbnailView.m */; };
 		15992ED212ED26B2001AA3C8 /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 15992ED112ED26B2001AA3C8 /* Util.m */; };
+		159FD90E12EFFD6D001C9BD7 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */; };
+		159FD90F12EFFD6D001C9BD7 /* ConfigView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */; };
 		15A3D85212E6E58800C26549 /* DocumentContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 15A3D85112E6E58800C26549 /* DocumentContext.m */; };
+		15DA17A712EFA51600B8A503 /* DocumentSearchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 15DA17A612EFA51600B8A503 /* DocumentSearchResult.m */; };
 		15E581C112954D7700C69201 /* UIBalloon.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5811812954D7700C69201 /* UIBalloon.m */; };
 		15E581C212954D7700C69201 /* ObjBezier.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5811E12954D7700C69201 /* ObjBezier.m */; };
 		15E581C312954D7700C69201 /* ObjPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E5812012954D7700C69201 /* ObjPoint.m */; };
@@ -131,8 +134,13 @@
 		155A7F0E12E58CE800F810AB /* DocumentDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentDownloadManager.h; sourceTree = "<group>"; };
 		15992ED012ED26B2001AA3C8 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		15992ED112ED26B2001AA3C8 /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
-		15A3D85012E6E58800C26549 /* DocumentContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentContext.h; sourceTree = "<group>"; };
-		15A3D85112E6E58800C26549 /* DocumentContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentContext.m; sourceTree = "<group>"; };
+		159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
+		159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigViewController.m; sourceTree = "<group>"; };
+		159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConfigView.xib; sourceTree = "<group>"; };
+		15A3D85012E6E58800C26549 /* DocumentContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DocumentContext.h; path = ../DocumentContext.h; sourceTree = "<group>"; };
+		15A3D85112E6E58800C26549 /* DocumentContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DocumentContext.m; path = ../DocumentContext.m; sourceTree = "<group>"; };
+		15DA17A512EFA51600B8A503 /* DocumentSearchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentSearchResult.h; sourceTree = "<group>"; };
+		15DA17A612EFA51600B8A503 /* DocumentSearchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentSearchResult.m; sourceTree = "<group>"; };
 		15E5811712954D7700C69201 /* UIBalloon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBalloon.h; sourceTree = "<group>"; };
 		15E5811812954D7700C69201 /* UIBalloon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBalloon.m; sourceTree = "<group>"; };
 		15E5811912954D7700C69201 /* DocumentViewerConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentViewerConst.h; sourceTree = "<group>"; };
@@ -381,8 +389,6 @@
 				1D3623250D0F684500981E51 /* MapDocAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* MapDocViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* MapDocViewController.m */,
-				15A3D85012E6E58800C26549 /* DocumentContext.h */,
-				15A3D85112E6E58800C26549 /* DocumentContext.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -453,6 +459,8 @@
 				15E5815312954D7700C69201 /* SubmenuViewControllers */,
 				154EB17612ED6A88007B5FD6 /* OverlayViewControllers */,
 				15E581B312954D7700C69201 /* VolonoiDiagram */,
+				15A3D85012E6E58800C26549 /* DocumentContext.h */,
+				15A3D85112E6E58800C26549 /* DocumentContext.m */,
 				15E5811912954D7700C69201 /* DocumentViewerConst.h */,
 				15E581A212954D7700C69201 /* TiledScrollView.h */,
 				15E581A312954D7700C69201 /* TiledScrollView.m */,
@@ -464,6 +472,9 @@
 				15E5812C12954D7700C69201 /* ImageViewController.m */,
 				15E5812812954D7700C69201 /* ImageViewController-iPad.xib */,
 				15E5812A12954D7700C69201 /* ImageViewController-iPhone.xib */,
+				159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */,
+				159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */,
+				159FD90D12EFFD6D001C9BD7 /* ConfigView.xib */,
 				15E5812312954D7700C69201 /* HighlightObject.h */,
 				15E5812412954D7700C69201 /* HighlightObject.m */,
 				151BB16212961361009A313E /* TOCObject.h */,
@@ -474,6 +485,8 @@
 				15E581AF12954D7700C69201 /* UIScaleButton.h */,
 				15E581B012954D7700C69201 /* UIScaleButton.m */,
 				1525732C12ED0A1C008DF7A5 /* obsoleted */,
+				15DA17A512EFA51600B8A503 /* DocumentSearchResult.h */,
+				15DA17A612EFA51600B8A503 /* DocumentSearchResult.m */,
 			);
 			path = DocumentViewerKit;
 			sourceTree = "<group>";
@@ -577,12 +590,12 @@
 		15E5815412954D7700C69201 /* Bookmark */ = {
 			isa = PBXGroup;
 			children = (
+				15E5815B12954D7700C69201 /* BookmarkViewController.h */,
+				15E5815C12954D7700C69201 /* BookmarkViewController.m */,
 				15E5815512954D7700C69201 /* BookmarkObject.h */,
 				15E5815612954D7700C69201 /* BookmarkObject.m */,
 				15E5815812954D7700C69201 /* BookmarkViewController-iPad.xib */,
 				15E5815A12954D7700C69201 /* BookmarkViewController-iPhone.xib */,
-				15E5815B12954D7700C69201 /* BookmarkViewController.h */,
-				15E5815C12954D7700C69201 /* BookmarkViewController.m */,
 			);
 			path = Bookmark;
 			sourceTree = "<group>";
@@ -955,6 +968,7 @@
 				15E5822C12954DBD00C69201 /* icon.png in Resources */,
 				15E5822D12954DBD00C69201 /* MainWindow-iPad.xib in Resources */,
 				15E5822E12954DBD00C69201 /* MainWindow-iPhone.xib in Resources */,
+				159FD90F12EFFD6D001C9BD7 /* ConfigView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1039,6 +1053,8 @@
 				15A3D85212E6E58800C26549 /* DocumentContext.m in Sources */,
 				15992ED212ED26B2001AA3C8 /* Util.m in Sources */,
 				154EB1C612ED7053007B5FD6 /* ThumbnailView.m in Sources */,
+				15DA17A712EFA51600B8A503 /* DocumentSearchResult.m in Sources */,
+				159FD90E12EFFD6D001C9BD7 /* ConfigViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1055,7 +1071,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A104D5A6-8141-4D67-9A4D-A05B49EB019C";
@@ -1130,7 +1146,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -1149,7 +1165,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

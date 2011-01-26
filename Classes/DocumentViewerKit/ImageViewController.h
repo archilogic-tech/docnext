@@ -19,12 +19,21 @@
 #import "DocumentViewerDatasource.h"
 #import "DocumentContext.h"
 
+#import "ConfigViewController.h"
+
 @class ImageSearchViewController;
 
 typedef enum {
     ImageViewLinkModeURI,
     ImageViewLinkModeGoToPage
 } ImageViewLinkMode;
+
+typedef enum {
+	PageTransitionNone,
+	PageTransitionFromLeft,
+	PageTransitionFromRight
+} PageTransitionAnimationType ;
+
 
 /*!
     @class       ImageViewController 
@@ -36,24 +45,30 @@ typedef enum {
                                                     OverlayManagerDelegate, UIActionSheetDelegate,
                                                     UIFreehandViewDelegate>
 {
+	ConfigViewController *_configViewController;
+	
 	// UI系
-    UIView *configView;
-    UILabel *titleLabel;
-    UISwitch *_freehandSwitch;
-    UIView *tiledScrollViewContainer;
-    UIView *selectionMenuView;
-    UIView *highlightMenuView;
-    UIView *highlightCommentMenuView;
-    UITextField *highlightCommentTextField;
+    //UIView *configView;
+
+    //UILabel *titleLabel;
+    //UISwitch *_freehandSwitch;
+
     
-    TiledScrollView *tiledScrollView;
+	IBOutlet UIView *_tiledScrollViewContainer;
+
+	TiledScrollView *tiledScrollView;
     TiledScrollView *prevTiledScrollView;
+
+    IBOutlet UIView *selectionMenuView;
+    IBOutlet UIView *highlightMenuView;
+    IBOutlet UIView *highlightCommentMenuView;
+    IBOutlet UITextField *highlightCommentTextField;
 
     MarkerView *markerView;
     UIFreehandView *_freehandView;
     UIView *balloonContainerView;
 
-    UIPopoverController *popover;
+   // UIPopoverController *popover;
 
     BOOL isIgnoreTap;
 
@@ -71,14 +86,16 @@ typedef enum {
 	id<NSObject,DocumentViewerDatasource> _datasource;					
 }
 
-@property(nonatomic,retain) IBOutlet UIView *configView;
-@property(nonatomic,retain) IBOutlet UILabel *titleLabel;
-@property(nonatomic,retain) IBOutlet UISwitch *freehandSwitch;
-@property(nonatomic,retain) IBOutlet UIView *tiledScrollViewContainer;
-@property(nonatomic,retain) IBOutlet UIView *selectionMenuView;
-@property(nonatomic,retain) IBOutlet UIView *highlightMenuView;
-@property(nonatomic,retain) IBOutlet UIView *highlightCommentMenuView;
-@property(nonatomic,retain) IBOutlet UITextField *highlightCommentTextField;
+@property (nonatomic, readonly) UIFreehandView *freehandView;
+@property (nonatomic, readonly) ConfigViewController *configViewController;
+@property (nonatomic, readonly) OverlayManager *overlayManager;
+@property (nonatomic, readonly) UIView *tiledScrollViewContainer;
+
+
+@property(nonatomic,retain) UIView *selectionMenuView;
+@property(nonatomic,retain) UIView *highlightMenuView;
+@property(nonatomic,retain) UIView *highlightCommentMenuView;
+@property(nonatomic,retain) UITextField *highlightCommentTextField;
 
 @property (nonatomic, retain) id<NSObject,DocumentViewerDatasource> datasource;
 @property (nonatomic, retain) DocumentContext *documentContext;
@@ -86,16 +103,6 @@ typedef enum {
 
 + (ImageViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
 
-- (IBAction)homeButtonClick:(id)sender;
-- (IBAction)tocViewButtonClick:(id)sender;
-- (IBAction)thumbnailViewButtonClick:(id)sender;
-- (IBAction)bookmarkViewButtonClick:(id)sender;
-- (IBAction)textViewButtonClick:(id)sender;
-- (IBAction)tweetButtonClick:(id)sender;
-- (IBAction)searchButtonClick:(id)sender;
-- (IBAction)freehandUndoClick;
-- (IBAction)freehandClearClick;
-- (IBAction)freehandSwitchChanged;
 - (IBAction)copyButtonClick;
 - (IBAction)highlightButtonClick;
 - (IBAction)highlightCommentButtonClick;

@@ -44,9 +44,6 @@
 
 	bookmark.documentContext = _documentContext;
 	bookmark.contentName = [_documentContext title];
-//    bookmark.documentId = self.currentDocumentId;
-//    bookmark.page = self.currentPage;
-//    bookmark.contentName = self.currentTitle;
     
     for ( BookmarkObject *already in self.bookmarks ) {
         if ( [bookmark equals:already] ) {
@@ -120,8 +117,8 @@
     
     BookmarkObject *bookmark = (BookmarkObject *)[self.bookmarks objectAtIndex:indexPath.row];
 
-	NSString *title = [bookmark.documentContext title];
-	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@ - %d page" , title , bookmark.contentName , (bookmark.documentContext.currentPage + 1)];
+	NSString *documentTitle = [bookmark.documentContext documentTitle];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@ - %d page" , documentTitle , bookmark.contentName , (bookmark.documentContext.currentPage + 1)];
     
     return cell;
 }

@@ -8,6 +8,83 @@
 
 #import "DocumentContext.h"
 #import "MapDocAppDelegate.h"
+#import "DocumentSearchResult.h"
+
+@interface DocumentContext (Private)
+- (int)relativeIndex:(int*)index;
+- (int)relativePage:(int*)page;
+- (void)didInterfaceOrientationChanged:(UIInterfaceOrientation)n;
+- (BOOL)isValidIndex:(int)i;
+- (BOOL)isValidPage:(int)i;
+- (int)currentPageByIndex:(int)i;
+- (int)currentIndexByPage:(int)page;
+
+
+
+
+// 外部
+- (id)init;
+- (void)dealloc;
+- (BOOL)isEqualToMetaDocumentId:(id<NSObject>)did;
+- (id<NSObject>)documentId;
+- (void)setDocumentId:(id <NSObject>)docId;
+- (void)setCurrentPage:(int)n;
+- (void)setCurrentIndex:(int)n;
+- (int)totalPage;
+- (BOOL)isSingleIndex;
+
+//- (UIImage*)thumbnailWithIndex:(int)index;
+- (UIImage*)thumbnailWithPage:(int)page;
+
+
+- (NSString*)documentTitle;
+- (NSString*)publisher;
+
+
+- (double)ratio;
+- (NSArray*)titles;
+
+- (NSString*)title;
+- (NSString*)titleWithPage:(int)page;
+
+- (NSString*)texts;
+
+// ユーザ操作系
+- (NSArray*)freehand;
+- (NSArray*)annotations;
+- (NSArray*)highlights;
+
+- (UIView*)getTileImageWithType:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
+
++ (DocumentContext *)objectWithDictionary:(NSDictionary *)dictionary;
+- (NSDictionary *)toDictionary;
+
+
+// 内部
+- (BOOL)isSinglePage:(int)page;
+- (int)totalPageWithDocumentOffset:(int)i;
+
+
+
+
+
+- (NSArray*)region;
+- (NSString*)imageText;
+- (NSString*)imageTextWithPage:(int)page;
+- (NSArray*)imageTextSearch:(NSString*)term;
+
+
+- (void)buildPageHeads;
+- (void)loadSinglePageSet;
+
+
+
+@end
+
+
+
+
+
 
 @implementation DocumentContext
 
@@ -19,7 +96,7 @@
 {
 	if ((self = [super init])) {
 
-		// 暫定
+		// TODO 暫定
 		MapDocAppDelegate *d = (MapDocAppDelegate*)[UIApplication sharedApplication].delegate;
 		_datasource = [d.datasource retain];
 		
@@ -27,11 +104,12 @@
 		[device beginGeneratingDeviceOrientationNotifications];			//Tell it to start monitoring the accelerometer for orientation
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];	//Get the notification centre for the app
 		[nc addObserver:self											//Add yourself as an observer
-			   selector:@selector(didInterfaceOrientationChanged:)
+			   selector:@selector(didInterfaceOrientationChangeHandler:)
 				   name:UIDeviceOrientationDidChangeNotification
 				 object:device];
 
 		_currentOrientation = [device orientation];
+		_totalPage = -1;
 	}
 	return self;
 }
@@ -52,20 +130,19 @@
 	return [d1 isEqualToString:d2];
 }
 
-
-
-- (void)didInterfaceOrientationChanged:(NSNotification*)n
+- (void)didInterfaceOrientationChangeHandler:(NSNotification*)n
 {
 	UIInterfaceOrientation o = [[n object] orientation];
-	if (o != _currentOrientation) {
-		// 1画面あたりのページ数が変更されるので、論理ページをつくり直す
-		[self buildPageHeads];
-	}
+	[self didInterfaceOrientationChanged:o];
+}
+
+
+- (void)didInterfaceOrientationChanged:(UIInterfaceOrientation)o
+{
 	_currentOrientation = o;
 
-	// 画面の向きが変わったら、論理ページを構築しなおす
-	[self loadSinglePageInfo];
-	[self buildPageHeads];
+	// 現在設定されているページを正規化する
+	self.currentPage = self.currentPage;
 }
 
 - (id<NSObject>)documentId
@@ -84,15 +161,17 @@
 		_documentId = [[NSArray alloc] initWithObjects:docId, nil];
 	}
 	_currentPage = 0;
+	_totalPage = -1;
 
 	// メタ情報を読み込んでおく
 	// TODO 暫定的に最初の文書の情報を利用する
 	[_metaDocumentInfoCache release];
 	id<NSObject> did = [_documentId objectAtIndex:0];
 	_metaDocumentInfoCache = [[_datasource info:_documentId documentId:did] retain];
+
 	
-	// 文書IDが変わったら、論理ページを構築しなおす
-	[self loadSinglePageInfo];
+	// 論理ページをめくる構築しなおす
+	[self loadSinglePageSet];
 	[self buildPageHeads];
 }
 
@@ -100,55 +179,51 @@
 - (BOOL)isValidIndex:(int)i
 {
 	if (i < 0) return NO;
-	
-	for (NSArray *ph in _pageHeads) {
-		int count = [ph count];
-		if (i < count) return YES;
-		i -= (count);
-	}
-	return NO;
-/*	
-	
-    if ( i < 0 || i >= [_pageHeads count] ) {
-        return NO;
-    }
-	return YES;
- */
+	int relativeIndex = i;
+	int documentOffset = [self relativeIndex:&relativeIndex];
+	return (documentOffset >= 0);
 }
-
 
 - (BOOL)isValidPage:(int)i
 {
-	for (int j = 0; j < [_documentId count]; j++) {
-
-		int n = [self totalPageWithDocumentOffset:j];
-		if (i < n) return YES;
-		i -= (n);
-	}
-	return NO;
+	if (i < 0) return NO;
+	int relativePage = i;
+	int documentOffset = [self relativePage:&relativePage];
+	return (documentOffset >= 0);
 }
 
 
 - (int)currentPageByIndex:(int)i
 {
-	int page = 0;
-	for (NSArray *ph in _pageHeads) {
-		int count = [ph count];
-		if (i < count) {
-			int n = page + [[ph objectAtIndex:i] intValue];
-			return n;
-		}
-		page += [[ph lastObject] intValue]+1;
-		i -= (count);
+	if (UIInterfaceOrientationIsPortrait(_currentOrientation)) return i;
+	
+	int relativeIndex = i;
+	int documentOffset = [self relativeIndex:&relativeIndex];
+	if (documentOffset < 0) return -1;
+	
+	NSArray *ph = [_pageHeads objectAtIndex:documentOffset];
+
+	int sum = 0;
+	for (int i = 0; i < documentOffset; i++) {
+		sum += [self totalPageWithDocumentOffset:i];
 	}
-	return [[_pageHeads objectAtIndex:i] intValue];
+	int page = [[ph objectAtIndex:relativeIndex] intValue];
+	return sum + page;
 }
 
 
+
+// ページを正規化する
 - (int)currentIndexByPage:(int)page
 {
+	if (UIInterfaceOrientationIsPortrait(_currentOrientation)) return page;
+
 	int index = 0;
-	for (NSArray *ph in _pageHeads) {
+
+	int documentOffset;
+	for (documentOffset = 0; documentOffset < [_pageHeads count]; documentOffset++) {
+		NSArray *ph = [_pageHeads objectAtIndex:documentOffset];
+
 		int count = [ph count];
 		for ( int i = 0; i < count; i++ ) {
 			int head = [[ph objectAtIndex:i] intValue];
@@ -159,9 +234,9 @@
 			}
 		}
 		index += count;
+		page -= [self totalPageWithDocumentOffset:documentOffset];
     }
-	return index;// - 1;
-	//    return [_pageHeads count] - 1;
+	return index-1;
 }
 
 
@@ -172,15 +247,44 @@
 		return;
 	}
 	
+	// まず、未正規化の_currentPageを設定する
 	_currentPage = n;
+	if (UIInterfaceOrientationIsPortrait(_currentOrientation)) {
+		_currentIndex = n;
+		return;
+	}
+	
 	_currentIndex = [self currentIndexByPage:n];
+
+	// _currentPageを正規化して設定しなおす
+	int relativeIndex = _currentIndex;
+	int documentOffset = [self relativeIndex:&relativeIndex];
+	if (documentOffset < 0) {
+		// ERR
+		assert(0);
+	}
+	
+	int sum = 0;
+	for (int i = 0; i < documentOffset; i++) {
+		sum += [self totalPageWithDocumentOffset:i];
+	}
+	
+	NSArray *tmp = [_pageHeads objectAtIndex:documentOffset];
+	int page = [[tmp objectAtIndex:relativeIndex] intValue]; // indexの先頭ページに正規化する
+
+	_currentPage = page + sum;
+	assert(_currentIndex >= 0);
 }
+
 
 - (void)setCurrentIndex:(int)n
 {
 	_currentIndex = n;
 	_currentPage = [self currentPageByIndex:n];
+
+	assert(_currentPage >= 0);
 }
+
 
 
 - (int)totalPageWithDocumentOffset:(int)i
@@ -193,40 +297,76 @@
 
 - (int)totalPage
 {
-	int sum = 0;
+	if (_totalPage > 0) return _totalPage;
+	
+	_totalPage = 0;
 	for (int i = 0; i < [_documentId count]; i++) {
-		sum += [self totalPageWithDocumentOffset:i];
+		_totalPage += [self totalPageWithDocumentOffset:i];
 	}
-	return sum;
+	return _totalPage;
 }
 
 
-- (BOOL)isSinglePage
+
+- (BOOL)isSingleIndex
 {
-//	int documentOffset = 0;
+	if (UIInterfaceOrientationIsPortrait(_currentOrientation)) return YES;
+	
 	int relativeIndex = _currentIndex;
-	for (NSArray *tmp in _isSinglePage) {
-		int count = [tmp count];
-		if (relativeIndex < [tmp count]) {
-			return [[tmp objectAtIndex:relativeIndex] boolValue];
-		}
-		relativeIndex -= (count);
-//		documentOffset++;
-	}
-	return NO;
+	int documentOffset = [self relativeIndex:&relativeIndex];
+	if (documentOffset < 0) return NO;
 
-//	return ( [[_isSinglePage objectAtIndex:_currentIndex] boolValue] );
+	NSArray *tmp = [_isSingleIndex objectAtIndex:documentOffset];
+	return [[tmp objectAtIndex:relativeIndex] boolValue];
 }
+
+- (BOOL)isSinglePage:(int)page
+{
+	NSString *pageStr = [[NSNumber numberWithInt:page] stringValue];
+
+	int documentOffset = 0;
+	for (NSSet *spi in _singlePageInfoList) {
+		if ([spi containsObject:pageStr]) {
+			return YES;
+		}
+		int count = [self totalPageWithDocumentOffset:documentOffset];
+		page -= (count);
+		documentOffset++;
+	}    
+    return NO;
+}
+
 
 - (NSArray*)titles
 {
-	NSMutableArray *result = [NSMutableArray array];
-	for (NSString *did in _documentId) {
-		NSArray *tmp = [_datasource tocs:_documentId documentId:did];
-		[result addObjectsFromArray:tmp];
-	}
-	return result;
+	return [_datasource tocs:_documentId];
 }
+
+- (int)relativeIndex:(int*)index
+{
+	int relativeIndex = *index;
+	int offset = 0;
+	for (NSString *did in _documentId) {
+
+		
+		int count;
+		if (UIInterfaceOrientationIsPortrait(_currentOrientation)) {
+			count = [self totalPageWithDocumentOffset:offset];
+		} else {
+			count = [[_pageHeads objectAtIndex:offset] count];
+		}
+
+		if (relativeIndex < count) {
+			*index = relativeIndex;
+			return offset;
+		}
+		relativeIndex -= count;
+		offset++;
+	}
+	return -1;
+}
+
+
 
 - (int)relativePage:(int*)page
 {
@@ -246,7 +386,6 @@
 
 // 文書メタ情報
 
-
 // メタ情報
 - (NSString*)publisher
 {
@@ -260,11 +399,16 @@
 	return r;
 }
 
+- (NSString*)documentTitle
+{
+    NSString *r = [_metaDocumentInfoCache objectForKey:@"title"];
+	return r;
+}
 
-
-
-
-
+- (NSString*)title
+{
+	return [self titleWithPage:_currentPage];
+}
 
 - (NSString*)titleWithPage:(int)page
 {
@@ -279,122 +423,111 @@
 	return tmp;
 }
 
-- (NSString*)title
-{
-	return [self titleWithPage:_currentIndex];
-}
-
 
 - (NSString*)texts
 {
+//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+
 	int relativePage = _currentPage;
-	for (NSString *did in _documentId) {
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			NSString *tmp = [_datasource texts:_documentId documentId:did page:relativePage];
-			return tmp;
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+
+	NSString *did = [_documentId objectAtIndex:documentOffset];
+	NSMutableString *tmp = [NSMutableString stringWithString:[_datasource texts:_documentId documentId:did page:relativePage]];
+
+	// TODO currentPageが!isSinglePageだったときの処理?
+	return tmp;
 }
 
 - (NSArray*)freehand
 {
-	int relativePage = _currentPage;
-	for (NSString *did in _documentId) {
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			NSArray *r = [_datasource freehand:_documentId
-									documentId:did
-										  page:relativePage];
-			return r;
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	NSArray *r = [_datasource freehand:_documentId
+								  page:_currentPage];
+	
+	// TODO currentPageが!isSinglePageだったときの処理?
+	return r;
 }
 
 - (NSArray*)annotations
 {
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+	
 	int relativePage = _currentPage;
-	for (NSString *did in _documentId) {
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			NSArray *r = [_datasource annotations:_documentId
-									   documentId:did
-											 page:relativePage];
-			return r;
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+	
+	NSString *did = [_documentId objectAtIndex:documentOffset];
+	NSArray *r = [_datasource annotations:_documentId
+							   documentId:did
+									 page:_currentPage];
+	
+	// TODO currentPageが!isSinglePageだったときの処理?
+	return r;
 }
 
 - (NSArray*)highlights
 {
-	int relativePage = _currentPage;
-	for (NSString *did in _documentId) {
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			NSArray *r = [_datasource highlights:_documentId
-									  documentId:did
-											page:relativePage];
-			return r;
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	NSArray *r = [_datasource highlights:_documentId
+									page:_currentPage];
+	
+	// TODO currentPageが!isSinglePageだったときの処理?
+	return r;
 }
+
 
 
 
 - (NSArray*)region
 {
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+	
 	int relativePage = _currentPage;
-	for (NSString *did in _documentId) {
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			NSArray *r = [_datasource regions:_documentId
-								   documentId:did
-										 page:relativePage];
-			return r;
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+	
+	NSString *did = [_documentId objectAtIndex:documentOffset];
+	NSArray *r = [_datasource regions:_documentId
+						   documentId:did
+								 page:relativePage];
+	
+	// TODO currentPageが!isSinglePageだったときの処理?
+	return r;
 }
 
-- (void)loadSinglePageInfo
+- (void)loadSinglePageSet
 {
 	NSMutableArray *singlePageInfoList = [[NSMutableArray alloc] init];
 	for (NSString *did in (NSArray*)_documentId) {
-
-		NSArray *tmp = [_datasource singlePageInfo:_documentId documentId:did];
+		NSArray *tmp = [_datasource setHideConfigViewPageList:_documentId documentId:did];
 		[singlePageInfoList addObject:[NSSet setWithArray:tmp]];
 	}
-	_singlePageInfo = singlePageInfoList;
+	[_singlePageInfoList release];
+	_singlePageInfoList = singlePageInfoList;
 }
 
+
+/*
 - (UIImage*)thumbnailWithIndex:(int)index
 {
-	int documentOffset = 0;
-	int relativeIndex = index;
-	for (NSArray *tmp in _isSinglePage) {
-		int count = [tmp count];
-		if (relativeIndex < [tmp count]) {
+	return [self thumbnailWithPage:[self currentPageByIndex:index]];
+}
+*/
 
-			return [_datasource thumbnail:_documentId documentId:[_documentId objectAtIndex:documentOffset] cover:relativeIndex];
-		}
-		relativeIndex -= (count);
-		documentOffset++;
-	}
-	return nil;
+- (UIImage*)thumbnailWithPage:(int)page
+{
+	int relativePage = page;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+	
+	NSString *did = [_documentId objectAtIndex:documentOffset];
+	
+	UIImage *img = [_datasource thumbnail:_documentId documentId:did page:relativePage];
+	return img;
+}
+
+- (NSString*)imageText
+{
+	return [self imageTextWithPage:_currentPage];
 }
 
 - (NSString*)imageTextWithPage:(int)page
@@ -413,63 +546,48 @@
 
 
 
-- (BOOL)isSinglePage:(int)page
-{
-	NSString *pageStr = [[NSNumber numberWithInt:page] stringValue];
-	
-	int documentOffset = 0;
-	for (NSSet *spi in _singlePageInfo) {
-		if ([spi containsObject:pageStr]) {
-			return YES;
-		}
-/*
-		for ( NSString *value in spi ) {
-			if ( [value intValue] == page ) {
-				return YES;
-			}
-		}
- */
-		int count = [self totalPageWithDocumentOffset:documentOffset];
-		page -= (count);
-		documentOffset++;
-	}    
-    return NO;
-}
 
+//done
 - (void)buildPageHeads
 {
+	NSLog(@"buildPageHeads");
+	
 	NSMutableArray *pageHeadsList = [[NSMutableArray alloc] init];
-	NSMutableArray *isSinglePageList = [[NSMutableArray alloc] init];
+	NSMutableArray *isSingleIndexList = [[NSMutableArray alloc] init];
 
 	int documentCount = [_documentId count];
 	for (int documentOffset = 0; documentOffset < documentCount; documentOffset++) {
 		NSMutableArray *pageHeads = [NSMutableArray array];
-		NSMutableArray *isSinglePage = [NSMutableArray array];
+		NSMutableArray *isSingleIndex = [NSMutableArray array];
 		
 		int totalPage = [self totalPageWithDocumentOffset:documentOffset];
 		
 		BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+		isLandscape = YES;
 		
 		for ( int page = 0 ; page < totalPage ; ) {
 			[pageHeads addObject:[NSNumber numberWithInt:page]];
 			if ( isLandscape &&
 				![self isSinglePage:page] &&
-				page + 1 < totalPage &&
+				(page + 1) < totalPage &&
 				![self isSinglePage:(page + 1)] ) {
 				
-				[isSinglePage addObject:[NSNumber numberWithBool:NO]];
+				[isSingleIndex addObject:[NSNumber numberWithBool:NO]];
 				page += 2;
 			} else {
-				[isSinglePage addObject:[NSNumber numberWithBool:YES]];
+				[isSingleIndex addObject:[NSNumber numberWithBool:YES]];
 				page += 1;
 			}
 		}
 		[pageHeadsList addObject:pageHeads];
-		[isSinglePageList addObject:isSinglePage];
+		[isSingleIndexList addObject:isSingleIndex];
 	}
     
+	[_pageHeads release];
+	[_isSingleIndex release];
+	
     _pageHeads = pageHeadsList;
-    _isSinglePage = isSinglePageList;
+    _isSingleIndex = isSingleIndexList;
 
 	_currentIndex = [self currentIndexByPage:_currentPage];
 }
@@ -478,23 +596,43 @@
 - (UIView*)getTileImageWithType:(NSString*)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
 {
 	int relativePage = page;
-	for (NSString *did in _documentId) {
-		
-		int count = [_datasource pages:_documentId documentId:did];
-		if (relativePage < count) {
-			// relativePageがfixした
-			return [_datasource getTileImageWithDocument:_documentId
-											  documentId:did
-													type:type
-													page:relativePage
-												  column:column
-													 row:row
-											  resolution:resolution];
-		}
-		relativePage -= (count);
-	}
-	return nil;
+	int documentOffset = [self relativePage:&relativePage];
+	if (documentOffset < 0) return nil;
+
+	NSString *did = [_documentId objectAtIndex:documentOffset];
+	UIView *v = [_datasource getTileImageWithDocument:_documentId
+										   documentId:did
+												 type:type
+												 page:relativePage
+											   column:column
+												  row:row
+										   resolution:resolution];
+	return v;
 }
+
+
+- (NSArray*)imageTextSearch:(NSString*)term
+{
+	NSMutableArray *searchResult = [NSMutableArray array];
+
+	int sum = 0;
+	for (int i = 0; i < [(NSArray*)_documentId count]; i++) {
+
+		NSString *did = [(NSArray*)_documentId objectAtIndex:i];
+		NSArray *sr = [_datasource imageTextSearch:_documentId documentId:did query:term];
+		if (sum > 0) {
+			for (DocumentSearchResult *dsr in sr) {
+				// ページ番号の調整
+				dsr.page += sum;
+			}
+		}
+		sum += [self totalPageWithDocumentOffset:i];
+		[searchResult addObjectsFromArray:sr];
+	}
+	return searchResult;
+}
+
+
 
 + (DocumentContext *)objectWithDictionary:(NSDictionary *)dictionary {
 	
@@ -513,6 +651,16 @@
     [ret setObject:[NSString stringWithFormat:@"%d" , _currentPage] forKey:@"page"];
     
     return ret;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    DocumentContext *clone = [[[self class] allocWithZone:zone] init];
+
+    clone.documentId = self.documentId;
+	clone.currentPage = self.currentPage;
+	
+    return  clone;
 }
 
 

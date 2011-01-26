@@ -23,7 +23,7 @@
 @property(nonatomic,retain) IBOutlet UITableView *tableView;
 @property(nonatomic,retain) NSMutableArray *bookmarks;
 
-@property (nonatomic, retain) DocumentContext *documentContext;
+@property (nonatomic, copy) DocumentContext *documentContext;
 @property (nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
 
 + (BookmarkViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
