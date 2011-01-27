@@ -7,15 +7,17 @@
 //
 
 #import "UstDocDatasource.h"
-#import "Region.h"
-#import "UIRemoteImageView.h"
-#import "TiledScrollView.h"
-#import "NSString+Data.h"
 
-#import "RangeObject.h"
+#import "UIRemoteImageView.h"
+
+#import "Region.h"
+#import "TiledScrollView.h"
 #import "SearchResult.h"
 #import "DocumentSearchResult.h"
 #import "NSString+Search.h"
+#import "NSString+Data.h"
+
+#import "BookmarkObject.h"
 
 
 @interface UstDocDatasource (private)

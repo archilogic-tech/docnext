@@ -10,8 +10,6 @@
 #import "MapDocViewController.h"
 #import "ImageViewController.h"
 #import "BookshelfDeletionViewController.h"
-
-// to be removed.
 #import "UstDocDatasource.h"
 
 
@@ -35,6 +33,9 @@
 
 		ImageViewController *ic = [ImageViewController createViewController:_datasource];
 		ic.documentContext = dc;
+
+		// カスタマイズしたConfigControllerを設定できる
+		//ic.configViewController = ...
 
 		[ic showInViewController:self.viewController];
 		[dc release];
@@ -67,6 +68,10 @@
 		
 		ImageViewController *ic = [ImageViewController createViewController:_datasource];
 		ic.documentContext = dc;
+
+		// カスタマイズしたConfigControllerを設定できる
+		//ic.configViewController = ...
+
 		[ic showInViewController:self.viewController];
 		[dc release];
 
@@ -85,6 +90,10 @@
 	
 	ImageViewController *ic = [ImageViewController createViewController:_datasource];
 	ic.documentContext = history;
+
+	// カスタマイズしたConfigControllerを設定できる
+	//ic.configViewController = ...
+
 	[ic showInViewController:self.viewController];
 }
 

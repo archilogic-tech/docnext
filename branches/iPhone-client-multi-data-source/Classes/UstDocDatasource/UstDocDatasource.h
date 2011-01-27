@@ -10,7 +10,6 @@
 #import "DocumentViewerDatasource.h"
 #import "StandardLocalStorageManager.h"
 #import "UstDocDownloadManager.h"
-#import "BookmarkObject.h"
 
 #define ServerEndpoint (@"http://ustdoc.com/docman_optimage/dispatch/viewer/")
 #define ReachabilityHost (@"ustdoc.com")

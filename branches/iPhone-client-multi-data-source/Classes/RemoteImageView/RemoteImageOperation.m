@@ -7,7 +7,6 @@
 //
 
 #import "RemoteImageOperation.h"
-#import "DocumentViewerConst.h"
 #import "ASIHTTPRequest.h"
 
 @implementation RemoteImageOperation

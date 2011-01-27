@@ -48,12 +48,6 @@ typedef enum {
 	ConfigViewController *_configViewController;
 	
 	// UI系
-    //UIView *configView;
-
-    //UILabel *titleLabel;
-    //UISwitch *_freehandSwitch;
-
-    
 	IBOutlet UIView *_tiledScrollViewContainer;
 
 	TiledScrollView *tiledScrollView;
@@ -67,8 +61,6 @@ typedef enum {
     MarkerView *markerView;
     UIFreehandView *_freehandView;
     UIView *balloonContainerView;
-
-   // UIPopoverController *popover;
 
     BOOL isIgnoreTap;
 
