@@ -15,6 +15,7 @@
 	id<NSObject,DocumentViewerDatasource> _datasource;
 
 	NSArray *_documentId;
+	int _normalizedCurrentPage;			// 正規化されたページ
 	int _currentPage;					// データファイル上のページ
 	int _currentIndex;					// アプリで扱うページ
 
@@ -22,7 +23,6 @@
 
 	int _totalPage;
 
-	NSArray *_singlePageInfoList;
 	NSArray *_pageHeads;
 	NSArray *_isSingleIndex;
 	NSDictionary *_metaDocumentInfoCache;
@@ -31,6 +31,7 @@
 @property (nonatomic, retain) id<NSObject> documentId;
 @property (nonatomic) int currentPage;
 @property (nonatomic) int currentIndex;
+@property (nonatomic, readonly) int normalizedCurrentPage;
 
 - (BOOL)isEqualToMetaDocumentId:(id<NSObject>)did;
 
@@ -60,7 +61,7 @@
 - (NSArray*)highlights;
 - (NSArray*)region;
 - (double)ratio;
-- (void)loadSinglePageSet;
+
 - (UIImage*)thumbnailWithIndex:(int)index;
 - (BOOL)isSinglePage:(int)page;
 - (void)buildPageHeads;

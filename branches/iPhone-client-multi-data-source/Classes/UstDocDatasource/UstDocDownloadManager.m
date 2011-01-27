@@ -97,9 +97,8 @@
     [request.userInfo setValue:[NSNumber numberWithInt:page] forKey:@"page"];
     [request.userInfo setValue:[NSNumber numberWithInt:px] forKey:@"px"];
     [request.userInfo setValue:[NSNumber numberWithInt:py] forKey:@"py"];
-    
-    [request startAsynchronous];
 
+    [request startAsynchronous];
 }
 
 - (void)downloadComplete:(id<NSObject>)metaDocumentId {
@@ -157,7 +156,7 @@
     downloadStatus.downloadedPage = page;
     downloadStatus.downloadedPx = px;
     downloadStatus.downloadedPy = py;
-	
+
     [_datasource saveDownloadStatus:downloadStatus];
 	[downloadStatus release];
 //	assert(0);
@@ -183,14 +182,14 @@
     id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
     id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
 	int currentDownloadIndex = [[request.userInfo objectForKey:@"currentDownloadIndex"] intValue];
-	
+
 	NSString *dirName = [NSString stringWithFormat:@"%@/%@/" ,
 						 [(NSArray*)metaDocumentId componentsJoinedByString:@","],
 						 docId];
 
 	////////// zip処理 /////////////////////////////
     NSString *zipName = [request.userInfo objectForKey:@"tempFileName"];
-	
+
 	// メタ情報を展開してローカルのストレージにキャッシュする
 	// 毎回全部消してしまうのはまずい
 	//[_datasource deleteCache:metaDocumentId];
@@ -225,9 +224,7 @@
 			NSString *baseUrl = [request.userInfo objectForKey:@"baseUrl"];
 			[self startMetaInfoDownload:metaDocumentId baseUrl:baseUrl index:currentDownloadIndex];
 			return;
-
 		}
-//		did = [(NSArray*)docId objectAtIndex:currentDownloadIndex];
 	}
 
     if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {

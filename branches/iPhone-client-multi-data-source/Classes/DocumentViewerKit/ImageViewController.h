@@ -84,10 +84,13 @@ typedef enum {
 	DocumentContext *_documentContext;
 	
 	id<NSObject,DocumentViewerDatasource> _datasource;					
+
+	UINavigationController *_container;
+	NSArray *_subviews;
 }
 
 @property (nonatomic, readonly) UIFreehandView *freehandView;
-@property (nonatomic, readonly) ConfigViewController *configViewController;
+@property (nonatomic, retain) ConfigViewController *configViewController;
 @property (nonatomic, readonly) OverlayManager *overlayManager;
 @property (nonatomic, readonly) UIView *tiledScrollViewContainer;
 @property (nonatomic, readonly) TiledScrollView *tiledScrollView;
@@ -103,6 +106,8 @@ typedef enum {
 
 
 + (ImageViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource;
+
+- (void)show;
 
 - (IBAction)copyButtonClick;
 - (IBAction)highlightButtonClick;

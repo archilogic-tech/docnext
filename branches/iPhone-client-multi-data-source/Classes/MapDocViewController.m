@@ -148,7 +148,7 @@
 	
 	ImageViewController *ic = [ImageViewController createViewController:_datasource];
 	ic.documentContext = dc;
-	[self pushViewController:ic animated:YES];
+	[ic showInViewController:self];
 	[dc release];
 
     [_loading dismissWithClickedButtonIndex:0 animated:YES];

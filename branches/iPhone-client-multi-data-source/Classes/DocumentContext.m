@@ -33,9 +33,7 @@
 - (int)totalPage;
 - (BOOL)isSingleIndex;
 
-//- (UIImage*)thumbnailWithIndex:(int)index;
 - (UIImage*)thumbnailWithPage:(int)page;
-
 
 - (NSString*)documentTitle;
 - (NSString*)publisher;
@@ -61,7 +59,7 @@
 
 
 // 内部
-- (BOOL)isSinglePage:(int)page;
+//- (BOOL)isSinglePage:(int)page;
 - (int)totalPageWithDocumentOffset:(int)i;
 
 
@@ -75,7 +73,7 @@
 
 
 - (void)buildPageHeads;
-- (void)loadSinglePageSet;
+//- (void)loadSinglePageSet;
 
 
 
@@ -90,7 +88,7 @@
 
 @synthesize currentPage = _currentPage;
 @synthesize currentIndex = _currentIndex;
-
+@synthesize normalizedCurrentPage = _normalizedCurrentPage;
 
 - (id)init
 {
@@ -99,8 +97,9 @@
 		// TODO 暫定
 		MapDocAppDelegate *d = (MapDocAppDelegate*)[UIApplication sharedApplication].delegate;
 		_datasource = [d.datasource retain];
-		
+
 		UIDevice *device = [UIDevice currentDevice];					//Get the device object
+
 		[device beginGeneratingDeviceOrientationNotifications];			//Tell it to start monitoring the accelerometer for orientation
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];	//Get the notification centre for the app
 		[nc addObserver:self											//Add yourself as an observer
@@ -117,14 +116,13 @@
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
+
 	[_documentId release];
 	[_datasource release];
-	[_singlePageInfoList release];
 	[_pageHeads release];
 	[_isSingleIndex release];
 	[_metaDocumentInfoCache release];
-	
+
 	[super dealloc];
 }
 
@@ -165,6 +163,8 @@
 	} else {
 		_documentId = [[NSArray alloc] initWithObjects:docId, nil];
 	}
+	_currentIndex = 0;
+	_normalizedCurrentPage = 0;
 	_currentPage = 0;
 	_totalPage = -1;
 
@@ -174,8 +174,7 @@
 	id<NSObject> did = [_documentId objectAtIndex:0];
 	_metaDocumentInfoCache = [[_datasource info:_documentId documentId:did] retain];
 
-	
-	// landscape時のページを構築しなおす
+	// landscape時のページを構築する
 	[self buildPageHeads];
 }
 
@@ -276,7 +275,7 @@
 	NSArray *tmp = [_pageHeads objectAtIndex:documentOffset];
 	int page = [[tmp objectAtIndex:relativeIndex] intValue]; // indexの先頭ページに正規化する
 
-	_currentPage = page + sum;
+	_normalizedCurrentPage = page+sum;
 	assert(_currentIndex >= 0);
 }
 
@@ -284,7 +283,7 @@
 - (void)setCurrentIndex:(int)n
 {
 	_currentIndex = n;
-	_currentPage = [self currentPageByIndex:n];
+	_normalizedCurrentPage = _currentPage = [self currentPageByIndex:n];
 
 	assert(_currentPage >= 0);
 }
@@ -324,23 +323,6 @@
 	return [[tmp objectAtIndex:relativeIndex] boolValue];
 }
 
-- (BOOL)isSinglePage:(int)page
-{
-	NSString *pageStr = [[NSNumber numberWithInt:page] stringValue];
-
-	int documentOffset = 0;
-	for (NSSet *spi in _singlePageInfoList) {
-		if ([spi containsObject:pageStr]) {
-			return YES;
-		}
-		int count = [self totalPageWithDocumentOffset:documentOffset];
-		page -= (count);
-		documentOffset++;
-	}    
-    return NO;
-}
-
-
 - (NSArray*)titles
 {
 	return [_datasource tocs:_documentId];
@@ -369,7 +351,6 @@
 	}
 	return -1;
 }
-
 
 
 - (int)relativePage:(int*)page
@@ -411,7 +392,8 @@
 
 - (NSString*)title
 {
-	return [self titleWithPage:_currentPage];
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+	return [self titleWithPage:_normalizedCurrentPage];
 }
 
 - (NSString*)titleWithPage:(int)page
@@ -432,7 +414,7 @@
 {
 //	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
 
-	int relativePage = _currentPage;
+	int relativePage = _normalizedCurrentPage;
 	int documentOffset = [self relativePage:&relativePage];
 	if (documentOffset < 0) return nil;
 
@@ -445,8 +427,9 @@
 
 - (NSArray*)freehand
 {
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
 	NSArray *r = [_datasource freehand:_documentId
-								  page:_currentPage];
+								  page:_normalizedCurrentPage];
 	
 	// TODO currentPageが!isSinglePageだったときの処理?
 	return r;
@@ -456,14 +439,14 @@
 {
 	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
 	
-	int relativePage = _currentPage;
+	int relativePage = _normalizedCurrentPage;
 	int documentOffset = [self relativePage:&relativePage];
 	if (documentOffset < 0) return nil;
-	
+
 	NSString *did = [_documentId objectAtIndex:documentOffset];
 	NSArray *r = [_datasource annotations:_documentId
 							   documentId:did
-									 page:_currentPage];
+									 page:relativePage];
 	
 	// TODO currentPageが!isSinglePageだったときの処理?
 	return r;
@@ -471,21 +454,19 @@
 
 - (NSArray*)highlights
 {
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
 	NSArray *r = [_datasource highlights:_documentId
-									page:_currentPage];
+									page:_normalizedCurrentPage];
 	
 	// TODO currentPageが!isSinglePageだったときの処理?
 	return r;
 }
 
-
-
-
 - (NSArray*)region
 {
 	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
 	
-	int relativePage = _currentPage;
+	int relativePage = _normalizedCurrentPage;
 	int documentOffset = [self relativePage:&relativePage];
 	if (documentOffset < 0) return nil;
 	
@@ -497,25 +478,6 @@
 	// TODO currentPageが!isSinglePageだったときの処理?
 	return r;
 }
-
-- (void)loadSinglePageSet
-{
-	NSMutableArray *singlePageInfoList = [[NSMutableArray alloc] init];
-	for (NSString *did in (NSArray*)_documentId) {
-		NSArray *tmp = [_datasource singlePageInfoList:_documentId documentId:did];
-		[singlePageInfoList addObject:[NSSet setWithArray:tmp]];
-	}
-	[_singlePageInfoList release];
-	_singlePageInfoList = singlePageInfoList;
-}
-
-
-/*
-- (UIImage*)thumbnailWithIndex:(int)index
-{
-	return [self thumbnailWithPage:[self currentPageByIndex:index]];
-}
-*/
 
 - (UIImage*)thumbnailWithPage:(int)page
 {
@@ -531,7 +493,8 @@
 
 - (NSString*)imageText
 {
-	return [self imageTextWithPage:_currentPage];
+	//	BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
+	return [self imageTextWithPage:_normalizedCurrentPage];
 }
 
 - (NSString*)imageTextWithPage:(int)page
@@ -550,13 +513,17 @@
 
 
 
-
-//done
+// landscape時のページの見出しリスト(論理ページ、物理ページ対応表)を作る
 - (void)buildPageHeads
 {
-	NSLog(@"buildPageHeads");
-
-	[self loadSinglePageSet];
+	/////////////////////////////////////	
+//	[self loadSinglePageSet];
+	NSMutableArray *singlePageInfoList = [NSMutableArray array];
+	for (NSString *did in (NSArray*)_documentId) {
+		NSArray *tmp = [_datasource singlePageInfoList:_documentId documentId:did];
+		[singlePageInfoList addObject:[NSSet setWithArray:tmp]];
+	}
+	/////////////////////////////////////	
 
 	NSMutableArray *pageHeadsList = [[NSMutableArray alloc] init];
 	NSMutableArray *isSingleIndexList = [[NSMutableArray alloc] init];
@@ -568,16 +535,13 @@
 		
 		int totalPage = [self totalPageWithDocumentOffset:documentOffset];
 		
-		BOOL isLandscape = UIInterfaceOrientationIsLandscape(_currentOrientation);
-		isLandscape = YES;
-		
+		NSSet *spi = [singlePageInfoList objectAtIndex:documentOffset];
 		for ( int page = 0 ; page < totalPage ; ) {
 			[pageHeads addObject:[NSNumber numberWithInt:page]];
-			if ( isLandscape &&
-				![self isSinglePage:page] &&
+			if (![spi containsObject:[[NSNumber numberWithInt:page] stringValue]] &&
 				(page + 1) < totalPage &&
-				![self isSinglePage:(page + 1)] ) {
-				
+				![spi containsObject:[[NSNumber numberWithInt:page+1] stringValue]] ) {
+
 				[isSingleIndex addObject:[NSNumber numberWithBool:NO]];
 				page += 2;
 			} else {
@@ -595,7 +559,7 @@
     _pageHeads = pageHeadsList;
     _isSingleIndex = isSingleIndexList;
 
-	_currentIndex = [self currentIndexByPage:_currentPage];
+	_currentIndex = [self currentIndexByPage:_normalizedCurrentPage];
 }
 
 
@@ -654,7 +618,7 @@
     NSMutableDictionary *ret = [NSMutableDictionary dictionaryWithCapacity:0];
     
     [ret setObject:_documentId forKey:@"documentId"];
-    [ret setObject:[NSString stringWithFormat:@"%d" , _currentPage] forKey:@"page"];
+    [ret setObject:[NSString stringWithFormat:@"%d" , _normalizedCurrentPage] forKey:@"page"];
     
     return ret;
 }
@@ -671,12 +635,12 @@
 
 - (BOOL)saveHighlights:(NSArray *)data
 {
-	return [_datasource saveHighlights:_documentId page:_currentPage data:data];
+	return [_datasource saveHighlights:_documentId page:_normalizedCurrentPage data:data];
 }
 
 - (BOOL)saveFreehand:(NSArray *)data
 {
-	return [_datasource saveFreehand:_documentId page:_currentPage data:data];
+	return [_datasource saveFreehand:_documentId page:_normalizedCurrentPage data:data];
 }
 
 

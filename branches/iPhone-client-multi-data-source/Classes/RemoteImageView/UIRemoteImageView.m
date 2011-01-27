@@ -20,7 +20,11 @@
 
 - (void)didFinishFetch:(UIImage *)image {
     self.image = image;
-    self.alpha = 0.0;
+
+	// TODO すでに画像が設定されている場合には、
+	// alphaを0にしない
+	
+	self.alpha = 0.0;
 
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.5];

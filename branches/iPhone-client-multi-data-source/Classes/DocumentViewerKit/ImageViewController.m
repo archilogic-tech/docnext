@@ -79,22 +79,28 @@
 	tiledScrollView = [[self buildContentView] retain];
 	[_tiledScrollViewContainer addSubview:tiledScrollView];
 
+	
 	_configViewController = [[ConfigViewController alloc] initWithNibName:[Util buildNibName:@"Config" orientation:self.interfaceOrientation]
 																   bundle:nil];
 	_configViewController.parent = self;
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
 	[super viewWillAppear:animated];
 	[self movePageToCurrent:PageTransitionNone];
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
 	// メニューを消す
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -122,7 +128,7 @@
 	_documentContext = [dc retain];
 
 	[self movePageToCurrent:PageTransitionNone];
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
 }
 
 - (void)dealloc {
@@ -143,6 +149,7 @@
 
 	[_documentContext release];
 	[_datasource release];
+	[_container release];
 	
     [super dealloc];
 }
@@ -163,7 +170,7 @@
 	NSString *text = [_documentContext imageText];
 	[[UIPasteboard generalPasteboard] setString:[text substringWithRange:[overlayManager selection]]];
 
-    [self setHideConfigView:YES];
+    [self setConfigViewHidden:YES];
     [overlayManager clearSelection];
 
 	isIgnoreTap = YES;
@@ -182,17 +189,17 @@
     
     [self saveHighlights];
     
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
     [overlayManager clearSelection];
     
-	[self setHideHighlightMenu:NO];
+	[self setHighlightMenuHidden:NO];
 }
 
 - (IBAction)highlightCommentButtonClick {
     HighlightObject *highlight = [highlights objectForKey:[NSNumber numberWithInt:currentHighlightSerial]];
     highlightCommentTextField.text = highlight.text;
     
-	[self setHideHighlightCommentMenu:NO];
+	[self setHighlightCommentMenuHidden:NO];
 }
 
 - (IBAction)highlightCommentApplyButtonClick {
@@ -205,7 +212,7 @@
     highlight.text = highlightCommentTextField.text;
     [self saveHighlights];
 
-	[self setHideHighlightCommentMenu:YES];
+	[self setHighlightCommentMenuHidden:YES];
 }
 
 - (IBAction)highlightChangeColorClick:(UIButton *)sender {
@@ -215,8 +222,8 @@
     highlight.color = sender.tag;
     [self saveHighlights];
     
-	[self setHideHighlightMenu:YES];
-	[self setHideHighlightCommentMenu:YES];
+	[self setHighlightMenuHidden:YES];
+	[self setHighlightCommentMenuHidden:YES];
 }
 
 - (IBAction)highlightDeleteClick {
@@ -227,8 +234,8 @@
     
     currentHighlightSerial = -1;
 
-	[self setHideHighlightMenu:YES];
-	[self setHideHighlightCommentMenu:YES];
+	[self setHighlightMenuHidden:YES];
+	[self setHighlightCommentMenuHidden:YES];
 }
 
 
@@ -313,12 +320,12 @@
 }
 
 
-- (BOOL)hideConfigView
+- (BOOL)configViewHidden
 {
 	return (_configViewController.view.alpha == 0);
 }
 
-- (void)setHideConfigView:(BOOL)b
+- (void)setConfigViewHidden:(BOOL)b
 {
     double dst = b ? 0 : 1;
     
@@ -334,9 +341,9 @@
     
     _configViewController.view.alpha = dst;
     if ( [overlayManager hasSelection] ) {
-		[self setHideSelectionMenuView:b];
+		[self setSelectionMenuViewHidden:b];
     }
-	[self setHideHighlightMenu:YES];
+	[self setHighlightMenuHidden:YES];
     [UIView commitAnimations];
 
 	if (b) [_configViewController viewDidDisappear:YES];
@@ -345,12 +352,12 @@
 
 }
 
-- (BOOL)hideSelectionMenu
+- (BOOL)selectionMenuHidden
 {
 	return (selectionMenuView.alpha == 0);
 }
 
-- (void)setHideSelectionMenuView:(BOOL)b
+- (void)setSelectionMenuViewHidden:(BOOL)b
 {
     double dst = b ? 0 : 1;
     
@@ -366,12 +373,12 @@
 }
 
 
-- (BOOL)hideHighlightMenu
+- (BOOL)highlightMenuHidden
 {
 	return (highlightMenuView.alpha == 0);
 }
 
-- (void)setHideHighlightMenu:(BOOL)b
+- (void)setHighlightMenuHidden:(BOOL)b
 {
     double dst = b ? 0 : 1;
 	[UIView beginAnimations:nil context:nil];
@@ -384,13 +391,13 @@
     [UIView commitAnimations];
 }
 
-- (BOOL)hideHighlightCommentMenu
+- (BOOL)highlightCommentMenuHidden
 {
 	return (highlightCommentMenuView.alpha == 0);
 }
 
 
-- (void)setHideHighlightCommentMenu:(BOOL)b
+- (void)setHighlightCommentMenuHidden:(BOOL)b
 {
     double dst = b ? 0 : 1;
     
@@ -539,7 +546,7 @@
 	
 	_documentContext.currentIndex += delta;
 	[self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
 }
 
 - (void)tiledScrollViewScaleChanging:(float)scale {
@@ -560,7 +567,7 @@
 	NSLog(@"single");
 
 	// コメント入力メニューが表示されているときはなにもしない
-	if (![self hideHighlightCommentMenu]) return;
+	if (![self highlightCommentMenuHidden]) return;
 	
 	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
 
@@ -568,14 +575,14 @@
         isIgnoreTap = NO;
     } else {
 		
-		if (![self hideHighlightMenu]) {
-            [self setHideHighlightMenu:YES];
+		if (![self highlightMenuHidden]) {
+            [self setHighlightMenuHidden:YES];
             [overlayManager clearHighlightSelection];
             currentHighlightSerial = -1;
             
-			[self setHideHighlightCommentMenu:YES];
+			[self setHighlightCommentMenuHidden:YES];
         } else {
-			[self setHideConfigView:![self hideConfigView]];
+			[self setConfigViewHidden:![self configViewHidden]];
         }
     }
 }
@@ -661,7 +668,7 @@
 					BOOL isLeft = linkPage > _documentContext.currentPage ? YES : NO;
 					_documentContext.currentPage = linkPage;
                     [self movePageToCurrent:isLeft ? PageTransitionFromLeft : PageTransitionFromRight];
-					[self setHideConfigView:YES];
+					[self setConfigViewHidden:YES];
                     break;
                 }
                 default:
@@ -680,19 +687,19 @@
 #pragma mark OverlayManagerDelegate
 
 - (void)didBeginSelect {
-	[self setHideConfigView:YES];
+	[self setConfigViewHidden:YES];
 }
 
 - (void)didEndSelect {
-	[self setHideConfigView:NO];
+	[self setConfigViewHidden:NO];
 }
 
 - (void)didTouchDownHighlight:(int)serial {
     currentHighlightSerial = serial;
     isIgnoreTap = YES;
     
-	[self setHideConfigView:YES];
-	[self setHideHighlightMenu:NO];
+	[self setConfigViewHidden:YES];
+	[self setHighlightMenuHidden:NO];
 }
 
 - (void)didTouchDownURILink:(NSString *)uri {
@@ -743,7 +750,41 @@
 }
 
 
+- (void)showInViewController:(UIViewController*)v
+{
+	if (!_container) {
+		_container = [[UINavigationController alloc] initWithRootViewController:self];
+		_container.navigationBarHidden = YES;
+		_container.view.backgroundColor = [UIColor blackColor];
+	}
+	
+	UIWindow *w = [UIApplication sharedApplication].keyWindow;
 
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:1];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:YES];
+
+	[v presentModalViewController:_container animated:NO];
+
+	[UIView commitAnimations];
+}
+
+- (void)dismiss
+{
+	UIWindow *w = [UIApplication sharedApplication].keyWindow;
+	
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:1];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:YES];
+
+	[self.parentViewController dismissModalViewControllerAnimated:NO];
+	
+	[UIView commitAnimations];
+	[_container release];
+	_container = nil;
+}
 
 
 

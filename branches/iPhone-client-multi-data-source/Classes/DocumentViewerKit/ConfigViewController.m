@@ -76,7 +76,7 @@
 
 
 - (IBAction)homeButtonClick:(id)sender {
-    [_parent.navigationController popToRootViewControllerAnimated:YES];
+	[_parent dismiss];
 }
 
 - (IBAction)tocViewButtonClick:(id)sender
@@ -156,7 +156,6 @@
 
 - (IBAction)freehandSwitchChanged {
     _parent.tiledScrollView.scrollEnabled = !_freehandSwitch.on;
-//    _parent.tiledScrollView.userInteractionEnabled = !_freehandSwitch.on;
     _parent.freehandView.userInteractionEnabled = _freehandSwitch.on;
     
     [_parent saveFreehand];
@@ -185,9 +184,9 @@
         popover = nil;
     } else {
 		[_parent.navigationController popViewControllerAnimated:YES];
-        //[searchViewController.view removeFromSuperview];
+//		[_parent dismiss];
     }
-	[_parent setHideConfigView:YES];
+	[_parent setConfigViewHidden:YES];
 }
 
 

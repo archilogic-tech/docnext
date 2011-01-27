@@ -47,7 +47,6 @@
 - (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page;
 - (UIView *)getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
 
-- (NSArray*)setHideConfigViewPageList:(id<NSObject>)metaDocumentId documentId:(id)docId;
 - (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page;
 - (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page; // imageTextとの違いは?
 

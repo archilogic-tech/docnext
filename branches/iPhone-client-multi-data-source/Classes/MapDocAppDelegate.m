@@ -35,9 +35,9 @@
 
 		ImageViewController *ic = [ImageViewController createViewController:_datasource];
 		ic.documentContext = dc;
-		[self.viewController pushViewController:ic animated:YES];
-		[dc release];
 
+		[ic showInViewController:self.viewController];
+		[dc release];
     } else {
         [_datasource startDownload:metaDocumentId baseUrl:nil];
     }
@@ -67,7 +67,7 @@
 		
 		ImageViewController *ic = [ImageViewController createViewController:_datasource];
 		ic.documentContext = dc;
-		[self.viewController pushViewController:ic animated:YES];
+		[ic showInViewController:self.viewController];
 		[dc release];
 
 	} else {
@@ -85,7 +85,7 @@
 	
 	ImageViewController *ic = [ImageViewController createViewController:_datasource];
 	ic.documentContext = history;
-	[self.viewController pushViewController:ic animated:YES];
+	[ic showInViewController:self.viewController];
 }
 
 - (void)downloaded {
@@ -180,19 +180,18 @@
 		// URLに記載されているホストからダウンロードを試みる
         [self view2:url];
 	}
-	
     return YES;
 }
 */
 
 - (void)dealloc {
-    [viewController release];
-    [window release];
+	[viewController release];
+	[window release];
     
-    [super dealloc];
+	[super dealloc];
 }
 
-- (void) applicationDidReceiveMemoryWarning:(UIApplication *)application
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
 	[_datasource didReceiveMemoryWarning];
 }
