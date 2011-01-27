@@ -14,19 +14,9 @@
 
 	NSString *_url;
 	NSString *_destination;
-	/*
-	id<NSObject> _metaDocumentId;
-	id<NSObject> _documentId;
-	UstDocDownloadManager *_downloadManager;
-	BOOL _finished;
-	 */
 }
 
 @property (nonatomic, copy) NSString *url;
 @property (nonatomic, copy) NSString *destination;
-/*
-@property (nonatomic, copy) id<NSObject> metaDocumentId;
-@property (nonatomic, copy) id<NSObject> documentId;
-@property (nonatomic, retain) UstDocDownloadManager *downloadManager;
-*/
+
 @end

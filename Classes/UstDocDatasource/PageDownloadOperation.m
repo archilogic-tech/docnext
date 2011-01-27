@@ -13,11 +13,7 @@
 
 @synthesize url = _url;
 @synthesize destination = _destination;
-/*
-@synthesize metaDocumentId = _metaDocumentId;
-@synthesize documentId = _documentId;
-@synthesize downloadManager = _downloadManager;
-*/
+
 - (id) init
 {
 	self = [super init];
@@ -34,44 +30,16 @@
 	[super dealloc];
 }
 
-/*
-- (BOOL) isFinished
-{
-	return _finished;
-}
-*/
-
-- (void)didPageDownloadFinished:(ASIHTTPRequest *)request {
-/*
-    id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
-	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
-	int page = [[request.userInfo objectForKey:@"page"] intValue];
-    int px = [[request.userInfo objectForKey:@"px"] intValue];
-    int py = [[request.userInfo objectForKey:@"py"] intValue];
-	
-    [self updateDownloadStatus:metaDocumentId documentId:docId page:page px:px py:py];
-    [self downloadNextPage:metaDocumentId documentId:docId page:page px:px py:py];
- */
-}
-
-- (void)didPageDownloadFailed:(ASIHTTPRequest *)request
-{
-	/*
-	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
-	[delegate didPageDownloadFailed:metaDocumentId error:request.error];
-	*/
-}
-
 
 - (void)main
 {
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:_url]];
-    request.delegate = self;
-    request.didFinishSelector = @selector(didPageDownloadFinished:);
-	request.didFailSelector = @selector(didPageDownloadFailed:);
-	
-	// 直接正しいところに書き込む
 	request.downloadDestinationPath = _destination;
+
+//    request.delegate = self;
+//    request.didFinishSelector = @selector(didPageDownloadFinished:);
+//	request.didFailSelector = @selector(didPageDownloadFailed:);
+	
 //    request.userInfo = [NSMutableDictionary dictionaryWithCapacity:0];
 /*
     [request.userInfo setValue:metaDocumentId forKey:@"metaDocumentId"];
@@ -82,6 +50,8 @@
  */
 	
     [request startSynchronous];
+
+	// TODO エラーチェック
 }
 
 @end

@@ -266,26 +266,17 @@
 							<array>
 								<string>29B97314FDCFA39411CA2CEA</string>
 								<string>080E96DDFE201D6D7F000001</string>
-								<string>15E5811512954D7700C69201</string>
-								<string>152D2EFF12F16B3A00DA9E19</string>
-								<string>15E5815D12954D7700C69201</string>
-								<string>15E5816B12954D7700C69201</string>
-								<string>15E5816E12954D7700C69201</string>
-								<string>15E581BC12954D7700C69201</string>
-								<string>15E5821F12954D8F00C69201</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>59</integer>
-									<integer>55</integer>
-									<integer>34</integer>
+									<integer>3</integer>
 									<integer>1</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 779}, {313, 618}}</string>
+							<string>{{0, 0}, {313, 618}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -322,7 +313,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>UstDocDownloadManager.m</string>
+								<string>MapDocAppDelegate.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -330,11 +321,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>UstDocDownloadManager.m</string>
+										<string>MapDocAppDelegate.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>156CE8BF12F18E7300F9C1A1</string>
+										<string>156CE8CC12F18F1400F9C1A1</string>
 										<key>history</key>
 										<array>
 											<string>15E30B70126C179D0091B6B7</string>
@@ -478,31 +469,31 @@
 											<string>152D2F4712F16C7200DA9E19</string>
 											<string>152D2F4812F16C7200DA9E19</string>
 											<string>152D2F4912F16C7200DA9E19</string>
-											<string>152D2F4C12F16C7200DA9E19</string>
 											<string>152D2F4D12F16C7200DA9E19</string>
 											<string>152D2F4E12F16C7200DA9E19</string>
 											<string>156CE7AE12F16EA100F9C1A1</string>
 											<string>156CE7AF12F16EA100F9C1A1</string>
-											<string>156CE7B012F16EA100F9C1A1</string>
 											<string>156CE7B712F16F2900F9C1A1</string>
 											<string>156CE7E412F17BBB00F9C1A1</string>
 											<string>156CE7E512F17BBB00F9C1A1</string>
-											<string>156CE7E712F17BBB00F9C1A1</string>
-											<string>156CE7E812F17BBB00F9C1A1</string>
 											<string>156CE80A12F17DA400F9C1A1</string>
 											<string>156CE82312F17E9200F9C1A1</string>
 											<string>156CE88012F18B9500F9C1A1</string>
 											<string>156CE88112F18B9500F9C1A1</string>
-											<string>156CE88212F18B9500F9C1A1</string>
 											<string>156CE88312F18B9500F9C1A1</string>
 											<string>156CE88412F18B9500F9C1A1</string>
 											<string>156CE88512F18B9500F9C1A1</string>
-											<string>156CE88612F18B9500F9C1A1</string>
 											<string>156CE88812F18B9500F9C1A1</string>
-											<string>156CE88A12F18B9500F9C1A1</string>
-											<string>156CE89E12F18C3C00F9C1A1</string>
 											<string>156CE8BA12F18E5700F9C1A1</string>
-											<string>156CE8BB12F18E5700F9C1A1</string>
+											<string>156CE8C112F18F0100F9C1A1</string>
+											<string>156CE8C212F18F0100F9C1A1</string>
+											<string>156CE8C512F18F1400F9C1A1</string>
+											<string>156CE8C612F18F1400F9C1A1</string>
+											<string>156CE8C712F18F1400F9C1A1</string>
+											<string>156CE8C812F18F1400F9C1A1</string>
+											<string>156CE8C912F18F1400F9C1A1</string>
+											<string>156CE8CA12F18F1400F9C1A1</string>
+											<string>152D2F4C12F16C7200DA9E19</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -700,7 +691,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>156CE8C012F18E7300F9C1A1</string>
 		<string>156CE83012F17F0500F9C1A1</string>
 		<string>156CE7C012F16F2900F9C1A1</string>
 		<string>156CE7C112F16F2900F9C1A1</string>
@@ -708,8 +698,8 @@
 		<string>1514E1641265A1000013B686</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>1CD10A99069EF8BA00B06720</string>
-		<string>/Users/sakukawa/Documents/archlogicViewer/docnext/MapDoc.xcodeproj</string>
 		<string>1C78EAAD065D492600B07095</string>
+		<string>/Users/sakukawa/Documents/archlogicViewer/docnext/MapDoc.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>2 68 1121 677 0 0 1280 778 </string>
