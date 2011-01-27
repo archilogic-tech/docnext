@@ -253,6 +253,7 @@
 	_currentPage = n;
 	if (UIInterfaceOrientationIsPortrait(_currentOrientation)) {
 		_currentIndex = n;
+		_normalizedCurrentPage = n;
 		return;
 	}
 	

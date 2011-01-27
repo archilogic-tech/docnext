@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		151BB16412961361009A313E /* TOCObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 151BB16312961361009A313E /* TOCObject.m */; };
 		154EB1C612ED7053007B5FD6 /* ThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 154EB1C512ED7053007B5FD6 /* ThumbnailView.m */; };
+		156CE84912F1833600F9C1A1 /* PageDownloadOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 156CE84812F1833600F9C1A1 /* PageDownloadOperation.m */; };
 		15992ED212ED26B2001AA3C8 /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 15992ED112ED26B2001AA3C8 /* Util.m */; };
 		159FD90E12EFFD6D001C9BD7 /* ConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 159FD90C12EFFD6D001C9BD7 /* ConfigViewController.m */; };
 		159FD90F12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 159FD90D12EFFD6D001C9BD7 /* ConfigViewController-iPhone.xib */; };
@@ -133,6 +134,8 @@
 		154EB1C412ED7053007B5FD6 /* ThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailView.h; sourceTree = "<group>"; };
 		154EB1C512ED7053007B5FD6 /* ThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailView.m; sourceTree = "<group>"; };
 		155A7F0E12E58CE800F810AB /* DocumentDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentDownloadManager.h; sourceTree = "<group>"; };
+		156CE84712F1833600F9C1A1 /* PageDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageDownloadOperation.h; sourceTree = "<group>"; };
+		156CE84812F1833600F9C1A1 /* PageDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageDownloadOperation.m; sourceTree = "<group>"; };
 		15992ED012ED26B2001AA3C8 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		15992ED112ED26B2001AA3C8 /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
 		159FD90B12EFFD6D001C9BD7 /* ConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigViewController.h; sourceTree = "<group>"; };
@@ -748,6 +751,8 @@
 				15E581C012954D7700C69201 /* UstDocDownloadManager.m */,
 				15E5823312954DFC00C69201 /* DownloadStatusObject.h */,
 				15E5823412954DFC00C69201 /* DownloadStatusObject.m */,
+				156CE84712F1833600F9C1A1 /* PageDownloadOperation.h */,
+				156CE84812F1833600F9C1A1 /* PageDownloadOperation.m */,
 			);
 			name = UstDocDatasource;
 			path = ../UstDocDatasource;
@@ -1079,6 +1084,7 @@
 				154EB1C612ED7053007B5FD6 /* ThumbnailView.m in Sources */,
 				15DA17A712EFA51600B8A503 /* DocumentSearchResult.m in Sources */,
 				159FD90E12EFFD6D001C9BD7 /* ConfigViewController.m in Sources */,
+				156CE84912F1833600F9C1A1 /* PageDownloadOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

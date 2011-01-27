@@ -763,7 +763,7 @@
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:1];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:YES];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:NO];
 
 	[v presentModalViewController:_container animated:NO];
 
@@ -777,7 +777,7 @@
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:1];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:YES];
+	[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:w cache:NO];
 
 	[self.parentViewController dismissModalViewControllerAnimated:NO];
 	

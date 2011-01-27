@@ -28,6 +28,6 @@
 
 @property(nonatomic,assign) id<NSObject,DocumentViewerDatasource> datasource;
 
-- (void)apply:(id<NSObject>)docId;
+- (void)apply:(id<NSObject>)metaDocumentId;
 
 @end
