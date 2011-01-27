@@ -477,8 +477,19 @@ package jp.archilogic.docnext.ui {
 
         private function set currentHead( value : int ) : * {
             _currentHead = value;
-            _setPageHandler( _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead ) ,
-                                                                            _infos[ _currentDocPos ].pages );
+
+            var sumToCurrent : int = 0;
+            var sumTotal : int = 0;
+
+            for ( var index : int = 0 ; index < _infos.length ; index++ ) {
+                if ( index < _currentDocPos ) {
+                    sumToCurrent += _infos[ _currentDocPos ].pages;
+                }
+
+                sumTotal += _infos[ _currentDocPos ].pages;
+            }
+
+            _setPageHandler( _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead ) + sumToCurrent , sumTotal );
         }
 
         private function easeInOutQuart( t : Number ) : Number {
