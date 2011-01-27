@@ -7,11 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TiledScrollView.h"
 #import "DocumentViewerDatasource.h"
 
-@interface MapDocViewController : UINavigationController<DownloadManagerDelegate> {
-    UIInterfaceOrientation willInterfaceOrientation;
+@interface MapDocViewController : UINavigationController<DownloadManagerDelegate, UIAlertViewDelegate> {
 	id<NSObject,DocumentViewerDatasource> _datasource;
 
 	UIProgressView *_downloadProgressView;

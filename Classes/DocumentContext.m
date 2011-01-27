@@ -73,7 +73,6 @@
 
 
 - (void)buildPageHeads;
-//- (void)loadSinglePageSet;
 
 
 
@@ -98,11 +97,11 @@
 		MapDocAppDelegate *d = (MapDocAppDelegate*)[UIApplication sharedApplication].delegate;
 		_datasource = [d.datasource retain];
 
-		UIDevice *device = [UIDevice currentDevice];					//Get the device object
+		UIDevice *device = [UIDevice currentDevice];
 
-		[device beginGeneratingDeviceOrientationNotifications];			//Tell it to start monitoring the accelerometer for orientation
-		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];	//Get the notification centre for the app
-		[nc addObserver:self											//Add yourself as an observer
+		[device beginGeneratingDeviceOrientationNotifications];
+		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+		[nc addObserver:self
 			   selector:@selector(didInterfaceOrientationChangeHandler:)
 				   name:UIDeviceOrientationDidChangeNotification
 				 object:device];
