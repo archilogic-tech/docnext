@@ -129,15 +129,6 @@
 */
 - (NSArray *)regions:(id)docId page:(int)page;
 
-/*!
-    @method     setHideConfigViewPageInfo:
-    @abstract   ?
-    @discussion 
-    @param      docId 文書ID
-    @result     ?
-*/
-- (NSArray*)setHideConfigViewPageList:(id)docId;
-
 
 /*!
     @method     deleteCache:

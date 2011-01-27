@@ -15,10 +15,10 @@
 - (id)initWithParam:(UIRemoteImageView *)_delegate url:(NSString*)url
 {
 	if ((self = [super init])) {
-        delegate = [_delegate retain];
+		delegate = [_delegate retain];
 		_url = [url retain];
-    }
-    return self;
+	}
+	return self;
 }
 
 - (void)dealloc {
@@ -27,16 +27,23 @@
     [super dealloc];
 }
 
-- (void)main {
-
-    NSLog(@"url : %@", _url);
+// queueのスレッドから呼ばれる
+- (void)main
+{
+	NSLog(@"url : %@", _url);
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:_url]];
 	request.requestHeaders = [NSMutableDictionary dictionaryWithObjectsAndKeys:@"docnext", @"User-Agent", nil];
 
     [request startSynchronous];
 
-    [delegate performSelectorOnMainThread:@selector(didFinishFetch:)
-                               withObject:[UIImage imageWithData:[request responseData]] waitUntilDone:YES];
+	NSData *data = [request responseData];
+	UIImage *img = [UIImage imageWithData:data];
+
+	// TODO キャッシュとしてdataを拡大画像を保存する
+	
+	[delegate performSelectorOnMainThread:@selector(didFinishFetch:)
+                               withObject:img
+							waitUntilDone:YES];
 }
 
 @end
