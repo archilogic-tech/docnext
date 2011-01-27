@@ -97,6 +97,12 @@
 	_downloadProgressView.alpha = 0.0f;
 
 	// 自動で再開させるので、ユーザへの通知は行わない
+	/*
+	 if ( [delegate respondsToSelector:@selector(didPageDownloadFailed:error:)] ) {
+	 [delegate didPageDownloadFailed:docId error:[request error]];
+	 }
+	 NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
+	 */
 }
 
 - (void)pageDownloadProgressed:(id <NSObject>)metaDocumentId downloaded:(float)downloaded

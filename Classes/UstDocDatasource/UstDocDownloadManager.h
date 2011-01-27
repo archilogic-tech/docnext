@@ -17,7 +17,9 @@
     id<NSObject,DownloadManagerDelegate> delegate;
 	id<NSObject,DocumentViewerDatasource> _datasource;
 
+	NSOperationQueue *_pageDownloadQueue;
 }
+
 
 @property(nonatomic,assign) id<NSObject,DownloadManagerDelegate> delegate;
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;

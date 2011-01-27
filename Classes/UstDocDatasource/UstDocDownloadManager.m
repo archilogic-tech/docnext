@@ -12,6 +12,8 @@
 #import "ZipArchive.h"
 #import "UstDocDatasource.h"
 
+#import "PageDownloadOperation.h"
+
 @interface UstDocDownloadManager ()
 - (void)downloadNextPage:(id)docId page:(int)page px:(int)px py:(int)py;
 - (void)didMetaInfoDownloadFinished:(ASIHTTPRequest *)request;
@@ -21,6 +23,24 @@
 
 @synthesize delegate;
 @synthesize datasource = _datasource;
+
+- (id) init
+{
+	self = [super init];
+	if (self) {
+		_pageDownloadQueue = [[NSOperationQueue alloc] init];
+	}
+	return self;
+}
+
+- (void)dealloc
+{
+	[_datasource release];
+	[_pageDownloadQueue release];
+	[super dealloc];
+}
+
+
 
 - (void)startMetaInfoDownload:(id<NSObject>)metaDocumentId baseUrl:(NSString*)baseUrl
 {
@@ -64,15 +84,18 @@
 }
 
 - (void)resume {
+	// TODO
+	/*
     DownloadStatusObject *downloadStatus = [_datasource downloadStatus];
 
-	[delegate didPageDownloadStarted:downloadStatus.metaDocumentId];
 
     [self downloadNextPage:downloadStatus.metaDocumentId
 				documentId:downloadStatus.docId
 					  page:downloadStatus.downloadedPage
 						px:downloadStatus.downloadedPx
                         py:downloadStatus.downloadedPy];
+	[delegate didPageDownloadStarted:downloadStatus.metaDocumentId];
+ */
 }
 
 - (void)downloadPage:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page px:(int)px py:(int)py
@@ -82,23 +105,14 @@
     
     NSString *url = [NSString stringWithFormat:@"%@getPage?type=%@&documentId=%@&page=%d&level=%d&px=%d&py=%d" ,
                      ServerEndpoint , type , docId , page , level , px , py];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    request.delegate = self;
-    request.didFinishSelector = @selector(didPageDownloadFinished:);
-	request.didFailSelector = @selector(didPageDownloadFailed:);
-	
-	// 直接正しいところに書き込む
-	NSString *dest = [NSString stringWithFormat:@"%@/%@/images/%@-%d-%d-%d-%d.jpg" , [(NSArray*)metaDocumentId componentsJoinedByString:@","] , docId , type , page , level , px , py];
-	request.downloadDestinationPath = [_datasource getFullPath:dest];
-	
-    request.userInfo = [NSMutableDictionary dictionaryWithCapacity:0];
-    [request.userInfo setValue:metaDocumentId forKey:@"metaDocumentId"];
-    [request.userInfo setValue:docId forKey:@"documentId"];
-    [request.userInfo setValue:[NSNumber numberWithInt:page] forKey:@"page"];
-    [request.userInfo setValue:[NSNumber numberWithInt:px] forKey:@"px"];
-    [request.userInfo setValue:[NSNumber numberWithInt:py] forKey:@"py"];
 
-    [request startAsynchronous];
+	NSString *dest = [NSString stringWithFormat:@"%@/%@/images/%@-%d-%d-%d-%d.jpg" , [(NSArray*)metaDocumentId componentsJoinedByString:@","] , docId , type , page , level , px , py];
+
+	PageDownloadOperation *op = [[PageDownloadOperation alloc] init];
+	op.url = url;
+	op.destination = [_datasource getFullPath:dest];
+	[_pageDownloadQueue addOperation:op];
+	[op release];
 }
 
 - (void)downloadComplete:(id<NSObject>)metaDocumentId {
@@ -113,7 +127,7 @@
     [downloaded addObject:[NSString stringWithFormat:@"%@" , mdid]];
     [_datasource saveDownloadedIds:downloaded];
 }
-
+/*
 - (void)downloadNextPage:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
     int pages = [_datasource pages:metaDocumentId];
     
@@ -161,6 +175,7 @@
 	[downloadStatus release];
 //	assert(0);
 }
+ */
 
 #pragma mark ASIHTTPRequest didFinishSelector
 
@@ -206,16 +221,10 @@
 	}
 
 	[[NSFileManager defaultManager] removeItemAtPath:zipName error:nil];
-	
-	// Take care this way is depended on the fact 2x2 is max
-	// TODO 意味を理解して修正すること
-	[self updateDownloadStatus:metaDocumentId documentId:docId page:-1 px:1 py:1];
-	
-	// 誌面画像のダウンロードを別スレッドで開始する
-	[delegate didPageDownloadStarted:metaDocumentId];
 
-    [self downloadPage:metaDocumentId documentId:docId page:0 px:0 py:0];
-    
+	// Take care this way is depended on the fact 2x2 is max
+	//	[self updateDownloadStatus:metaDocumentId documentId:docId page:-1 px:1 py:1];
+
 	currentDownloadIndex++;
 	if ([metaDocumentId isKindOfClass:[NSArray class]]) {
 		int count = [(NSArray*)metaDocumentId count];
@@ -227,11 +236,50 @@
 		}
 	}
 
+	// TODO 本当はこの時点で呼んではいけない
+	[self downloadComplete:metaDocumentId];
+
+	
+	// すべてのメタ情報のダウンロードが完了したら誌面画像のダウンロードを別スレッドで開始する
+	[self didDownloadPageStart:metaDocumentId];
+
     if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {
         [delegate didMetaInfoDownloadFinished:metaDocumentId];
     }
 }
 
+- (void)didDownloadPageStart:(id<NSObject>)metaDocumentId
+{
+	for (id<NSObject> documentId in metaDocumentId) {
+		int page = 0;
+		int px = 0;
+		int py = 0;
+		[self downloadPage:metaDocumentId documentId:documentId page:page px:px py:py];
+
+		int pages = [_datasource pages:metaDocumentId documentId:documentId];
+		while(true) {
+			if ( [[UIScreen mainScreen] scale] == 2.0 ) {
+				if ( px < 1 ) {
+					[self downloadPage:metaDocumentId documentId:documentId page:page px:++px py:py];
+				} else if ( py < 1 ) {
+					[self downloadPage:metaDocumentId documentId:documentId page:page px:0 py:++py];
+				} else if ( page + 1 < pages ) {
+					[self downloadPage:metaDocumentId documentId:documentId page:++page px:0 py:0];
+				} else {
+					break;
+				}
+			} else {
+				if ( page + 1 < pages ) {
+					[self downloadPage:metaDocumentId documentId:documentId page:++page px:0 py:0];
+				} else {
+					break;
+				}
+			}
+		}		
+	}		
+}
+
+/*
 - (void)didPageDownloadFinished:(ASIHTTPRequest *)request {
     id<NSObject> docId = [request.userInfo objectForKey:@"documentId"];
 	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
@@ -245,17 +293,10 @@
 
 - (void)didPageDownloadFailed:(ASIHTTPRequest *)request
 {
-    id docId = [request.userInfo objectForKey:@"documentId"];
-	
-	// TODO きちんとエラー情報を渡すこと
-	// NSNotifacationにする
-	/*
-	if ( [delegate respondsToSelector:@selector(didPageDownloadFailed:error:)] ) {
-		[delegate didPageDownloadFailed:docId error:[request error]];
-	}
-	NSLog( @"Request Failed: %@" , [[request error] localizedDescription] );
-	 */
+	id<NSObject> metaDocumentId = [request.userInfo objectForKey:@"metaDocumentId"];
+	[delegate didPageDownloadFailed:metaDocumentId error:request.error];
 }
+ */
 
 
 #pragma mark ASIHTTPRequestDelegate

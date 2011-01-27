@@ -157,7 +157,7 @@
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-	NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
+	id<NSObject> metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
     [cell apply:metaDocumentId];
     
     return cell;
@@ -170,8 +170,7 @@
 - (void)tableView:(UITableView *)_tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
 
-        NSString *metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
-
+        id<NSObject> metaDocumentId = [downloadedIds objectAtIndex:indexPath.row];
 		[_datasource deleteCache:metaDocumentId];
 
         [downloadedIds removeObjectAtIndex:indexPath.row];
@@ -197,7 +196,11 @@
     self.tableView.editing = YES;
     self.tableView.allowsSelectionDuringEditing = YES;
     
-    downloadedIds = [[_datasource downloadedIds] retain];
+	NSArray *tmp = [_datasource downloadedIds];
+	downloadedIds = [[NSMutableArray alloc] init];
+	for (NSString *s in tmp){
+		[downloadedIds addObject:[s componentsSeparatedByString:@","]];
+	}
     
     [self.tableView reloadData];
 }

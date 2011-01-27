@@ -25,7 +25,7 @@
     }
 
 	NSString *result = [documentsDirectory stringByAppendingPathComponent:fileName];
-//	NSLog(@"DIR : %@", result);
+	NSLog(@"DIR : %@", result);
     return result;
 }
 

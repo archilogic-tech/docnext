@@ -17,10 +17,10 @@
 
 @synthesize datasource = _datasource;
 
-- (void)apply:(id<NSObject>)docId {
+- (void)apply:(id<NSObject>)metaDocumentId {
 	
 	DocumentContext *dc = [[DocumentContext alloc] init];
-	dc.documentId = docId;
+	dc.documentId = metaDocumentId;
 	
 	self.imageView.image = [dc thumbnailWithPage:0];//  [_datasource thumbnail:docId cover:0];
     self.titleLabel.text = [dc documentTitle]; //[_datasource title:docId];
