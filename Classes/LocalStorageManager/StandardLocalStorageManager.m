@@ -11,6 +11,14 @@
 #import "NSString+Data.h"
 
 
+@interface StandardLocalStorageManager (Private)
+- (BOOL)write:(NSData *)data toFile:(NSString *)fileName;
+- (NSData *)read:(NSString *)fileName;
+- (BOOL)exists:(NSString *)fileName;
+- (BOOL)remove:(NSString *)fileName;
+@end
+
+
 @implementation StandardLocalStorageManager
 
 #pragma mark common
@@ -25,7 +33,7 @@
     }
 
 	NSString *result = [documentsDirectory stringByAppendingPathComponent:fileName];
-	NSLog(@"DIR : %@", result);
+//	NSLog(@"DIR : %@", result);
     return result;
 }
 
@@ -59,7 +67,6 @@
 	fileName = [self getFullPath:fileName];
 	BOOL r = YES;
 	return [[NSFileManager defaultManager] fileExistsAtPath:fileName isDirectory:&r];
-//	return [self exists:fileName] |	[self exists:[fileName stringByAppendingString:@".json"]];
 }
 
 - (BOOL)existsWithMetaDocumentId:(id<NSObject>)metaDocumentId documentId:docId forKey:(id)key
@@ -98,10 +105,6 @@
 	NSString *fileName = [NSString stringWithFormat:@"%@/", mdid];
 	return [self remove:fileName];
 }
-
-
-
-
 
 - (BOOL)saveObject:(id)object forKey:(id)key
 {
@@ -144,7 +147,6 @@
 	NSData *data = [self read:fileName];
 	return [[NSString stringWithData:data] JSONValue];
 }
-
 
 - (BOOL)saveData:(NSData*)data forKey:(id)key
 {

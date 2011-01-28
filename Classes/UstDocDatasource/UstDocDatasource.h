@@ -32,43 +32,50 @@
 - (void)didReceiveMemoryWarning;
 - (void)updateSystemFromVersion:(NSString*)currentVersion toVersion:(NSString*)newVersion;
 
-// ドキュメントメタ情報系
-- (NSDictionary*)info:(id<NSObject>)metaDocumentId;
+// ドキュメント操作系
 - (BOOL)existsDocument:(id<NSObject>)metaDocumentId;
-- (int)pages:(id<NSObject>)metaDocumentId;
-- (NSString *)title:(id<NSObject>)metaDocumentId;
-- (NSString *)publisher:(id<NSObject>)metaDocumentId;
-
-
-- (NSArray *)tocs:(id<NSObject>)metaDocumentId;
-
-- (int)imageTextSearch:(NSArray**)pages ranges:(NSArray**)ranges; // 全文検索
-- (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page;
-- (UIView *)getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
-
-- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page;
-- (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page; // imageTextとの違いは?
-
-// ドキュメントレベルユーザ操作系
-- (NSArray*)highlights:(id<NSObject>)metaDocumentId page:(int)page;
-- (NSArray*)freehand:(id<NSObject>)metaDocumentId page:(int)page;
-- (NSArray*)annotations:(id<NSObject>)metaDocumentId page:(int)page;
-
-- (BOOL)saveHighlights:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data;
-- (BOOL)saveFreehand:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data;
-//- (BOOL)saveAnnotations:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data;
-
 - (void)deleteCache:(id<NSObject>)metaDocumentId;
 
-// アプリケーションレベル ユーザ操作系
-- (NSArray *)bookmark;
-- (DocumentContext *)history;
 
-- (BOOL)saveBookmark:(NSArray *)bookmark;
+// ドキュメントメタ情報系
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId;
+- (int)pages:(id<NSObject>)metaDocumentId;
+
+- (NSDictionary*)info:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+//- (int)pages:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId;
+
+- (NSArray *)tocs:(id<NSObject>)metaDocumentId;
+//- (NSArray *)tocs:(id<NSObject>)metaDocumentId documentId:(id)documentId;
+//- (TOCObject *)toc:(id<NSObject>)metaDocumentId documentId:(id)documentId page:(int)page;
+
+//+ (NSArray *)buildRangesElem:(NSArray *)hitRanges text:(NSString *)text;
+- (NSArray*)imageTextSearch:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId query:(NSString*)term;
+
+
+// ページ情報取得系
+- (UIView *)getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution;
+- (NSArray*)singlePageInfoList:(id<NSObject>)metaDocumentId documentId:(id)docId;
+- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page;
+- (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page;
+- (NSArray*)annotations:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page;
+- (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page;
+- (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page;
+
+
+// ページにひもづく情報(廃止)
+// これらは、各々のクラスが管理すべき
+- (NSArray*)highlights:(id<NSObject>)metaDocumentId page:(int)page;
+- (NSArray*)freehand:(id<NSObject>)metaDocumentId page:(int)page;
+- (BOOL)saveHighlights:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data;
+- (BOOL)saveFreehand:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data;
+
+// アプリケーションレベル ユーザ操作系
+- (DocumentContext *)history;
 - (BOOL)saveHistory:(DocumentContext *)history;
 
 
-- (void)startDownload:(id)docId baseUrl:(NSString*)baseUrl;
+- (void)startDownload:(id<NSObject>)docId baseUrl:(NSString*)baseUrl;
 - (NSString *)getFullPath:(NSString *)fileName;
 
 @end

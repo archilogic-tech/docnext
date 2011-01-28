@@ -65,11 +65,13 @@
 - (void)clearSelection;
 - (UIView *)addBalloon:(NSString *)text tip:(CGPoint)tip;
 - (void)showSearchResult:(NSArray *)ranges selectedIndex:(int)selectedIndex;
+
 - (int)showHighlight:(NSRange)range color:(UIColor *)color selecting:(BOOL)selecting;
 - (void)clearHighlightSelection;
 - (void)changeHighlightComment:(int)serial text:(NSString *)text;
 - (void)changeHighlightColor:(int)serial color:(UIColor *)color;
 - (void)deleteHighlight:(int)serial;
+
 - (void)addURILink:(Region *)region uri:(NSString *)uri;
 - (void)addGoToPageLink:(Region *)region page:(int)page;
 - (void)applyScaleView:(float)scale;

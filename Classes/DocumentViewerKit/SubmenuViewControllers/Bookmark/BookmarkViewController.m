@@ -11,6 +11,7 @@
 #import "NSString+Data.h"
 #import "ImageViewController.h"
 
+
 @interface BookmarkViewController()
 - (void)saveBookmarks;
 @end
@@ -60,23 +61,13 @@
     [self.tableView reloadData];
 }
 
-/*
- - (IUIViewController *)createViewController
-{
-	BookmarkViewController *c = [BookmarkViewController createViewController:orientation datasource:_datasource];
-	c.documentContext = _documentContext;
-//	c.currentDocumentId = self.currentDocumentId;
-//	c.currentPage = self.currentPage;
-	return c;
-}
-*/
-
 #pragma mark load
 
 - (void)loadBookmarks {
     self.bookmarks = [NSMutableArray arrayWithCapacity:0];
-    
-	NSArray *bookmark = [_datasource bookmark];
+
+    id<LocalStorageManager> s = _datasource.localStorageManager;
+	NSArray *bookmark = [s objectForKey:@"bookmarks"];
 	
     for ( NSDictionary *dic in bookmark) {
         [self.bookmarks addObject:[BookmarkObject objectWithDictionary:dic]];
@@ -92,7 +83,8 @@
         [buf addObject:[bookmark toDictionary]];
     }
     
-	[_datasource saveBookmark:buf];
+    id<LocalStorageManager> s = _datasource.localStorageManager;
+	[s saveObject:buf forKey:@"bookmarks"];
 }
 
 #pragma mark -

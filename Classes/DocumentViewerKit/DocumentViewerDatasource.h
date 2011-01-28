@@ -11,6 +11,7 @@
 #import "DocumentContext.h"
 #import "DownloadStatusObject.h"
 #import "DocumentDownloadManager.h"
+#import "LocalStorageManager.h"
 
 @protocol DownloadManagerDelegate;
 
@@ -23,6 +24,7 @@
 @protocol DocumentViewerDatasource
 
 @property (nonatomic, assign) id<NSObject,DownloadManagerDelegate> downloadManagerDelegate;
+@property (nonatomic, readonly) id<LocalStorageManager> localStorageManager;
 
 #if 0
 
@@ -176,8 +178,8 @@
 - (DocumentContext *)history;
 - (BOOL)saveHistory:(DocumentContext *)history;
 
-- (NSArray *)bookmark;
-- (BOOL)saveBookmark:(NSArray *)bookmark;
+//- (NSArray *)bookmark;
+//- (BOOL)saveBookmark:(NSArray *)bookmark;
 
 - (UIImage*)thumbnail:(id)docId cover:(int)cover;
 - (NSString*)texts:(id)docId page:(int)page;

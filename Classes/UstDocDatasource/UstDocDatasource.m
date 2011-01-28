@@ -48,7 +48,7 @@
 
 @implementation UstDocDatasource
 
-
+@synthesize localStorageManager = _localStorageManager;
 
 
 
@@ -87,7 +87,6 @@
 {
 }
 
-
 - (id<NSObject,DownloadManagerDelegate>)downloadManagerDelegate
 {
 	return _downloadManager.delegate;
@@ -121,6 +120,45 @@
 
 #pragma mark custom
 
+- (BOOL)existsDocument:(id<NSObject>)metaDocumentId {
+	return [_localStorage existsWithMetaDocumentId:metaDocumentId];
+}
+
+- (void)deleteCache:(id<NSObject>)metaDocumentId {
+	[_localStorage removeWithDocumentId:metaDocumentId];
+	
+	// historyを消す
+	DocumentContext* history = [self history];
+    if ( [history isEqualToMetaDocumentId:metaDocumentId] ) {
+		[_localStorage removeForKey:@"history"];
+    }
+
+	// 以下、Notification等で対応する
+	
+	// ブックマークから消す
+    NSMutableArray *bookmarks = [NSMutableArray arrayWithCapacity:0];
+	NSDictionary *d = [_localStorage objectForKey:@"bookmarks"];
+    for ( NSDictionary *dic in d) {
+        BookmarkObject *obj = [BookmarkObject objectWithDictionary:dic];
+        if ( ![obj.documentContext isEqualToMetaDocumentId:metaDocumentId] ) {
+            [bookmarks addObject:dic];
+        }
+    }
+	[_localStorage saveObject:bookmarks forKey:@"bookmarks"];
+    
+	// ダウンロード済みIDリストから消す
+    NSMutableArray *downloadedIds = [NSMutableArray arrayWithArray:[self downloadedIds]];
+    NSString *mdid = [(NSArray*)metaDocumentId componentsJoinedByString:@","];
+	for ( id downloadedId in downloadedIds ) {
+        if ( [downloadedId compare:mdid] == NSOrderedSame ) {
+            [downloadedIds removeObject:downloadedId];
+            break;
+        }
+    }
+    [self saveDownloadedIds:downloadedIds];
+}
+
+
 // 書籍のメタ情報を取得するメソッド
 
 - (NSDictionary*)info:(id<NSObject>)metaDocumentId
@@ -137,9 +175,6 @@
 	return [_localStorage objectWithDocumentId:metaDocumentId documentId:documentId forKey:@"info"];
 }
 
-- (BOOL)existsDocument:(id<NSObject>)metaDocumentId {
-	return [_localStorage existsWithMetaDocumentId:metaDocumentId];
-}
 
 - (int)pages:(id<NSObject>)metaDocumentId
 {
@@ -155,17 +190,7 @@
 	return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"pages"] intValue];
 }
 
-/*
-- (NSString *)title:(id<NSObject>)metaDocumentId {
-    return [[self info:metaDocumentId] objectForKey:@"title"];
-}
-
-- (NSString *)publisher:(id<NSObject>)metaDocumentId {
-    return [[self info:metaDocumentId] objectForKey:@"publisher"];
-}
-*/
-
-- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id)documentId {
+- (double)ratio:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId {
     return [[[self info:metaDocumentId documentId:documentId] objectForKey:@"ratio"] doubleValue];
 }
 
@@ -251,76 +276,23 @@
 }
 
 
-- (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page
-{
-	NSString *key = [NSString stringWithFormat:@"texts/%d.image.txt", page];
-	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
-	return [NSString stringWithData:data];
-}
-
-- (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
-    static int SIZEOF_DOUBLE = 8;
-    static int N_REGION_FIELDS = 4;
-    
-    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
-    
-	NSString *key = [NSString stringWithFormat:@"texts/%d.regions", page];
-    NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
-	
-    int len = data.length;
-    for ( int pos = 0 ; pos < len ; pos += SIZEOF_DOUBLE * N_REGION_FIELDS ) {
-        Region *region = [[Region new] autorelease];
-        
-        double value;
-        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 0, SIZEOF_DOUBLE)];
-        region.x = value;
-        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 1, SIZEOF_DOUBLE)];
-        region.y = value;
-        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 2, SIZEOF_DOUBLE)];
-        region.width = value;
-        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 3, SIZEOF_DOUBLE)];
-        region.height = value;
-        
-        [ret addObject:region];
-    }
-    
-    return ret;
-}
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////
 
-// ダウンロード系
 
-- (DownloadStatusObject *)downloadStatus {
-	NSDictionary *d = [_localStorage objectForKey:@"downloadStatus"];
-    return [DownloadStatusObject objectWithDictionary:d];
-}
 
-- (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus {
-	return [_localStorage saveObject:[downloadStatus toDictionary] forKey:@"downloadStatus"];
-}
 
-- (BOOL)deleteDownloadStatus {
-	return [_localStorage removeForKey:@"downloadStatus"];
-}
 
-- (NSArray *)downloadedIds {
-	return [_localStorage objectForKey:@"downloadedIds"];
-}
 
-- (BOOL)saveDownloadedIds:(NSArray *)downloadedIds {
-	return [_localStorage saveObject:downloadedIds
-							  forKey:@"downloadedIds"];
-}
+
 
 
 
 // 生ドキュメント固有情報系 ////////////////////////////////////////////////////////////
 
-- (UIView *) getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
+- (UIView *) getTileImageWithDocument:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)documentId type:(NSString *)type page:(int)page column:(int)column row:(int)row resolution:(int)resolution
 {
 	NSString *key = [NSString stringWithFormat:@"images/%@-%d-%d-%d-%d.jpg", type, page, resolution, column, row];
 
@@ -354,17 +326,17 @@
 }
 
 
-- (NSArray*)singlePageInfoList:(id<NSObject>)metaDocumentId documentId:(id)docId {
+- (NSArray*)singlePageInfoList:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId {
 	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:@"singlePageInfo"];
 }
 
-- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
+- (UIImage*)thumbnail:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page {
 	NSString *key = [NSString stringWithFormat:@"images/thumb-%d.jpg", page];
 	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
 	return [UIImage imageWithData:data];
 }
 
-- (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page {
+- (NSString*)texts:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page {
 	NSString *key = [NSString stringWithFormat:@"texts/%d", page];
 	NSString *text = [NSString stringWithData:[_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key]];
 	return text;
@@ -376,41 +348,47 @@
 	return [_localStorage objectWithDocumentId:metaDocumentId documentId:docId forKey:key];
 }
 
+- (NSString *)imageText:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page
+{
+	NSString *key = [NSString stringWithFormat:@"texts/%d.image.txt", page];
+	NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
+	return [NSString stringWithData:data];
+}
+
+- (NSArray *)regions:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page {
+    static int SIZEOF_DOUBLE = 8;
+    static int N_REGION_FIELDS = 4;
+    
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:0];
+    
+	NSString *key = [NSString stringWithFormat:@"texts/%d.regions", page];
+    NSData *data = [_localStorage dataWithDocumentId:metaDocumentId documentId:docId forKey:key];
+	
+    int len = data.length;
+    for ( int pos = 0 ; pos < len ; pos += SIZEOF_DOUBLE * N_REGION_FIELDS ) {
+        Region *region = [[Region new] autorelease];
+        
+        double value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 0, SIZEOF_DOUBLE)];
+        region.x = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 1, SIZEOF_DOUBLE)];
+        region.y = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 2, SIZEOF_DOUBLE)];
+        region.width = value;
+        [data getBytes:&value range:NSMakeRange(pos + SIZEOF_DOUBLE * 3, SIZEOF_DOUBLE)];
+        region.height = value;
+        
+        [ret addObject:region];
+    }
+    
+    return ret;
+}
+
+
+
 
 
 // ユーザ操作系ドキュメント関連
-- (void)deleteCache:(id<NSObject>)metaDocumentId {
-	[_localStorage removeWithDocumentId:metaDocumentId];
-
-	// historyを消す
-	DocumentContext* history = [self history];
-    if ( [history isEqualToMetaDocumentId:metaDocumentId] ) {
-		[_localStorage removeForKey:@"history"];
-    }
-    
-	// ブックマークから消す
-    NSMutableArray *bookmarks = [NSMutableArray arrayWithCapacity:0];
-	NSDictionary *d = [_localStorage objectForKey:@"bookmarks"];
-    for ( NSDictionary *dic in d) {
-        BookmarkObject *obj = [BookmarkObject objectWithDictionary:dic];
-        if ( ![obj.documentContext isEqualToMetaDocumentId:metaDocumentId] ) {
-            [bookmarks addObject:dic];
-        }
-    }
-	[_localStorage saveObject:bookmarks forKey:@"bookmarks"];
-    
-	// ダウンロード済みIDリストから消す
-    NSMutableArray *downloadedIds = [NSMutableArray arrayWithArray:[self downloadedIds]];
-
-    NSString *mdid = [(NSArray*)metaDocumentId componentsJoinedByString:@","];
-	for ( id downloadedId in downloadedIds ) {
-        if ( [downloadedId compare:mdid] == NSOrderedSame ) {
-            [downloadedIds removeObject:downloadedId];
-            break;
-        }
-    }
-    [self saveDownloadedIds:downloadedIds];
-}
 
 - (NSArray*)highlights:(id<NSObject>)metaDocumentId page:(int)page
 {
@@ -425,7 +403,6 @@
 	return [_localStorage objectWithDocumentId:metaDocumentId forKey:key];
 }
 
-// meta documentレベルで保存する
 - (BOOL)saveHighlights:(id<NSObject>)metaDocumentId page:(int)page data:(NSArray *)data
 {
 	NSString *key = [NSString stringWithFormat:@"%d.highlight", page];
@@ -449,15 +426,7 @@
 	return [_localStorage saveObject:[history toDictionary] forKey:@"history"];
 }
 
-- (NSArray *)bookmark
-{
-	return [_localStorage objectForKey:@"bookmarks"];
-}
 
-- (BOOL)saveBookmark:(NSArray *)bookmark
-{
-	return [_localStorage saveObject:bookmark forKey:@"bookmarks"];
-}
 
 - (void)startDownload:(id)docId baseUrl:(NSString*)baseUrl
 {
@@ -477,6 +446,32 @@
 - (NSString *)getFullPath:(NSString *)fileName
 {
 	return [_localStorage getFullPath:fileName];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// ダウンロード系
+
+- (DownloadStatusObject *)downloadStatus {
+	NSDictionary *d = [_localStorage objectForKey:@"downloadStatus"];
+    return [DownloadStatusObject objectWithDictionary:d];
+}
+
+- (BOOL)saveDownloadStatus:(DownloadStatusObject *)downloadStatus {
+	return [_localStorage saveObject:[downloadStatus toDictionary] forKey:@"downloadStatus"];
+}
+
+- (BOOL)deleteDownloadStatus {
+	return [_localStorage removeForKey:@"downloadStatus"];
+}
+
+- (NSArray *)downloadedIds {
+	return [_localStorage objectForKey:@"downloadedIds"];
+}
+
+- (BOOL)saveDownloadedIds:(NSArray *)downloadedIds {
+	return [_localStorage saveObject:downloadedIds
+							  forKey:@"downloadedIds"];
 }
 
 
