@@ -109,7 +109,7 @@
 	[_configViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	
 	// 確実に回転させる
-	[_documentContext didInterfaceOrientationChanged:self.interfaceOrientation];
+	[_documentContext didInterfaceOrientationChanged:toInterfaceOrientation];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -242,17 +242,22 @@
 #pragma mark private
 
 - (void)addOverlay:(TiledScrollView *)view {
-    [markerView release];
-    markerView = [[MarkerView alloc] initWithFrame:view.frame];
+
+    CGRect r = view.frame;
+	r.origin.x = 0;
+	r.origin.y = 0;
+	
+	[markerView release];
+    markerView = [[MarkerView alloc] initWithFrame:r];
     [view.zoomableContainerView addSubview:markerView];
     
     [_freehandView release];
-    _freehandView = [[UIFreehandView alloc] initWithFrame:view.frame];
+    _freehandView = [[UIFreehandView alloc] initWithFrame:r];
     _freehandView.delegate = self;
     [view.zoomableContainerView addSubview:_freehandView];
     
     [balloonContainerView release];
-    balloonContainerView = [[UIView alloc] initWithFrame:view.frame];
+    balloonContainerView = [[UIView alloc] initWithFrame:r];
     balloonContainerView.userInteractionEnabled = NO;
     [view addSubview:balloonContainerView];
 }
@@ -517,7 +522,7 @@
 {
 	resolution += [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
     
-    int page = _documentContext.currentPage;
+    int page = _documentContext.normalizedCurrentPage;
 	BOOL isLandscape = UIInterfaceOrientationIsLandscape(self.interfaceOrientation);
     if ( isLandscape && ![_documentContext isSingleIndex]) {
         if ( column >= pow( 2 , resolution ) ) {
@@ -569,7 +574,7 @@
 	// コメント入力メニューが表示されているときはなにもしない
 	if (![self highlightCommentMenuHidden]) return;
 	
-	CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
+	//CGPoint p = [gestureRecognizer locationInView:gestureRecognizer.view];
 
     if ( isIgnoreTap ) {
         isIgnoreTap = NO;

@@ -7,19 +7,26 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "LocalStorageManager.h"
 
 /*!
     @class       StandardLocalStorageManager 
     @abstract    primitiveなlocal storageの操作を定義するクラス
     @discussion  すべてのコンポーネントは、このクラスを介してストレージを操作することが望まれる。すべての操作はkey and valueで行われる。
 */
-@interface StandardLocalStorageManager : NSObject {
+@interface StandardLocalStorageManager : NSObject<LocalStorageManager> {
 
 }
 
 /** このメソッドは推奨されない */
 - (NSString *)getFullPath:(NSString *)fileName;
 
+
+
+
+
+
+#if 0
 
 /** 存在チェック */
 - (BOOL)existsForKey:(id)key;
@@ -60,5 +67,6 @@
 /** 削除 */
 - (BOOL)removeWithDocumentId:(id<NSObject>)docId;
 
+#endif
 
 @end

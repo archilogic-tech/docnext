@@ -133,6 +133,7 @@
 		151BB16312961361009A313E /* TOCObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCObject.m; sourceTree = "<group>"; };
 		154EB1C412ED7053007B5FD6 /* ThumbnailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailView.h; sourceTree = "<group>"; };
 		154EB1C512ED7053007B5FD6 /* ThumbnailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailView.m; sourceTree = "<group>"; };
+		1556D23212F257DB0070A99B /* LocalStorageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalStorageManager.h; sourceTree = "<group>"; };
 		155A7F0E12E58CE800F810AB /* DocumentDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentDownloadManager.h; sourceTree = "<group>"; };
 		156CE84712F1833600F9C1A1 /* PageDownloadOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageDownloadOperation.h; sourceTree = "<group>"; };
 		156CE84812F1833600F9C1A1 /* PageDownloadOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageDownloadOperation.m; sourceTree = "<group>"; };
@@ -157,17 +158,11 @@
 		15E5812212954D7700C69201 /* UIFreehandView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIFreehandView.m; sourceTree = "<group>"; };
 		15E5812312954D7700C69201 /* HighlightObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightObject.h; sourceTree = "<group>"; };
 		15E5812412954D7700C69201 /* HighlightObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightObject.m; sourceTree = "<group>"; };
-		15E5812512954D7700C69201 /* HistoryObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryObject.h; sourceTree = "<group>"; };
-		15E5812612954D7700C69201 /* HistoryObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryObject.m; sourceTree = "<group>"; };
-		15E5812712954D7700C69201 /* ImageViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ImageViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5812812954D7700C69201 /* ImageViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ImageViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5812912954D7700C69201 /* ImageViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ImageViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5812A12954D7700C69201 /* ImageViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ImageViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5812B12954D7700C69201 /* ImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewController.h; sourceTree = "<group>"; };
 		15E5812C12954D7700C69201 /* ImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageViewController.m; sourceTree = "<group>"; };
 		15E5812D12954D7700C69201 /* IScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IScale.h; sourceTree = "<group>"; };
-		15E5812E12954D7700C69201 /* IUIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUIViewController.h; sourceTree = "<group>"; };
-		15E5812F12954D7700C69201 /* IUIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IUIViewController.m; sourceTree = "<group>"; };
 		15E5813212954D7700C69201 /* DataCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataCache.h; sourceTree = "<group>"; };
 		15E5813312954D7700C69201 /* DataCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataCache.m; sourceTree = "<group>"; };
 		15E5813412954D7700C69201 /* FlowCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlowCoverView.h; sourceTree = "<group>"; };
@@ -199,15 +194,11 @@
 		15E5815212954D7700C69201 /* image_selection_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_selection_indicator.png; sourceTree = "<group>"; };
 		15E5815512954D7700C69201 /* BookmarkObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkObject.h; sourceTree = "<group>"; };
 		15E5815612954D7700C69201 /* BookmarkObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkObject.m; sourceTree = "<group>"; };
-		15E5815712954D7700C69201 /* BookmarkViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPad-land.xib"; path = "SubmenuViewControllers/Bookmark/BookmarkViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5815812954D7700C69201 /* BookmarkViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "BookmarkViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5815912954D7700C69201 /* BookmarkViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookmarkViewController-iPhone-land.xib"; path = "SubmenuViewControllers/Bookmark/BookmarkViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5815A12954D7700C69201 /* BookmarkViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "BookmarkViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5815B12954D7700C69201 /* BookmarkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkViewController.h; sourceTree = "<group>"; };
 		15E5815C12954D7700C69201 /* BookmarkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkViewController.m; sourceTree = "<group>"; };
-		15E5815E12954D7700C69201 /* BookshelfDeletionViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad-land.xib"; path = "SubmenuViewControllers/Bookshelf/BookshelfDeletionViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5815F12954D7700C69201 /* BookshelfDeletionViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPad.xib"; path = "../BookshelfDeletionViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5816012954D7700C69201 /* BookshelfDeletionViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone-land.xib"; path = "SubmenuViewControllers/Bookshelf/BookshelfDeletionViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5816112954D7700C69201 /* BookshelfDeletionViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BookshelfDeletionViewController-iPhone.xib"; path = "../BookshelfDeletionViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5816212954D7700C69201 /* BookshelfTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookshelfTableViewCell.h; sourceTree = "<group>"; };
 		15E5816312954D7700C69201 /* BookshelfTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookshelfTableViewCell.m; sourceTree = "<group>"; };
@@ -220,13 +211,10 @@
 		15E5816A12954D7700C69201 /* BookshelfViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookshelfViewController.m; sourceTree = "<group>"; };
 		15E5816C12954D7700C69201 /* BookshelfDeletionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookshelfDeletionViewController.h; sourceTree = "<group>"; };
 		15E5816D12954D7700C69201 /* BookshelfDeletionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookshelfDeletionViewController.m; sourceTree = "<group>"; };
-		15E5816F12954D7700C69201 /* BrowserViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BrowserViewController-iPad-land.xib"; path = "SubmenuViewControllers/Browser/BrowserViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5817012954D7700C69201 /* BrowserViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "BrowserViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5817112954D7700C69201 /* BrowserViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "BrowserViewController-iPhone-land.xib"; path = "SubmenuViewControllers/Browser/BrowserViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5817212954D7700C69201 /* BrowserViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "BrowserViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5817312954D7700C69201 /* BrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowserViewController.h; sourceTree = "<group>"; };
 		15E5817412954D7700C69201 /* BrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowserViewController.m; sourceTree = "<group>"; };
-		15E5817612954D7700C69201 /* ImageSearchViewController-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ImageSearchViewController-land.xib"; path = "SubmenuViewControllers/ImageSearch/ImageSearchViewController-land.xib"; sourceTree = "<group>"; };
 		15E5817712954D7700C69201 /* ImageSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSearchViewController.h; sourceTree = "<group>"; };
 		15E5817812954D7700C69201 /* ImageSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageSearchViewController.m; sourceTree = "<group>"; };
 		15E5817912954D7700C69201 /* ImageSearchViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageSearchViewController.xib; sourceTree = "<group>"; };
@@ -254,34 +242,24 @@
 		15E5819012954D7700C69201 /* TextSizeMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextSizeMarker.m; sourceTree = "<group>"; };
 		15E5819112954D7700C69201 /* TextViewConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextViewConfig.h; sourceTree = "<group>"; };
 		15E5819212954D7700C69201 /* TextViewConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextViewConfig.m; sourceTree = "<group>"; };
-		15E5819312954D7700C69201 /* TextViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "TextViewController-iPad-land.xib"; path = "SubmenuViewControllers/Text/TextViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5819412954D7700C69201 /* TextViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "TextViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5819512954D7700C69201 /* TextViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "TextViewController-iPhone-land.xib"; path = "SubmenuViewControllers/Text/TextViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5819612954D7700C69201 /* TextViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "TextViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E5819712954D7700C69201 /* TextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextViewController.h; sourceTree = "<group>"; };
 		15E5819812954D7700C69201 /* TextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextViewController.m; sourceTree = "<group>"; };
 		15E5819912954D7700C69201 /* VTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VTextView.h; sourceTree = "<group>"; };
 		15E5819A12954D7700C69201 /* VTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VTextView.m; sourceTree = "<group>"; };
-		15E5819C12954D7700C69201 /* ThumbnailViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ThumbnailViewController-iPad-land.xib"; path = "SubmenuViewControllers/Thumbnail/ThumbnailViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E5819D12954D7700C69201 /* ThumbnailViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ThumbnailViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E5819E12954D7700C69201 /* ThumbnailViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "ThumbnailViewController-iPhone-land.xib"; path = "SubmenuViewControllers/Thumbnail/ThumbnailViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E5819F12954D7700C69201 /* ThumbnailViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "ThumbnailViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E581A012954D7700C69201 /* ThumbnailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailViewController.h; sourceTree = "<group>"; };
 		15E581A112954D7700C69201 /* ThumbnailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailViewController.m; sourceTree = "<group>"; };
 		15E581A212954D7700C69201 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TiledScrollView.h; path = SubmenuViewControllers/TiledScrollView.h; sourceTree = "<group>"; };
 		15E581A312954D7700C69201 /* TiledScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TiledScrollView.m; path = SubmenuViewControllers/TiledScrollView.m; sourceTree = "<group>"; };
-		15E581A712954D7700C69201 /* TOCViewController-iPad-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "TOCViewController-iPad-land.xib"; path = "SubmenuViewControllers/TOC/TOCViewController-iPad-land.xib"; sourceTree = "<group>"; };
 		15E581A812954D7700C69201 /* TOCViewController-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "TOCViewController-iPad.xib"; sourceTree = "<group>"; };
-		15E581A912954D7700C69201 /* TOCViewController-iPhone-land.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "TOCViewController-iPhone-land.xib"; path = "SubmenuViewControllers/TOC/TOCViewController-iPhone-land.xib"; sourceTree = "<group>"; };
 		15E581AA12954D7700C69201 /* TOCViewController-iPhone.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = "TOCViewController-iPhone.xib"; sourceTree = "<group>"; };
 		15E581AB12954D7700C69201 /* TOCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOCViewController.h; sourceTree = "<group>"; };
 		15E581AC12954D7700C69201 /* TOCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOCViewController.m; sourceTree = "<group>"; };
-		15E581AD12954D7700C69201 /* TapDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapDetector.h; sourceTree = "<group>"; };
-		15E581AE12954D7700C69201 /* TapDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapDetector.m; sourceTree = "<group>"; };
 		15E581AF12954D7700C69201 /* UIScaleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScaleButton.h; sourceTree = "<group>"; };
 		15E581B012954D7700C69201 /* UIScaleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIScaleButton.m; sourceTree = "<group>"; };
-		15E581B112954D7700C69201 /* UITouchAwareWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITouchAwareWindow.h; sourceTree = "<group>"; };
-		15E581B212954D7700C69201 /* UITouchAwareWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITouchAwareWindow.m; sourceTree = "<group>"; };
 		15E581B412954D7700C69201 /* VolonoiDiagramBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VolonoiDiagramBuilder.h; sourceTree = "<group>"; };
 		15E581B512954D7700C69201 /* VolonoiDiagramBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VolonoiDiagramBuilder.m; sourceTree = "<group>"; };
 		15E581BD12954D7700C69201 /* UstDocDatasource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UstDocDatasource.h; sourceTree = "<group>"; };
@@ -392,36 +370,6 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
-		1525732C12ED0A1C008DF7A5 /* obsoleted */ = {
-			isa = PBXGroup;
-			children = (
-				15E5819C12954D7700C69201 /* ThumbnailViewController-iPad-land.xib */,
-				15E5819E12954D7700C69201 /* ThumbnailViewController-iPhone-land.xib */,
-				15E5819312954D7700C69201 /* TextViewController-iPad-land.xib */,
-				15E5819512954D7700C69201 /* TextViewController-iPhone-land.xib */,
-				15E5817612954D7700C69201 /* ImageSearchViewController-land.xib */,
-				15E5815712954D7700C69201 /* BookmarkViewController-iPad-land.xib */,
-				15E5815912954D7700C69201 /* BookmarkViewController-iPhone-land.xib */,
-				15E5816F12954D7700C69201 /* BrowserViewController-iPad-land.xib */,
-				15E5817112954D7700C69201 /* BrowserViewController-iPhone-land.xib */,
-				15E581A712954D7700C69201 /* TOCViewController-iPad-land.xib */,
-				15E5815E12954D7700C69201 /* BookshelfDeletionViewController-iPad-land.xib */,
-				15E581A912954D7700C69201 /* TOCViewController-iPhone-land.xib */,
-				15E5816012954D7700C69201 /* BookshelfDeletionViewController-iPhone-land.xib */,
-				15E5812712954D7700C69201 /* ImageViewController-iPad-land.xib */,
-				15E5812912954D7700C69201 /* ImageViewController-iPhone-land.xib */,
-				15E581B112954D7700C69201 /* UITouchAwareWindow.h */,
-				15E581B212954D7700C69201 /* UITouchAwareWindow.m */,
-				15E581AD12954D7700C69201 /* TapDetector.h */,
-				15E581AE12954D7700C69201 /* TapDetector.m */,
-				15E5812E12954D7700C69201 /* IUIViewController.h */,
-				15E5812F12954D7700C69201 /* IUIViewController.m */,
-				15E5812512954D7700C69201 /* HistoryObject.h */,
-				15E5812612954D7700C69201 /* HistoryObject.m */,
-			);
-			name = obsoleted;
-			sourceTree = "<group>";
-		};
 		152D2EFF12F16B3A00DA9E19 /* SampleApps */ = {
 			isa = PBXGroup;
 			children = (
@@ -457,7 +405,6 @@
 				15E5814312954D7700C69201 /* OverlayManager.m */,
 				15E5814412954D7700C69201 /* Region.h */,
 				15E5814512954D7700C69201 /* Region.m */,
-				15E5814612954D7700C69201 /* Separation */,
 				15E5814712954D7700C69201 /* IntDoublePair.h */,
 				15E5814812954D7700C69201 /* IntDoublePair.m */,
 				15E5814912954D7700C69201 /* SeparationHolder.h */,
@@ -489,6 +436,7 @@
 				15A3D85012E6E58800C26549 /* DocumentContext.h */,
 				15A3D85112E6E58800C26549 /* DocumentContext.m */,
 				15E5811912954D7700C69201 /* DocumentViewerConst.h */,
+				1556D23212F257DB0070A99B /* LocalStorageManager.h */,
 				15E581A212954D7700C69201 /* TiledScrollView.h */,
 				15E581A312954D7700C69201 /* TiledScrollView.m */,
 				15992ED012ED26B2001AA3C8 /* Util.h */,
@@ -510,7 +458,6 @@
 				15E581B012954D7700C69201 /* UIScaleButton.m */,
 				15DA17A512EFA51600B8A503 /* DocumentSearchResult.h */,
 				15DA17A612EFA51600B8A503 /* DocumentSearchResult.m */,
-				1525732C12ED0A1C008DF7A5 /* obsoleted */,
 			);
 			path = DocumentViewerKit;
 			sourceTree = "<group>";
@@ -572,14 +519,6 @@
 			);
 			name = Marker;
 			path = ../Marker;
-			sourceTree = "<group>";
-		};
-		15E5814612954D7700C69201 /* Separation */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Separation;
-			path = ../OverlayManager/Separation;
 			sourceTree = "<group>";
 		};
 		15E5814B12954D7700C69201 /* Resources */ = {

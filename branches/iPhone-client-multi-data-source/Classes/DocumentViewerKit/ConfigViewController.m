@@ -31,6 +31,10 @@
 {
 	[super viewWillAppear:animated];
 	titleLabel.text = [_parent.documentContext documentTitle];
+
+	CGRect r = self.view.frame;
+	r.size.width = _parent.view.frame.size.width;
+	self.view.frame = r;
 }
 
 

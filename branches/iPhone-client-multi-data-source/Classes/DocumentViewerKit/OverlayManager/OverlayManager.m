@@ -226,6 +226,7 @@
     // clear cache
     [separationHolder release];
     separationHolder = nil;
+
     [regions release];
     regions = nil;
     

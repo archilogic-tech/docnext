@@ -98,11 +98,9 @@
  */
 }
 
-- (void)downloadPage:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page px:(int)px py:(int)py
+- (void)downloadPage:(id<NSObject>)metaDocumentId documentId:(id)docId page:(int)page px:(int)px py:(int)py level:(int)level
 {
 	NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
-    int level = [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
-    
     NSString *url = [NSString stringWithFormat:@"%@getPage?type=%@&documentId=%@&page=%d&level=%d&px=%d&py=%d" ,
                      ServerEndpoint , type , docId , page , level , px , py];
 
@@ -115,7 +113,7 @@
 	[op release];
 }
 
-- (void)downloadComplete:(id<NSObject>)metaDocumentId {
+- (void)didDocumentDownloadCompleted:(id<NSObject>)metaDocumentId {
 
     NSString *mdid = [(NSArray*)metaDocumentId componentsJoinedByString:@","];
 	if (delegate && [delegate respondsToSelector:@selector(didAllPagesDownloadFinished:)] ) {
@@ -127,55 +125,6 @@
     [downloaded addObject:[NSString stringWithFormat:@"%@" , mdid]];
     [_datasource saveDownloadedIds:downloaded];
 }
-/*
-- (void)downloadNextPage:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
-    int pages = [_datasource pages:metaDocumentId];
-    
-	// ダウンロードの進捗を伝える
-	// TODO NSNotificationに変更しようと思ったが、これで十分そう
-	if ( [delegate respondsToSelector:@selector(pageDownloadProgressed:downloaded:)] ) {
-		float val = (1.0 * ( page + 1.0 ) / pages);
-		[delegate pageDownloadProgressed:docId downloaded:val];
-	}
-	
-    if ( [[UIScreen mainScreen] scale] == 2.0 ) {
-        if ( px < 1 ) {
-            [self downloadPage:docId page:page px:(px + 1) py:py];
-        } else if ( py < 1 ) {
-            [self downloadPage:docId page:page px:0 py:(py + 1)];
-        } else if ( page + 1 < pages ) {
-            [self downloadPage:docId page:(page + 1) px:0 py:0];
-        } else {
-			int index = [(NSArray*)metaDocumentId indexOfObject:docId];
-			if (index == [metaDocumentId count]-1) {
-				[self downloadComplete:metaDocumentId];
-			}
-        }
-    } else {
-        if ( page + 1 < pages ) {
-            [self downloadPage:metaDocumentId documentId:docId page:(page + 1) px:0 py:0];
-        } else {
-			int index = [(NSArray*)metaDocumentId indexOfObject:docId];
-			if (index == [metaDocumentId count]-1) {
-				[self downloadComplete:metaDocumentId];
-			}
-        }
-    }
-}
-
-- (void)updateDownloadStatus:(id<NSObject>)metaDocumentId documentId:(id<NSObject>)docId page:(int)page px:(int)px py:(int)py {
-    DownloadStatusObject *downloadStatus = [[DownloadStatusObject alloc] init];
-    downloadStatus.docId = docId;
-	downloadStatus.metaDocumentId = metaDocumentId;
-    downloadStatus.downloadedPage = page;
-    downloadStatus.downloadedPx = px;
-    downloadStatus.downloadedPy = py;
-
-    [_datasource saveDownloadStatus:downloadStatus];
-	[downloadStatus release];
-//	assert(0);
-}
- */
 
 #pragma mark ASIHTTPRequest didFinishSelector
 
@@ -218,12 +167,10 @@
         [zip UnzipCloseFile];
     } else {
 		// error
+		assert(0);
 	}
 
 	[[NSFileManager defaultManager] removeItemAtPath:zipName error:nil];
-
-	// Take care this way is depended on the fact 2x2 is max
-	//	[self updateDownloadStatus:metaDocumentId documentId:docId page:-1 px:1 py:1];
 
 	currentDownloadIndex++;
 	if ([metaDocumentId isKindOfClass:[NSArray class]]) {
@@ -237,45 +184,34 @@
 	}
 
 	// TODO 本当はこの時点で呼んではいけない
-	[self downloadComplete:metaDocumentId];
+	[self didDocumentDownloadCompleted:metaDocumentId];
 
 	
 	// すべてのメタ情報のダウンロードが完了したら誌面画像のダウンロードを別スレッドで開始する
-	[self didDownloadPageStart:metaDocumentId];
+	[self downloadPageStart:metaDocumentId];
 
     if (delegate && [delegate respondsToSelector:@selector(didMetaInfoDownloadFinished:)] ) {
         [delegate didMetaInfoDownloadFinished:metaDocumentId];
     }
 }
 
-- (void)didDownloadPageStart:(id<NSObject>)metaDocumentId
+// 誌面画像のURLと保存先をqueueに入れる
+- (void)downloadPageStart:(id<NSObject>)metaDocumentId
 {
+    int level = [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
 	for (id<NSObject> documentId in metaDocumentId) {
-		int page = 0;
-		int px = 0;
-		int py = 0;
-		[self downloadPage:metaDocumentId documentId:documentId page:page px:px py:py];
 
 		int pages = [_datasource pages:metaDocumentId documentId:documentId];
-		while(true) {
-			if ( [[UIScreen mainScreen] scale] == 2.0 ) {
-				if ( px < 1 ) {
-					[self downloadPage:metaDocumentId documentId:documentId page:page px:++px py:py];
-				} else if ( py < 1 ) {
-					[self downloadPage:metaDocumentId documentId:documentId page:page px:0 py:++py];
-				} else if ( page + 1 < pages ) {
-					[self downloadPage:metaDocumentId documentId:documentId page:++page px:0 py:0];
-				} else {
-					break;
-				}
+		for (int p = 0; p < pages; p++) {
+			if ( level ) {
+				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:0 level:level];
+				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:1 level:level];
+				[self downloadPage:metaDocumentId documentId:documentId page:p px:1 py:0 level:level];
+				[self downloadPage:metaDocumentId documentId:documentId page:p px:1 py:1 level:level];
 			} else {
-				if ( page + 1 < pages ) {
-					[self downloadPage:metaDocumentId documentId:documentId page:++page px:0 py:0];
-				} else {
-					break;
-				}
-			}
-		}		
+				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:0 level:level];
+			}		
+		}
 	}		
 }
 
