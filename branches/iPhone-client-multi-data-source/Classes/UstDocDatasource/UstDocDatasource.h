@@ -11,9 +11,6 @@
 #import "StandardLocalStorageManager.h"
 #import "UstDocDownloadManager.h"
 
-#define ServerEndpoint (@"http://ustdoc.com/docman_optimage/dispatch/viewer/")
-#define ReachabilityHost (@"ustdoc.com")
-
 @class UstDocDownloadManager;
 
 @interface UstDocDatasource : NSObject<DocumentViewerDatasource> {
@@ -21,9 +18,12 @@
 	UstDocDownloadManager *_downloadManager;
 	StandardLocalStorageManager *_localStorage;
 
+	NSString *_serverEndPoint;
+	
 //	NSMutableDictionary *_imageCache;
 }
 
+@property (nonatomic, retain) NSString *serverEndPoint;
 
 // 外部向け
 - (id)init;

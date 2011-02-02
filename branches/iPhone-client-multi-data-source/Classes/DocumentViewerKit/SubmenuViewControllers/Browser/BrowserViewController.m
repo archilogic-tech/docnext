@@ -13,6 +13,7 @@
 
 @synthesize webView;
 @synthesize datasource = _datasource;
+@synthesize libraryUrl = _libraryUrl;
 
 + (BrowserViewController *)createViewController:(id<NSObject,DocumentViewerDatasource>)datasource
 {
@@ -26,9 +27,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-	NSString *libraryURL = LibraryURL;
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:libraryURL]]];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_libraryUrl]]];
 }
 
 - (void)dealloc {

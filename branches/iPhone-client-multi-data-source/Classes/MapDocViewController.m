@@ -7,6 +7,7 @@
 //
 
 #import "MapDocViewController.h"
+#import "MapDocAppDelegate.h"
 #import "ImageViewController.h"
 #import "BrowserViewController.h"
 
@@ -30,8 +31,9 @@
 	self.navigationBarHidden = YES;
 	
 	BrowserViewController *c = [BrowserViewController createViewController:_datasource];
+	c.libraryUrl = LibraryURL;
 	[self pushViewController:c animated:NO];
-
+	
 	// ダウンロードバーの表示
 	_downloadProgressView = [[UIProgressView alloc] init];
 	CGRect r = CGRectMake(10, self.view.frame.size.height-20, self.view.frame.size.width-20, 9);

@@ -54,7 +54,7 @@
 	
 	NSString *did = [metaDocumentId objectAtIndex:currentDownloadIndex];
 	
-	NSString *url = [NSString stringWithFormat:@"%@download?documentId=%@" , ServerEndpoint , did];
+	NSString *url = [NSString stringWithFormat:@"%@download?documentId=%@" , ((UstDocDatasource*)_datasource).serverEndPoint , did];
 	NSLog(@"%@ downloading...", url);
     
 	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
@@ -102,7 +102,7 @@
 {
 	NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
     NSString *url = [NSString stringWithFormat:@"%@getPage?type=%@&documentId=%@&page=%d&level=%d&px=%d&py=%d" ,
-                     ServerEndpoint , type , docId , page , level , px , py];
+                     ((UstDocDatasource*)_datasource).serverEndPoint , type , docId , page , level , px , py];
 
 	NSString *dest = [NSString stringWithFormat:@"%@/%@/images/%@-%d-%d-%d-%d.jpg" , [(NSArray*)metaDocumentId componentsJoinedByString:@","] , docId , type , page , level , px , py];
 
@@ -198,21 +198,24 @@
 // 誌面画像のURLと保存先をqueueに入れる
 - (void)downloadPageStart:(id<NSObject>)metaDocumentId
 {
-    int level = [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
 	for (id<NSObject> documentId in metaDocumentId) {
 
 		int pages = [_datasource pages:metaDocumentId documentId:documentId];
-		for (int p = 0; p < pages; p++) {
-			if ( level ) {
-				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:0 level:level];
-				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:1 level:level];
-				[self downloadPage:metaDocumentId documentId:documentId page:p px:1 py:0 level:level];
-				[self downloadPage:metaDocumentId documentId:documentId page:p px:1 py:1 level:level];
-			} else {
-				[self downloadPage:metaDocumentId documentId:documentId page:p px:0 py:0 level:level];
-			}		
-		}
-	}		
+
+		// 全レベルの誌面画像をダウンロードしておく。
+		int level = [[UIScreen mainScreen] scale] == 2.0 ? 1 : 0;
+		for (; level < 3; level++) {
+			int max = 1 << level;
+			for (int p = 0; p < pages; p++) {
+				for (int px = 0; px < max; px++) {
+					for (int py = 0; py < max; py++) {
+//						NSLog(@"%d %d %d %d", p, px, py, level);
+						[self downloadPage:metaDocumentId documentId:documentId page:p px:px py:py level:level];
+					}
+				}
+			}
+		}		
+	}
 }
 
 /*
