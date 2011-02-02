@@ -136,10 +136,11 @@
     // Override point for customization after app launch
 
 	// TODO UstDocDatasourceを標準とする
-	_datasource = [[UstDocDatasource alloc] init];
-	viewController.datasource = _datasource;
-	_datasource.downloadManagerDelegate = viewController;
-
+	UstDocDatasource *ds = [[UstDocDatasource alloc] init];
+	ds.serverEndPoint = ServerEndpoint;
+	ds.downloadManagerDelegate = viewController;
+	viewController.datasource = _datasource = ds;
+	
 	[self checkVersion];
 	
 	[window addSubview:viewController.view];

@@ -9,15 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "DocumentViewerDatasource.h"
 
-#define LibraryURL (@"http://ustdoc.com/docman_optimage/library.html")
-
 @interface BrowserViewController : UIViewController<UIWebViewDelegate> {
 	UIWebView *webView;
 	id<NSObject,DocumentViewerDatasource> _datasource;
+	NSString *_libraryUrl;
 }
 
 @property(nonatomic,retain) IBOutlet UIWebView *webView;
 @property(nonatomic,retain) id<NSObject,DocumentViewerDatasource> datasource;
+@property(nonatomic, copy) NSString* libraryUrl;
 
 
 + (BrowserViewController *)createViewController:(id<DocumentViewerDatasource>)datasource;

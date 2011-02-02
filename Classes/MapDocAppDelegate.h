@@ -9,6 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "DocumentDownloadManager.h"
 
+// for BrowserViewController
+#define LibraryURL (@"http://ustdoc.com/docman_optimage/library.html")
+
+// for UstDocDatasource
+#define ServerEndpoint (@"http://ustdoc.com/docman_optimage/dispatch/viewer/")
+
+
 @class MapDocViewController;
 
 @interface MapDocAppDelegate : NSObject <UIApplicationDelegate> {

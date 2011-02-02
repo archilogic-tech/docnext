@@ -49,7 +49,7 @@
 @implementation UstDocDatasource
 
 @synthesize localStorageManager = _localStorageManager;
-
+@synthesize serverEndPoint = _serverEndPoint;
 
 
 - (id)init
@@ -314,9 +314,8 @@
     } else {
         UIRemoteImageView *tile = [[[UIRemoteImageView alloc ] initWithFrame:CGRectZero] autorelease];
 
-		// TODO ServerEndpoingは、ハードコーディングするのではなく文書のメタ情報が保持するべき
 		NSString *url = [NSString stringWithFormat:@"%@getPage?type=%@&documentId=%@&page=%d&level=%d&px=%d&py=%d" ,
-						 ServerEndpoint , (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone") ,
+						 _serverEndPoint , (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone") ,
 						 documentId , page , resolution , column , row];
 		
 		// HGMTODO
