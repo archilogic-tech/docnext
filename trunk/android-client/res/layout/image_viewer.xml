@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:orientation="vertical">
+    <FrameLayout android:id="@+id/FrameLayout" android:layout_width="fill_parent" android:layout_height="0px"
+        android:layout_weight="1">
+        <jp.archilogic.docnext.android.component.TouchAndZoomImageSwitcher
+            android:id="@+id/TouchAndZoomImageSwitcher" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:background="@anim/loading" android:visibility="invisible" android:id="@+id/LeftLoadingImageView" />
+        <LinearLayout android:layout_width="0px" android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <TextView android:text="---" android:id="@+id/CurrentPageTextView" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_weight="1" android:gravity="right" />
+            <TextView android:text="/" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <TextView android:text="---" android:id="@+id/TotalPageTextView" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_weight="1" />
+        </LinearLayout>
+        <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:background="@anim/loading" android:visibility="invisible" android:id="@+id/RightLoadingImageView" />
+    </LinearLayout>
+    <jp.archilogic.docnext.android.component.CustomZoomControls
+        android:id="@+id/ZoomControls01" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>
