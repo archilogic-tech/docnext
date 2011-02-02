@@ -151,9 +151,7 @@ package jp.archilogic.docnext.ui {
             if ( head < 0 && _currentDocPos - 1 >= 0 ) {
                 nextDocPos--;
                 head += _pageHeadHelpers[ nextDocPos ].length;
-            }
-
-            if ( head >= _pageHeadHelpers[ _currentDocPos ].length && _currentDocPos + 1 < _infos.length ) {
+            } else if ( head >= _pageHeadHelpers[ _currentDocPos ].length && _currentDocPos + 1 < _infos.length ) {
                 nextDocPos++;
                 head -= _pageHeadHelpers[ _currentDocPos ].length;
             }
