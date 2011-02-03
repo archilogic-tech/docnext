@@ -17,6 +17,7 @@
 @interface ConfigViewController : UIViewController<ImageSearchDelegate> {
 	IBOutlet UILabel *titleLabel;
     IBOutlet UISwitch *_freehandSwitch;
+	IBOutlet UISwitch *_lockSwitch;
 
     UIPopoverController *popover;
 
@@ -24,6 +25,7 @@
 }
 
 @property (nonatomic, assign) ImageViewController *parent;
+@property (nonatomic) BOOL locked;
 
 - (IBAction)homeButtonClick:(id)sender;
 - (IBAction)tocViewButtonClick:(id)sender;
@@ -32,6 +34,7 @@
 - (IBAction)textViewButtonClick:(id)sender;
 - (IBAction)tweetButtonClick:(id)sender;
 - (IBAction)searchButtonClick:(id)sender;
+- (IBAction)lockSwitchChanged;
 - (IBAction)freehandUndoClick;
 - (IBAction)freehandClearClick;
 - (IBAction)freehandSwitchChanged;

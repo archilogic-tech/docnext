@@ -19,12 +19,14 @@
 @implementation ConfigViewController
 
 @synthesize parent = _parent;
+@synthesize locked = _locked;
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
 
 	[_parent.view addSubview:self.view];
+	_locked = NO;
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -126,6 +128,9 @@
 	[searchViewController release];
 }
 
+- (IBAction)lockSwitchChanged {
+    _locked = !_lockSwitch.on;
+}
 
 
 - (IBAction)freehandUndoClick {

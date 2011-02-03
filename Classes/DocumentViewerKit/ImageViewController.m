@@ -87,7 +87,7 @@
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
-	return YES;
+	return _configViewController.locked;
 }
 
 - (void)viewWillAppear:(BOOL)animated
