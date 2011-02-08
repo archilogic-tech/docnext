@@ -1,7 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:orientation="vertical">
-    <jp.archilogic.docnext.android.widget.CoreImageView android:id="@+id/coreImageView"
-        android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1" />
+    <FrameLayout android:id="@+id/FrameLayout" android:layout_width="fill_parent" android:layout_height="0px"
+        android:layout_weight="1">
+        <jp.archilogic.docnext.android.component.TouchAndZoomImageSwitcher
+            android:id="@+id/TouchAndZoomImageSwitcher" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    </FrameLayout>
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@anim/loading" android:visibility="invisible" android:id="@+id/LeftLoadingImageView" />

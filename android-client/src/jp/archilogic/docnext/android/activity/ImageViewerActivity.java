@@ -4,23 +4,25 @@ import java.util.List;
 
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.component.CustomZoomControls;
+import jp.archilogic.docnext.android.component.TouchAndZoomImageSwitcher;
 import jp.archilogic.docnext.android.task.BitmapReceiver;
 import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.GetPageTask;
 import jp.archilogic.docnext.android.task.IntegerReceiver;
-import jp.archilogic.docnext.android.widget.CoreImageView;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ImageViewerActivity extends Activity {
-    private CoreImageView _coreImageView;
+    private TouchAndZoomImageSwitcher _switcher;
+    private FrameLayout _frameLayout;
     private ImageView _leftLoadingImageView;
     private ImageView _rightLoadingImageView;
     private TextView _currentPageTextView;
@@ -45,23 +47,32 @@ public class ImageViewerActivity extends Activity {
         }
 
         if ( leftToRight ) {
-            // _switcher.setLeftToRightAnimation();
+            _switcher.setLeftToRightAnimation();
             _rightLoadingImageView.setVisibility( View.INVISIBLE );
         } else {
-            // _switcher.setRightToLeftAnimatin();
+            _switcher.setRightToLeftAnimatin();
             _leftLoadingImageView.setVisibility( View.INVISIBLE );
         }
 
         final int nextNextPage = page + page - _currentPage;
         setCurrentPage( page );
 
-        // _switcher.setCurrentBitmap( _bitmapCache[ 1 ] );
-        // _switcher.initScroll( false );
+        _switcher.setCurrentBitmap( _bitmapCache[ 1 ] );
+        _switcher.initScroll( false );
         loadImage( nextNextPage );
     }
 
+    public int getFrameHeight() {
+        return _frameLayout.getHeight();
+    }
+
+    public int getFrameWidth() {
+        return _frameLayout.getWidth();
+    }
+
     private void initComonentVariable() {
-        _coreImageView = ( CoreImageView ) findViewById( R.id.coreImageView );
+        _frameLayout = ( FrameLayout ) findViewById( R.id.FrameLayout );
+        _switcher = ( TouchAndZoomImageSwitcher ) findViewById( R.id.TouchAndZoomImageSwitcher );
         _leftLoadingImageView = ( ImageView ) findViewById( R.id.LeftLoadingImageView );
         _rightLoadingImageView = ( ImageView ) findViewById( R.id.RightLoadingImageView );
         _currentPageTextView = ( TextView ) findViewById( R.id.CurrentPageTextView );
@@ -100,7 +111,7 @@ public class ImageViewerActivity extends Activity {
 
                 // for init (mostly
                 if ( index == 1 ) {
-                    // _switcher.setCurrentBitmap( result );
+                    _switcher.setCurrentBitmap( result );
                 }
             }
         } ).execute();
@@ -120,33 +131,28 @@ public class ImageViewerActivity extends Activity {
         requestWindowFeature( Window.FEATURE_NO_TITLE );
         setContentView( R.layout.image_viewer );
 
-        final boolean test = false;
-        if ( test ) {
-            final String action = getIntent().getData().getHost();
+        final String action = getIntent().getData().getHost();
 
-            if ( !action.equals( "view" ) ) {
-                Toast.makeText( this , "Unsupported Action" , Toast.LENGTH_LONG ).show();
-                finish();
-                return;
-            }
-
-            final List< String > segments = getIntent().getData().getPathSegments();
-
-            if ( segments.size() != 1 ) {
-                Toast.makeText( this , "Invalid paramaters" , Toast.LENGTH_LONG ).show();
-                finish();
-                return;
-            }
-
-            _id = Long.valueOf( segments.get( 0 ) );
-        } else {
-            _id = 66;
+        if ( !action.equals( "view" ) ) {
+            Toast.makeText( this , "Unsupported Action" , Toast.LENGTH_LONG ).show();
+            finish();
+            return;
         }
+
+        final List< String > segments = getIntent().getData().getPathSegments();
+
+        if ( segments.size() != 1 ) {
+            Toast.makeText( this , "Invalid paramaters" , Toast.LENGTH_LONG ).show();
+            finish();
+            return;
+        }
+
+        _id = Long.valueOf( segments.get( 0 ) );
 
         initComonentVariable();
 
-        // _switcher.init( this );
-        // _zoomControls.init( _switcher );
+        _switcher.init( this );
+        _zoomControls.init( _switcher );
 
         _bitmapCache = new Bitmap[ 3 ];
         _loaded = new boolean[ 3 ];
