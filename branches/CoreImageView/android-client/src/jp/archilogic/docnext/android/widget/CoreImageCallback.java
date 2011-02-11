@@ -45,6 +45,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private PointF _offset;
     private float _scale; // to _sourceSize
     private float _minScale;
+    private float _maxScale;
 
     private Bitmap _baseCache;
     private int _baseSampleSize;
@@ -83,28 +84,44 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private void draw( final Canvas c , final Paint paint , final PointF offset ) {
         drawBackground( c , paint );
 
-        final RectF dst = new RectF();
+        final boolean f = false;
+        if ( f ) {
+            final RectF dst = new RectF();
 
-        final float hPadding = Math.max( _surfaceSize.width - _sourceSize.width * _scale , 0 ) / 2f;
-        dst.left = Math.max( hPadding + offset.x , 0 );
-        dst.right = _surfaceSize.width - Math.max( hPadding - offset.x , 0 );
+            final float hPadding = Math.max( _surfaceSize.width - _sourceSize.width * _scale , 0 ) / 2f;
+            dst.left = Math.max( hPadding + offset.x , 0 );
+            dst.right = _surfaceSize.width - Math.max( hPadding - offset.x , 0 );
 
-        final float vPadding = Math.max( _surfaceSize.height - _sourceSize.height * _scale , 0 ) / 2f;
-        dst.top = Math.max( vPadding + offset.y , 0 );
-        dst.bottom = _surfaceSize.height - Math.max( vPadding - offset.y , 0 );
+            final float vPadding = Math.max( _surfaceSize.height - _sourceSize.height * _scale , 0 ) / 2f;
+            dst.top = Math.max( vPadding + offset.y , 0 );
+            dst.bottom = _surfaceSize.height - Math.max( vPadding - offset.y , 0 );
 
-        final Rect src =
-                new Rect( Math.round( surfaceToImageValue( Math.max( 0 , -( offset.x + hPadding ) ) ) ) , //
-                        Math.round( surfaceToImageValue( Math.max( 0 , -( offset.y + vPadding ) ) ) ) , //
-                        Math.round( surfaceToImageValue( _surfaceSize.width - hPadding - Math.max( hPadding , offset.x ) )
-                                / _scale * _minScale ) , //
-                        Math.round( surfaceToImageValue( _surfaceSize.height - vPadding
-                                - Math.max( vPadding , offset.y ) )
-                                / _scale * _minScale ) );
-        Math.round( ( _baseCache.getHeight() - surfaceToImageValue( Math.max( 0 , offset.y - vPadding ) ) ) / _scale
-                * _minScale );
+            final Rect src =
+                    new Rect( Math.round( surfaceToImageValue( Math.max( 0 , -( offset.x + hPadding ) ) ) ) , //
+                            Math.round( surfaceToImageValue( Math.max( 0 , -( offset.y + vPadding ) ) ) ) , //
+                            Math.round( surfaceToImageValue( _surfaceSize.width - hPadding
+                                    - Math.max( hPadding , offset.x ) )
+                                    / _scale * _minScale ) , //
+                            Math.round( surfaceToImageValue( _surfaceSize.height - vPadding
+                                    - Math.max( vPadding , offset.y ) )
+                                    / _scale * _minScale ) );
+            Math.round( ( _baseCache.getHeight() - surfaceToImageValue( Math.max( 0 , offset.y - vPadding ) ) )
+                    / _scale * _minScale );
 
-        c.drawBitmap( _baseCache , src , dst , paint );
+            c.drawBitmap( _baseCache , src , dst , paint );
+        } else {
+            c.save();
+
+            final float hPadding = Math.max( _surfaceSize.width - _baseCache.getWidth() * _scale , 0 ) / 2f;
+            final float vPadding = Math.max( _surfaceSize.height - _baseCache.getHeight() * _scale , 0 ) / 2f;
+
+            c.translate( _offset.x + hPadding , _offset.y + vPadding );
+            c.scale( _scale , _scale );
+
+            c.drawBitmap( _baseCache , 0 , 0 , paint );
+
+            c.restore();
+        }
     }
 
     private void drawBackground( final Canvas c , final Paint paint ) {
@@ -128,22 +145,38 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     public void pinch( final PointF prev0 , final PointF prev1 , final PointF cur0 , final PointF cur1 ) {
-        final float prevDx = prev0.x - prev1.x;
-        final float scaleX = prevDx != 0 ? Math.abs( ( cur0.x - cur1.x ) / prevDx ) : Float.MAX_VALUE;
-        final float prevDy = prev0.y - prev1.y;
-        final float scaleY = prevDy != 0 ? Math.abs( ( cur0.y - cur1.y ) / prevDy ) : Float.MAX_VALUE;
+        final boolean f = false;
+        if ( f ) {
+            final float prevDx = prev0.x - prev1.x;
+            final float scaleX = prevDx != 0 ? Math.abs( ( cur0.x - cur1.x ) / prevDx ) : Float.MAX_VALUE;
+            final float prevDy = prev0.y - prev1.y;
+            final float scaleY = prevDy != 0 ? Math.abs( ( cur0.y - cur1.y ) / prevDy ) : Float.MAX_VALUE;
 
-        final float scale = scaleX * _sourceSize.height < scaleY * _sourceSize.width ? scaleX : scaleY;
+            final float scale = scaleX * _sourceSize.height < scaleY * _sourceSize.width ? scaleX : scaleY;
 
-        final PointF center =
-                new PointF( ( scale * ( prev0.x + prev1.x ) / 2f - ( cur0.x + cur0.x ) / 2f ) / ( scale - 1 ) , //
-                        ( scale * ( prev0.y + prev1.y ) / 2f - ( cur0.y + cur0.y ) / 2f ) / ( scale - 1 ) );
+            final PointF center =
+                    new PointF( ( scale * ( prev0.x + prev1.x ) / 2f - ( cur0.x + cur0.x ) / 2f ) / ( scale - 1 ) , //
+                            ( scale * ( prev0.y + prev1.y ) / 2f - ( cur0.y + cur0.y ) / 2f ) / ( scale - 1 ) );
 
-        scale( scale , center );
+            scale( scale , center );
+        } else {
+            final float prevD = ( float ) Math.hypot( prev0.x - prev1.x , prev0.y - prev1.y );
+            final float curD = ( float ) Math.hypot( cur0.x - cur1.x , cur0.y - cur1.y );
+
+            final PointF center = new PointF( ( cur0.x + cur1.x ) / 2 , ( cur0.y + cur1.y ) / 2 );
+
+            scale( curD / prevD , center );
+        }
     }
 
-    private void scale( final float delta , final PointF center ) {
-        _scale = Math.max( _scale * delta , _minScale );
+    public void scale( final float delta , final PointF center ) {
+        _scale *= delta;
+
+        _offset.x = Math.min( _offset.x * delta + center.x * ( 1 - delta ) / delta , 0 );
+        _offset.y = Math.min( _offset.y * delta + center.y * ( 1 - delta ) / delta , 0 );
+
+        // System.err.println( _offset.x + ", " + _offset.y );
+        // System.err.println( center.x + ", " + center.y );
 
         _invalidated = true;
     }
@@ -153,7 +186,9 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         _sourceSize = getSourceSize( _sources.get( 0 ) );
         _scale = _minScale = calcBaseScale( _sources.get( 0 ) , _sourceSize , _surfaceSize );
+        _maxScale = 1;
         _baseSampleSize = ( int ) Math.floor( 1f / _scale );
+        _baseSampleSize = 1;
         _baseCache = decodeByScale( sources.get( 0 ) , _baseSampleSize );
         _offset = new PointF( 0 , 0 );
 
@@ -164,8 +199,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     public void surfaceChanged( final SurfaceHolder holder , final int format , final int width , final int height ) {
         _surfaceSize = new Size( width , height );
 
-        setSources( Lists.newArrayList( "/sdcard/docnext/hanako-001.jpg" , "/sdcard/docnext/hanako-002.jpg" ,
-                "/sdcard/docnext/hanako-003.jpg" ) );
+        setSources( Lists.newArrayList( "/sdcard/docnext/hanako-001.png" , "/sdcard/docnext/hanako-002.png" ,
+                "/sdcard/docnext/hanako-003.png" ) );
     }
 
     @Override
@@ -190,22 +225,56 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                         if ( _willCleanUp ) {
                             _willCleanUp = false;
 
-                            if ( _offset.x != 0 || _offset.y != 0 ) {
-                                final long t = SystemClock.currentThreadTimeMillis();
+                            final float minOffsetX = Math.min( _surfaceSize.width - _baseCache.getWidth() * _scale , 0 );
+                            final float minOffsetY =
+                                    Math.min( _surfaceSize.height - _baseCache.getHeight() * _scale , 0 );
+                            if ( _offset.x < minOffsetX || _offset.y < minOffsetY || _offset.x > 0 || _offset.y > 0
+                                    || _scale < _minScale || _scale > _maxScale ) {
+                                final boolean doMinOffsetX = _offset.x < minOffsetX;
+                                final boolean doMinOffsetY = _offset.y < minOffsetY;
+                                final boolean doMaxOffsetX = _offset.x > 0;
+                                final boolean doMaxOffsetY = _offset.y > 0;
+                                final boolean doMinScale = _scale < _minScale;
+                                final boolean doMaxScale = _scale > _maxScale;
+
+                                final long t = SystemClock.elapsedRealtime();
 
                                 final Interpolator i = new EaseOutBounceInterpolator();
 
                                 final PointF offset = new PointF( _offset.x , _offset.y );
+                                final float scale = _scale;
 
                                 while ( !_willCancelCleanUp ) {
                                     final float diff =
-                                            Math.min( 1f * ( SystemClock.currentThreadTimeMillis() - t )
-                                                    / DURATION_CLEAN_UP , 1f );
+                                            Math.min( 1f * ( SystemClock.elapsedRealtime() - t ) / DURATION_CLEAN_UP ,
+                                                    1f );
 
                                     final Canvas c_ = holder.lockCanvas();
 
-                                    _offset = new PointF( offset.x * ( 1f - i.getInterpolation( diff ) ) , //
-                                            offset.y * ( 1f - i.getInterpolation( diff ) ) );
+                                    if ( doMinOffsetX ) {
+                                        _offset.x = offset.x + ( minOffsetX - offset.x ) * i.getInterpolation( diff );
+                                    }
+
+                                    if ( doMinOffsetY ) {
+                                        _offset.y = offset.y + ( minOffsetY - offset.y ) * i.getInterpolation( diff );
+                                    }
+
+                                    if ( doMaxOffsetX ) {
+                                        _offset.x = offset.x + ( 0 - offset.x ) * i.getInterpolation( diff );
+                                    }
+
+                                    if ( doMaxOffsetY ) {
+                                        _offset.y = offset.y + ( 0 - offset.y ) * i.getInterpolation( diff );
+                                    }
+
+                                    // TODO change offset (can consider scale clean-up not occur with offset?)
+                                    if ( doMinScale ) {
+                                        _scale = scale + ( _minScale - scale ) * i.getInterpolation( diff );
+                                    }
+
+                                    if ( doMaxScale ) {
+                                        _scale = scale + ( _maxScale - scale ) * i.getInterpolation( diff );
+                                    }
 
                                     draw( c_ , paint , _offset );
 
