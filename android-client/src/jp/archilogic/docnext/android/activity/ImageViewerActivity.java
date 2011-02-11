@@ -162,7 +162,7 @@ public class ImageViewerActivity extends Activity {
                 loadImage( 0 );
                 loadImage( 1 );
             }
-        } ).execute();
+        } );// .execute();
     }
 
     @Override
