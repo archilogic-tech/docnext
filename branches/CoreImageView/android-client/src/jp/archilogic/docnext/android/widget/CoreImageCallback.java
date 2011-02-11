@@ -93,10 +93,14 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         dst.top = Math.max( vPadding + offset.y , 0 );
         dst.bottom = _surfaceSize.height - Math.max( vPadding - offset.y , 0 );
 
-        final Rect src = new Rect( Math.round( surfaceToImageValue( Math.max( 0 , -( offset.x + hPadding ) ) ) ) , //
-                Math.round( surfaceToImageValue( Math.max( 0 , -( offset.y + vPadding ) ) ) ) , //
-                Math.round( surfaceToImageValue( _surfaceSize.width - hPadding * 2 ) / _scale * _minScale ) , //
-                Math.round( surfaceToImageValue( _surfaceSize.height - vPadding * 2 ) / _scale * _minScale ) );
+        final Rect src =
+                new Rect( Math.round( surfaceToImageValue( Math.max( 0 , -( offset.x + hPadding ) ) ) ) , //
+                        Math.round( surfaceToImageValue( Math.max( 0 , -( offset.y + vPadding ) ) ) ) , //
+                        Math.round( surfaceToImageValue( _surfaceSize.width - hPadding - Math.max( hPadding , offset.x ) )
+                                / _scale * _minScale ) , //
+                        Math.round( surfaceToImageValue( _surfaceSize.height - vPadding
+                                - Math.max( vPadding , offset.y ) )
+                                / _scale * _minScale ) );
         Math.round( ( _baseCache.getHeight() - surfaceToImageValue( Math.max( 0 , offset.y - vPadding ) ) ) / _scale
                 * _minScale );
 
