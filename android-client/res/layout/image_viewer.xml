@@ -16,7 +16,4 @@
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@anim/loading" android:visibility="invisible" android:id="@+id/RightLoadingImageView" />
     </LinearLayout>
-    <jp.archilogic.docnext.android.component.CustomZoomControls
-        android:id="@+id/ZoomControls01" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
 </LinearLayout>

@@ -3,7 +3,6 @@ package jp.archilogic.docnext.android.activity;
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
-import jp.archilogic.docnext.android.component.CustomZoomControls;
 import jp.archilogic.docnext.android.task.BitmapReceiver;
 import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.GetPageTask;
@@ -25,7 +24,6 @@ public class ImageViewerActivity extends Activity {
     private ImageView _rightLoadingImageView;
     private TextView _currentPageTextView;
     private TextView _totalPageTextView;
-    private CustomZoomControls _zoomControls;
 
     private long _id;
     private int _currentPage;
@@ -66,7 +64,6 @@ public class ImageViewerActivity extends Activity {
         _rightLoadingImageView = ( ImageView ) findViewById( R.id.RightLoadingImageView );
         _currentPageTextView = ( TextView ) findViewById( R.id.CurrentPageTextView );
         _totalPageTextView = ( TextView ) findViewById( R.id.TotalPageTextView );
-        _zoomControls = ( CustomZoomControls ) findViewById( R.id.ZoomControls01 );
     }
 
     private void loadImage( final int page ) {

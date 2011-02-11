@@ -16,6 +16,7 @@ public class CoreImageView extends SurfaceView {
 
     private int _nTouch;
     private final PointF[] _points = new PointF[ 2 ]; // supported multi-touch count
+    private PointF _pinchCenter;
 
     public CoreImageView( final Context context , final AttributeSet attrs ) {
         super( context , attrs );
@@ -59,6 +60,9 @@ public class CoreImageView extends SurfaceView {
 
             if ( _nTouch == 2 ) {
                 copyPoints( event );
+
+                _pinchCenter =
+                        new PointF( ( _points[ 0 ].x + _points[ 1 ].x ) / 2 , ( _points[ 0 ].y + _points[ 1 ].y ) / 2 );
             }
 
             break;
@@ -74,7 +78,12 @@ public class CoreImageView extends SurfaceView {
 
                 copyPoints( event );
 
-                _callback.pinch( prev0 , prev1 , copyPoint( _points[ 0 ] ) , copyPoint( _points[ 1 ] ) );
+                final float prevD = ( float ) Math.hypot( prev0.x - prev1.x , prev0.y - prev1.y );
+                final float curD =
+                        ( float ) Math.hypot( _points[ 0 ].x - _points[ 1 ].x , _points[ 0 ].y - _points[ 1 ].y );
+
+                // _callback.pinch( prev0 , prev1 , copyPoint( _points[ 0 ] ) , copyPoint( _points[ 1 ] ) );
+                _callback.scale( curD / prevD , _pinchCenter );
             }
 
             break;
