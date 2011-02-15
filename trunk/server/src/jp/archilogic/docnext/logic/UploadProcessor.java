@@ -104,12 +104,12 @@ public class UploadProcessor {
 
                 packManager.repack( doc.id );
 
-                progressManager.clearCompleted( doc.id );
-
                 doc.processing = false;
                 documentDao.update( doc );
             } catch ( final Throwable e ) {
                 throw new RuntimeException( e );
+            } finally {
+                progressManager.clearCompleted( doc.id );
             }
         }
 
