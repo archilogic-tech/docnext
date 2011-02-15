@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.widget;
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -108,6 +109,10 @@ public class CoreImageView extends SurfaceView {
         }
 
         return true;
+    }
+
+    public void setListener( final CoreImageListener l ) {
+        _callback.setListener( l );
     }
 
     public void setSources( final List< String > sources ) {
