@@ -82,7 +82,6 @@ public class CoreImageView extends SurfaceView {
                 final float curD =
                         ( float ) Math.hypot( _points[ 0 ].x - _points[ 1 ].x , _points[ 0 ].y - _points[ 1 ].y );
 
-                // _callback.pinch( prev0 , prev1 , copyPoint( _points[ 0 ] ) , copyPoint( _points[ 1 ] ) );
                 _callback.scale( curD / prevD , _pinchCenter );
             }
 
