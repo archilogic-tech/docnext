@@ -7,6 +7,7 @@ import jp.archilogic.docnext.android.task.BitmapReceiver;
 import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.GetPageTask;
 import jp.archilogic.docnext.android.task.IntegerReceiver;
+import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
 import jp.archilogic.docnext.android.widget.CoreImageView;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -17,6 +18,8 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.common.collect.Lists;
 
 public class ImageViewerActivity extends Activity {
     private CoreImageView _coreImageView;
@@ -30,6 +33,18 @@ public class ImageViewerActivity extends Activity {
     private int _totalPage;
     private Bitmap[] _bitmapCache;
     private boolean[] _loaded;
+
+    private final CoreImageListener _coreImageListener = new CoreImageListener() {
+        @Override
+        public void onPageChanged( final int index ) {
+            runOnUiThread( new Runnable() {
+                @Override
+                public void run() {
+                    _currentPageTextView.setText( String.valueOf( index + 1 ) );
+                }
+            } );
+        }
+    };
 
     private void changePage( final int page , final boolean leftToRight ) {
         if ( page < 0 || page >= _totalPage || !_loaded[ page - _currentPage + 1 ] ) {
@@ -141,6 +156,16 @@ public class ImageViewerActivity extends Activity {
         }
 
         initComonentVariable();
+
+        final List< String > sources = Lists.newArrayList();
+        for ( int index = 0 ; index < 180 ; index++ ) {
+            sources.add( String.format( "/sdcard/docnext/hanako-%03d.jpg" , index + 1 ) );
+        }
+        _coreImageView.setSources( sources );
+        _coreImageView.setListener( _coreImageListener );
+
+        _currentPageTextView.setText( String.valueOf( 1 ) );
+        _totalPageTextView.setText( String.valueOf( sources.size() ) );
 
         // _switcher.init( this );
         // _zoomControls.init( _switcher );
