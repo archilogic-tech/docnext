@@ -7,6 +7,8 @@ import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dao.DocumentDao;
 import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.entity.Document;
+import jp.archilogic.docnext.exception.EncryptedPDFException;
+import jp.archilogic.docnext.exception.MalformedPDFException;
 import jp.archilogic.docnext.exception.UnsupportedFormatException;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
@@ -31,23 +33,23 @@ public class UploadProcessor {
         private final String tempPath;
         private final Document doc;
 
-        public UploadTask( String tempPath , Document doc ) {
+        public UploadTask( final String tempPath , final Document doc ) {
             this.tempPath = tempPath;
             this.doc = doc;
         }
 
-        private void parseAnnotation( String tempPdfPath ) {
+        private void parseAnnotation( final String tempPdfPath ) {
             int page = 0;
-            for ( List< PageAnnotationInfo > infos : pdfAnnotationParser.parse( tempPdfPath ) ) {
+            for ( final List< PageAnnotationInfo > infos : pdfAnnotationParser.parse( tempPdfPath ) ) {
                 packManager.writeAnnotations( doc.id , page , infos );
 
                 page++;
             }
         }
 
-        private void parseText( String cleanedPath ) {
+        private void parseText( final String cleanedPath ) {
             int page = 0;
-            for ( PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
+            for ( final PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
                 packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
                 packManager.writeImageText( doc.id , page , pageTextInfo.text );
                 packManager.writeRegions( doc.id , page , pageTextInfo.regions );
@@ -63,10 +65,15 @@ public class UploadProcessor {
 
                 FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
 
-                String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
-                String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
+                final String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
+                final String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
-                if ( !pdfAnnotationParser.canParse( tempPdfPath ) ) {
+                try {
+                    pdfAnnotationParser.checkCanParse( tempPdfPath );
+                } catch ( final MalformedPDFException e ) {
+                    progressManager.setError( doc.id , ErrorType.MALFORMED );
+                    return;
+                } catch ( final EncryptedPDFException e ) {
                     progressManager.setError( doc.id , ErrorType.ENCRYPTED );
                     return;
                 }
@@ -75,7 +82,7 @@ public class UploadProcessor {
 
                 parseAnnotation( tempPdfPath );
 
-                String cleanedPath =
+                final String cleanedPath =
                         FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + "cleaned" + doc.id
                                 + ".pdf";
                 pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
@@ -83,7 +90,7 @@ public class UploadProcessor {
                 progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
                 progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
 
-                double ratio =
+                final double ratio =
                         thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
                                 + doc.id , doc.id );
 
@@ -101,22 +108,22 @@ public class UploadProcessor {
 
                 doc.processing = false;
                 documentDao.update( doc );
-            } catch ( Throwable e ) {
+            } catch ( final Throwable e ) {
                 throw new RuntimeException( e );
             }
         }
 
-        private String saveAsPdf( String path , String tempPath , long documentId ) {
+        private String saveAsPdf( final String path , final String tempPath , final long documentId ) {
             try {
                 if ( FilenameUtils.getExtension( path ).equals( "pdf" ) ) {
                     return tempPath;
                 } else {
-                    String tempDir = FilenameUtils.getFullPathNoEndSeparator( tempPath );
-                    String tempPdfPath = tempDir + File.separator + "temp" + documentId + ".pdf";
+                    final String tempDir = FilenameUtils.getFullPathNoEndSeparator( tempPath );
+                    final String tempPdfPath = tempDir + File.separator + "temp" + documentId + ".pdf";
                     converter.convert( new File( tempPath ) , new File( tempPdfPath ) );
                     return tempPdfPath;
                 }
-            } catch ( OpenOfficeException e ) {
+            } catch ( final OpenOfficeException e ) {
                 // currently, unnecessary code though...
                 if ( e.getCause() instanceof ErrorCodeIOException ) {
                     throw new UnsupportedFormatException();
@@ -146,7 +153,7 @@ public class UploadProcessor {
     @Autowired
     private ProgressManager progressManager;
 
-    public void proc( String tempPath , Document doc ) {
+    public void proc( final String tempPath , final Document doc ) {
         taskExecutor.execute( new UploadTask( tempPath , doc ) );
     }
 }

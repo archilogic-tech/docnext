@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 @Component
 public class ProgressManager {
     public enum ErrorType {
-        UNKNOWN , ENCRYPTED;
+        UNKNOWN , ENCRYPTED , MALFORMED;
     }
 
     public class Progress {
@@ -26,7 +26,7 @@ public class ProgressManager {
         public Progress() {
         }
 
-        public Progress( Step step ) {
+        public Progress( final Step step ) {
             this.step = step;
         }
     }
@@ -37,7 +37,7 @@ public class ProgressManager {
         public int totalThumbnail;
         public String error;
 
-        public ProgressJSON( Progress progress ) {
+        public ProgressJSON( final Progress progress ) {
             step = progress.step.toString();
             createdThumbnail = progress.createdThumbnail;
             totalThumbnail = progress.totalThumbnail;
@@ -54,11 +54,11 @@ public class ProgressManager {
 
     private final Map< Long , Progress > _data = Maps.newHashMap();
 
-    public void clearCompleted( long id ) {
+    public void clearCompleted( final long id ) {
         _data.remove( id );
     }
 
-    public String getProgressJSON( long id ) {
+    public String getProgressJSON( final long id ) {
         Progress progress = _data.get( id );
 
         // clear Progress which is set by setError
@@ -67,7 +67,7 @@ public class ProgressManager {
         }
 
         if ( progress == null ) {
-            Document document = documentDao.findById( id );
+            final Document document = documentDao.findById( id );
 
             if ( document != null && !document.processing ) {
                 progress = new Progress( Step.COMPLETED );
@@ -80,7 +80,7 @@ public class ProgressManager {
         return JSON.encode( new ProgressJSON( progress ) );
     }
 
-    public void setCreatedThumbnail( long id , int created ) {
+    public void setCreatedThumbnail( final long id , final int created ) {
         Progress progress = _data.get( id );
 
         if ( progress == null ) {
@@ -90,13 +90,13 @@ public class ProgressManager {
         progress.createdThumbnail = created;
     }
 
-    public void setError( long id , ErrorType error ) {
+    public void setError( final long id , final ErrorType error ) {
         setStep( id , Step.FAILED );
 
         _data.get( id ).error = error;
     }
 
-    public void setStep( long id , Step step ) {
+    public void setStep( final long id , final Step step ) {
         Progress progress = _data.get( id );
 
         if ( progress == null ) {
@@ -106,7 +106,7 @@ public class ProgressManager {
         progress.step = step;
     }
 
-    public void setTotalThumbnail( long id , int total ) {
+    public void setTotalThumbnail( final long id , final int total ) {
         Progress progress = _data.get( id );
 
         if ( progress == null ) {
