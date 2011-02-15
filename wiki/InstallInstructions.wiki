@@ -6,7 +6,7 @@ Server needs some command-line tools described bellow
  * xpdf
  * xpdf-japanese
  * openoffice.org
- * imagematick
+ * ImageMagick
 
 You should run openoffice.org as a daemon (performance reason), so, you should run shell-script on startup, like bellow
 {{{
