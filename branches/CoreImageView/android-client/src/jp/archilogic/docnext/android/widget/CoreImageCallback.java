@@ -169,6 +169,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
     }
 
+    private static final int DOUBLE_TAP_THREASHOLD = 10;
     private static final int PAGE_CHANGE_THREASHOLD = 4;
     private static final long DURATION_CLEAN_UP = 200L;
 
@@ -198,6 +199,9 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private int _index;
 
     private final ExecutorService _loadingExecutor = Executors.newSingleThreadExecutor();
+
+    private Thread _tapDelayDispatcher = null;
+    private PointF _delayPoint;
 
     public CoreImageCallback( final Bitmap background ) {
         _background = background;
@@ -273,6 +277,14 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _willCleanUp = true;
         _invalidated = true;
         _willCancelCleanUp = false;
+    }
+
+    private void doDoubleTap( final PointF point ) {
+        System.err.println( "***** double tap *****" );
+    }
+
+    private void doTap( final PointF point ) {
+        System.err.println( "***** tap *****" );
     }
 
     private void draw( final Canvas c , final Paint paint , final PointF offset ) {
@@ -458,6 +470,38 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     public void surfaceDestroyed( final SurfaceHolder holder ) {
         _shouldStop = true;
         _worker = null;
+    }
+
+    public void tap( final PointF point ) {
+        if ( _tapDelayDispatcher != null ) {
+            _tapDelayDispatcher = null;
+
+            if ( Math.hypot( point.x - _delayPoint.x , point.y - _delayPoint.y ) > DOUBLE_TAP_THREASHOLD ) {
+                tap( point );
+            }
+
+            doDoubleTap( point );
+        } else {
+            _delayPoint = point;
+            _tapDelayDispatcher = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep( 500 );
+                    } catch ( final InterruptedException e ) {
+                        throw new RuntimeException( e );
+                    }
+
+                    if ( _tapDelayDispatcher != null ) {
+                        _tapDelayDispatcher = null;
+
+                        doTap( point );
+                    }
+                }
+            };
+
+            _tapDelayDispatcher.start();
+        }
     }
 
     public void translate( final PointF delta ) {
