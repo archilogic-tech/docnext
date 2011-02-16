@@ -16,4 +16,14 @@
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:background="@anim/loading" android:visibility="invisible" android:id="@+id/RightLoadingImageView" />
     </LinearLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <Button android:id="@+id/l2r" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="L2R" />
+        <Button android:id="@+id/r2l" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="R2L" />
+        <Button android:id="@+id/t2b" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="T2B" />
+        <Button android:id="@+id/b2t" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="B2T" />
+    </LinearLayout>
 </LinearLayout>
