@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
+import jp.archilogic.docnext.android.widget.CoreImageCallback.DocumentDirection;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -109,6 +110,10 @@ public class CoreImageView extends SurfaceView {
         }
 
         return true;
+    }
+
+    public void setDirection( final DocumentDirection d ) {
+        _callback.setDirection( d );
     }
 
     public void setListener( final CoreImageListener l ) {

@@ -8,12 +8,14 @@ import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.GetPageTask;
 import jp.archilogic.docnext.android.task.IntegerReceiver;
 import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
+import jp.archilogic.docnext.android.widget.CoreImageCallback.DocumentDirection;
 import jp.archilogic.docnext.android.widget.CoreImageView;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -162,7 +164,33 @@ public class ImageViewerActivity extends Activity {
             sources.add( String.format( "/sdcard/docnext/hanako-%03d.jpg" , index + 1 ) );
         }
         _coreImageView.setSources( sources );
+        _coreImageView.setDirection( DocumentDirection.R2L );
         _coreImageView.setListener( _coreImageListener );
+
+        findViewById( R.id.l2r ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                _coreImageView.setDirection( DocumentDirection.L2R );
+            }
+        } );
+        findViewById( R.id.r2l ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                _coreImageView.setDirection( DocumentDirection.R2L );
+            }
+        } );
+        findViewById( R.id.t2b ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                _coreImageView.setDirection( DocumentDirection.T2B );
+            }
+        } );
+        findViewById( R.id.b2t ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                _coreImageView.setDirection( DocumentDirection.B2T );
+            }
+        } );
 
         _currentPageTextView.setText( String.valueOf( 1 ) );
         _totalPageTextView.setText( String.valueOf( sources.size() ) );

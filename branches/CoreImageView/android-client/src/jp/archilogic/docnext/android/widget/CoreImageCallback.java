@@ -14,9 +14,6 @@ import android.view.SurfaceHolder;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-/**
- * TODO separate image loading to Delegate?
- */
 public class CoreImageCallback implements SurfaceHolder.Callback {
     private static class CleanUpState {
         boolean needCleanUp;
@@ -63,6 +60,85 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         void onPageChanged( int index );
     }
 
+    public enum DocumentDirection {
+        L2R , R2L , T2B , B2T;
+
+        boolean shouldChangeToNext( final PointF offset , final Size surface , final Size image , final float scale ) {
+            switch ( this ) {
+            case L2R:
+                return offset.x < surface.width - surface.width / PAGE_CHANGE_THREASHOLD - image.width * scale;
+            case R2L:
+                return offset.x > surface.width / PAGE_CHANGE_THREASHOLD;
+            case T2B:
+                return offset.y < surface.height - surface.height / PAGE_CHANGE_THREASHOLD - image.height * scale;
+            case B2T:
+                return offset.y > surface.height / PAGE_CHANGE_THREASHOLD;
+            default:
+                throw new RuntimeException();
+            }
+        }
+
+        boolean shouldChangeToPrev( final PointF offset , final Size surface , final Size image , final float scale ) {
+            switch ( this ) {
+            case L2R:
+                return offset.x > surface.width / PAGE_CHANGE_THREASHOLD;
+            case R2L:
+                return offset.x < surface.width - surface.width / PAGE_CHANGE_THREASHOLD - image.width * scale;
+            case T2B:
+                return offset.y > surface.height / PAGE_CHANGE_THREASHOLD;
+            case B2T:
+                return offset.y < surface.height - surface.height / PAGE_CHANGE_THREASHOLD - image.height * scale;
+            default:
+                throw new RuntimeException();
+            }
+        }
+
+        int toXFactor( final int index ) {
+            switch ( this ) {
+            case L2R:
+                return index - CURRENT;
+            case R2L:
+                return CURRENT - index;
+            case T2B:
+            case B2T:
+                return 0;
+            default:
+                throw new RuntimeException();
+            }
+        }
+
+        int toYFactor( final int index ) {
+            switch ( this ) {
+            case L2R:
+            case R2L:
+                return 0;
+            case T2B:
+                return index - CURRENT;
+            case B2T:
+                return CURRENT - index;
+            default:
+                throw new RuntimeException();
+            }
+        }
+
+        void updateOffset( final PointF offset , final Size image , final float scale , final boolean isNext ) {
+            final int sign = ( this == L2R || this == T2B ) ^ isNext ? -1 : 1;
+
+            switch ( this ) {
+            case L2R:
+            case R2L:
+                offset.x += sign * image.width * scale;
+                break;
+            case T2B:
+            case B2T:
+                offset.y += sign * image.height * scale;
+                break;
+            default:
+                throw new RuntimeException();
+            }
+        }
+    }
+
     private static class Size {
         int width;
         int height;
@@ -90,6 +166,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private final Bitmap _background;
     private List< String > _sources;
     private CoreImageListener _listener = null;
+    private DocumentDirection _direction;
 
     private Size _imageSize;
 
@@ -119,38 +196,48 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _willCancelCleanUp = true;
     }
 
+    private void changeToNextPage() {
+        _images[ PREV ] = _images[ CURRENT ];
+        _images[ CURRENT ] = _images[ NEXT ];
+        _images[ NEXT ] = null;
+
+        if ( _index + 2 < _sources.size() ) {
+            load( _index + 2 , NEXT );
+        }
+
+        _index++;
+
+        if ( _listener != null ) {
+            _listener.onPageChanged( _index );
+        }
+    }
+
+    private void changeToPrevPage() {
+        _images[ NEXT ] = _images[ CURRENT ];
+        _images[ CURRENT ] = _images[ PREV ];
+        _images[ PREV ] = null;
+
+        if ( _index - 2 >= 0 ) {
+            load( _index - 2 , PREV );
+        }
+
+        _index--;
+
+        if ( _listener != null ) {
+            _listener.onPageChanged( _index );
+        }
+    }
+
     private void checkChangePage() {
-        if ( _offset.x > _surfaceSize.width / PAGE_CHANGE_THREASHOLD && _index + 1 < _sources.size() ) {
-            _images[ PREV ] = _images[ CURRENT ];
-            _images[ CURRENT ] = _images[ NEXT ];
-            _images[ NEXT ] = null;
+        if ( _direction.shouldChangeToNext( _offset , _surfaceSize , _imageSize , _scale )
+                && _index + 1 < _sources.size() ) {
+            changeToNextPage();
 
-            if ( _index + 2 < _sources.size() ) {
-                load( _index + 2 , NEXT );
-            }
+            _direction.updateOffset( _offset , _imageSize , _scale , true );
+        } else if ( _direction.shouldChangeToPrev( _offset , _surfaceSize , _imageSize , _scale ) && _index - 1 >= 0 ) {
+            changeToPrevPage();
 
-            _offset.x -= _imageSize.width * _scale;
-            _index++;
-
-            if ( _listener != null ) {
-                _listener.onPageChanged( _index );
-            }
-        } else if ( _offset.x < _surfaceSize.width - _surfaceSize.width / PAGE_CHANGE_THREASHOLD - //
-                _imageSize.width * _scale && _index - 1 >= 0 ) {
-            _images[ NEXT ] = _images[ CURRENT ];
-            _images[ CURRENT ] = _images[ PREV ];
-            _images[ PREV ] = null;
-
-            if ( _index - 2 >= 0 ) {
-                load( _index - 2 , PREV );
-            }
-
-            _offset.x += _imageSize.width * _scale;
-            _index--;
-
-            if ( _listener != null ) {
-                _listener.onPageChanged( _index );
-            }
+            _direction.updateOffset( _offset , _imageSize , _scale , false );
         }
     }
 
@@ -180,10 +267,10 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         c.translate( _offset.x + hPadding , _offset.y + vPadding );
         c.scale( _scale , _scale );
 
-        // TODO consider l2r, r2l, horizontal, vertical
         for ( int index = 0 ; index < 3 ; index++ ) {
             if ( _images[ index ] != null ) {
-                c.drawBitmap( _images[ index ] , _imageSize.width * ( 1 - index ) , 0 , paint );
+                c.drawBitmap( _images[ index ] , _imageSize.width * _direction.toXFactor( index ) , //
+                        _imageSize.height * _direction.toYFactor( index ) , paint );
             }
         }
 
@@ -207,6 +294,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 _images[ cacheIndex ] = decode( sourceIndex );
 
                 _loading = false;
+                _invalidated = true;
             }
         }.start();
     }
@@ -259,6 +347,12 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _invalidated = true;
     }
 
+    public void setDirection( final DocumentDirection d ) {
+        _direction = d;
+
+        _invalidated = true;
+    }
+
     public void setListener( final CoreImageListener l ) {
         _listener = l;
     }
@@ -304,7 +398,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 paint.setFilterBitmap( true );
 
                 while ( !_shouldStop ) {
-                    if ( _invalidated ) {
+                    if ( _invalidated && _surfaceSize != null && _imageSize != null ) {
                         _invalidated = false;
 
                         final Canvas c = holder.lockCanvas();
