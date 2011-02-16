@@ -1,6 +1,8 @@
 package jp.archilogic.docnext.android.widget;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.os.SystemClock;
 import android.view.SurfaceHolder;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -63,6 +66,23 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     public enum DocumentDirection {
         L2R , R2L , T2B , B2T;
 
+        boolean canMoveHorizontal() {
+            switch ( this ) {
+            case L2R:
+            case R2L:
+                return true;
+            case T2B:
+            case B2T:
+                return false;
+            default:
+                throw new RuntimeException();
+            }
+        }
+
+        boolean canMoveVertical() {
+            return !canMoveHorizontal();
+        }
+
         boolean shouldChangeToNext( final PointF offset , final Size surface , final Size image , final float scale ) {
             switch ( this ) {
             case L2R:
@@ -93,12 +113,12 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
             }
         }
 
-        int toXFactor( final int index ) {
+        int toXSign() {
             switch ( this ) {
             case L2R:
-                return index - CURRENT;
+                return 1;
             case R2L:
-                return CURRENT - index;
+                return -1;
             case T2B:
             case B2T:
                 return 0;
@@ -107,15 +127,15 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
             }
         }
 
-        int toYFactor( final int index ) {
+        int toYSign() {
             switch ( this ) {
             case L2R:
             case R2L:
                 return 0;
             case T2B:
-                return index - CURRENT;
+                return 1;
             case B2T:
-                return CURRENT - index;
+                return -1;
             default:
                 throw new RuntimeException();
             }
@@ -151,9 +171,6 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
     private static final int PAGE_CHANGE_THREASHOLD = 4;
     private static final long DURATION_CLEAN_UP = 200L;
-    private static final int PREV = 0;
-    private static final int CURRENT = 1;
-    private static final int NEXT = 2;
 
     private Size _surfaceSize;
     private Thread _worker;
@@ -165,6 +182,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
     private final Bitmap _background;
     private List< String > _sources;
+    private List< String > _thumbnailSources;
     private CoreImageListener _listener = null;
     private DocumentDirection _direction;
 
@@ -175,10 +193,11 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private float _minScale;
     private float _maxScale;
 
-    private final Bitmap[] _images = new Bitmap[ 3 ];
+    private Bitmap[] _images;
 
     private int _index;
-    private boolean _loading;
+
+    private final ExecutorService _loadingExecutor = Executors.newSingleThreadExecutor();
 
     public CoreImageCallback( final Bitmap background ) {
         _background = background;
@@ -197,12 +216,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void changeToNextPage() {
-        _images[ PREV ] = _images[ CURRENT ];
-        _images[ CURRENT ] = _images[ NEXT ];
-        _images[ NEXT ] = null;
+        if ( _index - 1 >= 0 ) {
+            _images[ _index - 1 ] = null;
+        }
 
         if ( _index + 2 < _sources.size() ) {
-            load( _index + 2 , NEXT );
+            _images[ _index + 2 ] = decode( _thumbnailSources.get( _index + 2 ) );
+            load( _index + 2 );
         }
 
         _index++;
@@ -213,12 +233,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void changeToPrevPage() {
-        _images[ NEXT ] = _images[ CURRENT ];
-        _images[ CURRENT ] = _images[ PREV ];
-        _images[ PREV ] = null;
+        if ( _index + 1 < _images.length ) {
+            _images[ _index + 1 ] = null;
+        }
 
         if ( _index - 2 >= 0 ) {
-            load( _index - 2 , PREV );
+            _images[ _index - 2 ] = decode( _thumbnailSources.get( _index - 2 ) );
+            load( _index - 2 );
         }
 
         _index--;
@@ -241,11 +262,11 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
     }
 
-    private Bitmap decode( final int index ) {
+    private Bitmap decode( final String path ) {
         final Options o = new Options();
         o.inPreferredConfig = Config.RGB_565;
 
-        return BitmapFactory.decodeFile( _sources.get( index ) , o );
+        return BitmapFactory.decodeFile( path , o );
     }
 
     public void doCleanUp() {
@@ -267,10 +288,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         c.translate( _offset.x + hPadding , _offset.y + vPadding );
         c.scale( _scale , _scale );
 
-        for ( int index = 0 ; index < 3 ; index++ ) {
-            if ( _images[ index ] != null ) {
-                c.drawBitmap( _images[ index ] , _imageSize.width * _direction.toXFactor( index ) , //
-                        _imageSize.height * _direction.toYFactor( index ) , paint );
+        for ( int delta = -1 ; delta <= 1 ; delta++ ) {
+            if ( _index + delta >= 0 && _index + delta < _images.length && _images[ _index + delta ] != null ) {
+                c.drawBitmap( _images[ _index + delta ] , null , //
+                        new RectF( _imageSize.width * _direction.toXSign() * delta , //
+                                _imageSize.height * _direction.toYSign() * delta , //
+                                _imageSize.width * ( _direction.toXSign() * delta + 1 ) , //
+                                _imageSize.height * ( _direction.toYSign() * delta + 1 ) ) , paint );
             }
         }
 
@@ -285,24 +309,23 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
     }
 
-    private void load( final int sourceIndex , final int cacheIndex ) {
-        _loading = true;
-
-        new Thread() {
+    private void load( final int index ) {
+        _loadingExecutor.execute( new Runnable() {
             @Override
             public void run() {
-                _images[ cacheIndex ] = decode( sourceIndex );
+                _images[ index ] = decode( _sources.get( index ) );
 
-                _loading = false;
+                if ( index < _index - 1 || index > _index + 1 ) {
+                    _images[ index ] = null;
+                }
+
                 _invalidated = true;
             }
-        }.start();
+        } );
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint paint ) {
-        if ( !_loading ) {
-            checkChangePage();
-        }
+        checkChangePage();
 
         final CleanUpState state =
                 new CleanUpState( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
@@ -365,16 +388,21 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
 
         _index = 0;
-        _images[ CURRENT ] = decode( 0 );
-        _images[ NEXT ] = decode( 1 );
 
-        _imageSize = new Size( _images[ CURRENT ].getWidth() , _images[ CURRENT ].getHeight() );
+        _images = new Bitmap[ sources.size() ];
+        _images[ 0 ] = decode( sources.get( 0 ) );
+        _images[ 1 ] = decode( sources.get( 1 ) );
+
+        _imageSize = new Size( _images[ 0 ].getWidth() , _images[ 0 ].getHeight() );
         _scale = _minScale = calcBaseScale( _imageSize , _surfaceSize );
         _maxScale = 1;
         _offset = new PointF( 0 , 0 );
 
-        _loading = false;
         _invalidated = true;
+    }
+
+    public void setThumbnailSources( final List< String > thumbs ) {
+        _thumbnailSources = thumbs;
     }
 
     @Override
@@ -433,6 +461,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     public void translate( final PointF delta ) {
+        if ( _surfaceSize.width >= _imageSize.width * _scale && !_direction.canMoveHorizontal() ) {
+            delta.x = 0;
+        }
+        if ( _surfaceSize.height >= _imageSize.height * _scale && !_direction.canMoveVertical() ) {
+            delta.y = 0;
+        }
+
         _offset.offset( delta.x , delta.y );
 
         _invalidated = true;

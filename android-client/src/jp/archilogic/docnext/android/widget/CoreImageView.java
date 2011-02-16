@@ -123,4 +123,8 @@ public class CoreImageView extends SurfaceView {
     public void setSources( final List< String > sources ) {
         _callback.setSources( sources );
     }
+
+    public void setThumbnailSources( final List< String > thumbs ) {
+        _callback.setThumbnailSources( thumbs );
+    }
 }
