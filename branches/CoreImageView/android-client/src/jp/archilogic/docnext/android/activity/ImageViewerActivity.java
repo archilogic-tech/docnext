@@ -164,6 +164,13 @@ public class ImageViewerActivity extends Activity {
             sources.add( String.format( "/sdcard/docnext/hanako-%03d.jpg" , index + 1 ) );
         }
         _coreImageView.setSources( sources );
+
+        final List< String > thumbs = Lists.newArrayList();
+        for ( int index = 0 ; index < 180 ; index++ ) {
+            thumbs.add( String.format( "/sdcard/docnext/hanako-thumb-%03d.jpg" , index + 1 ) );
+        }
+        _coreImageView.setThumbnailSources( thumbs );
+
         _coreImageView.setDirection( DocumentDirection.R2L );
         _coreImageView.setListener( _coreImageListener );
 
