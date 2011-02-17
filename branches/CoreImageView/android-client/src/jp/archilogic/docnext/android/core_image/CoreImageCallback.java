@@ -167,6 +167,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         if ( _scale < _maxScale ) {
             _willOffsetTo = new PointF( ( _offset.x - point.x ) * _maxScale / _scale + _surfaceSize.width / 2 , //
                     ( _offset.y - point.y ) * _maxScale / _scale + _surfaceSize.height / 2 );
+            // _willOffsetTo.x = _offset.x * _maxScale / _scale + point.x / ( _maxScale / _scale ) - point.x;
+            // _willOffsetTo.y = _offset.y * _maxScale / _scale + point.y / ( _maxScale / _scale ) - point.y;
             _willOffsetTo.x =
                     Math.min( Math.max( _willOffsetTo.x , _surfaceSize.width - _imageSize.width * _maxScale ) , 0 );
             _willOffsetTo.y =
@@ -304,13 +306,17 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
     }
 
-    public void scale( final float delta , final PointF center ) {
+    public void scale( float delta , final PointF center ) {
+        if ( _scale < _minScale || _scale > _maxScale ) {
+            delta = ( float ) Math.cbrt( delta );
+        }
+
         _scale *= delta;
 
         // TODO
-        // _offset.x = ( _offset.x - center.x ) * delta + _surfaceSize.width / 2;
-        // _offset.y = ( _offset.y - center.y ) * delta + _surfaceSize.height / 2;
         _offset.x = _offset.x * delta + center.x / delta - center.x;
+        // _offset.y = ( _offset.y - center.y ) * delta + _surfaceSize.height / 2;
+        // _offset.x = _offset.x * delta + center.x / delta - center.x;
         _offset.y = _offset.y * delta + center.y / delta - center.y;
 
         _invalidated = true;
