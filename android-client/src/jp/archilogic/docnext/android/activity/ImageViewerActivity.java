@@ -3,13 +3,13 @@ package jp.archilogic.docnext.android.activity;
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.core_image.CoreImageListener;
+import jp.archilogic.docnext.android.core_image.CoreImageView;
+import jp.archilogic.docnext.android.core_image.DocumentDirection;
 import jp.archilogic.docnext.android.task.BitmapReceiver;
 import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.GetPageTask;
 import jp.archilogic.docnext.android.task.IntegerReceiver;
-import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
-import jp.archilogic.docnext.android.widget.CoreImageCallback.DocumentDirection;
-import jp.archilogic.docnext.android.widget.CoreImageView;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;

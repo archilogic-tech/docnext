@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.widget;
+package jp.archilogic.docnext.android.core_image;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -18,159 +18,36 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 public class CoreImageCallback implements SurfaceHolder.Callback {
-    private static class CleanUpState {
-        boolean needCleanUp;
+    private class TapDispatcher extends Thread {
+        private final PointF _point;
+        private boolean _cancelled = false;
 
-        PointF srcOffset;
-        float srcScale;
-        PointF dstOffset;
-        float dstScale;
+        TapDispatcher( final PointF point ) {
+            _point = point;
+        }
 
-        CleanUpState( final PointF offset , final float scale , final Size surface , final Size image ,
-                final float minScale , final float maxScale ) {
-            if ( offset.x < Math.min( surface.width - image.width * scale , 0 ) || //
-                    offset.y < Math.min( surface.height - image.height * scale , 0 ) || //
-                    offset.x > 0 || offset.y > 0 || scale < minScale || scale > maxScale ) {
-                needCleanUp = true;
+        void cancel() {
+            _cancelled = true;
+        }
 
-                srcOffset = new PointF( offset.x , offset.y );
-                srcScale = scale;
-
-                if ( scale < minScale ) {
-                    dstScale = minScale;
-                    dstOffset = new PointF( 0 , 0 );
-                } else if ( scale > maxScale ) {
-                    dstScale = maxScale;
-                    dstOffset =
-                            new PointF( ( maxScale * offset.x - ( maxScale - scale ) * surface.width / 2 ) / scale ,
-                                    ( maxScale * offset.y - ( maxScale - scale ) * surface.height / 2 ) / scale );
-                } else {
-                    dstScale = scale;
-                    dstOffset = new PointF( offset.x , offset.y );
-                }
-
-                dstOffset.x =
-                        Math.min( Math.max( dstOffset.x , Math.min( surface.width - image.width * dstScale , 0 ) ) , 0 );
-                dstOffset.y = Math.min( Math.max( dstOffset.y , //
-                        Math.min( surface.height - image.height * dstScale , 0 ) ) , 0 );
-            } else {
-                needCleanUp = false;
+        @Override
+        public void run() {
+            try {
+                Thread.sleep( DOUBLE_TAP_DURATION );
+            } catch ( final InterruptedException e ) {
+                throw new RuntimeException( e );
             }
-        }
-    }
 
-    public interface CoreImageListener {
-        void onPageChanged( int index );
-    }
-
-    public enum DocumentDirection {
-        L2R , R2L , T2B , B2T;
-
-        boolean canMoveHorizontal() {
-            switch ( this ) {
-            case L2R:
-            case R2L:
-                return true;
-            case T2B:
-            case B2T:
-                return false;
-            default:
-                throw new RuntimeException();
+            if ( !_cancelled ) {
+                doTap( _point );
             }
-        }
 
-        boolean canMoveVertical() {
-            return !canMoveHorizontal();
-        }
-
-        boolean shouldChangeToNext( final PointF offset , final Size surface , final Size image , final float scale ) {
-            switch ( this ) {
-            case L2R:
-                return offset.x < surface.width - surface.width / PAGE_CHANGE_THREASHOLD - image.width * scale;
-            case R2L:
-                return offset.x > surface.width / PAGE_CHANGE_THREASHOLD;
-            case T2B:
-                return offset.y < surface.height - surface.height / PAGE_CHANGE_THREASHOLD - image.height * scale;
-            case B2T:
-                return offset.y > surface.height / PAGE_CHANGE_THREASHOLD;
-            default:
-                throw new RuntimeException();
-            }
-        }
-
-        boolean shouldChangeToPrev( final PointF offset , final Size surface , final Size image , final float scale ) {
-            switch ( this ) {
-            case L2R:
-                return offset.x > surface.width / PAGE_CHANGE_THREASHOLD;
-            case R2L:
-                return offset.x < surface.width - surface.width / PAGE_CHANGE_THREASHOLD - image.width * scale;
-            case T2B:
-                return offset.y > surface.height / PAGE_CHANGE_THREASHOLD;
-            case B2T:
-                return offset.y < surface.height - surface.height / PAGE_CHANGE_THREASHOLD - image.height * scale;
-            default:
-                throw new RuntimeException();
-            }
-        }
-
-        int toXSign() {
-            switch ( this ) {
-            case L2R:
-                return 1;
-            case R2L:
-                return -1;
-            case T2B:
-            case B2T:
-                return 0;
-            default:
-                throw new RuntimeException();
-            }
-        }
-
-        int toYSign() {
-            switch ( this ) {
-            case L2R:
-            case R2L:
-                return 0;
-            case T2B:
-                return 1;
-            case B2T:
-                return -1;
-            default:
-                throw new RuntimeException();
-            }
-        }
-
-        void updateOffset( final PointF offset , final Size image , final float scale , final boolean isNext ) {
-            final int sign = ( this == L2R || this == T2B ) ^ isNext ? -1 : 1;
-
-            switch ( this ) {
-            case L2R:
-            case R2L:
-                offset.x += sign * image.width * scale;
-                break;
-            case T2B:
-            case B2T:
-                offset.y += sign * image.height * scale;
-                break;
-            default:
-                throw new RuntimeException();
-            }
-        }
-    }
-
-    private static class Size {
-        int width;
-        int height;
-
-        Size( final int width , final int height ) {
-            this.width = width;
-            this.height = height;
+            _tapDispatcher = null;
         }
     }
 
     private static final int DOUBLE_TAP_THREASHOLD = 10;
-    private static final int PAGE_CHANGE_THREASHOLD = 4;
+    private static final long DOUBLE_TAP_DURATION = 200;
     private static final long DURATION_CLEAN_UP = 200L;
 
     private Size _surfaceSize;
@@ -180,6 +57,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private boolean _invalidated = false;
     private boolean _willCleanUp = false;
     private boolean _willCancelCleanUp = false;
+    private boolean _willCheckChangePage = false;
 
     private final Bitmap _background;
     private List< String > _sources;
@@ -194,13 +72,16 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private float _minScale;
     private float _maxScale;
 
+    private PointF _willOffsetTo;
+    private float _willScaleTo;
+
     private Bitmap[] _images;
 
     private int _index;
 
     private final ExecutorService _loadingExecutor = Executors.newSingleThreadExecutor();
 
-    private Thread _tapDelayDispatcher = null;
+    private TapDispatcher _tapDispatcher = null;
     private PointF _delayPoint;
 
     public CoreImageCallback( final Bitmap background ) {
@@ -231,6 +112,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         _index++;
 
+        _direction.updateOffset( _offset , _imageSize , _scale , true );
+
         if ( _listener != null ) {
             _listener.onPageChanged( _index );
         }
@@ -248,6 +131,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         _index--;
 
+        _direction.updateOffset( _offset , _imageSize , _scale , false );
+
         if ( _listener != null ) {
             _listener.onPageChanged( _index );
         }
@@ -257,12 +142,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         if ( _direction.shouldChangeToNext( _offset , _surfaceSize , _imageSize , _scale )
                 && _index + 1 < _sources.size() ) {
             changeToNextPage();
-
-            _direction.updateOffset( _offset , _imageSize , _scale , true );
         } else if ( _direction.shouldChangeToPrev( _offset , _surfaceSize , _imageSize , _scale ) && _index - 1 >= 0 ) {
             changeToPrevPage();
-
-            _direction.updateOffset( _offset , _imageSize , _scale , false );
         }
     }
 
@@ -273,21 +154,60 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         return BitmapFactory.decodeFile( path , o );
     }
 
-    public void doCleanUp() {
+    public void doCleanUp( final boolean willCheckChangePage ) {
         _willCleanUp = true;
+        _willCheckChangePage = willCheckChangePage;
         _invalidated = true;
         _willCancelCleanUp = false;
     }
 
     private void doDoubleTap( final PointF point ) {
         System.err.println( "***** double tap *****" );
+
+        if ( _scale < _maxScale ) {
+            _willOffsetTo = new PointF( ( _offset.x - point.x ) * _maxScale / _scale + _surfaceSize.width / 2 , //
+                    ( _offset.y - point.y ) * _maxScale / _scale + _surfaceSize.height / 2 );
+            _willOffsetTo.x =
+                    Math.min( Math.max( _willOffsetTo.x , _surfaceSize.width - _imageSize.width * _maxScale ) , 0 );
+            _willOffsetTo.y =
+                    Math.min( Math.max( _willOffsetTo.y , _surfaceSize.height - _imageSize.height * _maxScale ) , 0 );
+            _willScaleTo = _maxScale;
+        } else {
+            _willOffsetTo = new PointF( 0 , 0 );
+            _willScaleTo = _minScale;
+        }
+
+        _willCleanUp = true;
+        _willCheckChangePage = false;
+        _invalidated = true;
+        _willCancelCleanUp = false;
     }
 
     private void doTap( final PointF point ) {
         System.err.println( "***** tap *****" );
+
+        if ( point.x < _surfaceSize.width / 2 ) {
+            if ( _index + 1 < _images.length ) {
+                changeToNextPage();
+
+                _willCleanUp = true;
+                _willCheckChangePage = false;
+                _invalidated = true;
+                _willCancelCleanUp = false;
+            }
+        } else {
+            if ( _index - 1 >= 0 ) {
+                changeToPrevPage();
+
+                _willCleanUp = true;
+                _willCheckChangePage = false;
+                _invalidated = true;
+                _willCancelCleanUp = false;
+            }
+        }
     }
 
-    private void draw( final Canvas c , final Paint paint , final PointF offset ) {
+    private void draw( final Canvas c , final Paint paint ) {
         drawBackground( c , paint );
 
         c.save();
@@ -325,10 +245,17 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _loadingExecutor.execute( new Runnable() {
             @Override
             public void run() {
+                // 2 for waiting index update
+                if ( index < _index - 2 || index > _index + 2 ) {
+                    _images[ index ] = null;
+                    return;
+                }
+
                 _images[ index ] = decode( _sources.get( index ) );
 
                 if ( index < _index - 1 || index > _index + 1 ) {
                     _images[ index ] = null;
+                    return;
                 }
 
                 _invalidated = true;
@@ -337,10 +264,14 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint paint ) {
-        checkChangePage();
+        CleanUpState state;
+        if ( _willOffsetTo != null ) {
+            state = CleanUpState.getInstance( _offset , _scale , _willOffsetTo , _willScaleTo );
 
-        final CleanUpState state =
-                new CleanUpState( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
+            _willOffsetTo = null;
+        } else {
+            state = CleanUpState.getInstance( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
+        }
 
         if ( state.needCleanUp ) {
             final long t = SystemClock.elapsedRealtime();
@@ -356,7 +287,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 _offset.y = state.srcOffset.y + ( state.dstOffset.y - state.srcOffset.y ) * i.getInterpolation( diff );
                 _scale = state.srcScale + ( state.dstScale - state.srcScale ) * i.getInterpolation( diff );
 
-                draw( c_ , paint , _offset );
+                draw( c_ , paint );
 
                 holder.unlockCanvasAndPost( c_ );
 
@@ -376,8 +307,11 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     public void scale( final float delta , final PointF center ) {
         _scale *= delta;
 
-        _offset.x = _offset.x * delta + center.x * ( 1 - delta ) / delta;
-        _offset.y = _offset.y * delta + center.y * ( 1 - delta ) / delta;
+        // TODO
+        // _offset.x = ( _offset.x - center.x ) * delta + _surfaceSize.width / 2;
+        // _offset.y = ( _offset.y - center.y ) * delta + _surfaceSize.height / 2;
+        _offset.x = _offset.x * delta + center.x / delta - center.x;
+        _offset.y = _offset.y * delta + center.y / delta - center.y;
 
         _invalidated = true;
     }
@@ -443,12 +377,18 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
                         final Canvas c = holder.lockCanvas();
 
-                        draw( c , paint , _offset );
+                        draw( c , paint );
 
                         holder.unlockCanvasAndPost( c );
 
                         if ( _willCleanUp ) {
                             _willCleanUp = false;
+
+                            if ( _willCheckChangePage ) {
+                                _willCheckChangePage = false;
+
+                                checkChangePage();
+                            }
 
                             runCleanUp( holder , paint );
                         }
@@ -473,34 +413,19 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     public void tap( final PointF point ) {
-        if ( _tapDelayDispatcher != null ) {
-            _tapDelayDispatcher = null;
+        if ( _tapDispatcher != null ) {
+            _tapDispatcher.cancel();
+            _tapDispatcher = null;
 
             if ( Math.hypot( point.x - _delayPoint.x , point.y - _delayPoint.y ) > DOUBLE_TAP_THREASHOLD ) {
                 tap( point );
+            } else {
+                doDoubleTap( point );
             }
-
-            doDoubleTap( point );
         } else {
             _delayPoint = point;
-            _tapDelayDispatcher = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep( 500 );
-                    } catch ( final InterruptedException e ) {
-                        throw new RuntimeException( e );
-                    }
-
-                    if ( _tapDelayDispatcher != null ) {
-                        _tapDelayDispatcher = null;
-
-                        doTap( point );
-                    }
-                }
-            };
-
-            _tapDelayDispatcher.start();
+            _tapDispatcher = new TapDispatcher( point );
+            _tapDispatcher.start();
         }
     }
 
