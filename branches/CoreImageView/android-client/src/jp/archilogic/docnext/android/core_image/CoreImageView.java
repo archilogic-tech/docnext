@@ -1,10 +1,8 @@
-package jp.archilogic.docnext.android.widget;
+package jp.archilogic.docnext.android.core_image;
 
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
-import jp.archilogic.docnext.android.widget.CoreImageCallback.CoreImageListener;
-import jp.archilogic.docnext.android.widget.CoreImageCallback.DocumentDirection;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -129,7 +127,7 @@ public class CoreImageView extends SurfaceView {
 
     private void onTouchPointerUp() {
         if ( _nTouch == 2 ) {
-            _callback.doCleanUp();
+            _callback.doCleanUp( false );
 
             _nTouch = 0;
         }
@@ -137,7 +135,7 @@ public class CoreImageView extends SurfaceView {
 
     private void onTouchUp() {
         if ( _nTouch == 1 ) {
-            _callback.doCleanUp();
+            _callback.doCleanUp( true );
 
             if ( _isTap ) {
                 _callback.tap( _downPoints[ 0 ] );
