@@ -29,7 +29,9 @@
 	self = [super init];
 	if (self) {
 		_pageDownloadQueue = [[NSOperationQueue alloc] init];
+		[_pageDownloadQueue setMaxConcurrentOperationCount:1];
 	}
+	
 	return self;
 }
 
@@ -109,7 +111,14 @@
 	PageDownloadOperation *op = [[PageDownloadOperation alloc] init];
 	op.url = url;
 	op.destination = [_datasource getFullPath:dest];
-	[_pageDownloadQueue addOperation:op];
+
+	if (page == 0 && px == 0 && py == 0 && level == 0) {
+		// 1ページ目だけは、ダウンロードを待つ
+		[op main];
+	} else {
+		// 非同期でダウンロード
+		[_pageDownloadQueue addOperation:op];
+	}
 	[op release];
 }
 
@@ -209,7 +218,10 @@
 			for (int p = 0; p < pages; p++) {
 				for (int px = 0; px < max; px++) {
 					for (int py = 0; py < max; py++) {
-//						NSLog(@"%d %d %d %d", p, px, py, level);
+
+						
+						
+						//						NSLog(@"%d %d %d %d", p, px, py, level);
 						[self downloadPage:metaDocumentId documentId:documentId page:p px:px py:py level:level];
 					}
 				}
