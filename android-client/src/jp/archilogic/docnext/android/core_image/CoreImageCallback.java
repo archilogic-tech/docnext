@@ -162,13 +162,12 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void doDoubleTap( final PointF point ) {
-        System.err.println( "***** double tap *****" );
-
         if ( _scale < _maxScale ) {
-            _willOffsetTo = new PointF( ( _offset.x - point.x ) * _maxScale / _scale + _surfaceSize.width / 2 , //
-                    ( _offset.y - point.y ) * _maxScale / _scale + _surfaceSize.height / 2 );
-            // _willOffsetTo.x = _offset.x * _maxScale / _scale + point.x / ( _maxScale / _scale ) - point.x;
-            // _willOffsetTo.y = _offset.y * _maxScale / _scale + point.y / ( _maxScale / _scale ) - point.y;
+            _willOffsetTo = new PointF( //
+                    _offset.x * _maxScale / _scale - //
+                            ( point.x - getHorizontalPadding() ) * ( _maxScale - _scale ) / _scale , //
+                    _offset.y * _maxScale / _scale - //
+                            ( point.y - getVerticalPadding() ) * ( _maxScale - _scale ) / _scale );
             _willOffsetTo.x =
                     Math.min( Math.max( _willOffsetTo.x , _surfaceSize.width - _imageSize.width * _maxScale ) , 0 );
             _willOffsetTo.y =
@@ -186,27 +185,6 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void doTap( final PointF point ) {
-        System.err.println( "***** tap *****" );
-
-        if ( point.x < _surfaceSize.width / 2 ) {
-            if ( _index + 1 < _images.length ) {
-                changeToNextPage();
-
-                _willCleanUp = true;
-                _willCheckChangePage = false;
-                _invalidated = true;
-                _willCancelCleanUp = false;
-            }
-        } else {
-            if ( _index - 1 >= 0 ) {
-                changeToPrevPage();
-
-                _willCleanUp = true;
-                _willCheckChangePage = false;
-                _invalidated = true;
-                _willCancelCleanUp = false;
-            }
-        }
     }
 
     private void draw( final Canvas c , final Paint paint ) {
@@ -214,12 +192,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         c.save();
 
-        final float hPadding =
-                Math.max( _surfaceSize.width - _imageSize.width * Math.max( _scale , _minScale ) , 0 ) / 2f;
-        final float vPadding =
-                Math.max( _surfaceSize.height - _imageSize.height * Math.max( _scale , _minScale ) , 0 ) / 2f;
-
-        c.translate( _offset.x + hPadding , _offset.y + vPadding );
+        c.translate( _offset.x + getHorizontalPadding() , _offset.y + getVerticalPadding() );
         c.scale( _scale , _scale );
 
         for ( int delta = -1 ; delta <= 1 ; delta++ ) {
@@ -241,6 +214,14 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 c.drawBitmap( _background , x * _background.getWidth() , y * _background.getHeight() , paint );
             }
         }
+    }
+
+    private float getHorizontalPadding() {
+        return Math.max( _surfaceSize.width - _imageSize.width * Math.max( _scale , _minScale ) , 0 ) / 2f;
+    }
+
+    private float getVerticalPadding() {
+        return Math.max( _surfaceSize.height - _imageSize.height * Math.max( _scale , _minScale ) , 0 ) / 2f;
     }
 
     private void load( final int index ) {
@@ -308,16 +289,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
     public void scale( float delta , final PointF center ) {
         if ( _scale < _minScale || _scale > _maxScale ) {
-            delta = ( float ) Math.cbrt( delta );
+            delta = ( float ) Math.pow( delta , 0.2 );
         }
 
         _scale *= delta;
 
-        // TODO
-        _offset.x = _offset.x * delta + center.x / delta - center.x;
-        // _offset.y = ( _offset.y - center.y ) * delta + _surfaceSize.height / 2;
-        // _offset.x = _offset.x * delta + center.x / delta - center.x;
-        _offset.y = _offset.y * delta + center.y / delta - center.y;
+        _offset.x = _offset.x * delta + ( 1 - delta ) * ( center.x - getHorizontalPadding() );
+        _offset.y = _offset.y * delta + ( 1 - delta ) * ( center.y - getVerticalPadding() );
 
         _invalidated = true;
     }
