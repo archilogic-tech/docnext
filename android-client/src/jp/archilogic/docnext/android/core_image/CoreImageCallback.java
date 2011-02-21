@@ -46,8 +46,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         }
     }
 
-    private static final int DOUBLE_TAP_THREASHOLD = 10;
-    private static final long DOUBLE_TAP_DURATION = 200;
+    private static final int DOUBLE_TAP_THREASHOLD = 50;
+    private static final long DOUBLE_TAP_DURATION = 500;
     private static final long DURATION_CLEAN_UP = 200L;
 
     private Size _surfaceSize;
