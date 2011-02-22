@@ -1,8 +1,8 @@
-package jp.archilogic.docnext.android.core_image;
+package jp.archilogic.docnext.android.core.image;
 
 import android.graphics.PointF;
 
-public enum DocumentDirection {
+public enum ImageDocDirection {
     L2R , R2L , T2B , B2T;
 
     private static final int PAGE_CHANGE_THREASHOLD = 4;
