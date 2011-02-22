@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:orientation="vertical">
+    <TextView android:id="@+id/debug" android:layout_width="fill_parent" android:layout_height="wrap_content" />
     <jp.archilogic.docnext.android.core.text.CoreTextView android:id="@+id/coreTextView"
         android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1" />
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center_horizontal">
@@ -10,12 +11,14 @@
     </LinearLayout>
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
         <Button android:id="@+id/justify" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-            android:text="Justification" />
+            android:text="Justify" />
         <Button android:id="@+id/lineBreakingRule" android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="LBR" />
-        <Button android:id="@+id/t2b" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-            android:text="---" />
-        <Button android:id="@+id/b2t" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-            android:text="---" />
+        <Button android:id="@+id/bigger" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="Bigger" />
+        <Button android:id="@+id/smaller" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="Smaller" />
+        <Button android:id="@+id/reverse" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="Rev" />
     </LinearLayout>
 </LinearLayout>
