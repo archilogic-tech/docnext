@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.core_image;
+package jp.archilogic.docnext.android.core.image;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -63,7 +63,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private List< String > _sources;
     private List< String > _thumbnailSources;
     private CoreImageListener _listener = null;
-    private DocumentDirection _direction;
+    private ImageDocDirection _direction;
 
     private Size _imageSize;
 
@@ -300,7 +300,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _invalidated = true;
     }
 
-    public void setDirection( final DocumentDirection d ) {
+    public void setDirection( final ImageDocDirection d ) {
         _direction = d;
 
         _invalidated = true;

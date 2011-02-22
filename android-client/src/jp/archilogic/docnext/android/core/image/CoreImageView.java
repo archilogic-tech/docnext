@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.core_image;
+package jp.archilogic.docnext.android.core.image;
 
 import java.util.List;
 
@@ -145,7 +145,7 @@ public class CoreImageView extends SurfaceView {
         }
     }
 
-    public void setDirection( final DocumentDirection d ) {
+    public void setDirection( final ImageDocDirection d ) {
         _callback.setDirection( d );
     }
 

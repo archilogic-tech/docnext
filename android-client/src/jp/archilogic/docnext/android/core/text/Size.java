@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.core_image;
+package jp.archilogic.docnext.android.core.text;
 
 class Size {
     int width;
