@@ -82,7 +82,7 @@ public class CoreTextView extends SurfaceView {
         _callback.setDirection( d );
     }
 
-    public void setSources( final String source ) {
+    public void setSources( final CoreTextInfo source ) {
         _callback.setSource( source );
     }
 }
