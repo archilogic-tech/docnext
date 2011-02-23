@@ -31,7 +31,7 @@ public class CoreTextConfig {
         lineBreakingRule = LineBreakingRule.NONE;
 
         backgroundColor = Color.WHITE;
-        defaultTextColor = Color.BLACK;
+        defaultTextColor = 0xff222222;
 
         rubyFontSizeFactor = 2;
     }

@@ -73,7 +73,7 @@ public class TextViewerActivity extends Activity {
         _coreTextView.setSources( new CoreTextInfo() {
             {
                 text =
-                        "電子書籍フォーマットの国際標準仕様を策定している、IDPF（International Digital Publishing Forum、国際電子出版フォーラム）は15日、現在策定中の電子書籍フォーマット、「EPUB 3」のパブリックドラフトを公開した、と発表しました。\n\n"
+                        "電子書籍フォーマットの国際標準仕様を策定している、IDPF（International Digital Publishing Forum、国際電子出版フォーラム）は15日、現在策定中の電子書籍フォーマット、「EPUB 3」の境界面パブリックドラフトを公開した、と発表しました。\n\n"
                                 + "EPUB 3 Specification Public Draft Released | International Digital Publishing Forum\n\n"
                                 + "EPUB 3は、HTML5とCSS3など現在W3Cで策定中の最新のWeb標準をベースにした、オープンな電子書籍フォーマット。EPUBはアップルのiPadや Google Books、ソニーのReaderなどで採用されており、PCでもEPUBリーダーをインストールすることで表示可能で、電子書籍の有力な国際標準フォーマット、と考えられています。\n\n"
                                 + "EPUB 3は今年5月に完成予定\n\n"
@@ -81,14 +81,19 @@ public class TextViewerActivity extends Activity {
                                 + "EPUB 3に、そうした日本語を含む国際化仕様を組み込んでいるのが、EPUBのサブグループ「Enhanced Global Language Support」（EGLS）で、そのコーディネータは、日本人の村田真氏が努めています。村田氏は少し前に、EPUB 3そのもののエディタにも任命されたようで、公開されたEPUB 3のパブリックドラフトにはEditorsの欄に村田氏も名前を連ねています。\n\n"
                                 + "Webkitによる縦書きやルビといった日本語組み版機能の実装も進んでいる。WebkitをベースにしたEPUBリーダーも登場することだろう\n\n"
                                 + "現在、EPUB 3の縦書きやルビ、圏点といった、仕様の参照の基となるW3CのCSS3の策定も含め、関係者は最後の詰めの作業に入っており、仕様に合わせてWebkit による実装も進んでいます。EPUB 3のパブリックドラフトは、当初12月に公開される予定でしたので、やや予定より遅れているように見えますが、今のところ今年5月に完成するという予定に変更はなく、完成が待たれています。";
+
                 rubys = Lists.newArrayList();
-                rubys.add( new Ruby() {
-                    {
-                        text = "こくさいひょうじゅんしよう";
-                        location = 11;
-                        length = 6;
-                    }
-                } );
+                rubys.add( new Ruby( "でんししょせき" , 0 , 4 ) );
+                rubys.add( new Ruby( "こくさいひょうじゅんしよう" , 11 , 6 ) );
+                rubys.add( new Ruby( "さくてい" , 18 , 2 ) );
+                rubys.add( new Ruby( "アイディーピーエフ" , 25 , 4 ) );
+                rubys.add( new Ruby( "こくさいでんししゅっぱん" , 69 , 6 ) );
+                rubys.add( new Ruby( "げんざい" , 86 , 2 ) );
+                rubys.add( new Ruby( "イーブック" , 92 , 4 ) );
+                rubys.add( new Ruby( "インターフェース" , 112 , 3 ) );
+
+                dots = Lists.newArrayList();
+                dots.add( new Dot( 4 , 6 ) );
             }
         } );
         _coreTextView.setDirection( TextDocDirection.HORIZONTAL );

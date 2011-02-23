@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.core.text;
 import java.util.List;
 
 import jp.archilogic.docnext.android.core.text.CoreTextConfig.LineBreakingRule;
+import jp.archilogic.docnext.android.core.text.CoreTextInfo.Dot;
 import jp.archilogic.docnext.android.core.text.CoreTextInfo.Ruby;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -75,6 +76,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
         if ( _cache == null || _invalidatedCache ) {
             _invalidatedCache = false;
+            _cache = null;
 
             final long t = SystemClock.elapsedRealtime();
             final LayoutInfo[] layouts = layoutText( paint );
@@ -89,6 +91,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
             drawText( cacheCanvas , paint , layouts );
             drawRubys( cacheCanvas , paint , layouts );
+            drawDots( cacheCanvas , paint , layouts );
         }
 
         c.drawBitmap( _cache , 0 , 0 , paint );
@@ -104,21 +107,73 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         }
     }
 
+    private void drawDots( final Canvas c , final Paint paint , final LayoutInfo[] layouts ) {
+        paint.setTextSize( _config.getRubyFontSize() );
+        paint.setColor( _config.defaultTextColor );
+
+        final String dotChar = "﹅";
+        final float w = paint.measureText( dotChar );
+
+        for ( final Dot dot : _source.dots ) {
+            for ( int delta = 0 ; delta < dot.length ; delta++ ) {
+                final LayoutInfo l = layouts[ dot.location + delta ];
+
+                c.drawText( dotChar , l.x + ( l.width - w ) / 2 , l.y , paint );
+            }
+        }
+    }
+
+    private void drawRuby( final Canvas c , final Paint paint , final LayoutInfo[] layouts , final Ruby ruby ) {
+        final float w = paint.measureText( ruby.text );
+
+        final LayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
+        final LayoutInfo from = layouts[ ruby.location ];
+
+        final float textWidth = to.x + to.width - from.x;
+
+        if ( textWidth > w ) {
+            final float unit = ( textWidth - w ) / ruby.text.length();
+            float x = from.x + unit / 2;
+
+            for ( int index = 0 ; index < ruby.text.length() ; index++ ) {
+                c.drawText( ruby.text.substring( index , index + 1 ) , x , from.y , paint );
+
+                x += paint.measureText( ruby.text.substring( index , index + 1 ) ) + unit;
+            }
+        } else {
+            c.drawText( ruby.text , from.x + ( textWidth - w ) / 2 , from.y , paint );
+        }
+    }
+
     private void drawRubys( final Canvas c , final Paint paint , final LayoutInfo[] layouts ) {
         paint.setTextSize( _config.getRubyFontSize() );
         paint.setColor( _config.defaultTextColor );
 
         for ( final Ruby ruby : _source.rubys ) {
-            // TODO consider line break
+            final List< Integer > splitHeadIndex = Lists.newArrayList();
+            float currentY = -1;
+            for ( int delta = 0 ; delta < ruby.length ; delta++ ) {
+                if ( layouts[ ruby.location + delta ].y != currentY ) {
+                    currentY = layouts[ ruby.location + delta ].y;
 
-            final float w = paint.measureText( ruby.text );
+                    splitHeadIndex.add( ruby.location + delta );
+                }
+            }
 
-            final LayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
-            final LayoutInfo from = layouts[ ruby.location ];
+            int textPos = 0;
+            for ( int index = 0 ; index < splitHeadIndex.size() ; index++ ) {
+                final int from = splitHeadIndex.get( index );
+                final int to = index + 1 < splitHeadIndex.size() ? //
+                        splitHeadIndex.get( index + 1 ) : ruby.location + ruby.length;
 
-            final float textWidth = to.x + to.width - from.x;
+                final int useTextCount = index + 1 < splitHeadIndex.size() ? //
+                        Math.round( 1f * ruby.text.length() * ( to - from ) / ruby.length ) : //
+                        ruby.text.length() - textPos;
+                drawRuby( c , paint , layouts , //
+                        new Ruby( ruby.text.substring( textPos , textPos + useTextCount ) , from , to - from ) );
 
-            c.drawText( ruby.text , from.x + ( textWidth - w ) / 2 , from.y , paint );
+                textPos += useTextCount;
+            }
         }
     }
 

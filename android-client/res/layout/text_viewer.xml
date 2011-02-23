@@ -18,6 +18,8 @@
             android:text="Bigger" />
         <Button android:id="@+id/smaller" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:text="Smaller" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
         <Button android:id="@+id/reverse" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
             android:text="Rev" />
     </LinearLayout>
