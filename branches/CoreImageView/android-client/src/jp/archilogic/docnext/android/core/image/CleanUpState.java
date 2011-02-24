@@ -1,5 +1,6 @@
 package jp.archilogic.docnext.android.core.image;
 
+import jp.archilogic.docnext.android.core.Size;
 import android.graphics.PointF;
 
 class CleanUpState {

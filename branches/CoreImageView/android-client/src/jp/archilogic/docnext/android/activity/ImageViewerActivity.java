@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
@@ -41,9 +40,6 @@ public class ImageViewerActivity extends Activity {
     @Override
     public void onCreate( final Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        requestWindowFeature( Window.FEATURE_NO_TITLE );
-
         setContentView( R.layout.image_viewer );
 
         initComonentVariable();

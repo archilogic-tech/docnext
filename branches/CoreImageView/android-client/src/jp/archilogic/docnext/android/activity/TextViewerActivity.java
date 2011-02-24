@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.google.common.collect.Lists;
@@ -39,7 +38,8 @@ public class TextViewerActivity extends Activity {
     private void bindDebug() {
         _debug.setText( String
                 .format(
-                        "FontSize: %d, LineSpace: %.1f, hPad: %.1f, vPad: %.1f, Justification: %s, LineBreaking: %s, PageSpace: %.1f, Background: %X, DefaultColor: %X,  RubyFactor %d" , //
+                        "Direction: %s, FontSize: %d, LineSpace: %.1f, hPad: %.1f, vPad: %.1f, Justification: %s, LineBreaking: %s, PageSpace: %.1f, Background: %X, DefaultColor: %X,  RubyFactor %d" , //
+                        _config.direction , //
                         _config.fontSize , //
                         _config.lineSpace , //
                         _config.horizontalPadding , //
@@ -64,9 +64,6 @@ public class TextViewerActivity extends Activity {
     @Override
     public void onCreate( final Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        requestWindowFeature( Window.FEATURE_NO_TITLE );
-
         setContentView( R.layout.text_viewer );
 
         initComonentVariable();
@@ -74,12 +71,12 @@ public class TextViewerActivity extends Activity {
         final String sample =
                 "電子書籍フォーマットの国際標準仕様を策定している、IDPF（International Digital Publishing Forum、国際電子出版フォーラム）は15日、現在策定中の電子書籍フォーマット、「EPUB 3」の境界面パブリックドラフトを公開した、と発表しました。\n\n"
                         + "EPUB 3 Specification Public Draft Released | International Digital Publishing Forum\n\n"
-                        + "EPUB 3は、HTML5とCSS3など現在W3Cで策定中の最新のWeb標準をベースにした、オープンな電子書籍フォーマット。EPUBはアップルのiPadや Google Books、ソニーのReaderなどで採用されており、PCでもEPUBリーダーをインストールすることで表示可能で、電子書籍の有力な国際標準フォーマット、と考えられています。\n\n"
-                        + "EPUB 3は今年5月に完成予定\n\n"
-                        + "EPUB 3の仕様には、縦書きやルビ、圏点（傍点）、禁則といった日本語の書籍に不可欠だった要素が含まれているため、EPUB 3の登場は、国内での電子書籍の普及を促進することが期待されています。と同時に、どんなデバイスやソフトウェアであってもEPUB 3に対応していれば、日本の電子書籍に対応できるようになるため、マンガや小説など、あらゆる日本の出版物が、国際市場へ踏み出すためのチャンスとしても期待されています。\n\n"
-                        + "EPUB 3に、そうした日本語を含む国際化仕様を組み込んでいるのが、EPUBのサブグループ「Enhanced Global Language Support」（EGLS）で、そのコーディネータは、日本人の村田真氏が努めています。村田氏は少し前に、EPUB 3そのもののエディタにも任命されたようで、公開されたEPUB 3のパブリックドラフトにはEditorsの欄に村田氏も名前を連ねています。\n\n"
-                        + "Webkitによる縦書きやルビといった日本語組み版機能の実装も進んでいる。WebkitをベースにしたEPUBリーダーも登場することだろう\n\n"
-                        + "現在、EPUB 3の縦書きやルビ、圏点といった、仕様の参照の基となるW3CのCSS3の策定も含め、関係者は最後の詰めの作業に入っており、仕様に合わせてWebkit による実装も進んでいます。EPUB 3のパブリックドラフトは、当初12月に公開される予定でしたので、やや予定より遅れているように見えますが、今のところ今年5月に完成するという予定に変更はなく、完成が待たれています。";
+                        + "EPUB 3 は、HTML5 と CSS3 など現在 W3C で策定中の最新の Web 標準をベースにした、オープンな電子書籍フォーマット。EPUB はアップルの iPad や Google Books、ソニーの Reader などで採用されており、PC でも EPUB リーダーをインストールすることで表示可能で、電子書籍の有力な国際標準フォーマット、と考えられています。\n\n"
+                        + "EPUB 3 は今年5月に完成予定\n\n"
+                        + "EPUB 3 の仕様には、縦書きやルビ、圏点（傍点）、禁則といった日本語の書籍に不可欠だった要素が含まれているため、EPUB 3 の登場は、国内での電子書籍の普及を促進することが期待されています。と同時に、どんなデバイスやソフトウェアであっても EPUB 3 に対応していれば、日本の電子書籍に対応できるようになるため、マンガや小説など、あらゆる日本の出版物が、国際市場へ踏み出すためのチャンスとしても期待されています。\n\n"
+                        + "EPUB 3 に、そうした日本語を含む国際化仕様を組み込んでいるのが、EPUB のサブグループ「Enhanced Global Language Support」（EGLS）で、そのコーディネータは、日本人の村田真氏が努めています。村田氏は少し前に、EPUB 3 そのもののエディタにも任命されたようで、公開された EPUB 3 のパブリックドラフトには Editors の欄に村田氏も名前を連ねています。\n\n"
+                        + "Webkit による縦書きやルビといった日本語組み版機能の実装も進んでいる。Webkit をベースにした EPUB リーダーも登場することだろう\n\n"
+                        + "現在、EPUB 3 の縦書きやルビ、圏点といった、仕様の参照の基となる W3C の CSS3 の策定も含め、関係者は最後の詰めの作業に入っており、仕様に合わせて Webkit による実装も進んでいます。EPUB 3 の パブリックドラフトは、当初12月に公開される予定でしたので、やや予定より遅れているように見えますが、今のところ今年5月に完成するという予定に変更はなく、完成が待たれています。あぁいぃうぅえぇおぉつっやゃゆゅよょ";
         _coreTextView.setSources( Lists.newArrayList( new CoreTextInfo() {
             {
                 text = sample;
@@ -134,7 +131,6 @@ public class TextViewerActivity extends Activity {
                 dots = Lists.newArrayList();
             }
         } ) );
-        _coreTextView.setDirection( TextDocDirection.HORIZONTAL );
         _coreTextView.setListener( _coreImageListener );
         _coreTextView.setConfig( _config = new CoreTextConfig() );
 
@@ -195,6 +191,18 @@ public class TextViewerActivity extends Activity {
                 _config.backgroundColor ^= _config.defaultTextColor;
                 _config.defaultTextColor ^= _config.backgroundColor;
                 _config.backgroundColor ^= _config.defaultTextColor;
+
+                _coreTextView.setConfig( _config );
+
+                bindDebug();
+            }
+        } );
+        findViewById( R.id.direction ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                _config.direction =
+                        _config.direction == TextDocDirection.HORIZONTAL ? TextDocDirection.VERTICAL
+                                : TextDocDirection.HORIZONTAL;
 
                 _coreTextView.setConfig( _config );
 
