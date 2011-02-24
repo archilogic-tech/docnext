@@ -16,6 +16,7 @@ public class CoreTextConfig {
     public LineBreakingRule lineBreakingRule;
 
     // viewer config
+    public float pageSpace;
     public int backgroundColor;
     public int defaultTextColor;
 
@@ -30,6 +31,7 @@ public class CoreTextConfig {
         useJustification = true;
         lineBreakingRule = LineBreakingRule.NONE;
 
+        pageSpace = 32;
         backgroundColor = Color.WHITE;
         defaultTextColor = 0xff222222;
 

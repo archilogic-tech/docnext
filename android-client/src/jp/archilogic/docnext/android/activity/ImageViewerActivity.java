@@ -3,7 +3,7 @@ package jp.archilogic.docnext.android.activity;
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
-import jp.archilogic.docnext.android.core.image.CoreImageListener;
+import jp.archilogic.docnext.android.core.OnPageChangedListener;
 import jp.archilogic.docnext.android.core.image.CoreImageView;
 import jp.archilogic.docnext.android.core.image.ImageDocDirection;
 import android.app.Activity;
@@ -20,7 +20,7 @@ public class ImageViewerActivity extends Activity {
     private TextView _currentPageTextView;
     private TextView _totalPageTextView;
 
-    private final CoreImageListener _coreImageListener = new CoreImageListener() {
+    private final OnPageChangedListener _coreImageListener = new OnPageChangedListener() {
         @Override
         public void onPageChanged( final int index ) {
             runOnUiThread( new Runnable() {
@@ -48,15 +48,17 @@ public class ImageViewerActivity extends Activity {
 
         initComonentVariable();
 
+        final int PAGE = 227;
+        final String NAME = "comic";
         final List< String > sources = Lists.newArrayList();
-        for ( int index = 0 ; index < 180 ; index++ ) {
-            sources.add( String.format( "/sdcard/docnext/hanako-%03d.jpg" , index + 1 ) );
+        for ( int index = 0 ; index < PAGE ; index++ ) {
+            sources.add( String.format( "/sdcard/docnext/" + NAME + "-%03d.jpg" , index + 1 ) );
         }
         _coreImageView.setSources( sources );
 
         final List< String > thumbs = Lists.newArrayList();
-        for ( int index = 0 ; index < 180 ; index++ ) {
-            thumbs.add( String.format( "/sdcard/docnext/hanako-thumb-%03d.jpg" , index + 1 ) );
+        for ( int index = 0 ; index < PAGE ; index++ ) {
+            thumbs.add( String.format( "/sdcard/docnext/" + NAME + "-thumb-%03d.jpg" , index + 1 ) );
         }
         _coreImageView.setThumbnailSources( thumbs );
 

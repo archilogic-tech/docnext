@@ -1,6 +1,9 @@
 package jp.archilogic.docnext.android.core.text;
 
+import java.util.List;
+
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.core.OnPageChangedListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -71,9 +74,6 @@ public class CoreTextView extends SurfaceView {
         _callback.doCleanUp();
     }
 
-    /*
-     * public void setListener( final CoreImageListener l ) { _callback.setListener( l ); }
-     */
     public void setConfig( final CoreTextConfig c ) {
         _callback.setConfig( c );
     }
@@ -82,7 +82,11 @@ public class CoreTextView extends SurfaceView {
         _callback.setDirection( d );
     }
 
-    public void setSources( final CoreTextInfo source ) {
-        _callback.setSource( source );
+    public void setListener( final OnPageChangedListener l ) {
+        _callback.setListener( l );
+    }
+
+    public void setSources( final List< CoreTextInfo > source ) {
+        _callback.setSources( source );
     }
 }
