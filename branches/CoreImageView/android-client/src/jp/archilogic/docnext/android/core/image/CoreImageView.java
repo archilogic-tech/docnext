@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.core.image;
 import java.util.List;
 
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.core.OnPageChangedListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -149,7 +150,7 @@ public class CoreImageView extends SurfaceView {
         _callback.setDirection( d );
     }
 
-    public void setListener( final CoreImageListener l ) {
+    public void setListener( final OnPageChangedListener l ) {
         _callback.setListener( l );
     }
 

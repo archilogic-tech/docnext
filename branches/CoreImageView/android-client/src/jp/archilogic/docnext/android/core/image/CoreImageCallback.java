@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import jp.archilogic.docnext.android.core.OnPageChangedListener;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -54,7 +56,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private Thread _worker;
 
     private boolean _shouldStop;
-    private boolean _invalidated = false;
+    private boolean _invalidate = false;
     private boolean _willCleanUp = false;
     private boolean _willCancelCleanUp = false;
     private boolean _willCheckChangePage = false;
@@ -62,7 +64,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     private final Bitmap _background;
     private List< String > _sources;
     private List< String > _thumbnailSources;
-    private CoreImageListener _listener = null;
+    private OnPageChangedListener _listener = null;
     private ImageDocDirection _direction;
 
     private Size _imageSize;
@@ -157,7 +159,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     public void doCleanUp( final boolean willCheckChangePage ) {
         _willCleanUp = true;
         _willCheckChangePage = willCheckChangePage;
-        _invalidated = true;
+        _invalidate = true;
         _willCancelCleanUp = false;
     }
 
@@ -180,7 +182,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         _willCleanUp = true;
         _willCheckChangePage = false;
-        _invalidated = true;
+        _invalidate = true;
         _willCancelCleanUp = false;
     }
 
@@ -241,7 +243,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                     return;
                 }
 
-                _invalidated = true;
+                _invalidate = true;
             }
         } );
     }
@@ -297,16 +299,16 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _offset.x = _offset.x * delta + ( 1 - delta ) * ( center.x - getHorizontalPadding() );
         _offset.y = _offset.y * delta + ( 1 - delta ) * ( center.y - getVerticalPadding() );
 
-        _invalidated = true;
+        _invalidate = true;
     }
 
     public void setDirection( final ImageDocDirection d ) {
         _direction = d;
 
-        _invalidated = true;
+        _invalidate = true;
     }
 
-    public void setListener( final CoreImageListener l ) {
+    public void setListener( final OnPageChangedListener l ) {
         _listener = l;
     }
 
@@ -328,7 +330,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
         _maxScale = 1;
         _offset = new PointF( 0 , 0 );
 
-        _invalidated = true;
+        _invalidate = true;
     }
 
     public void setThumbnailSources( final List< String > thumbs ) {
@@ -356,8 +358,8 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 paint.setFilterBitmap( true );
 
                 while ( !_shouldStop ) {
-                    if ( _invalidated && _surfaceSize != null && _imageSize != null ) {
-                        _invalidated = false;
+                    if ( _invalidate && _surfaceSize != null && _imageSize != null ) {
+                        _invalidate = false;
 
                         final Canvas c = holder.lockCanvas();
 
@@ -423,6 +425,6 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
         _offset.offset( delta.x , delta.y );
 
-        _invalidated = true;
+        _invalidate = true;
     }
 }
