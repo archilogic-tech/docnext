@@ -78,10 +78,6 @@ public class CoreTextView extends SurfaceView {
         _callback.setConfig( c );
     }
 
-    public void setDirection( final TextDocDirection d ) {
-        _callback.setDirection( d );
-    }
-
     public void setListener( final OnPageChangedListener l ) {
         _callback.setListener( l );
     }

@@ -8,6 +8,7 @@ public class CoreTextConfig {
     }
 
     // typesettings
+    public TextDocDirection direction;
     public int fontSize;
     public float lineSpace;
     public float horizontalPadding;
@@ -24,6 +25,7 @@ public class CoreTextConfig {
     public int rubyFontSizeFactor;
 
     public CoreTextConfig() {
+        direction = TextDocDirection.HORIZONTAL;
         fontSize = 16;
         lineSpace = 4;
         horizontalPadding = 32;

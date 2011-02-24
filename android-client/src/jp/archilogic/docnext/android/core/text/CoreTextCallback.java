@@ -5,9 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import jp.archilogic.docnext.android.core.OnPageChangedListener;
-import jp.archilogic.docnext.android.core.text.CoreTextConfig.LineBreakingRule;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo.Dot;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo.Ruby;
+import jp.archilogic.docnext.android.core.Size;
+import jp.archilogic.docnext.android.core.text.engine.CoreTextEngine;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -20,23 +19,7 @@ import android.view.SurfaceHolder;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.google.common.collect.Lists;
-
 public class CoreTextCallback implements SurfaceHolder.Callback {
-    private static class LayoutInfo {
-        float x;
-        float y;
-        float width;
-        float height;
-
-        LayoutInfo( final float x , final float y , final float width , final float height ) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-    }
-
     private static final long DURATION_CLEAN_UP = 200L;
 
     private Size _surfaceSize;
@@ -52,7 +35,6 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     private List< CoreTextInfo > _sources;
     private CoreTextConfig _config;
     private OnPageChangedListener _listener = null;
-    private TextDocDirection _direction;
 
     private float _offset;
 
@@ -66,17 +48,18 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     private Bitmap buildCache( final Paint p , final CoreTextInfo source ) {
-        final LayoutInfo[] layouts = layoutText( p , source );
+        final CoreTextEngine engine = _config.direction.getEngine();
 
-        final LayoutInfo last = layouts[ layouts.length - 1 ];
-        final Bitmap ret = Bitmap.createBitmap( _surfaceSize.width , //
-                ( int ) Math.ceil( last.y + last.height + _config.verticalPadding ) , Config.RGB_565 );
+        final TextLayoutInfo[] layouts = engine.layoutText( p , source , _config , _surfaceSize );
+
+        final Size size = _config.direction.toCacheSize( layouts , _surfaceSize , _config );
+        final Bitmap ret = Bitmap.createBitmap( size.width , size.height , Config.RGB_565 );
 
         final Canvas c = new Canvas( ret );
 
-        drawText( c , p , layouts , source );
-        drawRubys( c , p , layouts , source );
-        drawDots( c , p , layouts , source );
+        engine.drawText( c , p , layouts , source , _config );
+        engine.drawRubys( c , p , layouts , source , _config );
+        engine.drawDots( c , p , layouts , source , _config );
 
         return ret;
     }
@@ -85,6 +68,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         final Paint p = new Paint();
         p.setAntiAlias( true );
         p.setTypeface( Typeface.createFromFile( "/sdcard/docnext/hira_kaku_pro_w3.otf" ) );
+
         return p;
     }
 
@@ -102,8 +86,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
             load( _index + 2 );
         }
 
-        _offset +=
-                ( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height ) + _config.pageSpace;
+        _offset =
+                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) , _surfaceSize , _config , true );
 
         _index++;
 
@@ -124,8 +108,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
         _index--;
 
-        _offset -=
-                ( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height ) + _config.pageSpace;
+        _offset =
+                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) , _surfaceSize , _config , false );
 
         if ( _listener != null ) {
             _listener.onPageChanged( _index );
@@ -133,10 +117,11 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     private void checkChangePage() {
-        if ( _offset < -( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height )
+        if ( _config.direction.shouldChangeToNext( _offset , nullSafeCacheSize( _index ) , _surfaceSize )
                 && _index + 1 < _sources.size() ) {
             changeToNextPage();
-        } else if ( _offset > 0 && _index - 1 >= 0 ) {
+        } else if ( _config.direction.shouldChangeToPrev( _offset , nullSafeCacheSize( _index ) , _surfaceSize )
+                && _index - 1 >= 0 ) {
             changeToPrevPage();
         }
     }
@@ -151,25 +136,18 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         drawBackground( c , p );
 
         c.save();
-        c.translate( 0 , _offset );
+        c.translate( _offset * _config.direction.toXFactor() , _offset * _config.direction.toYFactor() );
 
         for ( int delta = -1 ; delta <= 1 ; delta++ ) {
             if ( _index + delta >= 0 && _index + delta < _caches.length ) {
+                final RectF rect =
+                        _config.direction.toDrawRect( _caches , _surfaceSize , _index , delta , _config.pageSpace );
+
                 if ( _caches[ _index + delta ] != null ) {
-                    final float y =
-                            delta < 1
-                                    ? ( _caches[ _index + delta ].getHeight() + _config.pageSpace ) * delta
-                                    : ( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height )
-                                            + _config.pageSpace;
-
-                    c.drawBitmap( _caches[ _index + delta ] , null , //
-                            new RectF( 0 , y , _caches[ _index + delta ].getWidth() , //
-                                    y + _caches[ _index + delta ].getHeight() ) , p );
+                    c.drawBitmap( _caches[ _index + delta ] , null , rect , p );
                 } else {
-                    final float y = ( _surfaceSize.height + _config.pageSpace ) * delta;
                     p.setColor( _config.backgroundColor );
-
-                    c.drawRect( new RectF( 0 , y , _surfaceSize.width , y + _surfaceSize.height ) , p );
+                    c.drawRect( rect , p );
                 }
             }
         }
@@ -183,176 +161,6 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
                 c.drawBitmap( _background , x * _background.getWidth() , y * _background.getHeight() , p );
             }
         }
-    }
-
-    private void drawDots( final Canvas c , final Paint p , final LayoutInfo[] layouts , final CoreTextInfo source ) {
-        p.setTextSize( _config.getRubyFontSize() );
-        p.setColor( _config.defaultTextColor );
-
-        final String dotChar = "﹅";
-        final float w = p.measureText( dotChar );
-
-        for ( final Dot dot : source.dots ) {
-            for ( int delta = 0 ; delta < dot.length ; delta++ ) {
-                final LayoutInfo l = layouts[ dot.location + delta ];
-
-                c.drawText( dotChar , l.x + ( l.width - w ) / 2 , l.y , p );
-            }
-        }
-    }
-
-    private void drawRuby( final Canvas c , final Paint p , final LayoutInfo[] layouts , final Ruby ruby ) {
-        final float w = p.measureText( ruby.text );
-
-        final LayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
-        final LayoutInfo from = layouts[ ruby.location ];
-
-        final float textWidth = to.x + to.width - from.x;
-
-        if ( textWidth > w ) {
-            final float unit = ( textWidth - w ) / ruby.text.length();
-            float x = from.x + unit / 2;
-
-            for ( int index = 0 ; index < ruby.text.length() ; index++ ) {
-                c.drawText( ruby.text.substring( index , index + 1 ) , x , from.y , p );
-
-                x += p.measureText( ruby.text.substring( index , index + 1 ) ) + unit;
-            }
-        } else {
-            c.drawText( ruby.text , from.x + ( textWidth - w ) / 2 , from.y , p );
-        }
-    }
-
-    private void drawRubys( final Canvas c , final Paint p , final LayoutInfo[] layouts , final CoreTextInfo source ) {
-        p.setTextSize( _config.getRubyFontSize() );
-        p.setColor( _config.defaultTextColor );
-
-        for ( final Ruby ruby : source.rubys ) {
-            final List< Integer > splitHeadIndex = Lists.newArrayList();
-            float currentY = -1;
-            for ( int delta = 0 ; delta < ruby.length ; delta++ ) {
-                if ( layouts[ ruby.location + delta ].y != currentY ) {
-                    currentY = layouts[ ruby.location + delta ].y;
-
-                    splitHeadIndex.add( ruby.location + delta );
-                }
-            }
-
-            int textPos = 0;
-            for ( int index = 0 ; index < splitHeadIndex.size() ; index++ ) {
-                final int from = splitHeadIndex.get( index );
-                final int to = index + 1 < splitHeadIndex.size() ? //
-                        splitHeadIndex.get( index + 1 ) : ruby.location + ruby.length;
-
-                final int useTextCount = index + 1 < splitHeadIndex.size() ? //
-                        Math.round( 1f * ruby.text.length() * ( to - from ) / ruby.length ) : //
-                        ruby.text.length() - textPos;
-                drawRuby( c , p , layouts , //
-                        new Ruby( ruby.text.substring( textPos , textPos + useTextCount ) , from , to - from ) );
-
-                textPos += useTextCount;
-            }
-        }
-    }
-
-    private void drawText( final Canvas c , final Paint p , final LayoutInfo[] layouts , final CoreTextInfo source ) {
-        c.drawColor( _config.backgroundColor );
-
-        p.setTextSize( _config.fontSize );
-        p.setColor( _config.defaultTextColor );
-
-        for ( int index = 0 ; index < layouts.length ; index++ ) {
-            final LayoutInfo l = layouts[ index ];
-
-            if ( l != null ) {
-                c.drawText( source.at( index ) , l.x , l.y + l.height , p );
-            }
-        }
-    }
-
-    private boolean isCharNotPermittedOnStart( final String ch ) {
-        return "。、".contains( ch );
-    }
-
-    private LayoutInfo[] layoutText( final Paint p , final CoreTextInfo source ) {
-        final LayoutInfo[] ret = new LayoutInfo[ source.length() ];
-
-        float x = _config.horizontalPadding;
-        float y = _config.verticalPadding;
-
-        final List< String > buffer = Lists.newArrayList();
-
-        p.setTextSize( _config.fontSize );
-
-        for ( int index = 0 ; index < source.length() ; index++ ) {
-            final String ch = source.at( index );
-
-            final float charWidth = measure( p , ch );
-            boolean added = false;
-
-            boolean isLineBreak = x + charWidth >= _surfaceSize.width - _config.horizontalPadding;
-
-            if ( isLineBreak ) {
-                if ( _config.lineBreakingRule == LineBreakingRule.SQUEEZE ) {
-                    if ( isCharNotPermittedOnStart( ch ) ) {
-                        x += charWidth;
-                        buffer.add( ch );
-
-                        added = true;
-                    }
-                }
-            } else {
-                if ( _config.lineBreakingRule == LineBreakingRule.TO_NEXT ) {
-                    if ( index + 1 < source.length() ) {
-                        final String nextCh = source.at( index + 1 );
-
-                        if ( isCharNotPermittedOnStart( nextCh ) && //
-                                x + charWidth + measure( p , nextCh ) >= _surfaceSize.width - _config.horizontalPadding ) {
-                            isLineBreak = true;
-                        }
-                    }
-                }
-            }
-
-            final boolean isLineFeed = ch.equals( "\n" ) || index + 1 >= source.length();
-            if ( isLineFeed ) {
-                if ( !ch.equals( "\n" ) ) {
-                    x += charWidth;
-                    buffer.add( ch );
-
-                    added = true;
-                }
-            }
-
-            if ( isLineFeed || isLineBreak ) {
-                final float charGap = _config.useJustification && !isLineFeed ? //
-                        ( _surfaceSize.width - _config.horizontalPadding - x ) / ( buffer.size() - 1 ) : 0;
-
-                float curX = _config.horizontalPadding;
-                for ( int bufIndex = 0 ; bufIndex < buffer.size() ; bufIndex++ ) {
-                    final String curCh = buffer.get( bufIndex );
-
-                    final float w = measure( p , curCh );
-
-                    ret[ index - buffer.size() + bufIndex + ( added ? 1 : 0 ) ] =
-                            new LayoutInfo( curX , y + _config.getRubyFontSize() , w , _config.fontSize );
-
-                    curX += w + charGap;
-                }
-
-                x = _config.horizontalPadding;
-                y += _config.getRubyFontSize() + _config.fontSize + _config.lineSpace;
-
-                buffer.clear();
-            }
-
-            if ( !ch.equals( "\n" ) && !added ) {
-                x += charWidth;
-                buffer.add( ch );
-            }
-        }
-
-        return ret;
     }
 
     private void load( final int index ) {
@@ -377,14 +185,11 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         } );
     }
 
-    private float measure( final Paint p , final String ch ) {
-        final boolean isHalf = "。、".contains( ch );
-
-        return p.measureText( ch ) * ( isHalf ? 0.5f : 1f );
+    private Size nullSafeCacheSize( final int index ) {
+        return _caches[ index ] != null ? new Size( _caches[ index ].getWidth() , _caches[ index ].getHeight() ) : null;
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint p ) {
-        // TODO case bottom
         final boolean needCleanUp =
                 _index == 0
                         && _offset > 0
@@ -428,13 +233,6 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
     public void setConfig( final CoreTextConfig c ) {
         _config = c;
-
-        _invalidate = true;
-        _invalidateCache = true;
-    }
-
-    public void setDirection( final TextDocDirection d ) {
-        _direction = d;
 
         _invalidate = true;
         _invalidateCache = true;
@@ -528,7 +326,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     public void translate( final PointF delta ) {
-        _offset += delta.y;
+        _offset = _config.direction.translate( _offset , delta );
 
         _invalidate = true;
     }
