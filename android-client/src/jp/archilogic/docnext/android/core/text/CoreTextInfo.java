@@ -25,9 +25,20 @@ public class CoreTextInfo {
         }
     }
 
+    public static class TCY {
+        public int location;
+        public int length;
+
+        public TCY( final int location , final int length ) {
+            this.location = location;
+            this.length = length;
+        }
+    }
+
     public String text;
     public List< Ruby > rubys;
     public List< Dot > dots;
+    public List< TCY > tcys;
 
     public String at( final int index ) {
         return text.substring( index , index + 1 );

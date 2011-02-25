@@ -249,13 +249,13 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint paint ) {
-        CleanUpState state;
+        ImageCleanUpState state;
         if ( _willOffsetTo != null ) {
-            state = CleanUpState.getInstance( _offset , _scale , _willOffsetTo , _willScaleTo );
+            state = ImageCleanUpState.getInstance( _offset , _scale , _willOffsetTo , _willScaleTo );
 
             _willOffsetTo = null;
         } else {
-            state = CleanUpState.getInstance( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
+            state = ImageCleanUpState.getInstance( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
         }
 
         if ( state.needCleanUp ) {

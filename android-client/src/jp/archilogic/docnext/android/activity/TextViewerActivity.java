@@ -93,42 +93,51 @@ public class TextViewerActivity extends Activity {
 
                 dots = Lists.newArrayList();
                 dots.add( new Dot( 4 , 6 ) );
+
+                tcys = Lists.newArrayList();
+                tcys.add( new TCY( 82 , 2 ) );
             }
         } , new CoreTextInfo() {
             {
                 text = "**2** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } , new CoreTextInfo() {
             {
                 text = "**3** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } , new CoreTextInfo() {
             {
                 text = "**4** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } , new CoreTextInfo() {
             {
                 text = "**5** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } , new CoreTextInfo() {
             {
                 text = "**6** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } , new CoreTextInfo() {
             {
                 text = "**7** " + sample;
                 rubys = Lists.newArrayList();
                 dots = Lists.newArrayList();
+                tcys = Lists.newArrayList();
             }
         } ) );
         _coreTextView.setListener( _coreImageListener );

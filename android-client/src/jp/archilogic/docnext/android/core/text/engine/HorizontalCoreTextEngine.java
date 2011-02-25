@@ -21,7 +21,7 @@ public class HorizontalCoreTextEngine implements CoreTextEngine {
         p.setTextSize( _config.getRubyFontSize() );
         p.setColor( _config.defaultTextColor );
 
-        final String dotChar = "﹅";
+        final String dotChar = "・";
         final float w = p.measureText( dotChar );
 
         for ( final Dot dot : source.dots ) {
@@ -36,8 +36,8 @@ public class HorizontalCoreTextEngine implements CoreTextEngine {
     private void drawRuby( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final Ruby ruby ) {
         final float w = p.measureText( ruby.text );
 
-        final TextLayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
         final TextLayoutInfo from = layouts[ ruby.location ];
+        final TextLayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
 
         final float textWidth = to.x + to.width - from.x;
 
