@@ -136,8 +136,7 @@ public class ThumbnailCreator {
         int h = ( int ) Math.round( info.unitHeight * resolution );
 
         createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( resolution ) );
-        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , w , h , w ,
-                h );
+        convertAndResize( getPpmPath( prefix , page ) , String.format( "%sthumb-%d.jpg" , outDir , page ) , w , h , w , h );
     }
 
     private void createWeb( String outDir , String pdfPath , String prefix , ImageInfo info , int page ) {
