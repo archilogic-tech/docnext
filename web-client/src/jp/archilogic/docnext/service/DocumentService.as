@@ -1,7 +1,7 @@
 package jp.archilogic.docnext.service {
     import jp.archilogic.Service;
     import jp.archilogic.ServiceUtil;
-
+	import mx.controls.Alert;
     public class DocumentService {
         private static var service : Service = new Service( 'documentService' );
 
@@ -24,7 +24,11 @@ package jp.archilogic.docnext.service {
         public static function getPage( id : Number , page : int , result : Function ) : void {
             ServiceUtil.callHelper( service.getPage( id , page ) , result );
         }
-
+        
+		public static function getThumb( id : Number , page : int , result : Function ) : void {
+             ServiceUtil.callHelper( service.getThumb( id , page ) , result ); 
+        }
+        
         public static function getRegions( id : Number , page : int , result : Function ) : void {
             ServiceUtil.callHelper( service.getRegions( id , page ) , result );
         }
@@ -32,5 +36,6 @@ package jp.archilogic.docnext.service {
         public static function getSinglePageInfo( id : Number , result : Function ) : void {
             ServiceUtil.callHelper( service.getSinglePageInfo( id ) , result );
         }
+        
     }
 }

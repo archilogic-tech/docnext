@@ -3,10 +3,12 @@ package jp.archilogic.docnext.helper {
     import flash.events.IEventDispatcher;
     import flash.events.MouseEvent;
     import flash.geom.Point;
-    import mx.core.Container;
-    import mx.core.UIComponent;
+    
     import jp.archilogic.docnext.ui.DocumentComponentArrowIndicator;
     import jp.archilogic.docnext.ui.PageComponent;
+    
+    import mx.core.Container;
+    import mx.core.UIComponent;
 
     public class DocumentMouseEventHelper {
         private static const CLICK_THRESHOLD : Number = 5;
@@ -39,7 +41,10 @@ package jp.archilogic.docnext.helper {
         public function set arrowIndicator( value : DocumentComponentArrowIndicator ) : * {
             _arrowIndicator = value;
         }
-
+		public function get arrowIndicator( ) : DocumentComponentArrowIndicator
+		{
+			return _arrowIndicator;
+		}
         public function set changeMenuVisiblityFunc( value : Function ) : * {
             _changeMenuVisiblityFunc = value;
         }
@@ -121,7 +126,8 @@ package jp.archilogic.docnext.helper {
             }
 
             for each ( var page : PageComponent in _currentPagesFunc() ) {
-                page.initSelection();
+            	/* if( page == null) page = new PageComponent(page.page); */
+            	/* if( page !=null) */  page.initSelection();
                 page.clearEmphasize();
             }
 
