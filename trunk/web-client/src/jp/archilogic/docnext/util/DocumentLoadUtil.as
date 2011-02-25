@@ -1,15 +1,19 @@
 package jp.archilogic.docnext.util {
+    import __AS3__.vec.Vector;
+    
     import com.adobe.serialization.json.JSON;
+    
     import flash.events.Event;
     import flash.geom.Rectangle;
     import flash.utils.ByteArray;
     import flash.utils.Endian;
-    import mx.containers.Canvas;
-    import __AS3__.vec.Vector;
+    
     import jp.archilogic.docnext.helper.ContextMenuHelper;
     import jp.archilogic.docnext.service.DocumentService;
     import jp.archilogic.docnext.ui.PageComponent;
-
+    import jp.archilogic.docnext.ui.ThumbnailComponent;
+    import mx.controls.Alert;
+    import mx.containers.Canvas;
     public class DocumentLoadUtil {
         public static function loadPage( docId : Number , index : int , ratio : Number ,
                                          pages : Vector.<PageComponent> , scroller : Canvas ,
@@ -26,7 +30,6 @@ package jp.archilogic.docnext.util {
 
                 page.addEventListener( Event.COMPLETE , function() : void {
                     page.removeEventListener( Event.COMPLETE , arguments.callee );
-
                     pages[ index ] = page;
 
                     loadRegions( page );
@@ -39,7 +42,26 @@ package jp.archilogic.docnext.util {
                 page.loadData( result );
             } );
         }
-
+		public static function loadThumb(	docId :Number, index : int , ratio : Number,
+											thumbs : Vector.<ThumbnailComponent>, 
+											loadCompleteHandler : Function = null) : void
+		{
+			DocumentService.getThumb(docId, index, function(result : ByteArray ) : void
+			{
+				var thumb : ThumbnailComponent = thumbs[index] as ThumbnailComponent;
+				thumb.docId = docId;
+				thumb.page = index;
+				thumb.ratio = ratio;
+				thumb.addEventListener(Event.COMPLETE, function() : void
+				{
+					thumb.removeEventListener(Event.COMPLETE, arguments.callee );
+					
+					if(loadCompleteHandler != null)	loadCompleteHandler(thumb);
+				});
+				thumb.loadData(result);
+			});
+		}
+		/* shimaguchi */
         private static function loadAnnotation( page : PageComponent ) : void {
             DocumentService.getAnnotation( page.docId , page.page , function( result : String ) : void {
                 page.annotation = JSON.decode( result );

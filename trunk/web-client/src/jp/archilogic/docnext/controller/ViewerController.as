@@ -1,12 +1,15 @@
 package jp.archilogic.docnext.controller {
-    import mx.controls.Alert;
-    import mx.rpc.Fault;
     import __AS3__.vec.Vector;
+    
     import caurina.transitions.Tweener;
+    
     import jp.archilogic.Delegate;
     import jp.archilogic.ServiceUtil;
     import jp.archilogic.docnext.dto.DocumentResDto;
     import jp.archilogic.docnext.service.DocumentService;
+    
+    import mx.controls.Alert;
+    import mx.rpc.Fault;
 
     public class ViewerController extends Delegate {
         public var view : Viewer;
@@ -19,12 +22,63 @@ package jp.archilogic.docnext.controller {
             view.documentComponent.changeMenuVisiblityHandler = changeMenuVisiblityHandler;
             view.toolbox.changeMenuVisiblityHandler = changeMenuVisiblityHandler;
             view.toolbox.selectingHandler = selectingHandler;
-
+			view.toolbox.showThumbnailsHandler = showThumbnailsHandler;
+			view.thumbDockComponent.changeThumbDockVisiblityHandler = showThumbnailsHandler;
+			view.thumbDockComponent.documentComponent = view.documentComponent;
+			/* view.thumbDockComponent.changeDocumentVisiblityHandler = changeDocumentVisiblityHandler; */
+			
             var ids : String = view.parameters[ 'id' ];
 
             findDocumentHelper( ids.split( ',' ) , 0 , new Vector.<DocumentResDto> );
         }
-
+        
+		 private function showThumbnailsHandler( value : Boolean = true) : void 
+		 {
+		 	if(value)
+		 	{
+		 		var currentHead : int  = view.documentComponent.getCurrentHead();
+				/* changeDocumentVisiblityHandler(false, 0.3); */
+				/* view.documentComponent.alpha = 0.4; */
+				view.thumbDockComponent.setBackground(view.documentComponent.background);
+				view.documentComponent.removeEvents();
+				view.documentComponent.visible = false;
+				changeMenuVisiblityHandler(false);
+				view.thumbDockComponent.visible = true;
+				view.thumbDockComponent.addEvents();
+				view.thumbDockComponent.showUp();
+		 	}
+		 	else /*  documentComponent when thumbnails show off,*/
+		 	{
+		 		/* view.thumbDockComponent.removeEvents(); */
+		 		view.thumbDockComponent.showOff();
+		 		view.documentComponent.addEvents();
+		 		view.thumbDockComponent.visible = false;
+		 		/* view.documentComponent.alpha = 1; */
+		 		view.documentComponent.visible = true;
+		 		view.documentComponent.setCurrentHead( view.thumbDockComponent.currentIndex);
+		 	}
+		}
+		/* private function changeDocumentVisiblityHandler ( value : Boolean , alpha : int = 0 ) : void 
+		{
+			if(value)
+			{
+				view.documentComponent.addEvents();
+			}
+			else
+			{
+				view.documentComponent.removeEvents();
+				if(alpha !=0) 
+				{
+					view.documentComponent.visible = true;
+					view.documentComponent.alpha = alpha;
+				}
+				else
+				{
+					view.documentComponent.visible = false;
+				}
+			}
+			
+		}  */
         private function changeMenuVisiblityHandler( value : Boolean ) : void {
             if ( value ) {
                 view.toolbox.alpha = 0;
@@ -38,13 +92,14 @@ package jp.archilogic.docnext.controller {
                         }
                     } } );
         }
-
+		
         /**
          * Only check existance currently
          * TODO set title?
          */
-        private function findDocumentHelper( ids : Array /* of Number or String */ , position : int ,
-                                             dtos : Vector.<DocumentResDto> ) : void {
+        private function findDocumentHelper( 	ids : Array /* of Number or String */ , 
+        										position : int ,
+                                             	dtos : Vector.<DocumentResDto> ) : void {
             if ( position < ids.length ) {
                 DocumentService.findById( ids[ position ] , function( dto : DocumentResDto ) : void {
                     dtos.push( dto );
@@ -61,6 +116,7 @@ package jp.archilogic.docnext.controller {
                 } );
             } else {
                 view.documentComponent.load( dtos );
+                /* view.thumbDockComponent.load(dtos); */
             }
         }
 
