@@ -190,19 +190,11 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint p ) {
-        final boolean needCleanUp =
-                _index == 0
-                        && _offset > 0
-                        || _index == _caches.length - 1
-                        && _offset < _surfaceSize.height
-                                - ( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height );
+        final TextCleanUpState state =
+                TextCleanUpState.getInstance( _config.direction , _offset , _surfaceSize , nullSafeCacheSize( _index ) ,
+                        _index , _caches.length );
 
-        if ( needCleanUp ) {
-            final float srcOffset = _offset;
-            final float dstOffset =
-                    Math.max( Math.min( _offset , 0 ) , _surfaceSize.height
-                            - ( _caches[ _index ] != null ? _caches[ _index ].getHeight() : _surfaceSize.height ) );
-
+        if ( state.needCleanUp ) {
             final long t = SystemClock.elapsedRealtime();
 
             final Interpolator i = new AccelerateDecelerateInterpolator();
@@ -212,7 +204,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
                 final Canvas c_ = holder.lockCanvas();
 
-                _offset = srcOffset + ( dstOffset - srcOffset ) * i.getInterpolation( diff );
+                _offset = state.srcOffset + ( state.dstOffset - state.srcOffset ) * i.getInterpolation( diff );
 
                 draw( c_ , p );
 
@@ -289,6 +281,17 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
                                     _caches[ _index + delta ] = null;
                                     _caches[ _index + delta ] = buildCache( p , _sources.get( _index + delta ) );
                                 }
+                            }
+
+                            switch ( _config.direction ) {
+                            case HORIZONTAL:
+                                _offset = 0;
+                                break;
+                            case VERTICAL:
+                                _offset = _surfaceSize.width - _caches[ _index ].getWidth();
+                                break;
+                            default:
+                                throw new RuntimeException();
                             }
                         }
 

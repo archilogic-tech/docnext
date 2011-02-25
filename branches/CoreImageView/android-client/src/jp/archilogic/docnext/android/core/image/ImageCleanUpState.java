@@ -3,10 +3,10 @@ package jp.archilogic.docnext.android.core.image;
 import jp.archilogic.docnext.android.core.Size;
 import android.graphics.PointF;
 
-class CleanUpState {
-    public static CleanUpState getInstance( final PointF offset , final float scale , final PointF offsetTo ,
+class ImageCleanUpState {
+    public static ImageCleanUpState getInstance( final PointF offset , final float scale , final PointF offsetTo ,
             final float scaleTo ) {
-        final CleanUpState ret = new CleanUpState();
+        final ImageCleanUpState ret = new ImageCleanUpState();
 
         ret.needCleanUp = true;
 
@@ -18,9 +18,9 @@ class CleanUpState {
         return ret;
     }
 
-    public static CleanUpState getInstance( final PointF offset , final float scale , final Size surface ,
+    public static ImageCleanUpState getInstance( final PointF offset , final float scale , final Size surface ,
             final Size image , final float minScale , final float maxScale ) {
-        final CleanUpState ret = new CleanUpState();
+        final ImageCleanUpState ret = new ImageCleanUpState();
 
         if ( offset.x < Math.min( surface.width - image.width * scale , 0 ) || //
                 offset.y < Math.min( surface.height - image.height * scale , 0 ) || //

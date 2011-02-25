@@ -8,6 +8,7 @@ import jp.archilogic.docnext.android.core.text.CoreTextConfig.LineBreakingRule;
 import jp.archilogic.docnext.android.core.text.CoreTextInfo;
 import jp.archilogic.docnext.android.core.text.CoreTextInfo.Dot;
 import jp.archilogic.docnext.android.core.text.CoreTextInfo.Ruby;
+import jp.archilogic.docnext.android.core.text.CoreTextInfo.TCY;
 import jp.archilogic.docnext.android.core.text.TextLayoutInfo;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,6 +17,21 @@ import android.graphics.PointF;
 import com.google.common.collect.Lists;
 
 public class VerticalCoreTextEngine implements CoreTextEngine {
+    private void drawChar( final Canvas c , final Paint p , final String ch , final float x , final float y ,
+            final float h , final boolean forceVertical ) {
+        if ( !forceVertical && shouldRotate( ch ) ) {
+            c.save();
+            c.translate( h , 0 );
+            c.rotate( 90 , x , y );
+
+            c.drawText( ch , x , y + h , p );
+
+            c.restore();
+        } else {
+            c.drawText( ch , x , y + h , p );
+        }
+    }
+
     @Override
     public void drawDots( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final CoreTextInfo source ,
             final CoreTextConfig _config ) {
@@ -35,24 +51,21 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
     }
 
     private void drawRuby( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final Ruby ruby ) {
-        final float w = p.measureText( ruby.text );
+        final float h = p.getTextSize() * ruby.text.length();
 
-        final TextLayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
         final TextLayoutInfo from = layouts[ ruby.location ];
+        final TextLayoutInfo to = layouts[ ruby.location + ruby.length - 1 ];
 
-        final float textWidth = to.x + to.width - from.x;
+        final float textHeight = to.y + to.height - from.y;
 
-        if ( textWidth > w ) {
-            final float unit = ( textWidth - w ) / ruby.text.length();
-            float x = from.x + unit / 2;
+        final float unit = textHeight > h ? ( textHeight - h ) / ruby.text.length() : 0;
+        float y = from.y + ( unit > 0 ? unit / 2 : ( textHeight - h ) / 2 );
 
-            for ( int index = 0 ; index < ruby.text.length() ; index++ ) {
-                c.drawText( ruby.text.substring( index , index + 1 ) , x , from.y , p );
+        for ( int index = 0 ; index < ruby.text.length() ; index++ ) {
+            drawChar( c , p , ruby.text.substring( index , index + 1 ) , from.lineMetrics - p.getTextSize() , y ,
+                    p.getTextSize() , false );
 
-                x += p.measureText( ruby.text.substring( index , index + 1 ) ) + unit;
-            }
-        } else {
-            c.drawText( ruby.text , from.x + ( textWidth - w ) / 2 , from.y , p );
+            y += p.getTextSize() + unit;
         }
     }
 
@@ -64,10 +77,10 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
 
         for ( final Ruby ruby : source.rubys ) {
             final List< Integer > splitHeadIndex = Lists.newArrayList();
-            float currentY = -1;
+            int currentLine = -1;
             for ( int delta = 0 ; delta < ruby.length ; delta++ ) {
-                if ( layouts[ ruby.location + delta ].y != currentY ) {
-                    currentY = layouts[ ruby.location + delta ].y;
+                if ( layouts[ ruby.location + delta ].line != currentLine ) {
+                    currentLine = layouts[ ruby.location + delta ].line;
 
                     splitHeadIndex.add( ruby.location + delta );
                 }
@@ -102,17 +115,7 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
             final TextLayoutInfo l = layouts[ index ];
 
             if ( l != null ) {
-                if ( shouldRotate( source.at( index ) ) ) {
-                    c.save();
-                    c.translate( l.height , 0 );
-                    c.rotate( 90 , l.x , l.y );
-
-                    c.drawText( source.at( index ) , l.x , l.y + l.height , p );
-
-                    c.restore();
-                } else {
-                    c.drawText( source.at( index ) , l.x , l.y + l.height , p );
-                }
+                drawChar( c , p , source.at( index ) , l.x , l.y , l.height , isInTCY( source , index ) );
             }
         }
     }
@@ -130,8 +133,28 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
         }
     }
 
+    private TCY getTCY( final CoreTextInfo source , final int index ) {
+        for ( final TCY tcy : source.tcys ) {
+            if ( tcy.location == index ) {
+                return tcy;
+            }
+        }
+
+        return null;
+    }
+
     private boolean isCharNotPermittedOnStart( final String ch ) {
         return "。、".contains( ch );
+    }
+
+    private boolean isInTCY( final CoreTextInfo source , final int index ) {
+        for ( final TCY tcy : source.tcys ) {
+            if ( index >= tcy.location && index < tcy.location + tcy.length ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -151,7 +174,8 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
         for ( int index = 0 ; index < source.length() ; index++ ) {
             final String ch = source.at( index );
 
-            final float charHeight = measure( p , ch );
+            final TCY tcy = getTCY( source , index );
+            final float charHeight = tcy != null ? p.getTextSize() : measure( p , ch );
             boolean added = false;
 
             boolean isLineBreak = y + charHeight >= surface.height - config.verticalPadding;
@@ -196,8 +220,24 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
                 for ( int bufIndex = 0 ; bufIndex < buffer.size() ; bufIndex++ ) {
                     final String curCh = buffer.get( bufIndex );
 
-                    if ( shouldRotate( curCh ) ) {
-                        ret[ index - buffer.size() + bufIndex + ( added ? 1 : 0 ) ] =
+                    final int srcIndex = index - buffer.size() + bufIndex + ( added ? 1 : 0 );
+                    final TCY tcy_ = getTCY( source , srcIndex );
+
+                    if ( tcy_ != null ) {
+                        final float w =
+                                p.measureText( source.text.substring( tcy_.location , tcy_.location + tcy_.length ) );
+                        float x_ = x - config.getRubyFontSize() - config.fontSize - ( w - config.fontSize ) / 2;
+
+                        for ( int delta = 0 ; delta < tcy_.length ; delta++ ) {
+                            ret[ srcIndex + delta ] =
+                                    new TextLayoutInfo( x_ , curY , config.fontSize , config.fontSize , line , x );
+
+                            x_ += p.measureText( source.text.substring( srcIndex + delta , srcIndex + delta + 1 ) );
+                        }
+
+                        bufIndex += tcy_.length - 1;
+                    } else if ( shouldRotate( curCh ) ) {
+                        ret[ srcIndex ] =
                                 new TextLayoutInfo( x - config.getRubyFontSize() - config.fontSize
                                         + p.getFontMetrics().descent , curY + p.getFontMetrics().descent ,
                                         config.fontSize , measure( p , curCh ) , line , x );
@@ -206,13 +246,13 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
 
                         final PointF offset = getCharOffset( p , curCh );
 
-                        ret[ index - buffer.size() + bufIndex + ( added ? 1 : 0 ) ] =
+                        ret[ srcIndex ] =
                                 new TextLayoutInfo( x - config.getRubyFontSize() - config.fontSize
                                         + ( config.fontSize - w ) / 2 + offset.x , curY , config.fontSize ,
                                         config.fontSize - offset.y , line , x );
                     }
 
-                    curY += measure( p , curCh ) + charGap;
+                    curY += ( tcy_ != null ? p.getTextSize() : measure( p , curCh ) ) + charGap;
                 }
 
                 x -= config.getRubyFontSize() + config.fontSize + config.lineSpace;
@@ -225,6 +265,13 @@ public class VerticalCoreTextEngine implements CoreTextEngine {
             if ( !ch.equals( "\n" ) && !added ) {
                 y += charHeight;
                 buffer.add( ch );
+
+                if ( tcy != null ) {
+                    for ( int delta = 1 ; delta < tcy.length ; delta++ ) {
+                        index++;
+                        buffer.add( source.at( index ) );
+                    }
+                }
             }
         }
 
