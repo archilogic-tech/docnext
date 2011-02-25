@@ -65,6 +65,14 @@ public class DocumentService {
             throw new RuntimeException( e );
         }
     }
+    public byte[] getThumb( long id, int page)
+    {
+    	try {
+    		return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "thumb" , id , page ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
 
     public String getPublisher( long id ) {
         return packManager.readPublisher( id );
