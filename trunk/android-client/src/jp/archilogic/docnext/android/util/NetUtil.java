@@ -54,20 +54,19 @@ public class NetUtil {
     }
 
     public static InputStream getFont( final String name ) throws IOException {
-        final HttpGet get = new HttpGet( String.format( "http://twist.archilogic.jp/_docnext/font/%s" , name ) );
+        final HttpGet get = new HttpGet( String.format( "%sfont/%s" , name ) );
 
         return asStream( asResponse( get ) );
     }
 
     public static InputStream getImagePage( final long id , final int page ) throws IOException {
-        final HttpGet get = new HttpGet( String.format( "http://twist.archilogic.jp/_docnext/comic-%03d.jpg" , page ) );
+        final HttpGet get = new HttpGet( String.format( "%scomic-%03d.jpg" , page ) );
 
         return asStream( asResponse( get ) );
     }
 
     public static InputStream getImagePageThumbnail( final long id , final int page ) throws IOException {
-        final HttpGet get =
-                new HttpGet( String.format( "http://twist.archilogic.jp/_docnext/comic-thumb-%03d.jpg" , page ) );
+        final HttpGet get = new HttpGet( String.format( "%scomic-thumb-%03d.jpg" , page ) );
 
         return asStream( asResponse( get ) );
     }

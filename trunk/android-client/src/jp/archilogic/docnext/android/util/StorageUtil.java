@@ -5,20 +5,24 @@ import java.io.File;
 public class StorageUtil {
     private static final String ROOT = "/sdcard/docnext/";
 
-    public static void ensureFontDir() {
-        final File dir = new File( getFontDir() );
+    private static void ensureDir( final String path ) {
+        final File dir = new File( path );
 
         if ( !dir.exists() ) {
             dir.mkdirs();
         }
     }
 
-    public static void ensureImageDir( final long id ) {
-        final File dir = new File( getImageDir( id ) );
+    public static void ensureFontDir() {
+        ensureDir( getFontDir() );
+    }
 
-        if ( !dir.exists() ) {
-            dir.mkdirs();
-        }
+    public static void ensureImageDir( final long id ) {
+        ensureDir( getImageDir( id ) );
+    }
+
+    public static void ensureTextDir( final long id ) {
+        ensureDir( getTextDir( id ) );
     }
 
     private static String getFontDir() {
@@ -39,5 +43,13 @@ public class StorageUtil {
 
     public static String getImageThumbnailPath( final long id , final int page ) {
         return getImageDir( id ) + String.format( "%03d-thumb.jpg" , page );
+    }
+
+    private static String getTextDir( final long id ) {
+        return ROOT + "text/" + id + "/";
+    }
+
+    public static String getTextPath( final long id , final int page ) {
+        return getTextDir( id ) + page + ".json";
     }
 }
