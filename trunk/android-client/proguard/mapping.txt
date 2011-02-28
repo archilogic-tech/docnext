@@ -1,0 +1,453 @@
+jp.archilogic.docnext.android.ImageViewerActivity -> jp.archilogic.docnext.android.ImageViewerActivity:
+    jp.archilogic.docnext.android.core.image.CoreImageView _coreImageView -> a
+    android.widget.TextView _currentPageTextView -> b
+    android.widget.TextView _totalPageTextView -> c
+    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> d
+    void onCreate(android.os.Bundle) -> onCreate
+    android.widget.TextView access$0(jp.archilogic.docnext.android.ImageViewerActivity) -> a
+    jp.archilogic.docnext.android.core.image.CoreImageView access$1(jp.archilogic.docnext.android.ImageViewerActivity) -> b
+jp.archilogic.docnext.android.ImageViewerActivity$1 -> jp.archilogic.docnext.android.w:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    void onPageChanged(int) -> a
+jp.archilogic.docnext.android.ImageViewerActivity$1$1 -> jp.archilogic.docnext.android.k:
+    jp.archilogic.docnext.android.ImageViewerActivity$1 this$1 -> a
+    int val$index -> b
+    void run() -> run
+jp.archilogic.docnext.android.ImageViewerActivity$2 -> jp.archilogic.docnext.android.v:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.ImageViewerActivity$3 -> jp.archilogic.docnext.android.z:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.ImageViewerActivity$4 -> jp.archilogic.docnext.android.y:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.ImageViewerActivity$5 -> jp.archilogic.docnext.android.x:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.MainActivity -> jp.archilogic.docnext.android.MainActivity:
+    void fetchImagePage(int,android.app.ProgressDialog) -> a
+    void fetchImagePageThumbnail(int,android.app.ProgressDialog) -> b
+    void onCreate(android.os.Bundle) -> onCreate
+    void access$0(jp.archilogic.docnext.android.MainActivity,int,android.app.ProgressDialog) -> a
+    void access$1(jp.archilogic.docnext.android.MainActivity,int,android.app.ProgressDialog) -> b
+    void access$2(jp.archilogic.docnext.android.MainActivity) -> a
+jp.archilogic.docnext.android.MainActivity$1 -> jp.archilogic.docnext.android.r:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$2 -> jp.archilogic.docnext.android.s:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    int val$page -> c
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$3 -> jp.archilogic.docnext.android.p:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    int val$page -> c
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$4 -> jp.archilogic.docnext.android.q:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.MainActivity$5 -> jp.archilogic.docnext.android.t:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.TextViewerActivity -> jp.archilogic.docnext.android.TextViewerActivity:
+    android.widget.TextView _debug -> a
+    jp.archilogic.docnext.android.core.text.CoreTextView _coreTextView -> b
+    android.widget.TextView _currentPageTextView -> c
+    android.widget.TextView _totalPageTextView -> d
+    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> e
+    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> f
+    void bindDebug() -> a
+    void onCreate(android.os.Bundle) -> onCreate
+    android.widget.TextView access$0(jp.archilogic.docnext.android.TextViewerActivity) -> a
+    jp.archilogic.docnext.android.core.text.CoreTextConfig access$1(jp.archilogic.docnext.android.TextViewerActivity) -> b
+    jp.archilogic.docnext.android.core.text.CoreTextView access$2(jp.archilogic.docnext.android.TextViewerActivity) -> c
+    void access$3(jp.archilogic.docnext.android.TextViewerActivity) -> d
+jp.archilogic.docnext.android.TextViewerActivity$1 -> jp.archilogic.docnext.android.j:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onPageChanged(int) -> a
+jp.archilogic.docnext.android.TextViewerActivity$1$1 -> jp.archilogic.docnext.android.u:
+    jp.archilogic.docnext.android.TextViewerActivity$1 this$1 -> a
+    int val$index -> b
+    void run() -> run
+jp.archilogic.docnext.android.TextViewerActivity$10 -> jp.archilogic.docnext.android.b:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule -> b
+    void onClick(android.view.View) -> onClick
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule() -> a
+jp.archilogic.docnext.android.TextViewerActivity$11 -> jp.archilogic.docnext.android.a:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.TextViewerActivity$12 -> jp.archilogic.docnext.android.g:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.TextViewerActivity$13 -> jp.archilogic.docnext.android.f:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.TextViewerActivity$14 -> jp.archilogic.docnext.android.h:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.TextViewerActivity$2 -> jp.archilogic.docnext.android.i:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$3 -> jp.archilogic.docnext.android.o:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$4 -> jp.archilogic.docnext.android.n:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$5 -> jp.archilogic.docnext.android.m:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$6 -> jp.archilogic.docnext.android.l:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$7 -> jp.archilogic.docnext.android.c:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$8 -> jp.archilogic.docnext.android.d:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
+jp.archilogic.docnext.android.TextViewerActivity$9 -> jp.archilogic.docnext.android.e:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    void onClick(android.view.View) -> onClick
+jp.archilogic.docnext.android.core.OnPageChangedListener -> jp.archilogic.docnext.android.core.b:
+    void onPageChanged(int) -> a
+jp.archilogic.docnext.android.core.Size -> jp.archilogic.docnext.android.core.a:
+    int width -> a
+    int height -> b
+jp.archilogic.docnext.android.core.image.CoreImageCallback -> jp.archilogic.docnext.android.core.image.b:
+    jp.archilogic.docnext.android.core.Size _surfaceSize -> a
+    java.lang.Thread _worker -> b
+    boolean _shouldStop -> c
+    boolean _invalidate -> d
+    boolean _willCleanUp -> e
+    boolean _willCancelCleanUp -> f
+    boolean _willCheckChangePage -> g
+    android.graphics.Bitmap _background -> h
+    java.util.List _sources -> i
+    java.util.List _thumbnailSources -> j
+    jp.archilogic.docnext.android.core.OnPageChangedListener _listener -> k
+    jp.archilogic.docnext.android.core.image.ImageDocDirection _direction -> l
+    jp.archilogic.docnext.android.core.Size _imageSize -> m
+    android.graphics.PointF _offset -> n
+    float _scale -> o
+    float _minScale -> p
+    float _maxScale -> q
+    android.graphics.PointF _willOffsetTo -> r
+    float _willScaleTo -> s
+    android.graphics.Bitmap[] _images -> t
+    int _index -> u
+    java.util.concurrent.ExecutorService _loadingExecutor -> v
+    jp.archilogic.docnext.android.core.image.CoreImageCallback$TapDispatcher _tapDispatcher -> w
+    android.graphics.PointF _delayPoint -> x
+    void cancelCleanUp() -> a
+    android.graphics.Bitmap decode(java.lang.String) -> b
+    void doCleanUp(boolean) -> a
+    void draw(android.graphics.Canvas,android.graphics.Paint) -> a
+    float getHorizontalPadding() -> b
+    float getVerticalPadding() -> c
+    void load(int) -> a
+    void scale(float,android.graphics.PointF) -> a
+    void setDirection(jp.archilogic.docnext.android.core.image.ImageDocDirection) -> a
+    void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    void setSources(java.util.List) -> a
+    void setThumbnailSources(java.util.List) -> b
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    void tap(android.graphics.PointF) -> a
+    void translate(android.graphics.PointF) -> b
+    void access$1$15e0c38b(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> a
+    int access$2(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> b
+    android.graphics.Bitmap[] access$3(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> c
+    java.util.List access$4(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> d
+    android.graphics.Bitmap access$5$2ae0e830(java.lang.String) -> a
+    void access$6(jp.archilogic.docnext.android.core.image.CoreImageCallback,boolean) -> a
+    boolean access$7(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> e
+    boolean access$8(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> f
+    jp.archilogic.docnext.android.core.Size access$9(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> g
+    jp.archilogic.docnext.android.core.Size access$10(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> h
+    void access$11(jp.archilogic.docnext.android.core.image.CoreImageCallback,android.graphics.Canvas,android.graphics.Paint) -> a
+    boolean access$12(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> i
+    void access$13$5c2ab754(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> j
+    boolean access$14(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> k
+    void access$15$5c2ab754(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> l
+    void access$16(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> m
+    void access$17(jp.archilogic.docnext.android.core.image.CoreImageCallback,android.view.SurfaceHolder,android.graphics.Paint) -> a
+jp.archilogic.docnext.android.core.image.CoreImageCallback$1 -> jp.archilogic.docnext.android.core.image.d:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> a
+    int val$index -> b
+    void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageCallback$2 -> jp.archilogic.docnext.android.core.image.e:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> a
+    android.view.SurfaceHolder val$holder -> b
+    void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageCallback$TapDispatcher -> jp.archilogic.docnext.android.core.image.f:
+    android.graphics.PointF _point -> a
+    boolean _cancelled -> b
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> c
+    void cancel() -> a
+    void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageView -> jp.archilogic.docnext.android.core.image.CoreImageView:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback _callback -> a
+    int _nTouch -> b
+    android.graphics.PointF[] _prevPoints -> c
+    android.graphics.PointF[] _downPoints -> d
+    boolean _isTap -> e
+    android.graphics.PointF _pinchCenter -> f
+    android.graphics.PointF copyPoint(android.graphics.PointF) -> a
+    void copyPoints(android.view.MotionEvent,android.graphics.PointF[]) -> a
+    void onFinishInflate() -> onFinishInflate
+    boolean onTouchEvent(android.view.MotionEvent) -> onTouchEvent
+    void setDirection(jp.archilogic.docnext.android.core.image.ImageDocDirection) -> a
+    void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    void setSources(java.util.List) -> a
+    void setThumbnailSources(java.util.List) -> b
+jp.archilogic.docnext.android.core.image.ImageCleanUpState -> jp.archilogic.docnext.android.core.image.c:
+    boolean needCleanUp -> a
+    android.graphics.PointF srcOffset -> b
+    float srcScale -> c
+    android.graphics.PointF dstOffset -> d
+    float dstScale -> e
+jp.archilogic.docnext.android.core.image.ImageDocDirection -> jp.archilogic.docnext.android.core.image.a:
+    jp.archilogic.docnext.android.core.image.ImageDocDirection L2R -> a
+    jp.archilogic.docnext.android.core.image.ImageDocDirection R2L -> b
+    jp.archilogic.docnext.android.core.image.ImageDocDirection T2B -> c
+    jp.archilogic.docnext.android.core.image.ImageDocDirection B2T -> d
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$image$ImageDocDirection -> e
+    jp.archilogic.docnext.android.core.image.ImageDocDirection[] ENUM$VALUES -> f
+    boolean canMoveHorizontal() -> a
+    boolean canMoveVertical() -> b
+    boolean shouldChangeToNext(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,float) -> a
+    boolean shouldChangeToPrev(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,float) -> b
+    int toXSign() -> c
+    int toYSign() -> d
+    void updateOffset(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,float,boolean) -> a
+    jp.archilogic.docnext.android.core.image.ImageDocDirection[] values() -> values
+    jp.archilogic.docnext.android.core.image.ImageDocDirection valueOf(java.lang.String) -> valueOf
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$image$ImageDocDirection() -> e
+jp.archilogic.docnext.android.core.text.CoreTextCallback -> jp.archilogic.docnext.android.core.text.i:
+    jp.archilogic.docnext.android.core.Size _surfaceSize -> a
+    java.lang.Thread _worker -> b
+    boolean _shouldStop -> c
+    boolean _invalidate -> d
+    boolean _invalidateCache -> e
+    boolean _willCleanUp -> f
+    boolean _willCancelCleanUp -> g
+    android.graphics.Bitmap _background -> h
+    java.util.List _sources -> i
+    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> j
+    jp.archilogic.docnext.android.core.OnPageChangedListener _listener -> k
+    float _offset -> l
+    android.graphics.Bitmap[] _caches -> m
+    int _index -> n
+    java.util.concurrent.ExecutorService _loadingExecutor -> o
+    void cancelCleanUp() -> a
+    void doCleanUp() -> b
+    void draw(android.graphics.Canvas,android.graphics.Paint) -> a
+    void load(int) -> a
+    jp.archilogic.docnext.android.core.Size nullSafeCacheSize(int) -> b
+    void setConfig(jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    void setSources(java.util.List) -> a
+    void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    void translate(android.graphics.PointF) -> a
+    int access$0(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> a
+    android.graphics.Bitmap[] access$1(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> b
+    android.graphics.Paint access$2$62d57a77() -> c
+    java.util.List access$3(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> c
+    android.graphics.Bitmap access$4(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.graphics.Paint,jp.archilogic.docnext.android.core.text.CoreTextInfo) -> a
+    void access$5(jp.archilogic.docnext.android.core.text.CoreTextCallback,boolean) -> a
+    boolean access$6(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> d
+    boolean access$7(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> e
+    jp.archilogic.docnext.android.core.Size access$8(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> f
+    boolean access$9(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> g
+    void access$10$31f7af72(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> h
+    jp.archilogic.docnext.android.core.text.CoreTextConfig access$11(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> i
+    void access$12(jp.archilogic.docnext.android.core.text.CoreTextCallback,float) -> a
+    void access$13(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.graphics.Canvas,android.graphics.Paint) -> a
+    boolean access$14(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> j
+    void access$15$31f7af72(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> k
+    void access$16(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> l
+    void access$17(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.view.SurfaceHolder,android.graphics.Paint) -> a
+jp.archilogic.docnext.android.core.text.CoreTextCallback$1 -> jp.archilogic.docnext.android.core.text.d:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback this$0 -> a
+    int val$index -> b
+    void run() -> run
+jp.archilogic.docnext.android.core.text.CoreTextCallback$2 -> jp.archilogic.docnext.android.core.text.a:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback this$0 -> a
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> b
+    android.view.SurfaceHolder val$holder -> c
+    void run() -> run
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
+jp.archilogic.docnext.android.core.text.CoreTextConfig -> jp.archilogic.docnext.android.core.text.l:
+    jp.archilogic.docnext.android.core.text.TextDocDirection direction -> a
+    int fontSize -> b
+    float lineSpace -> c
+    float horizontalPadding -> d
+    float verticalPadding -> e
+    boolean useJustification -> f
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule lineBreakingRule -> g
+    float pageSpace -> h
+    int backgroundColor -> i
+    int defaultTextColor -> j
+    int rubyFontSizeFactor -> k
+    int getRubyFontSize() -> a
+jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule -> jp.archilogic.docnext.android.core.text.c:
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule NONE -> a
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule TO_NEXT -> b
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule SQUEEZE -> c
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] ENUM$VALUES -> d
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] values() -> values
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.core.text.CoreTextInfo -> jp.archilogic.docnext.android.core.text.f:
+    java.lang.String text -> a
+    java.util.List rubys -> b
+    java.util.List dots -> c
+    java.util.List tcys -> d
+    java.lang.String at(int) -> a
+jp.archilogic.docnext.android.core.text.CoreTextInfo$Dot -> jp.archilogic.docnext.android.core.text.b:
+    int location -> a
+    int length -> b
+jp.archilogic.docnext.android.core.text.CoreTextInfo$Ruby -> jp.archilogic.docnext.android.core.text.e:
+    java.lang.String text -> a
+    int location -> b
+    int length -> c
+jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY -> jp.archilogic.docnext.android.core.text.j:
+    int location -> a
+    int length -> b
+jp.archilogic.docnext.android.core.text.CoreTextView -> jp.archilogic.docnext.android.core.text.CoreTextView:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback _callback -> a
+    android.graphics.PointF[] _prevPoints -> b
+    void copyPoints(android.view.MotionEvent,android.graphics.PointF[]) -> a
+    void onFinishInflate() -> onFinishInflate
+    boolean onTouchEvent(android.view.MotionEvent) -> onTouchEvent
+    void setConfig(jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    void setSources(java.util.List) -> a
+jp.archilogic.docnext.android.core.text.TextCleanUpState -> jp.archilogic.docnext.android.core.text.h:
+    boolean needCleanUp -> a
+    float srcOffset -> b
+    float dstOffset -> c
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> d
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
+jp.archilogic.docnext.android.core.text.TextDocDirection -> jp.archilogic.docnext.android.core.text.k:
+    jp.archilogic.docnext.android.core.text.TextDocDirection HORIZONTAL -> a
+    jp.archilogic.docnext.android.core.text.TextDocDirection VERTICAL -> b
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> c
+    jp.archilogic.docnext.android.core.text.TextDocDirection[] ENUM$VALUES -> d
+    jp.archilogic.docnext.android.core.text.engine.CoreTextEngine getEngine() -> a
+    boolean shouldChangeToNext(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size) -> a
+    boolean shouldChangeToPrev(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size) -> b
+    jp.archilogic.docnext.android.core.Size toCacheSize(jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    android.graphics.RectF toDrawRect(android.graphics.Bitmap[],jp.archilogic.docnext.android.core.Size,int,int,float) -> a
+    int toXFactor() -> b
+    int toYFactor() -> c
+    float translate(float,android.graphics.PointF) -> a
+    float updateOffset(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.text.CoreTextConfig,boolean) -> a
+    jp.archilogic.docnext.android.core.text.TextDocDirection[] values() -> values
+    jp.archilogic.docnext.android.core.text.TextDocDirection valueOf(java.lang.String) -> valueOf
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> d
+jp.archilogic.docnext.android.core.text.TextLayoutInfo -> jp.archilogic.docnext.android.core.text.g:
+    float x -> a
+    float y -> b
+    float width -> c
+    float height -> d
+    int line -> e
+    float lineMetrics -> f
+jp.archilogic.docnext.android.core.text.engine.CoreTextEngine -> jp.archilogic.docnext.android.core.text.a.b:
+    void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+jp.archilogic.docnext.android.core.text.engine.HorizontalCoreTextEngine -> jp.archilogic.docnext.android.core.text.a.c:
+    void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+    float measure(android.graphics.Paint,java.lang.String) -> a
+jp.archilogic.docnext.android.core.text.engine.VerticalCoreTextEngine -> jp.archilogic.docnext.android.core.text.a.a:
+    void drawChar(android.graphics.Canvas,android.graphics.Paint,java.lang.String,float,float,float,boolean) -> a
+    void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY getTCY(jp.archilogic.docnext.android.core.text.CoreTextInfo,int) -> a
+    jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+    float measure(android.graphics.Paint,java.lang.String) -> a
+jp.archilogic.docnext.android.task.GetFontTask -> jp.archilogic.docnext.android.a.d:
+    jp.archilogic.docnext.android.task.Receiver _receiver -> a
+    java.lang.String _name -> b
+    void onNetworkError() -> a
+    java.lang.Object background() -> b
+    void post$5d527811() -> c
+jp.archilogic.docnext.android.task.GetImagePageTask -> jp.archilogic.docnext.android.a.b:
+    jp.archilogic.docnext.android.task.Receiver _receiver -> a
+    long _id -> b
+    int _page -> c
+    void onNetworkError() -> a
+    java.lang.Object background() -> b
+    void post$5d527811() -> c
+jp.archilogic.docnext.android.task.GetImagePageThumbnailTask -> jp.archilogic.docnext.android.a.e:
+    jp.archilogic.docnext.android.task.Receiver _receiver -> a
+    long _id -> b
+    int _page -> c
+    void onNetworkError() -> a
+    java.lang.Object background() -> b
+    void post$5d527811() -> c
+jp.archilogic.docnext.android.task.NetworkTask -> jp.archilogic.docnext.android.a.c:
+    int _networkUnavailableMessage -> a
+    int _networkErrorMessage -> b
+    android.content.Context _context -> c
+    boolean _networkUnavailable -> d
+    boolean _networkError -> e
+    java.lang.Object background() -> b
+    java.lang.Object doInBackground$532ebdd5() -> d
+    void onNetworkError() -> a
+    void onPostExecute(java.lang.Object) -> onPostExecute
+    void post$5d527811() -> c
+    java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+jp.archilogic.docnext.android.task.Receiver -> jp.archilogic.docnext.android.a.a:
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.util.NetUtil -> jp.archilogic.docnext.android.b.a:
+    org.apache.http.HttpResponse asResponse(org.apache.http.client.methods.HttpUriRequest) -> a
+    java.io.InputStream asStream(org.apache.http.HttpResponse) -> a
+    java.io.InputStream getFont(java.lang.String) -> a
+    java.io.InputStream getImagePage$3a716009(int) -> a
+    java.io.InputStream getImagePageThumbnail$3a716009(int) -> b
+jp.archilogic.docnext.android.util.StorageUtil -> jp.archilogic.docnext.android.b.b:
+    void ensureImageDir$1349ef() -> a
+    java.lang.String getFontPath(java.lang.String) -> a
+    java.lang.String getImageDir(long) -> a
+    java.lang.String getImagePath(long,int) -> a
+    java.lang.String getImageThumbnailPath(long,int) -> b
+org.apache.commons.io.IOUtils -> a.a.b.a.a:
+    char DIR_SEPARATOR -> a
+    java.lang.String LINE_SEPARATOR -> b
+    int copy(java.io.InputStream,java.io.OutputStream) -> a
+org.apache.commons.io.output.StringBuilderWriter -> a.a.b.a.a.a:
+    java.lang.StringBuilder builder -> a
+    java.io.Writer append(char) -> append
+    java.io.Writer append(java.lang.CharSequence) -> append
+    java.io.Writer append(java.lang.CharSequence,int,int) -> append
+    void close() -> close
+    void flush() -> flush
+    void write(java.lang.String) -> write
+    void write(char[],int,int) -> write
+    java.lang.String toString() -> toString
+    java.lang.Appendable append(char) -> append
+    java.lang.Appendable append(java.lang.CharSequence,int,int) -> append
+    java.lang.Appendable append(java.lang.CharSequence) -> append
+org.apache.http.client.entity.DecompressingEntity -> a.a.a.a.a.c:
+    void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.DeflateDecompressingEntity -> a.a.a.a.a.b:
+    java.io.InputStream getContent() -> getContent
+    org.apache.http.Header getContentEncoding() -> getContentEncoding
+    long getContentLength() -> getContentLength
+    void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.GzipDecompressingEntity -> a.a.a.a.a.a:
+    java.io.InputStream getContent() -> getContent
+    org.apache.http.Header getContentEncoding() -> getContentEncoding
+    long getContentLength() -> getContentLength
+    void writeTo(java.io.OutputStream) -> writeTo
