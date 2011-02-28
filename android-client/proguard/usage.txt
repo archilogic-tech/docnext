@@ -915,9 +915,6 @@ com.google.common.util.concurrent.UncheckedTimeoutException
 com.google.common.util.concurrent.UninterruptibleFuture
 com.google.common.util.concurrent.ValueFuture
 com.google.common.util.concurrent.package-info
-jp.archilogic.docnext.android.MainActivity:
-    private static final long DUMMY_ID
-    private static final int N_PAGE
 jp.archilogic.docnext.android.R
 jp.archilogic.docnext.android.R$attr
 jp.archilogic.docnext.android.R$drawable
@@ -934,10 +931,109 @@ jp.archilogic.docnext.android.core.image.ImageDocDirection:
     private static final int PAGE_CHANGE_THREASHOLD
 jp.archilogic.docnext.android.core.text.CoreTextCallback:
     private static final long DURATION_CLEAN_UP
-jp.archilogic.docnext.android.util.NetUtil:
-    private static final int TIMEOUT
+jp.archilogic.docnext.android.info.MetaInfo
+jp.archilogic.docnext.android.task.GetFontTask
+jp.archilogic.docnext.android.task.GetImagePageTask
+jp.archilogic.docnext.android.task.GetImagePageThumbnailTask
+jp.archilogic.docnext.android.task.GetInfoTask
+jp.archilogic.docnext.android.task.NetworkTask
+jp.archilogic.docnext.android.task.Receiver
+jp.archilogic.docnext.android.type.ViewerType
+jp.archilogic.docnext.android.util.NetUtil
 jp.archilogic.docnext.android.util.StorageUtil:
     private static final java.lang.String ROOT
+    9:14:private static void ensureDir(java.lang.String)
+    17:18:public static void ensureFontDir()
+    21:22:public static void ensureImageDir(long)
+    25:26:public static void ensureTextDir(long)
+    49:49:private static java.lang.String getTextDir(long)
+    53:53:public static java.lang.String getTextPath(long,int)
+net.arnx.jsonic.Base64:
+    static final java.lang.String BASE64_MAP
+net.arnx.jsonic.CharSequenceOutputSource
+net.arnx.jsonic.ClassUtil:
+    134:147:public static java.lang.String toUpperCamel(java.lang.String)
+    171:174:public static void clear()
+net.arnx.jsonic.JSON:
+    316:316:public static java.lang.String encode(java.lang.Object)
+    328:330:public static java.lang.String encode(java.lang.Object,boolean)
+    342:343:public static void encode(java.lang.Object,java.io.OutputStream)
+    355:358:public static void encode(java.lang.Object,java.io.OutputStream,boolean)
+    369:370:public static void encode(java.lang.Object,java.lang.Appendable)
+    382:385:public static void encode(java.lang.Object,java.lang.Appendable,boolean)
+    395:397:public static java.lang.String escapeJS(java.lang.Object)
+    409:409:public static java.lang.Object decode(java.lang.String)
+    421:421:public static java.lang.Object decode(java.lang.String,java.lang.Class)
+    434:434:public static java.lang.Object decode(java.lang.String,java.lang.reflect.Type)
+    447:447:public static java.lang.Object decode(java.io.InputStream)
+    474:474:public static java.lang.Object decode(java.io.InputStream,java.lang.reflect.Type)
+    487:487:public static java.lang.Object decode(java.io.Reader)
+    500:500:public static java.lang.Object decode(java.io.Reader,java.lang.Class)
+    514:514:public static java.lang.Object decode(java.io.Reader,java.lang.reflect.Type)
+    524:528:public static void validate(java.lang.CharSequence)
+    538:542:public static void validate(java.io.InputStream)
+    552:556:public static void validate(java.io.Reader)
+    568:570:public JSON(int)
+    572:574:public JSON(net.arnx.jsonic.JSON$Mode)
+    582:583:public void setContext(java.lang.Object)
+    591:595:public void setLocale(java.util.Locale)
+    603:604:public void setPrettyPrint(boolean)
+    613:617:public void setMaxDepth(int)
+    625:625:public int getMaxDepth()
+    635:636:public void setSuppressNull(boolean)
+    644:648:public void setMode(net.arnx.jsonic.JSON$Mode)
+    656:656:public net.arnx.jsonic.JSON$Mode getMode()
+    683:684:public java.io.OutputStream format(java.lang.Object,java.io.OutputStream)
+    861:867:public java.lang.Object parse(java.lang.CharSequence)
+    872:872:public java.lang.Object parse(java.lang.CharSequence,java.lang.Class)
+    877:884:public java.lang.Object parse(java.lang.CharSequence,java.lang.reflect.Type)
+    889:889:public java.lang.Object parse(java.io.InputStream)
+    905:905:public java.lang.Object parse(java.io.Reader)
+    910:910:public java.lang.Object parse(java.io.Reader,java.lang.Class)
+    915:916:public java.lang.Object parse(java.io.Reader,java.lang.reflect.Type)
+    1538:1538:public java.lang.Object convert(java.lang.Object,java.lang.reflect.Type)
+net.arnx.jsonic.JSON$Context:
+    1773:1773:public java.lang.Object getKey()
+    1782:1783:public java.lang.Object getKey(int)
+    1797:1800:public java.lang.Object convert(java.lang.Object,java.lang.Object,java.lang.Class)
+    1804:1808:public java.lang.Object convert(java.lang.Object,java.lang.Object,java.lang.reflect.Type)
+net.arnx.jsonic.JSONException:
+    private static final long serialVersionUID
+    public static final int FORMAT_ERROR
+    public static final int PREFORMAT_ERROR
+    public static final int PARSE_ERROR
+    public static final int POSTPARSE_ERROR
+    73:73:public int getErrorCode()
+    80:80:public long getLineNumber()
+    87:87:public long getColumnNumber()
+    94:94:public long getErrorOffset()
+net.arnx.jsonic.ReaderOutputSource:
+    82:87:public ReaderOutputSource(java.io.Reader)
+net.arnx.jsonic.StringBufferFormatSource
+net.arnx.jsonic.web.Container
+net.arnx.jsonic.web.Container$1
+net.arnx.jsonic.web.GatewayFilter
+net.arnx.jsonic.web.GatewayFilter$Config
+net.arnx.jsonic.web.GatewayFilter$GZIPResponse
+net.arnx.jsonic.web.GatewayFilter$GZIPResponse$1
+net.arnx.jsonic.web.RESTServlet
+net.arnx.jsonic.web.RESTServlet$Config
+net.arnx.jsonic.web.RESTServlet$Route
+net.arnx.jsonic.web.RESTServlet$RouteMapping
+net.arnx.jsonic.web.RPCServlet
+net.arnx.jsonic.web.RPCServlet$Config
+net.arnx.jsonic.web.RPCServlet$Route
+net.arnx.jsonic.web.RPCServlet$RouteMapping
+net.arnx.jsonic.web.WebServiceServlet
+net.arnx.jsonic.web.WebServiceServlet$ByteBuilder
+net.arnx.jsonic.web.WebServiceServlet$Config
+net.arnx.jsonic.web.WebServiceServlet$JSON
+net.arnx.jsonic.web.WebServiceServlet$Route
+net.arnx.jsonic.web.WebServiceServlet$RouteMapping
+net.arnx.jsonic.web.WebServiceServlet$RpcRequest
+net.arnx.jsonic.web.extension.GuiceContainer
+net.arnx.jsonic.web.extension.S2Container
+net.arnx.jsonic.web.extension.SpringContainer
 org.apache.commons.io.ByteOrderMark
 org.apache.commons.io.CopyUtils
 org.apache.commons.io.DirectoryWalker
@@ -956,73 +1052,7 @@ org.apache.commons.io.FilenameUtils
 org.apache.commons.io.HexDump
 org.apache.commons.io.IOCase
 org.apache.commons.io.IOExceptionWithCause
-org.apache.commons.io.IOUtils:
-    public static final char DIR_SEPARATOR_UNIX
-    public static final char DIR_SEPARATOR_WINDOWS
-    public static final java.lang.String LINE_SEPARATOR_UNIX
-    public static final java.lang.String LINE_SEPARATOR_WINDOWS
-    private static final int DEFAULT_BUFFER_SIZE
-    private static final int SKIP_BUFFER_SIZE
-    private static char[] SKIP_CHAR_BUFFER
-    private static byte[] SKIP_BYTE_BUFFER
-    170:171:public static void closeQuietly(java.io.Reader)
-    196:197:public static void closeQuietly(java.io.Writer)
-    223:224:public static void closeQuietly(java.io.InputStream)
-    251:252:public static void closeQuietly(java.io.OutputStream)
-    279:285:public static void closeQuietly(java.io.Closeable)
-    311:318:public static void closeQuietly(java.net.Socket)
-    342:342:public static java.io.InputStream toBufferedInputStream(java.io.InputStream)
-    359:361:public static byte[] toByteArray(java.io.InputStream)
-    377:379:public static byte[] toByteArray(java.io.Reader)
-    401:403:public static byte[] toByteArray(java.io.Reader,java.lang.String)
-    420:420:public static byte[] toByteArray(java.lang.String)
-    439:441:public static char[] toCharArray(java.io.InputStream)
-    463:465:public static char[] toCharArray(java.io.InputStream,java.lang.String)
-    481:483:public static char[] toCharArray(java.io.Reader)
-    501:503:public static java.lang.String toString(java.io.InputStream)
-    524:526:public static java.lang.String toString(java.io.InputStream,java.lang.String)
-    541:543:public static java.lang.String toString(java.io.Reader)
-    558:558:public static java.lang.String toString(byte[])
-    578:581:public static java.lang.String toString(byte[],java.lang.String)
-    601:602:public static java.util.List readLines(java.io.InputStream)
-    623:627:public static java.util.List readLines(java.io.InputStream,java.lang.String)
-    645:652:public static java.util.List readLines(java.io.Reader)
-    685:685:public static org.apache.commons.io.LineIterator lineIterator(java.io.Reader)
-    720:726:public static org.apache.commons.io.LineIterator lineIterator(java.io.InputStream,java.lang.String)
-    739:739:public static java.io.InputStream toInputStream(java.lang.CharSequence)
-    756:756:public static java.io.InputStream toInputStream(java.lang.CharSequence,java.lang.String)
-    769:770:public static java.io.InputStream toInputStream(java.lang.String)
-    787:788:public static java.io.InputStream toInputStream(java.lang.String,java.lang.String)
-    805:808:public static void write(byte[],java.io.OutputStream)
-    824:827:public static void write(byte[],java.io.Writer)
-    848:855:public static void write(byte[],java.io.Writer,java.lang.String)
-    871:874:public static void write(char[],java.io.Writer)
-    892:895:public static void write(char[],java.io.OutputStream)
-    917:924:public static void write(char[],java.io.OutputStream,java.lang.String)
-    938:941:public static void write(java.lang.CharSequence,java.io.Writer)
-    958:961:public static void write(java.lang.CharSequence,java.io.OutputStream)
-    981:984:public static void write(java.lang.CharSequence,java.io.OutputStream,java.lang.String)
-    998:1001:public static void write(java.lang.String,java.io.Writer)
-    1018:1021:public static void write(java.lang.String,java.io.OutputStream)
-    1041:1048:public static void write(java.lang.String,java.io.OutputStream,java.lang.String)
-    1065:1068:public static void write(java.lang.StringBuffer,java.io.Writer)
-    1087:1090:public static void write(java.lang.StringBuffer,java.io.OutputStream)
-    1112:1119:public static void write(java.lang.StringBuffer,java.io.OutputStream,java.lang.String)
-    1137:1149:public static void writeLines(java.util.Collection,java.lang.String,java.io.OutputStream)
-    1169:1185:public static void writeLines(java.util.Collection,java.lang.String,java.io.OutputStream,java.lang.String)
-    1200:1212:public static void writeLines(java.util.Collection,java.lang.String,java.io.Writer)
-    1286:1288:public static void copy(java.io.InputStream,java.io.Writer)
-    1311:1317:public static void copy(java.io.InputStream,java.io.Writer,java.lang.String)
-    1340:1344:public static int copy(java.io.Reader,java.io.Writer)
-    1361:1368:public static long copyLarge(java.io.Reader,java.io.Writer)
-    1392:1397:public static void copy(java.io.Reader,java.io.OutputStream)
-    1424:1433:public static void copy(java.io.Reader,java.io.OutputStream,java.lang.String)
-    1453:1470:public static boolean contentEquals(java.io.InputStream,java.io.InputStream)
-    1490:1507:public static boolean contentEquals(java.io.Reader,java.io.Reader)
-    1527:1548:public static long skip(java.io.InputStream,long)
-    1568:1589:public static long skip(java.io.Reader,long)
-    1608:1615:public static void skipFully(java.io.InputStream,long)
-    1633:1637:public static void skipFully(java.io.Reader,long)
+org.apache.commons.io.IOUtils
 org.apache.commons.io.LineIterator
 org.apache.commons.io.TaggedIOException
 org.apache.commons.io.ThreadMonitor
@@ -1102,13 +1132,12 @@ org.apache.commons.io.output.NullOutputStream
 org.apache.commons.io.output.NullWriter
 org.apache.commons.io.output.ProxyOutputStream
 org.apache.commons.io.output.ProxyWriter
-org.apache.commons.io.output.StringBuilderWriter:
-    59:61:public StringBuilderWriter(java.lang.StringBuilder)
-    148:148:public java.lang.StringBuilder getBuilder()
+org.apache.commons.io.output.StringBuilderWriter
 org.apache.commons.io.output.TaggedOutputStream
 org.apache.commons.io.output.TeeOutputStream
 org.apache.commons.io.output.ThresholdingOutputStream
 org.apache.commons.io.output.WriterOutputStream
 org.apache.commons.io.output.XmlStreamWriter
-org.apache.http.client.entity.DecompressingEntity:
-    private static final int BUFFER_SIZE
+org.apache.http.client.entity.DecompressingEntity
+org.apache.http.client.entity.DeflateDecompressingEntity
+org.apache.http.client.entity.GzipDecompressingEntity
