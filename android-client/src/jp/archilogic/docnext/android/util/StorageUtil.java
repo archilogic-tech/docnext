@@ -1,6 +1,12 @@
 package jp.archilogic.docnext.android.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import jp.archilogic.docnext.android.info.MetaInfo;
+import net.arnx.jsonic.JSON;
 
 public class StorageUtil {
     private static final String ROOT = "/sdcard/docnext/";
@@ -19,6 +25,10 @@ public class StorageUtil {
 
     public static void ensureImageDir( final long id ) {
         ensureDir( getImageDir( id ) );
+    }
+
+    public static void ensureMetaInfoDir() {
+        ensureDir( getMetaInfoDir() );
     }
 
     public static void ensureTextDir( final long id ) {
@@ -43,6 +53,33 @@ public class StorageUtil {
 
     public static String getImageThumbnailPath( final long id , final int page ) {
         return getImageDir( id ) + String.format( "%03d-thumb.jpg" , page );
+    }
+
+    public static MetaInfo getMetaInfo( final long id ) {
+        InputStream in = null;
+        try {
+            in = new FileInputStream( getMetaInfoPath( id ) );
+
+            return JSON.decode( in , MetaInfo.class );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        } finally {
+            if ( in != null ) {
+                try {
+                    in.close();
+                } catch ( final IOException e ) {
+                    throw new RuntimeException( e );
+                }
+            }
+        }
+    }
+
+    private static String getMetaInfoDir() {
+        return ROOT + "meta/";
+    }
+
+    public static String getMetaInfoPath( final long id ) {
+        return getMetaInfoDir() + id + ".json";
     }
 
     private static String getTextDir( final long id ) {

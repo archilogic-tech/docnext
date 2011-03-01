@@ -7,6 +7,10 @@ public class CoreTextInfo {
         public int location;
         public int length;
 
+        // for JSONIC
+        public Dot() {
+        }
+
         public Dot( final int location , final int length ) {
             this.location = location;
             this.length = length;
@@ -17,6 +21,10 @@ public class CoreTextInfo {
         public String text;
         public int location;
         public int length;
+
+        // for JSONIC
+        public Ruby() {
+        }
 
         public Ruby( final String text , final int location , final int length ) {
             this.text = text;
@@ -29,6 +37,10 @@ public class CoreTextInfo {
         public int location;
         public int length;
 
+        // for JSONIC
+        public TCY() {
+        }
+
         public TCY( final int location , final int length ) {
             this.location = location;
             this.length = length;
@@ -39,6 +51,10 @@ public class CoreTextInfo {
     public List< Ruby > rubys;
     public List< Dot > dots;
     public List< TCY > tcys;
+
+    // for JSONIC
+    public CoreTextInfo() {
+    }
 
     public String at( final int index ) {
         return text.substring( index , index + 1 );

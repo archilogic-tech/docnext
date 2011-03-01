@@ -53,6 +53,12 @@ public class NetUtil {
         return entity.getContent();
     }
 
+    public static InputStream get( final String url ) throws IOException {
+        final HttpGet get = new HttpGet( url );
+
+        return asStream( asResponse( get ) );
+    }
+
     public static InputStream getFont( final String name ) throws IOException {
         final HttpGet get = new HttpGet( String.format( "%sfont/%s" , name ) );
 
