@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 
         StorageUtil.ensureFontDir();
 
-        final ProgressDialog progress = ProgressDialog.show( this , "" , "Loading..." );
+        final ProgressDialog progress = ProgressDialog.show( this , "" , "Loading font..." );
 
         new DownloadTask( this , new Receiver< Void , Void >() {
             @Override
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
         StorageUtil.ensureImageDir( id );
 
         final ProgressDialog progress = new ProgressDialog( this );
-        progress.setMessage( "Loading..." );
+        progress.setMessage( "Loading image..." );
         progress.setCancelable( false );
         progress.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
         progress.setMax( meta.pages );
@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
         StorageUtil.ensureImageDir( id );
 
         final ProgressDialog progress = new ProgressDialog( this );
-        progress.setMessage( "Loading..." );
+        progress.setMessage( "Loading thumbnail..." );
         progress.setCancelable( false );
         progress.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
         progress.setMax( meta.pages );
@@ -158,7 +158,7 @@ public class MainActivity extends Activity {
 
         StorageUtil.ensureMetaInfoDir();
 
-        final ProgressDialog progress = ProgressDialog.show( this , "" , "Loading..." );
+        final ProgressDialog progress = ProgressDialog.show( this , "" , "Loading meta..." );
 
         new DownloadTask( this , new Receiver< Void , Void >() {
             @Override
@@ -186,7 +186,7 @@ public class MainActivity extends Activity {
         StorageUtil.ensureTextDir( id );
 
         final ProgressDialog progress = new ProgressDialog( this );
-        progress.setMessage( "Loading..." );
+        progress.setMessage( "Loading text..." );
         progress.setCancelable( false );
         progress.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
         progress.setMax( meta.pages );
