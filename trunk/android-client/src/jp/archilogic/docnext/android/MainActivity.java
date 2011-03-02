@@ -210,7 +210,7 @@ public class MainActivity extends Activity {
                 public void receive( final Void result ) {
                     fetchTextHelper( id , meta , page + 1 , progress );
                 }
-            } , ConstManager.getInstance( MainActivity.this ).getEndpoint() + "text/" + id + "/" + page ,
+            } , ConstManager.getInstance( MainActivity.this ).getEndpoint() + "text/" + id + "/" + page + ".json" ,
                     StorageUtil.getTextPath( id , page ) ).execute();
         } else {
             progress.dismiss();

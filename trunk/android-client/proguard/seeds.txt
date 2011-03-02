@@ -54,6 +54,8 @@ jp.archilogic.docnext.android.core.text.TextDocDirection: jp.archilogic.docnext.
 jp.archilogic.docnext.android.core.text.TextDocDirection: jp.archilogic.docnext.android.core.text.TextDocDirection valueOf(java.lang.String)
 com.google.common.collect.CustomConcurrentHashMap$NullEvictable: com.google.common.collect.CustomConcurrentHashMap$NullEvictable[] values()
 com.google.common.collect.CustomConcurrentHashMap$NullEvictable: com.google.common.collect.CustomConcurrentHashMap$NullEvictable valueOf(java.lang.String)
+jp.archilogic.docnext.android.type.ExtraType: jp.archilogic.docnext.android.type.ExtraType[] values()
+jp.archilogic.docnext.android.type.ExtraType: jp.archilogic.docnext.android.type.ExtraType valueOf(java.lang.String)
 com.google.common.collect.AbstractIterator$State: com.google.common.collect.AbstractIterator$State[] values()
 com.google.common.collect.AbstractIterator$State: com.google.common.collect.AbstractIterator$State valueOf(java.lang.String)
 com.google.common.base.Equivalences$Impl: com.google.common.base.Equivalences$Impl[] values()
@@ -120,6 +122,18 @@ com.google.common.primitives.SignedBytes$LexicographicalComparator: com.google.c
 com.google.common.primitives.SignedBytes$LexicographicalComparator: com.google.common.primitives.SignedBytes$LexicographicalComparator valueOf(java.lang.String)
 jp.archilogic.docnext.android.core.image.CoreImageView
 jp.archilogic.docnext.android.core.text.CoreTextView
+jp.archilogic.docnext.android.info.MetaInfo
+jp.archilogic.docnext.android.info.MetaInfo: jp.archilogic.docnext.android.type.ViewerType type
+jp.archilogic.docnext.android.info.MetaInfo: int pages
+jp.archilogic.docnext.android.info.MetaInfo: MetaInfo()
+jp.archilogic.docnext.android.core.text.CoreTextInfo
+jp.archilogic.docnext.android.core.text.CoreTextInfo: java.lang.String text
+jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List rubys
+jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List dots
+jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List tcys
+jp.archilogic.docnext.android.core.text.CoreTextInfo: CoreTextInfo()
+jp.archilogic.docnext.android.core.text.CoreTextInfo: java.lang.String at(int)
+jp.archilogic.docnext.android.core.text.CoreTextInfo: int length()
 jp.archilogic.docnext.android.MainActivity
 jp.archilogic.docnext.android.TextViewerActivity
 jp.archilogic.docnext.android.ImageViewerActivity
