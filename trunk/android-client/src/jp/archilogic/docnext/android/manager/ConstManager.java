@@ -3,14 +3,11 @@ package jp.archilogic.docnext.android.manager;
 import java.io.IOException;
 import java.io.InputStream;
 
+import jp.archilogic.docnext.android.info.ServerInfo;
 import net.arnx.jsonic.JSON;
 import android.content.Context;
 
 public class ConstManager {
-    private static class ServerInfo {
-        public String endpoint;
-    }
-
     private static ConstManager _instance = null;
 
     public static ConstManager getInstance( final Context context ) {

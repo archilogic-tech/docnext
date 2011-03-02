@@ -122,18 +122,37 @@ com.google.common.primitives.SignedBytes$LexicographicalComparator: com.google.c
 com.google.common.primitives.SignedBytes$LexicographicalComparator: com.google.common.primitives.SignedBytes$LexicographicalComparator valueOf(java.lang.String)
 jp.archilogic.docnext.android.core.image.CoreImageView
 jp.archilogic.docnext.android.core.text.CoreTextView
+jp.archilogic.docnext.android.info.TextInfo
+jp.archilogic.docnext.android.info.TextInfo: java.lang.String text
+jp.archilogic.docnext.android.info.TextInfo: java.util.List rubys
+jp.archilogic.docnext.android.info.TextInfo: java.util.List dots
+jp.archilogic.docnext.android.info.TextInfo: java.util.List tcys
+jp.archilogic.docnext.android.info.TextInfo: TextInfo()
+jp.archilogic.docnext.android.info.TextInfo: java.lang.String at(int)
+jp.archilogic.docnext.android.info.TextInfo: int length()
+jp.archilogic.docnext.android.info.TextInfo$TCY
+jp.archilogic.docnext.android.info.TextInfo$TCY: int location
+jp.archilogic.docnext.android.info.TextInfo$TCY: int length
+jp.archilogic.docnext.android.info.TextInfo$TCY: TextInfo$TCY()
+jp.archilogic.docnext.android.info.TextInfo$TCY: TextInfo$TCY(int,int)
+jp.archilogic.docnext.android.info.TextInfo$Ruby
+jp.archilogic.docnext.android.info.TextInfo$Ruby: java.lang.String text
+jp.archilogic.docnext.android.info.TextInfo$Ruby: int location
+jp.archilogic.docnext.android.info.TextInfo$Ruby: int length
+jp.archilogic.docnext.android.info.TextInfo$Ruby: TextInfo$Ruby()
+jp.archilogic.docnext.android.info.TextInfo$Ruby: TextInfo$Ruby(java.lang.String,int,int)
+jp.archilogic.docnext.android.info.ServerInfo
+jp.archilogic.docnext.android.info.ServerInfo: java.lang.String endpoint
+jp.archilogic.docnext.android.info.ServerInfo: ServerInfo()
+jp.archilogic.docnext.android.info.TextInfo$Dot
+jp.archilogic.docnext.android.info.TextInfo$Dot: int location
+jp.archilogic.docnext.android.info.TextInfo$Dot: int length
+jp.archilogic.docnext.android.info.TextInfo$Dot: TextInfo$Dot()
+jp.archilogic.docnext.android.info.TextInfo$Dot: TextInfo$Dot(int,int)
 jp.archilogic.docnext.android.info.MetaInfo
 jp.archilogic.docnext.android.info.MetaInfo: jp.archilogic.docnext.android.type.ViewerType type
 jp.archilogic.docnext.android.info.MetaInfo: int pages
 jp.archilogic.docnext.android.info.MetaInfo: MetaInfo()
-jp.archilogic.docnext.android.core.text.CoreTextInfo
-jp.archilogic.docnext.android.core.text.CoreTextInfo: java.lang.String text
-jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List rubys
-jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List dots
-jp.archilogic.docnext.android.core.text.CoreTextInfo: java.util.List tcys
-jp.archilogic.docnext.android.core.text.CoreTextInfo: CoreTextInfo()
-jp.archilogic.docnext.android.core.text.CoreTextInfo: java.lang.String at(int)
-jp.archilogic.docnext.android.core.text.CoreTextInfo: int length()
 jp.archilogic.docnext.android.MainActivity
 jp.archilogic.docnext.android.TextViewerActivity
 jp.archilogic.docnext.android.ImageViewerActivity

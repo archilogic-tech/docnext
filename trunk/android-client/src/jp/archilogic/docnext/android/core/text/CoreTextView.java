@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.core.OnPageChangedListener;
+import jp.archilogic.docnext.android.info.TextInfo;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -82,7 +83,7 @@ public class CoreTextView extends SurfaceView {
         _callback.setListener( l );
     }
 
-    public void setSources( final List< CoreTextInfo > source ) {
+    public void setSources( final List< TextInfo > source ) {
         _callback.setSources( source );
     }
 }

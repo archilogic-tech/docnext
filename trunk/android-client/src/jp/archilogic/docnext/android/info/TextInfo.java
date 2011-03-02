@@ -1,8 +1,8 @@
-package jp.archilogic.docnext.android.core.text;
+package jp.archilogic.docnext.android.info;
 
 import java.util.List;
 
-public class CoreTextInfo {
+public class TextInfo {
     public static class Dot {
         public int location;
         public int length;
@@ -53,7 +53,7 @@ public class CoreTextInfo {
     public List< TCY > tcys;
 
     // for JSONIC
-    public CoreTextInfo() {
+    public TextInfo() {
     }
 
     public String at( final int index ) {
