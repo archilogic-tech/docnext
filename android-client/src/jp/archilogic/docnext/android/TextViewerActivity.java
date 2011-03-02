@@ -8,9 +8,9 @@ import java.util.List;
 import jp.archilogic.docnext.android.core.OnPageChangedListener;
 import jp.archilogic.docnext.android.core.text.CoreTextConfig;
 import jp.archilogic.docnext.android.core.text.CoreTextConfig.LineBreakingRule;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo;
 import jp.archilogic.docnext.android.core.text.CoreTextView;
 import jp.archilogic.docnext.android.core.text.TextDocDirection;
+import jp.archilogic.docnext.android.info.TextInfo;
 import jp.archilogic.docnext.android.info.MetaInfo;
 import jp.archilogic.docnext.android.type.ExtraType;
 import jp.archilogic.docnext.android.util.StorageUtil;
@@ -98,12 +98,12 @@ public class TextViewerActivity extends Activity {
 
         final MetaInfo meta = StorageUtil.getMetaInfo( id );
 
-        final List< CoreTextInfo > source = Lists.newArrayList();
+        final List< TextInfo > source = Lists.newArrayList();
         for ( int page = 0 ; page < meta.pages ; page++ ) {
             try {
                 final InputStream in = new FileInputStream( StorageUtil.getTextPath( id , page ) );
 
-                source.add( JSON.decode( in , CoreTextInfo.class ) );
+                source.add( JSON.decode( in , TextInfo.class ) );
 
                 in.close();
             } catch ( final IOException e ) {

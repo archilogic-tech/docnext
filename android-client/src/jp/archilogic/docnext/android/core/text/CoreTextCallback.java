@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import jp.archilogic.docnext.android.core.OnPageChangedListener;
 import jp.archilogic.docnext.android.core.Size;
 import jp.archilogic.docnext.android.core.text.engine.CoreTextEngine;
+import jp.archilogic.docnext.android.info.TextInfo;
 import jp.archilogic.docnext.android.util.StorageUtil;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -33,7 +34,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     private boolean _willCancelCleanUp = false;
 
     private final Bitmap _background;
-    private List< CoreTextInfo > _sources;
+    private List< TextInfo > _sources;
     private CoreTextConfig _config;
     private OnPageChangedListener _listener = null;
 
@@ -48,7 +49,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         _background = background;
     }
 
-    private Bitmap buildCache( final Paint p , final CoreTextInfo source ) {
+    private Bitmap buildCache( final Paint p , final TextInfo source ) {
         final CoreTextEngine engine = _config.direction.getEngine();
 
         final TextLayoutInfo[] layouts = engine.layoutText( p , source , _config , _surfaceSize );
@@ -235,7 +236,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         _listener = l;
     }
 
-    public void setSources( final List< CoreTextInfo > sources ) {
+    public void setSources( final List< TextInfo > sources ) {
         _sources = sources;
 
         if ( _surfaceSize == null ) {

@@ -893,10 +893,6 @@ jp.archilogic.docnext.android.core.image.ImageDocDirection:
     private static final int PAGE_CHANGE_THREASHOLD
 jp.archilogic.docnext.android.core.text.CoreTextCallback:
     private static final long DURATION_CLEAN_UP
-jp.archilogic.docnext.android.core.text.CoreTextInfo$Dot:
-    14:17:public CoreTextInfo$Dot(int,int)
-jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY:
-    44:47:public CoreTextInfo$TCY(int,int)
 jp.archilogic.docnext.android.util.NetUtil:
     private static final int TIMEOUT
     63:65:public static java.io.InputStream getFont(java.lang.String)

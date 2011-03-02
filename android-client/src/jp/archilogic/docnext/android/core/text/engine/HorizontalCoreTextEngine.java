@@ -5,10 +5,10 @@ import java.util.List;
 import jp.archilogic.docnext.android.core.Size;
 import jp.archilogic.docnext.android.core.text.CoreTextConfig;
 import jp.archilogic.docnext.android.core.text.CoreTextConfig.LineBreakingRule;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo.Dot;
-import jp.archilogic.docnext.android.core.text.CoreTextInfo.Ruby;
 import jp.archilogic.docnext.android.core.text.TextLayoutInfo;
+import jp.archilogic.docnext.android.info.TextInfo;
+import jp.archilogic.docnext.android.info.TextInfo.Dot;
+import jp.archilogic.docnext.android.info.TextInfo.Ruby;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 
 public class HorizontalCoreTextEngine implements CoreTextEngine {
     @Override
-    public void drawDots( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final CoreTextInfo source ,
+    public void drawDots( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final TextInfo source ,
             final CoreTextConfig _config ) {
         p.setTextSize( _config.getRubyFontSize() );
         p.setColor( _config.defaultTextColor );
@@ -56,7 +56,7 @@ public class HorizontalCoreTextEngine implements CoreTextEngine {
     }
 
     @Override
-    public void drawRubys( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final CoreTextInfo source ,
+    public void drawRubys( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final TextInfo source ,
             final CoreTextConfig _config ) {
         p.setTextSize( _config.getRubyFontSize() );
         p.setColor( _config.defaultTextColor );
@@ -90,7 +90,7 @@ public class HorizontalCoreTextEngine implements CoreTextEngine {
     }
 
     @Override
-    public void drawText( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final CoreTextInfo source ,
+    public void drawText( final Canvas c , final Paint p , final TextLayoutInfo[] layouts , final TextInfo source ,
             final CoreTextConfig _config ) {
         c.drawColor( _config.backgroundColor );
 
@@ -111,7 +111,7 @@ public class HorizontalCoreTextEngine implements CoreTextEngine {
     }
 
     @Override
-    public TextLayoutInfo[] layoutText( final Paint p , final CoreTextInfo source , final CoreTextConfig config ,
+    public TextLayoutInfo[] layoutText( final Paint p , final TextInfo source , final CoreTextConfig config ,
             final Size surface ) {
         final TextLayoutInfo[] ret = new TextLayoutInfo[ source.length() ];
 
