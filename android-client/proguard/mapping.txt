@@ -4,87 +4,93 @@ jp.archilogic.docnext.android.ImageViewerActivity -> jp.archilogic.docnext.andro
     android.widget.TextView _totalPageTextView -> c
     jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> d
     void onCreate(android.os.Bundle) -> onCreate
+    boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
+    boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
     android.widget.TextView access$0(jp.archilogic.docnext.android.ImageViewerActivity) -> a
-    jp.archilogic.docnext.android.core.image.CoreImageView access$1(jp.archilogic.docnext.android.ImageViewerActivity) -> b
-jp.archilogic.docnext.android.ImageViewerActivity$1 -> jp.archilogic.docnext.android.s:
+jp.archilogic.docnext.android.ImageViewerActivity$1 -> jp.archilogic.docnext.android.j:
     jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
     void onPageChanged(int) -> a
-jp.archilogic.docnext.android.ImageViewerActivity$1$1 -> jp.archilogic.docnext.android.k:
+jp.archilogic.docnext.android.ImageViewerActivity$1$1 -> jp.archilogic.docnext.android.b:
     jp.archilogic.docnext.android.ImageViewerActivity$1 this$1 -> a
     int val$index -> b
     void run() -> run
-jp.archilogic.docnext.android.ImageViewerActivity$2 -> jp.archilogic.docnext.android.r:
-    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.ImageViewerActivity$3 -> jp.archilogic.docnext.android.v:
-    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.ImageViewerActivity$4 -> jp.archilogic.docnext.android.u:
-    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.ImageViewerActivity$5 -> jp.archilogic.docnext.android.t:
-    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
 jp.archilogic.docnext.android.MainActivity -> jp.archilogic.docnext.android.MainActivity:
     android.webkit.WebView _webView -> a
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$type$ViewerType -> b
+    void checkMetaInfo(long) -> a
+    void fetchFont(java.lang.String,long) -> a
+    void fetchImageHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> a
+    void fetchImageThumbnail(long,jp.archilogic.docnext.android.info.MetaInfo) -> a
+    void fetchImageThumbnailHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> b
+    void fetchTextHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> c
     void onCreate(android.os.Bundle) -> onCreate
-jp.archilogic.docnext.android.MainActivity$1 -> jp.archilogic.docnext.android.p:
+    void showImage(long) -> b
+    void showText(long) -> c
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$type$ViewerType() -> a
+    void access$1(jp.archilogic.docnext.android.MainActivity,long) -> a
+    void access$2(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> a
+    void access$3(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> b
+    void access$4(jp.archilogic.docnext.android.MainActivity,long) -> b
+    void access$5(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> c
+    void access$6(jp.archilogic.docnext.android.MainActivity,long) -> c
+jp.archilogic.docnext.android.MainActivity$1 -> jp.archilogic.docnext.android.e:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$2 -> jp.archilogic.docnext.android.f:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$3 -> jp.archilogic.docnext.android.c:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$4 -> jp.archilogic.docnext.android.d:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$5 -> jp.archilogic.docnext.android.g:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$6 -> jp.archilogic.docnext.android.h:
     jp.archilogic.docnext.android.MainActivity this$0 -> a
     boolean shouldOverrideUrlLoading(android.webkit.WebView,java.lang.String) -> shouldOverrideUrlLoading
 jp.archilogic.docnext.android.TextViewerActivity -> jp.archilogic.docnext.android.TextViewerActivity:
-    android.widget.TextView _debug -> a
-    jp.archilogic.docnext.android.core.text.CoreTextView _coreTextView -> b
-    android.widget.TextView _currentPageTextView -> c
-    android.widget.TextView _totalPageTextView -> d
-    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> e
-    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> f
-    void bindDebug() -> a
+    jp.archilogic.docnext.android.core.text.CoreTextView _coreTextView -> a
+    android.widget.TextView _currentPageTextView -> b
+    android.widget.TextView _totalPageTextView -> c
+    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> d
+    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> e
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule -> f
     void onCreate(android.os.Bundle) -> onCreate
+    boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
+    boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
     android.widget.TextView access$0(jp.archilogic.docnext.android.TextViewerActivity) -> a
-    jp.archilogic.docnext.android.core.text.CoreTextConfig access$1(jp.archilogic.docnext.android.TextViewerActivity) -> b
-    jp.archilogic.docnext.android.core.text.CoreTextView access$2(jp.archilogic.docnext.android.TextViewerActivity) -> c
-    void access$3(jp.archilogic.docnext.android.TextViewerActivity) -> d
-jp.archilogic.docnext.android.TextViewerActivity$1 -> jp.archilogic.docnext.android.j:
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule() -> a
+jp.archilogic.docnext.android.TextViewerActivity$1 -> jp.archilogic.docnext.android.a:
     jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
     void onPageChanged(int) -> a
-jp.archilogic.docnext.android.TextViewerActivity$1$1 -> jp.archilogic.docnext.android.q:
+jp.archilogic.docnext.android.TextViewerActivity$1$1 -> jp.archilogic.docnext.android.i:
     jp.archilogic.docnext.android.TextViewerActivity$1 this$1 -> a
     int val$index -> b
     void run() -> run
-jp.archilogic.docnext.android.TextViewerActivity$10 -> jp.archilogic.docnext.android.b:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule -> b
-    void onClick(android.view.View) -> onClick
-    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule() -> a
-jp.archilogic.docnext.android.TextViewerActivity$11 -> jp.archilogic.docnext.android.a:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.TextViewerActivity$12 -> jp.archilogic.docnext.android.g:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.TextViewerActivity$13 -> jp.archilogic.docnext.android.f:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.TextViewerActivity$14 -> jp.archilogic.docnext.android.h:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
-jp.archilogic.docnext.android.TextViewerActivity$2 -> jp.archilogic.docnext.android.i:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$3 -> jp.archilogic.docnext.android.o:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$4 -> jp.archilogic.docnext.android.n:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$5 -> jp.archilogic.docnext.android.m:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$6 -> jp.archilogic.docnext.android.l:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$7 -> jp.archilogic.docnext.android.c:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$8 -> jp.archilogic.docnext.android.d:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> e
-jp.archilogic.docnext.android.TextViewerActivity$9 -> jp.archilogic.docnext.android.e:
-    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
-    void onClick(android.view.View) -> onClick
 jp.archilogic.docnext.android.core.OnPageChangedListener -> jp.archilogic.docnext.android.core.b:
     void onPageChanged(int) -> a
 jp.archilogic.docnext.android.core.Size -> jp.archilogic.docnext.android.core.a:
@@ -201,7 +207,7 @@ jp.archilogic.docnext.android.core.image.ImageDocDirection -> jp.archilogic.docn
     jp.archilogic.docnext.android.core.image.ImageDocDirection[] values() -> values
     jp.archilogic.docnext.android.core.image.ImageDocDirection valueOf(java.lang.String) -> valueOf
     int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$image$ImageDocDirection() -> e
-jp.archilogic.docnext.android.core.text.CoreTextCallback -> jp.archilogic.docnext.android.core.text.i:
+jp.archilogic.docnext.android.core.text.CoreTextCallback -> jp.archilogic.docnext.android.core.text.h:
     jp.archilogic.docnext.android.core.Size _surfaceSize -> a
     java.lang.Thread _worker -> b
     boolean _shouldStop -> c
@@ -257,7 +263,7 @@ jp.archilogic.docnext.android.core.text.CoreTextCallback$2 -> jp.archilogic.docn
     android.view.SurfaceHolder val$holder -> c
     void run() -> run
     int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
-jp.archilogic.docnext.android.core.text.CoreTextConfig -> jp.archilogic.docnext.android.core.text.l:
+jp.archilogic.docnext.android.core.text.CoreTextConfig -> jp.archilogic.docnext.android.core.text.k:
     jp.archilogic.docnext.android.core.text.TextDocDirection direction -> a
     int fontSize -> b
     float lineSpace -> c
@@ -277,12 +283,13 @@ jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule -> jp.ar
     jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] ENUM$VALUES -> d
     jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] values() -> values
     jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule valueOf(java.lang.String) -> valueOf
-jp.archilogic.docnext.android.core.text.CoreTextInfo -> jp.archilogic.docnext.android.core.text.g:
-    java.lang.String text -> a
-    java.util.List rubys -> b
-    java.util.List dots -> c
-    java.util.List tcys -> d
-    java.lang.String at(int) -> a
+jp.archilogic.docnext.android.core.text.CoreTextInfo -> jp.archilogic.docnext.android.core.text.CoreTextInfo:
+    java.lang.String text -> text
+    java.util.List rubys -> rubys
+    java.util.List dots -> dots
+    java.util.List tcys -> tcys
+    java.lang.String at(int) -> at
+    int length() -> length
 jp.archilogic.docnext.android.core.text.CoreTextInfo$Dot -> jp.archilogic.docnext.android.core.text.b:
     int location -> a
     int length -> b
@@ -290,7 +297,7 @@ jp.archilogic.docnext.android.core.text.CoreTextInfo$Ruby -> jp.archilogic.docne
     java.lang.String text -> a
     int location -> b
     int length -> c
-jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY -> jp.archilogic.docnext.android.core.text.j:
+jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY -> jp.archilogic.docnext.android.core.text.i:
     int location -> a
     int length -> b
 jp.archilogic.docnext.android.core.text.CoreTextView -> jp.archilogic.docnext.android.core.text.CoreTextView:
@@ -302,13 +309,13 @@ jp.archilogic.docnext.android.core.text.CoreTextView -> jp.archilogic.docnext.an
     void setConfig(jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
     void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
     void setSources(java.util.List) -> a
-jp.archilogic.docnext.android.core.text.TextCleanUpState -> jp.archilogic.docnext.android.core.text.h:
+jp.archilogic.docnext.android.core.text.TextCleanUpState -> jp.archilogic.docnext.android.core.text.g:
     boolean needCleanUp -> a
     float srcOffset -> b
     float dstOffset -> c
     int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> d
     int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
-jp.archilogic.docnext.android.core.text.TextDocDirection -> jp.archilogic.docnext.android.core.text.k:
+jp.archilogic.docnext.android.core.text.TextDocDirection -> jp.archilogic.docnext.android.core.text.j:
     jp.archilogic.docnext.android.core.text.TextDocDirection HORIZONTAL -> a
     jp.archilogic.docnext.android.core.text.TextDocDirection VERTICAL -> b
     int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> c
@@ -351,17 +358,63 @@ jp.archilogic.docnext.android.core.text.engine.VerticalCoreTextEngine -> jp.arch
     jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY getTCY(jp.archilogic.docnext.android.core.text.CoreTextInfo,int) -> a
     jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.core.text.CoreTextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
     float measure(android.graphics.Paint,java.lang.String) -> a
-jp.archilogic.docnext.android.manager.ConstManager -> jp.archilogic.docnext.android.b.b:
+jp.archilogic.docnext.android.info.MetaInfo -> jp.archilogic.docnext.android.info.MetaInfo:
+    jp.archilogic.docnext.android.type.ViewerType type -> type
+    int pages -> pages
+jp.archilogic.docnext.android.manager.ConstManager -> jp.archilogic.docnext.android.d.b:
     jp.archilogic.docnext.android.manager.ConstManager _instance -> a
     jp.archilogic.docnext.android.manager.ConstManager$ServerInfo _info -> b
     jp.archilogic.docnext.android.manager.ConstManager getInstance(android.content.Context) -> a
     java.lang.String getEndpoint() -> a
-jp.archilogic.docnext.android.manager.ConstManager$ServerInfo -> jp.archilogic.docnext.android.b.a:
+jp.archilogic.docnext.android.manager.ConstManager$ServerInfo -> jp.archilogic.docnext.android.d.a:
     java.lang.String endpoint -> a
-jp.archilogic.docnext.android.util.StorageUtil -> jp.archilogic.docnext.android.a.a:
-    java.lang.String getImageDir$2f33e691() -> a
-    java.lang.String getImagePath$7382bd4(int) -> a
-    java.lang.String getImageThumbnailPath$7382bd4(int) -> b
+jp.archilogic.docnext.android.task.DownloadTask -> jp.archilogic.docnext.android.a.b:
+    jp.archilogic.docnext.android.task.Receiver _receiver -> a
+    java.lang.String _remotePath -> b
+    java.lang.String _localPath -> c
+    void onNetworkError() -> a
+    java.lang.Object background() -> b
+    void post$5d527811() -> c
+jp.archilogic.docnext.android.task.NetworkTask -> jp.archilogic.docnext.android.a.c:
+    int _networkUnavailableMessage -> a
+    int _networkErrorMessage -> b
+    android.content.Context _context -> c
+    boolean _networkUnavailable -> d
+    boolean _networkError -> e
+    java.lang.Object background() -> b
+    java.lang.Object doInBackground$532ebdd5() -> d
+    void onNetworkError() -> a
+    void onPostExecute(java.lang.Object) -> onPostExecute
+    void post$5d527811() -> c
+    java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+jp.archilogic.docnext.android.task.Receiver -> jp.archilogic.docnext.android.a.a:
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.type.ExtraType -> jp.archilogic.docnext.android.b.a:
+    jp.archilogic.docnext.android.type.ExtraType ID -> a
+    jp.archilogic.docnext.android.type.ExtraType[] ENUM$VALUES -> b
+    jp.archilogic.docnext.android.type.ExtraType[] values() -> values
+    jp.archilogic.docnext.android.type.ExtraType valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.type.ViewerType -> jp.archilogic.docnext.android.b.b:
+    jp.archilogic.docnext.android.type.ViewerType IMAGE -> a
+    jp.archilogic.docnext.android.type.ViewerType TEXT -> b
+    jp.archilogic.docnext.android.type.ViewerType[] ENUM$VALUES -> c
+    jp.archilogic.docnext.android.type.ViewerType[] values() -> values
+    jp.archilogic.docnext.android.type.ViewerType valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.util.StorageUtil -> jp.archilogic.docnext.android.c.a:
+    void ensureDir(java.lang.String) -> b
+    void ensureFontDir() -> a
+    void ensureImageDir(long) -> a
+    void ensureMetaInfoDir() -> b
+    void ensureTextDir(long) -> b
+    java.lang.String getFontPath(java.lang.String) -> a
+    java.lang.String getImageDir(long) -> e
+    java.lang.String getImagePath(long,int) -> a
+    java.lang.String getImageThumbnailPath(long,int) -> b
+    jp.archilogic.docnext.android.info.MetaInfo getMetaInfo(long) -> c
+    java.lang.String getMetaInfoPath(long) -> d
+    java.lang.String getTextDir(long) -> f
+    java.lang.String getTextPath(long,int) -> c
 net.arnx.jsonic.AppendableConverter -> a.a.a.p:
     net.arnx.jsonic.AppendableConverter INSTANCE -> a
     java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
@@ -389,7 +442,7 @@ net.arnx.jsonic.ByteArrayFormatter -> a.a.a.y:
 net.arnx.jsonic.ByteConverter -> a.a.a.g:
     net.arnx.jsonic.ByteConverter INSTANCE -> a
     java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
-net.arnx.jsonic.ByteFormatter -> a.a.a.ai:
+net.arnx.jsonic.ByteFormatter -> a.a.a.ah:
     net.arnx.jsonic.ByteFormatter INSTANCE -> a
     boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
 net.arnx.jsonic.CalendarConverter -> a.a.a.v:
@@ -398,7 +451,7 @@ net.arnx.jsonic.CalendarConverter -> a.a.a.v:
 net.arnx.jsonic.CharArrayFormatter -> a.a.a.bc:
     net.arnx.jsonic.CharArrayFormatter INSTANCE -> a
     boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
-net.arnx.jsonic.CharSequenceConverter -> a.a.a.al:
+net.arnx.jsonic.CharSequenceConverter -> a.a.a.ak:
     net.arnx.jsonic.CharSequenceConverter INSTANCE -> a
     java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
 net.arnx.jsonic.CharacterConverter -> a.a.a.bg:
@@ -569,7 +622,7 @@ net.arnx.jsonic.JSON$Context -> a.a.a.bi:
     java.util.Map getSetProperties(java.lang.Class) -> c
     java.text.Format format(java.lang.Class) -> d
     java.lang.String toString() -> toString
-net.arnx.jsonic.JSON$Mode -> a.a.a.ah:
+net.arnx.jsonic.JSON$Mode -> a.a.a.ai:
     net.arnx.jsonic.JSON$Mode TRADITIONAL -> a
     net.arnx.jsonic.JSON$Mode STRICT -> b
     net.arnx.jsonic.JSON$Mode SCRIPT -> c
@@ -635,7 +688,7 @@ net.arnx.jsonic.NullFormatter -> a.a.a.aw:
 net.arnx.jsonic.NumberFormatter -> a.a.a.o:
     net.arnx.jsonic.NumberFormatter INSTANCE -> a
     boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
-net.arnx.jsonic.ObjectArrayFormatter -> a.a.a.ak:
+net.arnx.jsonic.ObjectArrayFormatter -> a.a.a.al:
     net.arnx.jsonic.ObjectArrayFormatter INSTANCE -> a
     boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
 net.arnx.jsonic.ObjectConverter -> a.a.a.w:
@@ -731,3 +784,32 @@ net.arnx.jsonic.WriterInputSource -> a.a.a.au:
     void append(java.lang.String,int,int) -> a
     void append(char) -> a
     void flush() -> a
+org.apache.commons.io.IOUtils -> b.a.b.a.a:
+    char DIR_SEPARATOR -> a
+    java.lang.String LINE_SEPARATOR -> b
+    int copy(java.io.InputStream,java.io.OutputStream) -> a
+org.apache.commons.io.output.StringBuilderWriter -> b.a.b.a.a.a:
+    java.lang.StringBuilder builder -> a
+    java.io.Writer append(char) -> append
+    java.io.Writer append(java.lang.CharSequence) -> append
+    java.io.Writer append(java.lang.CharSequence,int,int) -> append
+    void close() -> close
+    void flush() -> flush
+    void write(java.lang.String) -> write
+    void write(char[],int,int) -> write
+    java.lang.String toString() -> toString
+    java.lang.Appendable append(char) -> append
+    java.lang.Appendable append(java.lang.CharSequence,int,int) -> append
+    java.lang.Appendable append(java.lang.CharSequence) -> append
+org.apache.http.client.entity.DecompressingEntity -> b.a.a.a.a.b:
+    void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.DeflateDecompressingEntity -> b.a.a.a.a.c:
+    java.io.InputStream getContent() -> getContent
+    org.apache.http.Header getContentEncoding() -> getContentEncoding
+    long getContentLength() -> getContentLength
+    void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.GzipDecompressingEntity -> b.a.a.a.a.a:
+    java.io.InputStream getContent() -> getContent
+    org.apache.http.Header getContentEncoding() -> getContentEncoding
+    long getContentLength() -> getContentLength
+    void writeTo(java.io.OutputStream) -> writeTo

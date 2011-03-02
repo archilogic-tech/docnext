@@ -61,23 +61,7 @@ com.google.common.base.Objects$1
 com.google.common.base.Objects$ToStringHelper
 com.google.common.base.Platform
 com.google.common.base.Platform$1
-com.google.common.base.Preconditions:
-    87:90:public static void checkArgument(boolean,java.lang.Object)
-    114:118:public static void checkArgument(boolean,java.lang.String,java.lang.Object[])
-    128:131:public static void checkState(boolean)
-    144:147:public static void checkState(boolean,java.lang.Object)
-    171:175:public static void checkState(boolean,java.lang.String,java.lang.Object[])
-    203:206:public static java.lang.Object checkNotNull(java.lang.Object,java.lang.Object)
-    229:234:public static java.lang.Object checkNotNull(java.lang.Object,java.lang.String,java.lang.Object[])
-    280:280:public static int checkElementIndex(int,int)
-    300:303:public static int checkElementIndex(int,int,java.lang.String)
-    307:312:private static java.lang.String badElementIndex(int,int,java.lang.String)
-    330:330:public static int checkPositionIndex(int,int)
-    350:353:public static int checkPositionIndex(int,int,java.lang.String)
-    357:362:private static java.lang.String badPositionIndex(int,int,java.lang.String)
-    383:386:public static void checkPositionIndexes(int,int,int)
-    389:396:private static java.lang.String badPositionIndexes(int,int,int)
-    414:443:static java.lang.String format(java.lang.String,java.lang.Object[])
+com.google.common.base.Preconditions
 com.google.common.base.Predicate
 com.google.common.base.Predicates
 com.google.common.base.Predicates$1
@@ -456,6 +440,8 @@ com.google.common.collect.LinkedListMultimap$NodeIterator
 com.google.common.collect.LinkedListMultimap$ValueForKeyIterator
 com.google.common.collect.ListMultimap
 com.google.common.collect.Lists:
+    90:95:public static java.util.ArrayList newArrayList(java.lang.Object[])
+    99:102:static int computeArrayListCapacity(int)
     117:119:public static java.util.ArrayList newArrayList(java.lang.Iterable)
     136:141:public static java.util.ArrayList newArrayList(java.util.Iterator)
     167:168:public static java.util.ArrayList newArrayListWithCapacity(int)
@@ -819,31 +805,7 @@ com.google.common.primitives.Doubles$LexicographicalComparator
 com.google.common.primitives.Floats
 com.google.common.primitives.Floats$FloatArrayAsList
 com.google.common.primitives.Floats$LexicographicalComparator
-com.google.common.primitives.Ints:
-    public static final int BYTES
-    61:61:public static int hashCode(int)
-    73:75:public static int checkedCast(long)
-    106:106:public static int compare(int,int)
-    119:124:public static boolean contains(int[],int)
-    137:137:public static int indexOf(int[],int)
-    143:148:private static int indexOf(int[],int,int,int)
-    163:178:public static int indexOf(int[],int[])
-    191:191:public static int lastIndexOf(int[],int)
-    197:202:private static int lastIndexOf(int[],int,int,int)
-    214:221:public static int min(int[])
-    233:240:public static int max(int[])
-    253:263:public static int[] concat(int[][])
-    279:279:public static byte[] toByteArray(int)
-    300:302:public static int fromByteArray(byte[])
-    314:314:public static int fromBytes(byte,byte,byte,byte)
-    335:337:public static int[] ensureCapacity(int[],int,int)
-    344:346:private static int[] copyOf(int[],int)
-    359:370:public static java.lang.String join(java.lang.String,int[])
-    389:389:public static java.util.Comparator lexicographicalComparator()
-    422:432:public static int[] toArray(java.util.Collection)
-    450:453:public static java.util.List asList(int[])
-    44:44:static int access$000(int[],int,int,int)
-    44:44:static int access$100(int[],int,int,int)
+com.google.common.primitives.Ints
 com.google.common.primitives.Ints$IntArrayAsList
 com.google.common.primitives.Ints$LexicographicalComparator
 com.google.common.primitives.Longs
@@ -931,23 +893,17 @@ jp.archilogic.docnext.android.core.image.ImageDocDirection:
     private static final int PAGE_CHANGE_THREASHOLD
 jp.archilogic.docnext.android.core.text.CoreTextCallback:
     private static final long DURATION_CLEAN_UP
-jp.archilogic.docnext.android.info.MetaInfo
-jp.archilogic.docnext.android.task.GetFontTask
-jp.archilogic.docnext.android.task.GetImagePageTask
-jp.archilogic.docnext.android.task.GetImagePageThumbnailTask
-jp.archilogic.docnext.android.task.GetInfoTask
-jp.archilogic.docnext.android.task.NetworkTask
-jp.archilogic.docnext.android.task.Receiver
-jp.archilogic.docnext.android.type.ViewerType
-jp.archilogic.docnext.android.util.NetUtil
+jp.archilogic.docnext.android.core.text.CoreTextInfo$Dot:
+    14:17:public CoreTextInfo$Dot(int,int)
+jp.archilogic.docnext.android.core.text.CoreTextInfo$TCY:
+    44:47:public CoreTextInfo$TCY(int,int)
+jp.archilogic.docnext.android.util.NetUtil:
+    private static final int TIMEOUT
+    63:65:public static java.io.InputStream getFont(java.lang.String)
+    69:71:public static java.io.InputStream getImagePage(long,int)
+    75:77:public static java.io.InputStream getImagePageThumbnail(long,int)
 jp.archilogic.docnext.android.util.StorageUtil:
     private static final java.lang.String ROOT
-    9:14:private static void ensureDir(java.lang.String)
-    17:18:public static void ensureFontDir()
-    21:22:public static void ensureImageDir(long)
-    25:26:public static void ensureTextDir(long)
-    49:49:private static java.lang.String getTextDir(long)
-    53:53:public static java.lang.String getTextPath(long,int)
 net.arnx.jsonic.Base64:
     static final java.lang.String BASE64_MAP
 net.arnx.jsonic.CharSequenceOutputSource
@@ -1052,7 +1008,73 @@ org.apache.commons.io.FilenameUtils
 org.apache.commons.io.HexDump
 org.apache.commons.io.IOCase
 org.apache.commons.io.IOExceptionWithCause
-org.apache.commons.io.IOUtils
+org.apache.commons.io.IOUtils:
+    public static final char DIR_SEPARATOR_UNIX
+    public static final char DIR_SEPARATOR_WINDOWS
+    public static final java.lang.String LINE_SEPARATOR_UNIX
+    public static final java.lang.String LINE_SEPARATOR_WINDOWS
+    private static final int DEFAULT_BUFFER_SIZE
+    private static final int SKIP_BUFFER_SIZE
+    private static char[] SKIP_CHAR_BUFFER
+    private static byte[] SKIP_BYTE_BUFFER
+    170:171:public static void closeQuietly(java.io.Reader)
+    196:197:public static void closeQuietly(java.io.Writer)
+    223:224:public static void closeQuietly(java.io.InputStream)
+    251:252:public static void closeQuietly(java.io.OutputStream)
+    279:285:public static void closeQuietly(java.io.Closeable)
+    311:318:public static void closeQuietly(java.net.Socket)
+    342:342:public static java.io.InputStream toBufferedInputStream(java.io.InputStream)
+    359:361:public static byte[] toByteArray(java.io.InputStream)
+    377:379:public static byte[] toByteArray(java.io.Reader)
+    401:403:public static byte[] toByteArray(java.io.Reader,java.lang.String)
+    420:420:public static byte[] toByteArray(java.lang.String)
+    439:441:public static char[] toCharArray(java.io.InputStream)
+    463:465:public static char[] toCharArray(java.io.InputStream,java.lang.String)
+    481:483:public static char[] toCharArray(java.io.Reader)
+    501:503:public static java.lang.String toString(java.io.InputStream)
+    524:526:public static java.lang.String toString(java.io.InputStream,java.lang.String)
+    541:543:public static java.lang.String toString(java.io.Reader)
+    558:558:public static java.lang.String toString(byte[])
+    578:581:public static java.lang.String toString(byte[],java.lang.String)
+    601:602:public static java.util.List readLines(java.io.InputStream)
+    623:627:public static java.util.List readLines(java.io.InputStream,java.lang.String)
+    645:652:public static java.util.List readLines(java.io.Reader)
+    685:685:public static org.apache.commons.io.LineIterator lineIterator(java.io.Reader)
+    720:726:public static org.apache.commons.io.LineIterator lineIterator(java.io.InputStream,java.lang.String)
+    739:739:public static java.io.InputStream toInputStream(java.lang.CharSequence)
+    756:756:public static java.io.InputStream toInputStream(java.lang.CharSequence,java.lang.String)
+    769:770:public static java.io.InputStream toInputStream(java.lang.String)
+    787:788:public static java.io.InputStream toInputStream(java.lang.String,java.lang.String)
+    805:808:public static void write(byte[],java.io.OutputStream)
+    824:827:public static void write(byte[],java.io.Writer)
+    848:855:public static void write(byte[],java.io.Writer,java.lang.String)
+    871:874:public static void write(char[],java.io.Writer)
+    892:895:public static void write(char[],java.io.OutputStream)
+    917:924:public static void write(char[],java.io.OutputStream,java.lang.String)
+    938:941:public static void write(java.lang.CharSequence,java.io.Writer)
+    958:961:public static void write(java.lang.CharSequence,java.io.OutputStream)
+    981:984:public static void write(java.lang.CharSequence,java.io.OutputStream,java.lang.String)
+    998:1001:public static void write(java.lang.String,java.io.Writer)
+    1018:1021:public static void write(java.lang.String,java.io.OutputStream)
+    1041:1048:public static void write(java.lang.String,java.io.OutputStream,java.lang.String)
+    1065:1068:public static void write(java.lang.StringBuffer,java.io.Writer)
+    1087:1090:public static void write(java.lang.StringBuffer,java.io.OutputStream)
+    1112:1119:public static void write(java.lang.StringBuffer,java.io.OutputStream,java.lang.String)
+    1137:1149:public static void writeLines(java.util.Collection,java.lang.String,java.io.OutputStream)
+    1169:1185:public static void writeLines(java.util.Collection,java.lang.String,java.io.OutputStream,java.lang.String)
+    1200:1212:public static void writeLines(java.util.Collection,java.lang.String,java.io.Writer)
+    1286:1288:public static void copy(java.io.InputStream,java.io.Writer)
+    1311:1317:public static void copy(java.io.InputStream,java.io.Writer,java.lang.String)
+    1340:1344:public static int copy(java.io.Reader,java.io.Writer)
+    1361:1368:public static long copyLarge(java.io.Reader,java.io.Writer)
+    1392:1397:public static void copy(java.io.Reader,java.io.OutputStream)
+    1424:1433:public static void copy(java.io.Reader,java.io.OutputStream,java.lang.String)
+    1453:1470:public static boolean contentEquals(java.io.InputStream,java.io.InputStream)
+    1490:1507:public static boolean contentEquals(java.io.Reader,java.io.Reader)
+    1527:1548:public static long skip(java.io.InputStream,long)
+    1568:1589:public static long skip(java.io.Reader,long)
+    1608:1615:public static void skipFully(java.io.InputStream,long)
+    1633:1637:public static void skipFully(java.io.Reader,long)
 org.apache.commons.io.LineIterator
 org.apache.commons.io.TaggedIOException
 org.apache.commons.io.ThreadMonitor
@@ -1132,12 +1154,13 @@ org.apache.commons.io.output.NullOutputStream
 org.apache.commons.io.output.NullWriter
 org.apache.commons.io.output.ProxyOutputStream
 org.apache.commons.io.output.ProxyWriter
-org.apache.commons.io.output.StringBuilderWriter
+org.apache.commons.io.output.StringBuilderWriter:
+    59:61:public StringBuilderWriter(java.lang.StringBuilder)
+    148:148:public java.lang.StringBuilder getBuilder()
 org.apache.commons.io.output.TaggedOutputStream
 org.apache.commons.io.output.TeeOutputStream
 org.apache.commons.io.output.ThresholdingOutputStream
 org.apache.commons.io.output.WriterOutputStream
 org.apache.commons.io.output.XmlStreamWriter
-org.apache.http.client.entity.DecompressingEntity
-org.apache.http.client.entity.DeflateDecompressingEntity
-org.apache.http.client.entity.GzipDecompressingEntity
+org.apache.http.client.entity.DecompressingEntity:
+    private static final int BUFFER_SIZE
