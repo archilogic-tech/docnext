@@ -1,7 +1,9 @@
 package jp.archilogic.docnext.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dao.DocumentDao;
@@ -11,6 +13,7 @@ import jp.archilogic.docnext.logic.ProgressManager.Step;
 import jp.archilogic.docnext.logic.UploadProcessor;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,7 +61,7 @@ public class AdminController {
 
         String path = "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
         String uploadPath = getTempPath() + File.separator + doc.id + File.separator + path;
-        FileUtils.writeByteArrayToFile( new File( uploadPath ) , file.getBytes() );
+        copyFile( file.getInputStream(), uploadPath);
 
         uploadProcessor.proc( uploadPath , doc );
 
@@ -67,20 +70,17 @@ public class AdminController {
         return String.valueOf( doc.id );
     }
 
-
-    public long uploadFile(String name , String filename, byte[] file ) throws IOException {
-        Document document = new Document();
-        document.name = name;
-        document.fileName = filename;
-        document.processing = true;
-        documentDao.create( document );
-
-        String path = "uploaded" + document.id + "." + FilenameUtils.getExtension( filename );
-        String uploadPath = getTempPath() + File.separator + document.id + File.separator + path;
-        FileUtils.writeByteArrayToFile( new File( uploadPath ) , file);
-
-        uploadProcessor.proc( uploadPath , document );
-        return document.id;
+    private void copyFile(InputStream source, String destination) throws IOException {
+        try {
+            FileOutputStream output = FileUtils.openOutputStream( new File( destination ) );
+            try {
+                IOUtils.copy( source, output );
+            } finally {
+                IOUtils.closeQuietly( output );
+            }
+        } finally {
+            IOUtils.closeQuietly( source );
+        }
     }
 
 }
