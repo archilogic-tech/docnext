@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import jp.archilogic.docnext.dto.Region;
+import jp.archilogic.docnext.exception.EncryptedPDFException;
+import jp.archilogic.docnext.exception.MalformedPDFException;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -35,7 +37,7 @@ public class PDFAnnotationParser {
         public String action = "GoToPage";
         public int page;
 
-        GoToPageAction( int page ) {
+        GoToPageAction( final int page ) {
             this.page = page;
         }
     }
@@ -44,7 +46,7 @@ public class PDFAnnotationParser {
         public Region region;
         public Action action;
 
-        public PageAnnotationInfo( Region region , Action action ) {
+        public PageAnnotationInfo( final Region region , final Action action ) {
             this.region = region;
             this.action = action;
         }
@@ -54,70 +56,67 @@ public class PDFAnnotationParser {
         public String action = "URI";
         public String uri;
 
-        URIAction( String uri ) {
+        URIAction( final String uri ) {
             this.uri = uri;
         }
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger( PDFAnnotationParser.class );
 
-    public boolean canParse( String src ) {
+    public void checkCanParse( final String src ) throws MalformedPDFException , EncryptedPDFException {
         try {
-            PDDocument document = PDDocument.load( src );
+            final PDDocument document = PDDocument.load( src );
 
             if ( document.isEncrypted() ) {
                 document.openProtection( new StandardDecryptionMaterial( null ) );
             }
-
-            return true;
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
+            throw new MalformedPDFException();
+        } catch ( final BadSecurityHandlerException e ) {
             throw new RuntimeException( e );
-        } catch ( BadSecurityHandlerException e ) {
-            throw new RuntimeException( e );
-        } catch ( CryptographyException e ) {
-            // the document has a password, which length > 0
-            return false;
+        } catch ( final CryptographyException e ) {
+            throw new EncryptedPDFException();
         }
     }
 
-    public void clean( String src , String dst ) {
+    public void clean( final String src , final String dst ) {
         try {
-            PDDocument document = PDDocument.load( src );
+            final PDDocument document = PDDocument.load( src );
 
             if ( document.isEncrypted() ) {
                 document.openProtection( new StandardDecryptionMaterial( null ) );
                 document.setAllSecurityToBeRemoved( true );
             }
 
-            List< ? > allPages = document.getDocumentCatalog().getAllPages();
+            final List< ? > allPages = document.getDocumentCatalog().getAllPages();
             for ( int i = 0 ; i < allPages.size() ; i++ ) {
-                PDPage page = ( PDPage ) allPages.get( i );
+                final PDPage page = ( PDPage ) allPages.get( i );
 
                 page.setAnnotations( Lists.newArrayList() );
             }
 
             document.save( dst );
             document.close();
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
-        } catch ( COSVisitorException e ) {
+        } catch ( final COSVisitorException e ) {
             throw new RuntimeException( e );
-        } catch ( BadSecurityHandlerException e ) {
+        } catch ( final BadSecurityHandlerException e ) {
             throw new RuntimeException( e );
-        } catch ( CryptographyException e ) {
+        } catch ( final CryptographyException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    private Region convertToRegion( PDAnnotation anno , PDPage page ) {
-        PDRectangle rect = anno.getRectangle();
-        PDRectangle crop = page.findCropBox();
-        PDRectangle media = page.findMediaBox();
+    private Region convertToRegion( final PDAnnotation anno , final PDPage page ) {
+        final PDRectangle rect = anno.getRectangle();
+        final PDRectangle crop = page.findCropBox();
+        final PDRectangle media = page.findMediaBox();
 
-        PDRectangle container = crop.getWidth() < media.getWidth() ? crop : media;
+        final PDRectangle container = crop.getWidth() < media.getWidth() ? crop : media;
 
-        float w = container.getWidth();
-        float h = container.getHeight();
+        final float w = container.getWidth();
+        final float h = container.getHeight();
 
         return new Region( ( rect.getLowerLeftX() - container.getLowerLeftX() ) / w ,
                 ( h - ( rect.getUpperRightY() - container.getLowerLeftY() ) ) / h , rect.getWidth() / w ,
@@ -125,15 +124,15 @@ public class PDFAnnotationParser {
     }
 
     @SuppressWarnings( "unchecked" )
-    private List< PageAnnotationInfo > getAnnotations( PDPage page ) throws IOException {
-        List< PageAnnotationInfo > ret = Lists.newArrayList();
+    private List< PageAnnotationInfo > getAnnotations( final PDPage page ) throws IOException {
+        final List< PageAnnotationInfo > ret = Lists.newArrayList();
 
-        for ( PDAnnotation anno : ( List< PDAnnotation > ) page.getAnnotations() ) {
+        for ( final PDAnnotation anno : ( List< PDAnnotation > ) page.getAnnotations() ) {
             if ( anno instanceof PDAnnotationLink ) {
-                PDAction action = ( ( PDAnnotationLink ) anno ).getAction();
+                final PDAction action = ( ( PDAnnotationLink ) anno ).getAction();
 
                 if ( action instanceof PDActionGoTo ) {
-                    PDDestination dest = ( ( PDActionGoTo ) action ).getDestination();
+                    final PDDestination dest = ( ( PDActionGoTo ) action ).getDestination();
 
                     if ( dest instanceof PDNamedDestination ) {
                         LOGGER.info( "PDNamedDestination is not supported" );
@@ -157,20 +156,20 @@ public class PDFAnnotationParser {
         return ret;
     }
 
-    private String nsGetClassName( Object object ) {
+    private String nsGetClassName( final Object object ) {
         return object != null ? object.getClass().toString() : "(null)";
     }
 
-    public List< List< PageAnnotationInfo >> parse( String src ) {
+    public List< List< PageAnnotationInfo >> parse( final String src ) {
         try {
-            PDDocument document = PDDocument.load( src );
+            final PDDocument document = PDDocument.load( src );
             if ( document.isEncrypted() ) {
                 document.openProtection( new StandardDecryptionMaterial( null ) );
             }
 
-            List< List< PageAnnotationInfo >> ret = Lists.newArrayList();
+            final List< List< PageAnnotationInfo >> ret = Lists.newArrayList();
 
-            List< ? > allPages = document.getDocumentCatalog().getAllPages();
+            final List< ? > allPages = document.getDocumentCatalog().getAllPages();
             for ( int i = 0 ; i < allPages.size() ; i++ ) {
                 ret.add( getAnnotations( ( PDPage ) allPages.get( i ) ) );
             }
@@ -178,11 +177,11 @@ public class PDFAnnotationParser {
             document.close();
 
             return ret;
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
-        } catch ( BadSecurityHandlerException e ) {
+        } catch ( final BadSecurityHandlerException e ) {
             throw new RuntimeException( e );
-        } catch ( CryptographyException e ) {
+        } catch ( final CryptographyException e ) {
             throw new RuntimeException( e );
         }
     }

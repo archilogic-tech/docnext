@@ -9,6 +9,7 @@ import jp.archilogic.docnext.converter.ListConverter;
 import jp.archilogic.docnext.dao.DocumentDao;
 import jp.archilogic.docnext.dto.DocumentResDto;
 import jp.archilogic.docnext.dto.TOCElem;
+import jp.archilogic.docnext.dto.DividePage;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
@@ -64,6 +65,14 @@ public class DocumentService {
             throw new RuntimeException( e );
         }
     }
+    public byte[] getThumb( long id, int page)
+    {
+    	try {
+    		return IOUtils.toByteArray( new FileInputStream( repositoryManager.getImagePath( "thumb" , id , page ) ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
 
     public String getPublisher( long id ) {
         return packManager.readPublisher( id );
@@ -85,8 +94,20 @@ public class DocumentService {
         return packManager.readTitle( id );
     }
 
+    public String getBinding( long id ) {
+        return packManager.readBinding( id );
+    }
+
+    public String getFlow( long id ) {
+        return packManager.readFlow( id );
+    }
+
     public List< TOCElem > getTOC( long id ) {
         return packManager.readTOC( id );
+    }
+
+    public List< DividePage > getDividePage( long id ) {
+        return packManager.readDividePage( id );
     }
 
     public void repack( long id ) {
@@ -109,7 +130,19 @@ public class DocumentService {
         packManager.writeTitle( id , title );
     }
 
+    public void setBinding( long id , String binding) {
+        packManager.writeBinding( id , binding);
+    }
+
+    public void setFlow( long id , String flow) {
+        packManager.writeFlow( id , flow);
+    }
+
     public void setTOC( long id , List< TOCElem > toc ) {
         packManager.writeTOC( id , toc );
+    }
+    
+    public void setDividePage( long id , List< DividePage > dividePage) {
+        packManager.writeDividePage( id , dividePage );
     }
 }
