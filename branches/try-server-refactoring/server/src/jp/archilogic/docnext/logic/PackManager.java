@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dto.Region;
 import jp.archilogic.docnext.dto.TOCElem;
+import jp.archilogic.docnext.dto.DividePage;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import net.arnx.jsonic.JSON;
 
@@ -34,6 +35,8 @@ public class PackManager {
         public String title;
         public String publisher;
         public double ratio;
+		public String binding;
+		public String flow;
     }
 
     @SuppressWarnings( "unused" )
@@ -140,6 +143,14 @@ public class PackManager {
         return readInfo( documentId ).publisher;
     }
 
+    public String readBinding( long documentId ) {
+        return readInfo( documentId ).binding;
+    }
+
+    public String readFlow( long documentId ) {
+        return readInfo( documentId ).flow;
+    }
+    
     public byte[] readRegions( long docId , int page ) {
         try {
             return FileUtils.readFileToByteArray( new File( String.format( "%s/pack/%d/texts/%d.regions" ,
@@ -154,6 +165,16 @@ public class PackManager {
         try {
             return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
                     "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ) , Integer[].class ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public List< DividePage > readDividePage( long documentId ) {
+        try {
+            return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
+                    "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ) , DividePage[].class ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
@@ -246,6 +267,18 @@ public class PackManager {
         writeInfo( documentId , info );
     }
 
+    public void writeBinding( long documentId , String binding) {
+        Info info = readInfo( documentId );
+        info.binding = binding;
+        writeInfo( documentId , info );
+    }
+
+    public void writeFlow( long documentId , String flow) {
+        Info info = readInfo( documentId );
+        info.flow = flow;
+        writeInfo( documentId , info );
+    }
+
     public void writeRegions( long documentId , int page , List< Region > regions ) {
         final int SIZEOF_DOUBLE = 8;
         final int N_REGION_FIELDS = 4;
@@ -272,6 +305,16 @@ public class PackManager {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ,
                     JSON.encode( singlePageInfo ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void writeDividePage( long documentId , List< DividePage > dividePage) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( dividePage) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }

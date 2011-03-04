@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <!-- zentable -->
+    <link rel="stylesheet" type="text/css" href="/css/zentable.css">
+    <link rel="stylesheet" href="/css/main.css" type="text/css" media="screen" />    
+    <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.mousewheel.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.timers-1.1.2.js"></script>
+    <script type="text/javascript" src="/js/jquery.zentable.js"></script>
+    
+    <script type='text/javascript' src='/dwr/interface/DocumentService.js'></script>
+    <script type='text/javascript' src='/dwr/engine.js'></script>
+    <script type='text/javascript' src='/dwr/util.js'></script>
+    <script type='text/javascript' src='/js/header.js'></script>
+    <script type='text/javascript' src='/js/cookie.js'></script>
+    <script type="text/javascript" src='/js/edit_single_page_info.js'></script>
+  </head>
+  <body>
+  
+  <div id="site_contain">
+  <div id="edit_header"></div>
+  <div id="content">
+  <p>
+    <input type='button' value='Load'>
+    <input type='button' value='Save'>
+    <input type='button' value='Add' onclick='addRow();'>
+    <input type='text' value='0' id='remove_target'>
+    <input type="button" value="Remove" onclick='removeRow();'>
+  </p>
+  
+  <table id="zentable" class="table" style='width:300px;'>
+  </table>
+  </div>
+  </div>
+  </body>
+</html>
