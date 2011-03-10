@@ -10,6 +10,7 @@ import jp.archilogic.docnext.dao.DocumentDao;
 import jp.archilogic.docnext.dto.DocumentResDto;
 import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.dto.DividePage;
+import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
