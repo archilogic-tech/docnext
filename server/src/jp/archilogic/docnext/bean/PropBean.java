@@ -25,4 +25,13 @@ public class PropBean {
 
     @Value( "${path.tmp}" )
     public String tmp;
+
+    @Value( "${image.ios}" )
+    public boolean forIOS;
+
+    @Value( "${image.web}" )
+    public boolean forWeb;
+
+    @Value( "${image.texture}" )
+    public boolean forTexture;
 }
