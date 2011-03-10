@@ -14,6 +14,7 @@ import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
 import jp.archilogic.docnext.logic.ProgressManager.ErrorType;
 import jp.archilogic.docnext.logic.ProgressManager.Step;
+import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import jp.archilogic.docnext.util.FileUtil;
 
 import org.apache.commons.io.FileUtils;
@@ -82,23 +83,21 @@ public class UploadProcessor {
 
                 parseAnnotation( tempPdfPath );
 
-                final String cleanedPath =
-                        FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + "cleaned" + doc.id
-                                + ".pdf";
+                final String cleanedPath = FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
+                        "cleaned" + doc.id + ".pdf";
                 pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
                 progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
                 progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
 
-                final double ratio =
-                        thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , cleanedPath , ppmPath
-                                + doc.id , doc.id );
+                final CreateResult res = thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , //
+                        cleanedPath , ppmPath + doc.id , doc.id );
 
                 packManager.copyThumbnails( doc.id );
                 packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
                 packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
                 packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
-                packManager.writeRatio( doc.id , ratio );
+                packManager.writeImageCreateResult( doc.id , res );
 
                 parseText( cleanedPath );
 
