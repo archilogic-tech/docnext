@@ -17,6 +17,7 @@ import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dto.DividePage;
 import jp.archilogic.docnext.dto.Region;
 import jp.archilogic.docnext.dto.TOCElem;
+import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import net.arnx.jsonic.JSON;
@@ -152,6 +153,20 @@ public class PackManager {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" , prop.repository ,
                     docId ) ) );
         } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public List < Frame > readFrames( long documentId ) {
+    	return Arrays.asList(JSON.decode( readFrameJson( documentId ), Frame[].class ));
+    }
+    
+    public String readFrameJson( long docId ) {
+        try {
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/frames.json" , prop.repository ,
+                    docId ) ) );
+        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -321,6 +336,16 @@ public class PackManager {
                     new File( String.format( "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ,
                     JSON.encode( singlePageInfo ) );
         } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void writeFrames( long documentId , List< Frame > frames) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/frames.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( frames ) );
+        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
