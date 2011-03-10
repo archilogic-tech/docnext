@@ -14,7 +14,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ThumbnailCreator {
-    private class ImageInfo {
+    static class CreateResult {
+        double ratio;
+        int nHorizontal;
+        int nVertical;
+
+        CreateResult( final double ratio , final int nHorizontal , final int nVertical ) {
+            this.ratio = ratio;
+            this.nHorizontal = nHorizontal;
+            this.nVertical = nVertical;
+        }
+    }
+
+    private static class ImageInfo {
         double unitWidth;
         double unitHeight;
 
@@ -35,8 +47,8 @@ public class ThumbnailCreator {
     private static final int THUMBNAIL_SIZE = 256;
     private static final int WEB_HEIGHT = 1600;
     private static final int TEXTURE_BASE_SIZE = 256;
-    private static final int TEXTURE_HORIZONATL = 4;
-    private static final int TEXTURE_VERTICAL = 6;
+    private static final int TEXTURE_N_HORIZONATL = 4;
+    private static final int TEXTURE_N_VERTICAL = 6;
 
     @Autowired
     private PropBean prop;
@@ -73,7 +85,7 @@ public class ThumbnailCreator {
     /**
      * @return width / height ratio
      */
-    public double create( final String outDir , final String pdfPath , final String prefix , final long id ) {
+    public CreateResult create( final String outDir , final String pdfPath , final String prefix , final long id ) {
         LOGGER.info( "Begin create thumbanil" );
         final long t = System.currentTimeMillis();
 
@@ -107,7 +119,7 @@ public class ThumbnailCreator {
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return info.unitWidth / info.unitHeight;
+        return new CreateResult( info.unitWidth / info.unitHeight , TEXTURE_N_HORIZONATL , TEXTURE_N_VERTICAL );
     }
 
     private void createByResolution( final String pdfPath , final String prefix , final int page , final int resolution ) {
@@ -151,8 +163,8 @@ public class ThumbnailCreator {
 
     private void createTextureImage( final String outPath , final String pdfPath , final String prefix ,
             final ImageInfo info , final int page , final int maxLevel , final int textureFactor ) {
-        final int deviceWidth = TEXTURE_BASE_SIZE * TEXTURE_HORIZONATL;
-        final int deviceHeight = TEXTURE_BASE_SIZE * TEXTURE_VERTICAL;
+        final int deviceWidth = TEXTURE_BASE_SIZE * TEXTURE_N_HORIZONATL;
+        final int deviceHeight = TEXTURE_BASE_SIZE * TEXTURE_N_VERTICAL;
         final int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
 
         double maxResolution;
@@ -171,8 +183,8 @@ public class ThumbnailCreator {
 
             final int factor = ( int ) Math.pow( 2 , level );
 
-            for ( int py = 0 ; py < TEXTURE_VERTICAL / textureFactor * factor ; py++ ) {
-                for ( int px = 0 ; px < TEXTURE_HORIZONATL / textureFactor * factor ; px++ ) {
+            for ( int py = 0 ; py < TEXTURE_N_VERTICAL / textureFactor * factor ; py++ ) {
+                for ( int px = 0 ; px < TEXTURE_N_HORIZONATL / textureFactor * factor ; px++ ) {
                     LOGGER.info( "Proc part: " + px + "," + py );
 
                     final int w = TEXTURE_BASE_SIZE * textureFactor * maxFactor / factor;
