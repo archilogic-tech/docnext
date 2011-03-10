@@ -1,5 +1,5 @@
 #site_contain {
-	width:900px;
+	width:850px;
 	margin: 30px auto;
 	padding: 30px;
 	border: 1px solid;
@@ -13,17 +13,21 @@
 
 #navigation li {
 	float: left;
-	margin: 0 0.15em;
+	margin: 0 0.5em;
 }
 
 #navigation li a {
-	color: black;
+	color: blue;
 	background: white;
-	text-decoration: none;
+	text-decoration: underline;
 	border: 1px solid;
 }
 
 #navigation li a:hover {
 	color: white;
-	background: black;
+	background: gray;
+}
+
+#content {
+	margin: 30px 30px;
 }

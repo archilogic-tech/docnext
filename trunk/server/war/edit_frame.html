@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+
+    <script type='text/javascript' src='/dwr/interface/DocumentService.js'></script>
+    <script type='text/javascript' src='/dwr/engine.js'></script>
+    <script type='text/javascript' src='/dwr/util.js'></script>
+    <script type='text/javascript' src='/js/jquery-1.4.4.js'></script>
+    <script type='text/javascript' src='/js/header.js'></script>
+    <script type='text/javascript' src='/js/cookie.js'></script>
+	<script type="text/javascript" src="/js/jquery-ui-1.7.2.custom.min.js"></script>
+
+    <script type="text/javascript" src='/js/edit_frame.js'></script>
+	
+	<script>
+		$(document).ready(function() {
+			$("#target").draggable();
+		});
+	</script>
+  </head>
+  <body>
+
+  <div id="site_contain">
+  <div id="edit_header"></div>
+  <div id="content">
+	ここにコマ割り編集用の画面が出来ます。
+	<ul>
+		<li>入力に必要な情報
+		<li>原点x
+		<li>原点y
+		<li>幅、高さ
+		<li>順番、ページ番号 以上
+  	</ul>
+	
+	<div id="target" style="background-color: yellow;">Drag me</div>
+<!--
+	<table>
+	<tr>
+	  	<td>origin x</td>
+  		<td><input id="x" type="text"></td>
+	</tr>
+	<tr>
+	  	<td>origin y</td>
+  		<td><input id="y" type="text"></td>
+	</tr>
+	<tr>
+	  	<td>width</td>
+  		<td><input id="width" type="text"></td>
+  	</tr>
+  	<tr>
+	  	<td>height</td>
+  		<td><input id="height" type="text"></td>
+  	</tr>
+  	<tr>
+	  	<td>order</td>
+  		<td><input id="order" type="text"></td>
+  	</tr>
+  	<tr>
+	  	<td>page</td>
+  		<td><input id="page" type="text"></td>
+  	</tr>
+	</table>
+-->
+
+	<div id="controller">
+		<input type="button" onclick="page.prev(); draw();" value="< prev">
+		<input type="button" onclick="page.next(); draw();" value="next >">
+		<input type="button" onclick="clear_page(); draw();" value="clear">
+	</div>
+	
+	<div id="canvasesdiv">
+	<!--
+	<canvas id="frame" width="545" height="800" style="border-style:solid; border-width:1px; margin:10px; z-index:1">
+	-->
+	<canvas id="frame" width="545" height="800" style="border-style:solid; border-width:1px; margin:10px; z-index:1">
+	This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+	</div>
+	<!--
+  	<input type="button" value="save this modification to the database on the computer" onclick="save();">
+	-->
+  </div>
+  </div>  
+  </body>
+</html>

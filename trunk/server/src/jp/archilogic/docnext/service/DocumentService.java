@@ -50,6 +50,10 @@ public class DocumentService {
         return packManager.readAnnotation( id , page );
     }
 
+    public List< Frame > getFrames( long id ) {
+        return packManager.readFrames( id );
+    }
+
     public String getImageText( long id , int page ) {
         return packManager.readImageText( id , page );
     }
@@ -144,5 +148,9 @@ public class DocumentService {
     
     public void setDividePage( long id , List< DividePage > dividePage) {
         packManager.writeDividePage( id , dividePage );
+    }
+
+    public void setFrames( long id , List< Frame > frames ) {
+        packManager.writeFrames( id , frames );
     }
 }
