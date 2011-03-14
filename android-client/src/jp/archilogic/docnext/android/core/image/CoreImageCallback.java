@@ -16,7 +16,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.view.SurfaceHolder;
-import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 public class CoreImageCallback implements SurfaceHolder.Callback {
@@ -50,7 +50,7 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
     private static final int DOUBLE_TAP_THREASHOLD = 50;
     private static final long DOUBLE_TAP_DURATION = 500;
-    private static final long DURATION_CLEAN_UP = 200L;
+    private static final long DURATION_CLEAN_UP = 500L;
 
     private Size _surfaceSize;
     private Thread _worker;
@@ -255,13 +255,16 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
 
             _willOffsetTo = null;
         } else {
-            state = ImageCleanUpState.getInstance( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
+            state =
+                    ImageCleanUpState
+                            .getInstance( _offset , _scale , _surfaceSize , _imageSize , _minScale , _maxScale );
         }
 
         if ( state.needCleanUp ) {
             final long t = SystemClock.elapsedRealtime();
+            int n = 0;
 
-            final Interpolator i = new AccelerateDecelerateInterpolator();
+            final Interpolator i = new DecelerateInterpolator();
 
             while ( !_willCancelCleanUp ) {
                 final float diff = Math.min( 1f * ( SystemClock.elapsedRealtime() - t ) / DURATION_CLEAN_UP , 1f );
@@ -285,7 +288,11 @@ public class CoreImageCallback implements SurfaceHolder.Callback {
                 } catch ( final InterruptedException e ) {
                     throw new RuntimeException( e );
                 }
+
+                n++;
             }
+
+            System.err.println( "FPS: " + 1e3 * n / ( SystemClock.elapsedRealtime() - t ) );
         }
     }
 
