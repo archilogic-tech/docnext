@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.coreview.image;
+package jp.archilogic.docnext.android.coreview.image_;
 
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
