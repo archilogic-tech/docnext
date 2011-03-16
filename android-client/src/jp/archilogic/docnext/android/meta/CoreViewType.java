@@ -1,7 +1,7 @@
 package jp.archilogic.docnext.android.meta;
 
 import jp.archilogic.docnext.android.coreview.CoreView;
-import jp.archilogic.docnext.android.coreview.image_.CoreImageView;
+import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import android.content.Context;
 
 public enum CoreViewType {
