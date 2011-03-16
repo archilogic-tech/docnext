@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">docnext</string>
+
+    <string name="network_unavailable">Network Unavailable</string>
+    <string name="network_error">Network Error</string>
+    
+    <string name="cannot_download_in_parallel">Can\'t download in parallel</string>
+</resources>
