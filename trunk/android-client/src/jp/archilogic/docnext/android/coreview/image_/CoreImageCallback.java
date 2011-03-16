@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.coreview.image;
+package jp.archilogic.docnext.android.coreview.image_;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
