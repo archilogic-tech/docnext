@@ -1,0 +1,815 @@
+jp.archilogic.docnext.android.ImageViewerActivity -> jp.archilogic.docnext.android.ImageViewerActivity:
+    jp.archilogic.docnext.android.core.image.CoreImageView _coreImageView -> a
+    android.widget.TextView _currentPageTextView -> b
+    android.widget.TextView _totalPageTextView -> c
+    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> d
+    44:73:void onCreate(android.os.Bundle) -> onCreate
+    77:82:boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
+    87:89:boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
+    21:21:android.widget.TextView access$0(jp.archilogic.docnext.android.ImageViewerActivity) -> a
+jp.archilogic.docnext.android.ImageViewerActivity$1 -> jp.archilogic.docnext.android.j:
+    jp.archilogic.docnext.android.ImageViewerActivity this$0 -> a
+    27:33:void onPageChanged(int) -> a
+jp.archilogic.docnext.android.ImageViewerActivity$1$1 -> jp.archilogic.docnext.android.b:
+    jp.archilogic.docnext.android.ImageViewerActivity$1 this$1 -> a
+    int val$index -> b
+    30:31:void run() -> run
+jp.archilogic.docnext.android.MainActivity -> jp.archilogic.docnext.android.MainActivity:
+    android.webkit.WebView _webView -> a
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$type$ViewerType -> b
+    24:34:void checkMetaInfo(long) -> a
+    39:63:void fetchFont(java.lang.String,long) -> a
+    86:106:void fetchImageHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> a
+    109:126:void fetchImageThumbnail(long,jp.archilogic.docnext.android.info.MetaInfo) -> a
+    130:150:void fetchImageThumbnailHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> b
+    200:220:void fetchTextHelper(long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> c
+    224:246:void onCreate(android.os.Bundle) -> onCreate
+    249:250:void showImage(long) -> b
+    253:254:void showText(long) -> c
+    20:20:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$type$ViewerType() -> a
+    252:252:void access$1(jp.archilogic.docnext.android.MainActivity,long) -> a
+    85:85:void access$2(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> a
+    128:128:void access$3(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> b
+    23:23:void access$4(jp.archilogic.docnext.android.MainActivity,long) -> b
+    199:199:void access$5(jp.archilogic.docnext.android.MainActivity,long,jp.archilogic.docnext.android.info.MetaInfo,int,android.app.ProgressDialog) -> c
+    152:152:void access$6(jp.archilogic.docnext.android.MainActivity,long) -> c
+jp.archilogic.docnext.android.MainActivity$1 -> jp.archilogic.docnext.android.e:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    1:1:void error$5d527811() -> a
+    1:1:void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$2 -> jp.archilogic.docnext.android.f:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    1:1:void error$5d527811() -> a
+    1:1:void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$3 -> jp.archilogic.docnext.android.c:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    1:1:void error$5d527811() -> a
+    1:1:void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$4 -> jp.archilogic.docnext.android.d:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    1:1:void error$5d527811() -> a
+    1:1:void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$5 -> jp.archilogic.docnext.android.g:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    android.app.ProgressDialog val$progress -> b
+    long val$id -> c
+    jp.archilogic.docnext.android.info.MetaInfo val$meta -> d
+    int val$page -> e
+    1:1:void error$5d527811() -> a
+    1:1:void receive$5d527811() -> b
+jp.archilogic.docnext.android.MainActivity$6 -> jp.archilogic.docnext.android.h:
+    jp.archilogic.docnext.android.MainActivity this$0 -> a
+    233:241:boolean shouldOverrideUrlLoading(android.webkit.WebView,java.lang.String) -> shouldOverrideUrlLoading
+jp.archilogic.docnext.android.TextViewerActivity -> jp.archilogic.docnext.android.TextViewerActivity:
+    jp.archilogic.docnext.android.core.text.CoreTextView _coreTextView -> a
+    android.widget.TextView _currentPageTextView -> b
+    android.widget.TextView _totalPageTextView -> c
+    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> d
+    jp.archilogic.docnext.android.core.OnPageChangedListener _coreImageListener -> e
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule -> f
+    89:120:void onCreate(android.os.Bundle) -> onCreate
+    124:131:boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
+    136:163:boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
+    28:28:android.widget.TextView access$0(jp.archilogic.docnext.android.TextViewerActivity) -> a
+    26:26:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$CoreTextConfig$LineBreakingRule() -> a
+jp.archilogic.docnext.android.TextViewerActivity$1 -> jp.archilogic.docnext.android.a:
+    jp.archilogic.docnext.android.TextViewerActivity this$0 -> a
+    36:42:void onPageChanged(int) -> a
+jp.archilogic.docnext.android.TextViewerActivity$1$1 -> jp.archilogic.docnext.android.i:
+    jp.archilogic.docnext.android.TextViewerActivity$1 this$1 -> a
+    int val$index -> b
+    39:40:void run() -> run
+jp.archilogic.docnext.android.core.OnPageChangedListener -> jp.archilogic.docnext.android.core.b:
+    void onPageChanged(int) -> a
+jp.archilogic.docnext.android.core.Size -> jp.archilogic.docnext.android.core.a:
+    int width -> a
+    int height -> b
+jp.archilogic.docnext.android.core.image.CoreImageCallback -> jp.archilogic.docnext.android.core.image.e:
+    jp.archilogic.docnext.android.core.Size _surfaceSize -> a
+    java.lang.Thread _worker -> b
+    boolean _shouldStop -> c
+    boolean _invalidate -> d
+    boolean _willCleanUp -> e
+    boolean _willCancelCleanUp -> f
+    boolean _willCheckChangePage -> g
+    android.graphics.Bitmap _background -> h
+    java.util.List _sources -> i
+    java.util.List _thumbnailSources -> j
+    jp.archilogic.docnext.android.core.OnPageChangedListener _listener -> k
+    jp.archilogic.docnext.android.core.image.ImageDocDirection _direction -> l
+    jp.archilogic.docnext.android.core.Size _imageSize -> m
+    android.graphics.PointF _offset -> n
+    float _scale -> o
+    float _minScale -> p
+    float _maxScale -> q
+    android.graphics.PointF _willOffsetTo -> r
+    float _willScaleTo -> s
+    android.graphics.Bitmap[] _images -> t
+    int _index -> u
+    java.util.concurrent.ExecutorService _loadingExecutor -> v
+    jp.archilogic.docnext.android.core.image.CoreImageCallback$TapDispatcher _tapDispatcher -> w
+    android.graphics.PointF _delayPoint -> x
+    102:103:void cancelCleanUp() -> a
+    153:156:android.graphics.Bitmap decode(java.lang.String) -> b
+    160:164:void doCleanUp(boolean) -> a
+    193:211:void draw(android.graphics.Canvas,android.graphics.Paint) -> a
+    222:222:float getHorizontalPadding() -> b
+    226:226:float getVerticalPadding() -> c
+    230:249:void load(int) -> a
+    293:303:void scale(float,android.graphics.PointF) -> a
+    306:309:void setDirection(jp.archilogic.docnext.android.core.image.ImageDocDirection) -> a
+    312:313:void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    316:334:void setSources(java.util.List) -> a
+    337:338:void setThumbnailSources(java.util.List) -> b
+    342:347:void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    351:393:void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    397:399:void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    402:416:void tap(android.graphics.PointF) -> a
+    419:429:void translate(android.graphics.PointF) -> b
+    86:86:void access$1$15e0c38b(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> a
+    82:82:int access$2(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> b
+    80:80:android.graphics.Bitmap[] access$3(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> c
+    65:65:java.util.List access$4(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> d
+    152:152:android.graphics.Bitmap access$5$2ae0e830(java.lang.String) -> a
+    59:59:void access$6(jp.archilogic.docnext.android.core.image.CoreImageCallback,boolean) -> a
+    58:58:boolean access$7(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> e
+    59:59:boolean access$8(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> f
+    55:55:jp.archilogic.docnext.android.core.Size access$9(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> g
+    70:70:jp.archilogic.docnext.android.core.Size access$10(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> h
+    192:192:void access$11(jp.archilogic.docnext.android.core.image.CoreImageCallback,android.graphics.Canvas,android.graphics.Paint) -> a
+    60:60:boolean access$12(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> i
+    60:60:void access$13$5c2ab754(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> j
+    62:62:boolean access$14(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> k
+    62:62:void access$15$5c2ab754(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> l
+    143:143:void access$16(jp.archilogic.docnext.android.core.image.CoreImageCallback) -> m
+    251:251:void access$17(jp.archilogic.docnext.android.core.image.CoreImageCallback,android.view.SurfaceHolder,android.graphics.Paint) -> a
+jp.archilogic.docnext.android.core.image.CoreImageCallback$1 -> jp.archilogic.docnext.android.core.image.a:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> a
+    int val$index -> b
+    234:247:void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageCallback$2 -> jp.archilogic.docnext.android.core.image.b:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> a
+    android.view.SurfaceHolder val$holder -> b
+    356:389:void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageCallback$TapDispatcher -> jp.archilogic.docnext.android.core.image.c:
+    android.graphics.PointF _point -> a
+    boolean _cancelled -> b
+    jp.archilogic.docnext.android.core.image.CoreImageCallback this$0 -> c
+    32:33:void cancel() -> a
+    38:48:void run() -> run
+jp.archilogic.docnext.android.core.image.CoreImageView -> jp.archilogic.docnext.android.core.image.CoreImageView:
+    jp.archilogic.docnext.android.core.image.CoreImageCallback _callback -> a
+    int _nTouch -> b
+    android.graphics.PointF[] _prevPoints -> c
+    android.graphics.PointF[] _downPoints -> d
+    boolean _isTap -> e
+    android.graphics.PointF _pinchCenter -> f
+    31:31:android.graphics.PointF copyPoint(android.graphics.PointF) -> a
+    35:38:void copyPoints(android.view.MotionEvent,android.graphics.PointF[]) -> a
+    42:48:void onFinishInflate() -> onFinishInflate
+    64:86:boolean onTouchEvent(android.view.MotionEvent) -> onTouchEvent
+    150:151:void setDirection(jp.archilogic.docnext.android.core.image.ImageDocDirection) -> a
+    154:155:void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    158:159:void setSources(java.util.List) -> a
+    162:163:void setThumbnailSources(java.util.List) -> b
+jp.archilogic.docnext.android.core.image.ImageCleanUpState -> jp.archilogic.docnext.android.core.image.f:
+    boolean needCleanUp -> a
+    android.graphics.PointF srcOffset -> b
+    float srcScale -> c
+    android.graphics.PointF dstOffset -> d
+    float dstScale -> e
+jp.archilogic.docnext.android.core.image.ImageDocDirection -> jp.archilogic.docnext.android.core.image.d:
+    jp.archilogic.docnext.android.core.image.ImageDocDirection L2R -> a
+    jp.archilogic.docnext.android.core.image.ImageDocDirection R2L -> b
+    jp.archilogic.docnext.android.core.image.ImageDocDirection T2B -> c
+    jp.archilogic.docnext.android.core.image.ImageDocDirection B2T -> d
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$image$ImageDocDirection -> e
+    jp.archilogic.docnext.android.core.image.ImageDocDirection[] ENUM$VALUES -> f
+    12:20:boolean canMoveHorizontal() -> a
+    25:25:boolean canMoveVertical() -> b
+    29:39:boolean shouldChangeToNext(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,float) -> a
+    44:54:boolean shouldChangeToPrev(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,float) -> b
+    59:68:int toXSign() -> c
+    73:82:int toYSign() -> d
+    87:99:void updateOffset(android.graphics.PointF,jp.archilogic.docnext.android.core.Size,float,boolean) -> a
+    1:1:jp.archilogic.docnext.android.core.image.ImageDocDirection[] values() -> values
+    1:1:jp.archilogic.docnext.android.core.image.ImageDocDirection valueOf(java.lang.String) -> valueOf
+    6:6:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$image$ImageDocDirection() -> e
+jp.archilogic.docnext.android.core.text.CoreTextCallback -> jp.archilogic.docnext.android.core.text.f:
+    jp.archilogic.docnext.android.core.Size _surfaceSize -> a
+    java.lang.Thread _worker -> b
+    boolean _shouldStop -> c
+    boolean _invalidate -> d
+    boolean _invalidateCache -> e
+    boolean _willCleanUp -> f
+    boolean _willCancelCleanUp -> g
+    android.graphics.Bitmap _background -> h
+    java.util.List _sources -> i
+    jp.archilogic.docnext.android.core.text.CoreTextConfig _config -> j
+    jp.archilogic.docnext.android.core.OnPageChangedListener _listener -> k
+    float _offset -> l
+    android.graphics.Bitmap[] _caches -> m
+    int _index -> n
+    java.util.concurrent.ExecutorService _loadingExecutor -> o
+    78:79:void cancelCleanUp() -> a
+    132:135:void doCleanUp() -> b
+    138:158:void draw(android.graphics.Canvas,android.graphics.Paint) -> a
+    169:188:void load(int) -> a
+    191:191:jp.archilogic.docnext.android.core.Size nullSafeCacheSize(int) -> b
+    229:233:void setConfig(jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    236:237:void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    240:254:void setSources(java.util.List) -> a
+    258:263:void surfaceChanged(android.view.SurfaceHolder,int,int,int) -> surfaceChanged
+    267:325:void surfaceCreated(android.view.SurfaceHolder) -> surfaceCreated
+    329:331:void surfaceDestroyed(android.view.SurfaceHolder) -> surfaceDestroyed
+    334:337:void translate(android.graphics.PointF) -> a
+    44:44:int access$0(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> a
+    43:43:android.graphics.Bitmap[] access$1(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> b
+    69:69:android.graphics.Paint access$2$62d57a77() -> c
+    37:37:java.util.List access$3(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> c
+    52:52:android.graphics.Bitmap access$4(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.graphics.Paint,jp.archilogic.docnext.android.info.TextInfo) -> a
+    31:31:void access$5(jp.archilogic.docnext.android.core.text.CoreTextCallback,boolean) -> a
+    30:30:boolean access$6(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> d
+    31:31:boolean access$7(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> e
+    27:27:jp.archilogic.docnext.android.core.Size access$8(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> f
+    32:32:boolean access$9(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> g
+    32:32:void access$10$31f7af72(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> h
+    38:38:jp.archilogic.docnext.android.core.text.CoreTextConfig access$11(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> i
+    41:41:void access$12(jp.archilogic.docnext.android.core.text.CoreTextCallback,float) -> a
+    137:137:void access$13(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.graphics.Canvas,android.graphics.Paint) -> a
+    33:33:boolean access$14(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> j
+    33:33:void access$15$31f7af72(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> k
+    121:121:void access$16(jp.archilogic.docnext.android.core.text.CoreTextCallback) -> l
+    194:194:void access$17(jp.archilogic.docnext.android.core.text.CoreTextCallback,android.view.SurfaceHolder,android.graphics.Paint) -> a
+jp.archilogic.docnext.android.core.text.CoreTextCallback$1 -> jp.archilogic.docnext.android.core.text.c:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback this$0 -> a
+    int val$index -> b
+    173:186:void run() -> run
+jp.archilogic.docnext.android.core.text.CoreTextCallback$2 -> jp.archilogic.docnext.android.core.text.a:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback this$0 -> a
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> b
+    android.view.SurfaceHolder val$holder -> c
+    272:321:void run() -> run
+    269:269:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
+jp.archilogic.docnext.android.core.text.CoreTextConfig -> jp.archilogic.docnext.android.core.text.h:
+    jp.archilogic.docnext.android.core.text.TextDocDirection direction -> a
+    int fontSize -> b
+    float lineSpace -> c
+    float horizontalPadding -> d
+    float verticalPadding -> e
+    boolean useJustification -> f
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule lineBreakingRule -> g
+    float pageSpace -> h
+    int backgroundColor -> i
+    int defaultTextColor -> j
+    int rubyFontSizeFactor -> k
+    44:44:int getRubyFontSize() -> a
+jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule -> jp.archilogic.docnext.android.core.text.b:
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule NONE -> a
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule TO_NEXT -> b
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule SQUEEZE -> c
+    jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] ENUM$VALUES -> d
+    1:1:jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule[] values() -> values
+    1:1:jp.archilogic.docnext.android.core.text.CoreTextConfig$LineBreakingRule valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.core.text.CoreTextView -> jp.archilogic.docnext.android.core.text.CoreTextView:
+    jp.archilogic.docnext.android.core.text.CoreTextCallback _callback -> a
+    android.graphics.PointF[] _prevPoints -> b
+    26:29:void copyPoints(android.view.MotionEvent,android.graphics.PointF[]) -> a
+    33:39:void onFinishInflate() -> onFinishInflate
+    49:65:boolean onTouchEvent(android.view.MotionEvent) -> onTouchEvent
+    79:80:void setConfig(jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    83:84:void setListener(jp.archilogic.docnext.android.core.OnPageChangedListener) -> a
+    87:88:void setSources(java.util.List) -> a
+jp.archilogic.docnext.android.core.text.TextCleanUpState -> jp.archilogic.docnext.android.core.text.e:
+    boolean needCleanUp -> a
+    float srcOffset -> b
+    float dstOffset -> c
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> d
+    5:5:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> a
+jp.archilogic.docnext.android.core.text.TextDocDirection -> jp.archilogic.docnext.android.core.text.g:
+    jp.archilogic.docnext.android.core.text.TextDocDirection HORIZONTAL -> a
+    jp.archilogic.docnext.android.core.text.TextDocDirection VERTICAL -> b
+    int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection -> c
+    jp.archilogic.docnext.android.core.text.TextDocDirection[] ENUM$VALUES -> d
+    15:21:jp.archilogic.docnext.android.core.text.engine.CoreTextEngine getEngine() -> a
+    26:32:boolean shouldChangeToNext(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size) -> a
+    37:43:boolean shouldChangeToPrev(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size) -> b
+    48:56:jp.archilogic.docnext.android.core.Size toCacheSize(jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    62:68:android.graphics.RectF toDrawRect(android.graphics.Bitmap[],jp.archilogic.docnext.android.core.Size,int,int,float) -> a
+    117:123:int toXFactor() -> b
+    128:134:int toYFactor() -> c
+    139:145:float translate(float,android.graphics.PointF) -> a
+    151:158:float updateOffset(float,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.Size,jp.archilogic.docnext.android.core.text.CoreTextConfig,boolean) -> a
+    1:1:jp.archilogic.docnext.android.core.text.TextDocDirection[] values() -> values
+    1:1:jp.archilogic.docnext.android.core.text.TextDocDirection valueOf(java.lang.String) -> valueOf
+    11:11:int[] $SWITCH_TABLE$jp$archilogic$docnext$android$core$text$TextDocDirection() -> d
+jp.archilogic.docnext.android.core.text.TextLayoutInfo -> jp.archilogic.docnext.android.core.text.d:
+    float x -> a
+    float y -> b
+    float width -> c
+    float height -> d
+    int line -> e
+    float lineMetrics -> f
+jp.archilogic.docnext.android.core.text.engine.CoreTextEngine -> jp.archilogic.docnext.android.core.text.a.a:
+    void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+jp.archilogic.docnext.android.core.text.engine.HorizontalCoreTextEngine -> jp.archilogic.docnext.android.core.text.a.c:
+    21:34:void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    61:90:void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    95:107:void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    116:196:jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+    200:202:float measure(android.graphics.Paint,java.lang.String) -> a
+jp.archilogic.docnext.android.core.text.engine.VerticalCoreTextEngine -> jp.archilogic.docnext.android.core.text.a.b:
+    22:33:void drawChar(android.graphics.Canvas,android.graphics.Paint,java.lang.String,float,float,float,boolean) -> a
+    38:51:void drawDots(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> a
+    75:104:void drawRubys(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> b
+    109:121:void drawText(android.graphics.Canvas,android.graphics.Paint,jp.archilogic.docnext.android.core.text.TextLayoutInfo[],jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig) -> c
+    137:143:jp.archilogic.docnext.android.info.TextInfo$TCY getTCY(jp.archilogic.docnext.android.info.TextInfo,int) -> a
+    163:286:jp.archilogic.docnext.android.core.text.TextLayoutInfo[] layoutText(android.graphics.Paint,jp.archilogic.docnext.android.info.TextInfo,jp.archilogic.docnext.android.core.text.CoreTextConfig,jp.archilogic.docnext.android.core.Size) -> a
+    290:295:float measure(android.graphics.Paint,java.lang.String) -> a
+jp.archilogic.docnext.android.info.MetaInfo -> jp.archilogic.docnext.android.info.MetaInfo:
+    jp.archilogic.docnext.android.type.ViewerType type -> type
+    int pages -> pages
+jp.archilogic.docnext.android.info.ServerInfo -> jp.archilogic.docnext.android.info.ServerInfo:
+    java.lang.String endpoint -> endpoint
+jp.archilogic.docnext.android.info.TextInfo -> jp.archilogic.docnext.android.info.TextInfo:
+    java.lang.String text -> text
+    java.util.List rubys -> rubys
+    java.util.List dots -> dots
+    java.util.List tcys -> tcys
+    60:60:java.lang.String at(int) -> at
+    64:64:int length() -> length
+jp.archilogic.docnext.android.info.TextInfo$Dot -> jp.archilogic.docnext.android.info.TextInfo$Dot:
+    int location -> location
+    int length -> length
+jp.archilogic.docnext.android.info.TextInfo$Ruby -> jp.archilogic.docnext.android.info.TextInfo$Ruby:
+    java.lang.String text -> text
+    int location -> location
+    int length -> length
+jp.archilogic.docnext.android.info.TextInfo$TCY -> jp.archilogic.docnext.android.info.TextInfo$TCY:
+    int location -> location
+    int length -> length
+jp.archilogic.docnext.android.manager.ConstManager -> jp.archilogic.docnext.android.d.a:
+    jp.archilogic.docnext.android.manager.ConstManager _instance -> a
+    jp.archilogic.docnext.android.info.ServerInfo _info -> b
+    14:19:jp.archilogic.docnext.android.manager.ConstManager getInstance(android.content.Context) -> a
+    28:28:java.lang.String getEndpoint() -> a
+jp.archilogic.docnext.android.task.DownloadTask -> jp.archilogic.docnext.android.a.b:
+    jp.archilogic.docnext.android.task.Receiver _receiver -> a
+    java.lang.String _remotePath -> b
+    java.lang.String _localPath -> c
+    39:40:void onNetworkError() -> a
+    1:1:java.lang.Object background() -> b
+    1:1:void post$5d527811() -> c
+jp.archilogic.docnext.android.task.NetworkTask -> jp.archilogic.docnext.android.a.c:
+    int _networkUnavailableMessage -> a
+    int _networkErrorMessage -> b
+    android.content.Context _context -> c
+    boolean _networkUnavailable -> d
+    boolean _networkError -> e
+    java.lang.Object background() -> b
+    29:38:java.lang.Object doInBackground$532ebdd5() -> d
+    void onNetworkError() -> a
+    55:74:void onPostExecute(java.lang.Object) -> onPostExecute
+    void post$5d527811() -> c
+    1:1:java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
+jp.archilogic.docnext.android.task.Receiver -> jp.archilogic.docnext.android.a.a:
+    void error$5d527811() -> a
+    void receive$5d527811() -> b
+jp.archilogic.docnext.android.type.ExtraType -> jp.archilogic.docnext.android.b.a:
+    jp.archilogic.docnext.android.type.ExtraType ID -> a
+    jp.archilogic.docnext.android.type.ExtraType[] ENUM$VALUES -> b
+    1:1:jp.archilogic.docnext.android.type.ExtraType[] values() -> values
+    1:1:jp.archilogic.docnext.android.type.ExtraType valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.type.ViewerType -> jp.archilogic.docnext.android.b.b:
+    jp.archilogic.docnext.android.type.ViewerType IMAGE -> a
+    jp.archilogic.docnext.android.type.ViewerType TEXT -> b
+    jp.archilogic.docnext.android.type.ViewerType[] ENUM$VALUES -> c
+    1:1:jp.archilogic.docnext.android.type.ViewerType[] values() -> values
+    1:1:jp.archilogic.docnext.android.type.ViewerType valueOf(java.lang.String) -> valueOf
+jp.archilogic.docnext.android.util.StorageUtil -> jp.archilogic.docnext.android.c.a:
+    15:20:void ensureDir(java.lang.String) -> b
+    23:24:void ensureFontDir() -> a
+    27:28:void ensureImageDir(long) -> a
+    31:32:void ensureMetaInfoDir() -> b
+    35:36:void ensureTextDir(long) -> b
+    43:43:java.lang.String getFontPath(java.lang.String) -> a
+    47:47:java.lang.String getImageDir(long) -> e
+    51:51:java.lang.String getImagePath(long,int) -> a
+    55:55:java.lang.String getImageThumbnailPath(long,int) -> b
+    59:74:jp.archilogic.docnext.android.info.MetaInfo getMetaInfo(long) -> c
+    82:82:java.lang.String getMetaInfoPath(long) -> d
+    86:86:java.lang.String getTextDir(long) -> f
+    90:90:java.lang.String getTextPath(long,int) -> c
+net.arnx.jsonic.AppendableConverter -> a.a.a.p:
+    net.arnx.jsonic.AppendableConverter INSTANCE -> a
+    771:782:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ArrayConverter -> a.a.a.ca:
+    net.arnx.jsonic.ArrayConverter INSTANCE -> a
+    1001:1039:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.Base64 -> a.a.a.k:
+    8:41:java.lang.String encode(byte[]) -> a
+    45:112:byte[] decode(java.lang.CharSequence) -> a
+net.arnx.jsonic.BigDecimalConverter -> a.a.a.br:
+    net.arnx.jsonic.BigDecimalConverter INSTANCE -> a
+    493:518:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.BigIntegerConverter -> a.a.a.ay:
+    net.arnx.jsonic.BigIntegerConverter INSTANCE -> a
+    447:485:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.BooleanArrayFormatter -> a.a.a.bv:
+    net.arnx.jsonic.BooleanArrayFormatter INSTANCE -> a
+    178:189:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.BooleanConverter -> a.a.a.ax:
+    net.arnx.jsonic.BooleanConverter INSTANCE -> a
+    130:159:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ByteArrayFormatter -> a.a.a.y:
+    net.arnx.jsonic.ByteArrayFormatter INSTANCE -> a
+    197:198:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ByteConverter -> a.a.a.g:
+    net.arnx.jsonic.ByteConverter INSTANCE -> a
+    196:236:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ByteFormatter -> a.a.a.ah:
+    net.arnx.jsonic.ByteFormatter INSTANCE -> a
+    397:398:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.CalendarConverter -> a.a.a.v:
+    net.arnx.jsonic.CalendarConverter INSTANCE -> a
+    955:974:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.CharArrayFormatter -> a.a.a.bc:
+    net.arnx.jsonic.CharArrayFormatter INSTANCE -> a
+    422:422:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.CharSequenceConverter -> a.a.a.ak:
+    net.arnx.jsonic.CharSequenceConverter INSTANCE -> a
+    754:763:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.CharacterConverter -> a.a.a.bg:
+    net.arnx.jsonic.CharacterConverter INSTANCE -> a
+    167:188:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.CharsetConverter -> a.a.a.bd:
+    net.arnx.jsonic.CharsetConverter INSTANCE -> a
+    694:705:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ClassConverter -> a.a.a.b:
+    net.arnx.jsonic.ClassConverter INSTANCE -> a
+    713:746:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ClassFormatter -> a.a.a.be:
+    net.arnx.jsonic.ClassFormatter INSTANCE -> a
+    406:406:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ClassUtil -> a.a.a.bm:
+    java.util.WeakHashMap cache -> a
+    boolean accessible -> b
+    24:32:java.lang.ClassLoader getContextClassLoader() -> a
+    36:36:java.lang.Class findClass(java.lang.String) -> a
+    40:71:java.lang.Class findClass$3555389e(java.lang.String) -> c
+    88:89:boolean equals(java.lang.String,java.lang.Class) -> a
+    93:94:boolean isAssignableFrom(java.lang.String,java.lang.Class) -> b
+    98:114:java.lang.Class getRawType(java.lang.reflect.Type) -> a
+    119:130:java.lang.reflect.Type resolveTypeVariable(java.lang.reflect.TypeVariable,java.lang.reflect.ParameterizedType) -> a
+    151:167:java.lang.String toLowerCamel(java.lang.String) -> b
+net.arnx.jsonic.ClassUtil$1 -> a.a.a.aq:
+    50:50:boolean removeEldestEntry(java.util.Map$Entry) -> removeEldestEntry
+net.arnx.jsonic.CollectionConverter -> a.a.a.h:
+    net.arnx.jsonic.CollectionConverter INSTANCE -> a
+    1049:1093:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ComplexDateFormat -> a.a.a.i:
+    boolean escape -> a
+    23:47:java.lang.String escape(java.lang.String) -> a
+    53:63:java.lang.StringBuffer format(java.util.Date,java.lang.StringBuffer,java.text.FieldPosition) -> format
+net.arnx.jsonic.Converter -> a.a.a.az:
+    java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.DOMElementFormatter -> a.a.a.x:
+    net.arnx.jsonic.DOMElementFormatter INSTANCE -> a
+    762:826:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.DateConverter -> a.a.a.av:
+    net.arnx.jsonic.DateConverter INSTANCE -> a
+    820:861:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+    865:947:java.lang.Long convertDate(java.lang.String,java.util.Locale) -> a
+net.arnx.jsonic.DateFormatter -> a.a.a.aa:
+    net.arnx.jsonic.DateFormatter INSTANCE -> a
+    159:170:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.DoubleArrayFormatter -> a.a.a.bs:
+    net.arnx.jsonic.DoubleArrayFormatter INSTANCE -> a
+    329:356:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.DoubleConverter -> a.a.a.bn:
+    net.arnx.jsonic.DoubleConverter INSTANCE -> a
+    413:439:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.DynaBeanFormatter -> a.a.a.z:
+    net.arnx.jsonic.DynaBeanFormatter INSTANCE -> a
+    682:754:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.EnumConverter -> a.a.a.ae:
+    net.arnx.jsonic.EnumConverter INSTANCE -> a
+    791:812:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.EnumerationFormatter -> a.a.a.bo:
+    net.arnx.jsonic.EnumerationFormatter INSTANCE -> a
+    532:572:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.FieldProperty -> a.a.a.bt:
+    java.lang.String name -> a
+    java.lang.reflect.Field field -> b
+    net.arnx.jsonic.JSONHint hint -> c
+    java.lang.reflect.Type gtype -> d
+    java.lang.Class type -> e
+    201:201:java.lang.String getName() -> a
+    205:205:net.arnx.jsonic.JSONHint getHint() -> b
+    209:209:java.lang.Object get(java.lang.Object) -> a
+    213:214:void set(java.lang.Object,java.lang.Object) -> a
+    217:218:java.lang.reflect.Type getGenericType(java.lang.reflect.Type) -> a
+    222:223:java.lang.Class getType(java.lang.reflect.Type) -> b
+    227:233:void init(java.lang.reflect.Type) -> c
+    242:245:int hashCode() -> hashCode
+    250:262:boolean equals(java.lang.Object) -> equals
+    186:186:int compareTo(java.lang.Object) -> compareTo
+net.arnx.jsonic.FileConverter -> a.a.a.bz:
+    net.arnx.jsonic.FileConverter INSTANCE -> a
+    606:617:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.FloatArrayFormatter -> a.a.a.bx:
+    net.arnx.jsonic.FloatArrayFormatter INSTANCE -> a
+    293:321:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.FloatConverter -> a.a.a.ao:
+    net.arnx.jsonic.FloatConverter INSTANCE -> a
+    379:405:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.FloatFormatter -> a.a.a.r:
+    net.arnx.jsonic.FloatFormatter INSTANCE -> a
+    130:151:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.FormatConverter -> a.a.a.at:
+    net.arnx.jsonic.FormatConverter INSTANCE -> a
+    78:78:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.Formatter -> a.a.a.bq:
+    boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.InetAddressConverter -> a.a.a.u:
+    net.arnx.jsonic.InetAddressConverter INSTANCE -> a
+    982:993:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.InputSource -> a.a.a.bl:
+    void append(java.lang.String) -> a
+    void append(java.lang.String,int,int) -> a
+    void append(char) -> a
+    void flush() -> a
+net.arnx.jsonic.IntArrayFormatter -> a.a.a.as:
+    net.arnx.jsonic.IntArrayFormatter INSTANCE -> a
+    246:262:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.IntegerConverter -> a.a.a.bh:
+    net.arnx.jsonic.IntegerConverter INSTANCE -> a
+    289:326:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.IterableFormatter -> a.a.a.e:
+    net.arnx.jsonic.IterableFormatter INSTANCE -> a
+    524:524:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.IteratorFormatter -> a.a.a.bp:
+    net.arnx.jsonic.IteratorFormatter INSTANCE -> a
+    477:516:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.JSON -> a.a.a.j:
+    java.lang.Class prototype -> a
+    java.util.Map FORMAT_MAP -> b
+    java.util.Map CONVERT_MAP -> c
+    java.lang.Object contextObject -> d
+    java.util.Locale locale -> e
+    boolean prettyPrint -> f
+    int maxDepth -> g
+    boolean suppressNull -> h
+    net.arnx.jsonic.JSON$Mode mode -> i
+    299:305:net.arnx.jsonic.JSON newInstance() -> a
+    460:460:java.lang.Object decode(java.io.InputStream,java.lang.Class) -> a
+    666:672:java.lang.String format(java.lang.Object) -> a
+    728:856:net.arnx.jsonic.Formatter format(net.arnx.jsonic.JSON$Context,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+    1004:1135:java.util.Map parseObject(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource,int) -> a
+    1139:1235:java.util.List parseArray(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource,int) -> b
+    1239:1292:java.lang.String parseString(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource,int) -> c
+    1296:1330:java.lang.Object parseLiteral$417fa08d(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource,boolean) -> a
+    1334:1404:java.lang.Number parseNumber(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource,int) -> d
+    1408:1461:char parseEscape(net.arnx.jsonic.OutputSource) -> a
+    1467:1524:void skipComment(net.arnx.jsonic.JSON$Context,net.arnx.jsonic.OutputSource) -> a
+    1527:1527:net.arnx.jsonic.JSONException createParseException(java.lang.String,net.arnx.jsonic.OutputSource) -> a
+    1532:1534:java.lang.String getMessage(java.lang.String,java.lang.Object[]) -> a
+    1543:1555:java.lang.Object convert(net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.reflect.Type) -> a
+    1570:1627:java.lang.Object postparse(net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+    1632:1632:java.lang.String normalize(java.lang.String) -> a
+    1645:1647:boolean ignore$20cfabb6(java.lang.reflect.Member) -> a
+    1651:1703:java.lang.Object create(net.arnx.jsonic.JSON$Context,java.lang.Class) -> a
+    159:159:java.util.Locale access$000(net.arnx.jsonic.JSON) -> a
+    159:159:java.lang.Object access$100(net.arnx.jsonic.JSON) -> b
+    159:159:int access$200(net.arnx.jsonic.JSON) -> c
+    159:159:boolean access$300(net.arnx.jsonic.JSON) -> d
+    159:159:boolean access$400(net.arnx.jsonic.JSON) -> e
+    159:159:net.arnx.jsonic.JSON$Mode access$500(net.arnx.jsonic.JSON) -> f
+net.arnx.jsonic.JSON$Context -> a.a.a.bi:
+    java.util.Locale locale -> a
+    java.lang.Object contextObject -> b
+    int maxDepth -> c
+    boolean prettyPrint -> d
+    boolean suppressNull -> e
+    net.arnx.jsonic.JSON$Mode mode -> f
+    java.lang.Object[] path -> h
+    int level -> g
+    java.util.Map memberCache -> i
+    net.arnx.jsonic.StringBuilderInputSource builderCache -> j
+    net.arnx.jsonic.JSON this$0 -> k
+    1730:1735:net.arnx.jsonic.StringBuilderInputSource getCachedBuffer() -> a
+    1792:1792:net.arnx.jsonic.JSONHint getHint() -> b
+    1812:1821:void enter(java.lang.Object,net.arnx.jsonic.JSONHint) -> a
+    1824:1825:void enter(java.lang.Object) -> a
+    1828:1829:void exit() -> c
+    1832:1832:boolean hasMemberCache(java.lang.Class) -> a
+    1837:1906:java.util.List getGetProperties(java.lang.Class) -> b
+    1911:1970:java.util.Map getSetProperties(java.lang.Class) -> c
+    1974:1991:java.text.Format format(java.lang.Class) -> d
+    1995:2032:java.lang.String toString() -> toString
+net.arnx.jsonic.JSON$Mode -> a.a.a.ai:
+    net.arnx.jsonic.JSON$Mode TRADITIONAL -> a
+    net.arnx.jsonic.JSON$Mode STRICT -> b
+    net.arnx.jsonic.JSON$Mode SCRIPT -> c
+    net.arnx.jsonic.JSON$Mode[] $VALUES -> d
+    163:163:net.arnx.jsonic.JSON$Mode[] values() -> values
+    163:163:net.arnx.jsonic.JSON$Mode valueOf(java.lang.String) -> valueOf
+net.arnx.jsonic.JSONException -> a.a.a.l:
+    int errorID -> a
+    long lineNumber -> b
+    long columnNumber -> c
+    long offset -> d
+net.arnx.jsonic.JSONHint -> a.a.a.d:
+    java.lang.String name() -> a
+    java.lang.String format() -> b
+    java.lang.Class type() -> c
+    boolean ignore() -> d
+    boolean serialized() -> e
+    java.lang.String anonym() -> f
+net.arnx.jsonic.ListFormatter -> a.a.a.t:
+    net.arnx.jsonic.ListFormatter INSTANCE -> a
+    430:469:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.LocaleConverter -> a.a.a.ac:
+    net.arnx.jsonic.LocaleConverter INSTANCE -> a
+    566:598:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.LocaleFormatter -> a.a.a.c:
+    net.arnx.jsonic.LocaleFormatter INSTANCE -> a
+    414:414:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.LongArrayFormatter -> a.a.a.cb:
+    net.arnx.jsonic.LongArrayFormatter INSTANCE -> a
+    270:285:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.LongConverter -> a.a.a.by:
+    net.arnx.jsonic.LongConverter INSTANCE -> a
+    334:371:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.MapConverter -> a.a.a.ad:
+    net.arnx.jsonic.MapConverter INSTANCE -> a
+    1103:1185:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+    1190:1210:void flattenProperties(java.lang.StringBuilder,java.lang.Object,java.util.Properties) -> a
+net.arnx.jsonic.MapFormatter -> a.a.a.f:
+    net.arnx.jsonic.MapFormatter INSTANCE -> a
+    580:625:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.MethodProperty -> a.a.a.m:
+    java.lang.String name -> a
+    java.lang.reflect.Method method -> b
+    net.arnx.jsonic.JSONHint hint -> c
+    java.lang.reflect.Type gtype -> d
+    java.lang.Class type -> e
+    281:281:java.lang.String getName() -> a
+    285:285:net.arnx.jsonic.JSONHint getHint() -> b
+    289:289:java.lang.Object get(java.lang.Object) -> a
+    293:294:void set(java.lang.Object,java.lang.Object) -> a
+    297:298:java.lang.reflect.Type getGenericType(java.lang.reflect.Type) -> a
+    302:303:java.lang.Class getType(java.lang.reflect.Type) -> b
+    307:313:void init(java.lang.reflect.Type) -> c
+    322:325:int hashCode() -> hashCode
+    330:342:boolean equals(java.lang.Object) -> equals
+    266:266:int compareTo(java.lang.Object) -> compareTo
+net.arnx.jsonic.NullConverter -> a.a.a.bf:
+    net.arnx.jsonic.NullConverter INSTANCE -> a
+    45:45:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.NullFormatter -> a.a.a.aw:
+    net.arnx.jsonic.NullFormatter INSTANCE -> a
+    36:37:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.NumberFormatter -> a.a.a.o:
+    net.arnx.jsonic.NumberFormatter INSTANCE -> a
+    116:122:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ObjectArrayFormatter -> a.a.a.al:
+    net.arnx.jsonic.ObjectArrayFormatter INSTANCE -> a
+    364:389:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ObjectConverter -> a.a.a.w:
+    net.arnx.jsonic.ObjectConverter INSTANCE -> a
+    1217:1246:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.ObjectFormatter -> a.a.a.bw:
+    net.arnx.jsonic.ObjectFormatter INSTANCE -> a
+    633:674:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.OutputSource -> a.a.a.ar:
+    int next() -> a
+    void back() -> b
+    long getLineNumber() -> c
+    long getColumnNumber() -> d
+    long getOffset() -> e
+net.arnx.jsonic.PatternConverter -> a.a.a.n:
+    net.arnx.jsonic.PatternConverter INSTANCE -> a
+    526:538:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.PlainConverter -> a.a.a.aj:
+    net.arnx.jsonic.PlainConverter INSTANCE -> a
+    java.util.Map PRIMITIVE_MAP -> b
+    66:66:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+    70:70:java.lang.Object getDefaultValue(java.lang.Class) -> a
+net.arnx.jsonic.PlainFormatter -> a.a.a.bu:
+    net.arnx.jsonic.PlainFormatter INSTANCE -> a
+    45:46:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.Property -> a.a.a.bk:
+    java.lang.String getName() -> a
+    net.arnx.jsonic.JSONHint getHint() -> b
+    java.lang.Object get(java.lang.Object) -> a
+    void set(java.lang.Object,java.lang.Object) -> a
+    java.lang.Class getType(java.lang.reflect.Type) -> b
+    java.lang.reflect.Type getGenericType(java.lang.reflect.Type) -> a
+net.arnx.jsonic.ReaderOutputSource -> a.a.a.s:
+    long lines -> a
+    long columns -> b
+    long offset -> c
+    java.io.Reader reader -> d
+    char[] buf -> e
+    int start -> f
+    int end -> g
+    90:107:int next() -> a
+    111:114:void back() -> b
+    117:117:long getLineNumber() -> c
+    121:121:long getColumnNumber() -> d
+    125:125:long getOffset() -> e
+    161:166:java.lang.String toString() -> toString
+net.arnx.jsonic.SerializableConverter -> a.a.a.bj:
+    net.arnx.jsonic.SerializableConverter INSTANCE -> a
+    105:110:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+    114:122:java.lang.Object deserialize(byte[]) -> a
+net.arnx.jsonic.SerializableFormatter -> a.a.a.ab:
+    net.arnx.jsonic.SerializableFormatter INSTANCE -> a
+    206:206:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ShortArrayFormatter -> a.a.a.bb:
+    net.arnx.jsonic.ShortArrayFormatter INSTANCE -> a
+    222:238:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.ShortConverter -> a.a.a.a:
+    net.arnx.jsonic.ShortConverter INSTANCE -> a
+    244:281:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.StringBuilderInputSource -> a.a.a.ap:
+    java.lang.StringBuilder sb -> a
+    114:115:void append(java.lang.String) -> a
+    119:120:void append(java.lang.String,int,int) -> a
+    124:125:void append(char) -> a
+    129:129:void flush() -> a
+    132:133:void clear() -> b
+    137:137:java.lang.String toString() -> toString
+net.arnx.jsonic.StringFormatter -> a.a.a.an:
+    net.arnx.jsonic.StringFormatter INSTANCE -> a
+    int[] ESCAPE_CHARS -> b
+    73:74:boolean format(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Object,net.arnx.jsonic.InputSource) -> a
+    78:109:void serialize(net.arnx.jsonic.JSON$Context,java.lang.String,net.arnx.jsonic.InputSource) -> a
+net.arnx.jsonic.StringSerializableConverter -> a.a.a.af:
+    net.arnx.jsonic.StringSerializableConverter INSTANCE -> a
+    86:97:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.TimeZoneConverter -> a.a.a.q:
+    net.arnx.jsonic.TimeZoneConverter INSTANCE -> a
+    546:558:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.URIConverter -> a.a.a.ba:
+    net.arnx.jsonic.URIConverter INSTANCE -> a
+    650:667:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.URLConverter -> a.a.a.ag:
+    net.arnx.jsonic.URLConverter INSTANCE -> a
+    625:642:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.UUIDConverter -> a.a.a.am:
+    net.arnx.jsonic.UUIDConverter INSTANCE -> a
+    675:686:java.lang.Object convert(net.arnx.jsonic.JSON,net.arnx.jsonic.JSON$Context,java.lang.Object,java.lang.Class,java.lang.reflect.Type) -> a
+net.arnx.jsonic.WriterInputSource -> a.a.a.au:
+    java.io.Writer writer -> a
+    char[] buf -> b
+    int pos -> c
+    25:26:void append(java.lang.String) -> a
+    30:44:void append(java.lang.String,int,int) -> a
+    48:53:void append(char) -> a
+    56:58:void flush() -> a
+org.apache.commons.io.IOUtils -> b.a.b.a.a:
+    char DIR_SEPARATOR -> a
+    java.lang.String LINE_SEPARATOR -> b
+    1236:1240:int copy(java.io.InputStream,java.io.OutputStream) -> a
+org.apache.commons.io.output.StringBuilderWriter -> b.a.b.a.a.a:
+    java.lang.StringBuilder builder -> a
+    71:72:java.io.Writer append(char) -> append
+    83:84:java.io.Writer append(java.lang.CharSequence) -> append
+    97:98:java.io.Writer append(java.lang.CharSequence,int,int) -> append
+    106:106:void close() -> close
+    113:113:void flush() -> flush
+    123:126:void write(java.lang.String) -> write
+    137:140:void write(char[],int,int) -> write
+    158:158:java.lang.String toString() -> toString
+    34:34:java.lang.Appendable append(char) -> append
+    34:34:java.lang.Appendable append(java.lang.CharSequence,int,int) -> append
+    34:34:java.lang.Appendable append(java.lang.CharSequence) -> append
+org.apache.http.client.entity.DecompressingEntity -> b.a.a.a.a.b:
+    60:73:void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.DeflateDecompressingEntity -> b.a.a.a.a.c:
+    64:142:java.io.InputStream getContent() -> getContent
+    153:153:org.apache.http.Header getContentEncoding() -> getContentEncoding
+    163:163:long getContentLength() -> getContentLength
+    1:1:void writeTo(java.io.OutputStream) -> writeTo
+org.apache.http.client.entity.GzipDecompressingEntity -> b.a.a.a.a.a:
+    58:60:java.io.InputStream getContent() -> getContent
+    70:70:org.apache.http.Header getContentEncoding() -> getContentEncoding
+    80:80:long getContentLength() -> getContentLength
+    1:1:void writeTo(java.io.OutputStream) -> writeTo
