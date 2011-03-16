@@ -26,8 +26,6 @@ public class DownloadTask extends NetworkTask< Void , Void > {
 
     @Override
     protected Void background() throws IOException {
-        System.err.println( _localPath + ", " + _remotePath );
-
         final FileOutputStream out = new FileOutputStream( _localPath );
 
         IOUtils.copy( NetUtil.get( _remotePath ) , out );
