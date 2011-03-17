@@ -10,9 +10,9 @@ public interface CoreView {
      */
     void onDragGesture( PointF delta );
 
-    void onGestureBegin( PointF point );
+    void onGestureBegin();
 
-    void onGestureEnd( PointF point );
+    void onGestureEnd();
 
     void onTapGesture( PointF point );
 
