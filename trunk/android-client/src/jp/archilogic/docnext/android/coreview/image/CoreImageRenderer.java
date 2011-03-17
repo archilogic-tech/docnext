@@ -31,7 +31,7 @@ public class CoreImageRenderer implements Renderer {
     private final CoreImageEngine _engine = new CoreImageEngine();
 
     private TextureInfo _background;
-    private PageInfo _page;
+    private PageInfo[] _pages;
 
     int _fpsCounter = 0;
     long _fpsTime;
@@ -52,7 +52,7 @@ public class CoreImageRenderer implements Renderer {
         _engine.isInteracting = false;
     }
 
-    private PageInfo loadPage( final GL10 gl ) {
+    private PageInfo loadPage( final GL10 gl , final int page ) {
         try {
             final int width = 1024;
             final int height = 1479;
@@ -70,7 +70,7 @@ public class CoreImageRenderer implements Renderer {
                     final int tw = Math.min( width - tx , TEXTURE_SIZE );
                     final int th = Math.min( height - ty , TEXTURE_SIZE );
 
-                    final InputStream in = _context.getAssets().open( String.format( "%d_%d.jpg" , x , y ) );
+                    final InputStream in = _context.getAssets().open( String.format( "%d_%d_%d.jpg" , page , x , y ) );
                     final int tt = prepareTexture( gl , in , tw , th ).texture;
                     IOUtils.closeQuietly( in );
 
@@ -102,14 +102,25 @@ public class CoreImageRenderer implements Renderer {
             }
         }
 
-        for ( final PageTextureInfo texture : _page.textures ) {
-            gl.glBindTexture( GL10.GL_TEXTURE_2D , texture.texture );
+        for ( int index = 0 ; index < 3 ; index++ ) {
+            if ( _pages[ index ] != null ) {
+                for ( final PageTextureInfo texture : _pages[ index ].textures ) {
+                    gl.glBindTexture( GL10.GL_TEXTURE_2D , texture.texture );
 
-            ( ( GL11Ext ) gl ).glDrawTexfOES( _engine.matrix.x( texture.x ) , //
-                    _engine.surfaceSize.height - _engine.matrix.y( texture.y + texture.height ) , //
-                    0 , //
-                    _engine.matrix.length( texture.width ) , //
-                    _engine.matrix.length( texture.height ) );
+                    final float x =
+                            _engine.matrix.x( texture.x ) + _engine.getHorizontalPadding()
+                                    + _engine.matrix.length( _engine.pageSize.width ) * ( index - 1 )
+                                    * _engine.direction.toXSign();
+                    final float y =
+                            _engine.surfaceSize.height - _engine.matrix.y( texture.y + texture.height )
+                                    - _engine.getVerticalPadding() + _engine.matrix.length( _engine.pageSize.height )
+                                    * ( index - 1 ) * _engine.direction.toYSign();
+                    final float w = _engine.matrix.length( texture.width );
+                    final float h = _engine.matrix.length( texture.height );
+
+                    ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
+                }
+            }
         }
 
         _fpsCounter++;
@@ -133,9 +144,10 @@ public class CoreImageRenderer implements Renderer {
         _background = prepareTexture( gl , in , 256 , 256 );
         IOUtils.closeQuietly( in );
 
-        _page = loadPage( gl );
+        _pages = new PageInfo[] { loadPage( gl , 6 ) , loadPage( gl , 7 ) , loadPage( gl , 8 ) };
 
-        _engine.pageSize = new SizeInfo( _page.width , _page.height );
+        _engine.pageSize = new SizeInfo( _pages[ 0 ].width , _pages[ 0 ].height );
+        _engine.direction = CoreImageDirection.R2L;
     }
 
     /**

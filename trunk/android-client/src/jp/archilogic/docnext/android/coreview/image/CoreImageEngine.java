@@ -12,9 +12,11 @@ import android.view.animation.Interpolator;
 public class CoreImageEngine {
     private static final long CLEANUP_DURATION = 200L;
 
+    int page = 0;
     CoreImageMatrix matrix = new CoreImageMatrix();
     SizeInfo pageSize;
     SizeInfo surfaceSize;
+    CoreImageDirection direction;
     boolean isInteracting = false;
 
     private float _minScale;
@@ -24,8 +26,23 @@ public class CoreImageEngine {
     private final Interpolator interpolator = new DecelerateInterpolator();
 
     void drag( final PointF delta ) {
+        if ( surfaceSize.width >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
+            delta.x = 0;
+        }
+        if ( surfaceSize.height >= pageSize.height * matrix.scale && !direction.canMoveVertical() ) {
+            delta.y = 0;
+        }
+
         matrix.tx += delta.x;
         matrix.ty += delta.y;
+    }
+
+    float getHorizontalPadding() {
+        return Math.max( surfaceSize.width - pageSize.width * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
+    }
+
+    float getVerticalPadding() {
+        return Math.max( surfaceSize.height - pageSize.height * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
     }
 
     void initScale() {
@@ -41,6 +58,8 @@ public class CoreImageEngine {
     void update() {
         if ( !isInteracting ) {
             if ( cleanup == null ) {
+                // check change page
+
                 cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
             }
 
@@ -74,7 +93,8 @@ public class CoreImageEngine {
 
         matrix.scale *= scaleDelta;
 
-        matrix.tx = matrix.tx * scaleDelta + ( 1 - scaleDelta ) * center.x;
-        matrix.ty = matrix.ty * scaleDelta + ( 1 - scaleDelta ) * center.y;
+        // This formula may be wrong...
+        matrix.tx = matrix.tx * scaleDelta + ( 1 - scaleDelta ) * ( center.x - getHorizontalPadding() );
+        matrix.ty = matrix.ty * scaleDelta + ( 1 - scaleDelta ) * ( center.y - getVerticalPadding() );
     }
 }
