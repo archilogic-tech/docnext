@@ -8,6 +8,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
 
+import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.info.SizeInfo;
 
 import org.apache.commons.io.IOUtils;
@@ -15,18 +16,40 @@ import org.apache.commons.io.IOUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLUtils;
+import android.os.SystemClock;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Handle OpenGL features
+ */
 public class CoreImageRenderer implements Renderer {
     private final Context _context;
+    private final CoreImageEngine _engine = new CoreImageEngine();
+
+    private TextureInfo _background;
     private PageInfo _page;
-    private SizeInfo _surfaceSize;
+
+    int _fpsCounter = 0;
+    long _fpsTime;
 
     public CoreImageRenderer( final Context context ) {
         _context = context;
+    }
+
+    void beginInteraction() {
+        _engine.isInteracting = true;
+    }
+
+    void drag( final PointF delta ) {
+        _engine.drag( delta );
+    }
+
+    void endInteraction() {
+        _engine.isInteracting = false;
     }
 
     private PageInfo loadPage( final GL10 gl ) {
@@ -42,17 +65,16 @@ public class CoreImageRenderer implements Renderer {
             ret.textures = Lists.newArrayList();
             for ( int y = 0 ; y * TEXTURE_SIZE < height ; y++ ) {
                 for ( int x = 0 ; x * TEXTURE_SIZE < width ; x++ ) {
-                    final TextureInfo texture = new TextureInfo();
-                    texture.x = x * TEXTURE_SIZE;
-                    texture.y = y * TEXTURE_SIZE;
-                    texture.width = Math.min( width - texture.x , TEXTURE_SIZE );
-                    texture.height = Math.min( height - texture.y , TEXTURE_SIZE );
+                    final int tx = x * TEXTURE_SIZE;
+                    final int ty = y * TEXTURE_SIZE;
+                    final int tw = Math.min( width - tx , TEXTURE_SIZE );
+                    final int th = Math.min( height - ty , TEXTURE_SIZE );
 
                     final InputStream in = _context.getAssets().open( String.format( "%d_%d.jpg" , x , y ) );
-                    texture.texture = prepareTexture( gl , in , texture.width , texture.height );
+                    final int tt = prepareTexture( gl , in , tw , th ).texture;
                     IOUtils.closeQuietly( in );
 
-                    ret.textures.add( texture );
+                    ret.textures.add( new PageTextureInfo( tt , tw , th , tx , ty ) );
                 }
             }
 
@@ -64,12 +86,36 @@ public class CoreImageRenderer implements Renderer {
 
     @Override
     public void onDrawFrame( final GL10 gl ) {
+        if ( _fpsCounter == 0 ) {
+            _fpsTime = SystemClock.elapsedRealtime();
+        }
+
+        _engine.update();
+
         gl.glClear( GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT );
 
-        for ( final TextureInfo texture : _page.textures ) {
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , _background.texture );
+        for ( int y = 0 ; y * _background.height < _engine.surfaceSize.height ; y++ ) {
+            for ( int x = 0 ; x * _background.width < _engine.surfaceSize.width ; x++ ) {
+                ( ( GL11Ext ) gl ).glDrawTexfOES( x * _background.width , y * _background.height , 0 ,
+                        _background.width , _background.height );
+            }
+        }
+
+        for ( final PageTextureInfo texture : _page.textures ) {
             gl.glBindTexture( GL10.GL_TEXTURE_2D , texture.texture );
-            ( ( GL11Ext ) gl ).glDrawTexfOES( texture.x , _surfaceSize.height - ( texture.y + texture.height ) , 0 ,
-                    texture.width , texture.height );
+
+            ( ( GL11Ext ) gl ).glDrawTexfOES( _engine.matrix.x( texture.x ) , //
+                    _engine.surfaceSize.height - _engine.matrix.y( texture.y + texture.height ) , //
+                    0 , //
+                    _engine.matrix.length( texture.width ) , //
+                    _engine.matrix.length( texture.height ) );
+        }
+
+        _fpsCounter++;
+        if ( _fpsCounter == 180 ) {
+            _fpsCounter = 0;
+            System.err.println( "FPS: " + 180.0 * 1000 / ( SystemClock.elapsedRealtime() - _fpsTime ) );
         }
     }
 
@@ -77,26 +123,37 @@ public class CoreImageRenderer implements Renderer {
     public void onSurfaceChanged( final GL10 gl , final int width , final int height ) {
         gl.glEnable( GL10.GL_TEXTURE_2D );
 
-        _surfaceSize = new SizeInfo( width , height );
+        _engine.surfaceSize = new SizeInfo( width , height );
+        _engine.initScale();
     }
 
     @Override
     public void onSurfaceCreated( final GL10 gl , final EGLConfig config ) {
+        final InputStream in = _context.getResources().openRawResource( R.drawable.background );
+        _background = prepareTexture( gl , in , 256 , 256 );
+        IOUtils.closeQuietly( in );
+
         _page = loadPage( gl );
+
+        _engine.pageSize = new SizeInfo( _page.width , _page.height );
     }
 
     /**
      * Crop is keeping left and top edge
      */
-    private int prepareTexture( final GL10 gl , final InputStream in , final int cropWidth , final int cropHeight ) {
+    private TextureInfo prepareTexture( final GL10 gl , final InputStream in , final int cropWidth ,
+            final int cropHeight ) {
         final int[] texture = new int[ 1 ];
 
         gl.glGenTextures( 1 , texture , 0 );
 
         gl.glBindTexture( GL10.GL_TEXTURE_2D , texture[ 0 ] );
 
-        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MIN_FILTER , GL10.GL_NEAREST );
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MIN_FILTER , GL10.GL_LINEAR );
         gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MAG_FILTER , GL10.GL_LINEAR );
+
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_S , GL10.GL_CLAMP_TO_EDGE );
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_T , GL10.GL_CLAMP_TO_EDGE );
 
         final Bitmap bitmap = BitmapFactory.decodeStream( in );
 
@@ -107,6 +164,10 @@ public class CoreImageRenderer implements Renderer {
         ( ( GL11 ) gl ).glTexParameteriv( GL10.GL_TEXTURE_2D , GL11Ext.GL_TEXTURE_CROP_RECT_OES , //
                 new int[] { 0 , cropHeight , cropWidth , -cropHeight } , 0 );
 
-        return texture[ 0 ];
+        return new TextureInfo( texture[ 0 ] , cropWidth , cropHeight );
+    }
+
+    void zoom( final float scaleDelta , final PointF center ) {
+        _engine.zoom( scaleDelta , center );
     }
 }

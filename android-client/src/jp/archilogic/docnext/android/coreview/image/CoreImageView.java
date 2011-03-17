@@ -7,10 +7,12 @@ import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 
 public class CoreImageView extends GLSurfaceView implements CoreView {
+    private CoreImageRenderer _renderer;
+
     public CoreImageView( final Context context ) {
         super( context );
 
-        setRenderer( new CoreImageRenderer( context ) );
+        setRenderer( _renderer = new CoreImageRenderer( context ) );
     }
 
     @Override
@@ -19,14 +21,17 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onDragGesture( final PointF delta ) {
+        _renderer.drag( delta );
     }
 
     @Override
-    public void onGestureBegin( final PointF point ) {
+    public void onGestureBegin() {
+        _renderer.beginInteraction();
     }
 
     @Override
-    public void onGestureEnd( final PointF point ) {
+    public void onGestureEnd() {
+        _renderer.endInteraction();
     }
 
     @Override
@@ -35,6 +40,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
+        _renderer.zoom( scaleDelta , center );
     }
 
     @Override
