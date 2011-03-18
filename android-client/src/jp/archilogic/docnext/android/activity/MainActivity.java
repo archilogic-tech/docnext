@@ -151,6 +151,7 @@ public class MainActivity extends Activity {
 
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
+        // TODO downloading on Activity has a problem on quit App (should use Service?)
         findViewById( R.id.button ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
