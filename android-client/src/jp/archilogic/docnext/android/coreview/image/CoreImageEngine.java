@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.android.coreview.image;
 
+import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer.PageLoader;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.graphics.PointF;
 import android.os.SystemClock;
@@ -12,18 +14,61 @@ import android.view.animation.Interpolator;
 public class CoreImageEngine {
     private static final long CLEANUP_DURATION = 200L;
 
+    long id;
     int page = 0;
     CoreImageMatrix matrix = new CoreImageMatrix();
     SizeInfo pageSize;
     SizeInfo surfaceSize;
     CoreImageDirection direction;
+    boolean[] loaded;
     boolean isInteracting = false;
+
+    private PageLoader _loader;
 
     private float _minScale;
     private float _maxScale;
 
-    private CoreImageCleanupValue cleanup = null;
     private final Interpolator interpolator = new DecelerateInterpolator();
+    private CoreImageCleanupValue cleanup = null;
+    private boolean _preventCheckChangePage = false;
+
+    private void changeToNextPage() {
+        if ( page - 1 >= 0 ) {
+            loaded[ page - 1 ] = false;
+        }
+
+        if ( page + 2 < loaded.length ) {
+            _loader.load( page + 2 );
+        }
+
+        page++;
+
+        direction.updateOffset( this , true );
+    }
+
+    private void changeToPrevPage() {
+        if ( page + 1 < loaded.length ) {
+            loaded[ page + 1 ] = false;
+        }
+
+        if ( page - 2 >= 0 ) {
+            _loader.load( page - 2 );
+        }
+
+        page--;
+
+        direction.updateOffset( this , false );
+    }
+
+    private void checkChangePage() {
+        if ( direction.shouldChangeToNext( this ) && page + 1 < loaded.length
+                && ( page + 2 >= loaded.length || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
+            changeToNextPage();
+        } else if ( direction.shouldChangeToPrev( this ) && page - 1 >= 0
+                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) ) ) {
+            changeToPrevPage();
+        }
+    }
 
     void drag( final PointF delta ) {
         if ( surfaceSize.width >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
@@ -52,13 +97,21 @@ public class CoreImageEngine {
         _maxScale = 1f;
     }
 
+    void setPageLoader( final PageLoader loader ) {
+        _loader = loader;
+    }
+
     /**
      * Check cleanup, Check change page, etc...
      */
     void update() {
         if ( !isInteracting ) {
             if ( cleanup == null ) {
-                // check change page
+                if ( _preventCheckChangePage ) {
+                    _preventCheckChangePage = false;
+                } else {
+                    checkChangePage();
+                }
 
                 cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
             }
@@ -96,5 +149,7 @@ public class CoreImageEngine {
         // This formula may be wrong...
         matrix.tx = matrix.tx * scaleDelta + ( 1 - scaleDelta ) * ( center.x - getHorizontalPadding() );
         matrix.ty = matrix.ty * scaleDelta + ( 1 - scaleDelta ) * ( center.y - getVerticalPadding() );
+
+        _preventCheckChangePage = true;
     }
 }

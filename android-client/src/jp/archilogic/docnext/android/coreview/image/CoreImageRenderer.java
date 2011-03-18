@@ -1,14 +1,21 @@
 package jp.archilogic.docnext.android.coreview.image;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
 
+import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.info.DocInfo;
+import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 
 import org.apache.commons.io.IOUtils;
@@ -27,21 +34,104 @@ import com.google.common.collect.Lists;
  * Handle OpenGL features
  */
 public class CoreImageRenderer implements Renderer {
+    interface PageLoader {
+        void load( int page );
+    }
+
     private final Context _context;
     private final CoreImageEngine _engine = new CoreImageEngine();
 
     private TextureInfo _background;
     private PageInfo[] _pages;
 
+    private final Queue< PageImageCache > _loadPageQueue = Lists.newLinkedList();
+    private final ExecutorService _executor = Executors.newSingleThreadExecutor();
+
     int _fpsCounter = 0;
     long _fpsTime;
 
+    private final PageLoader _loader = new PageLoader() {
+        @Override
+        public void load( final int page ) {
+            _executor.execute( new Runnable() {
+                @Override
+                public void run() {
+                    // 2 for waiting index update
+                    if ( page < _engine.page - 2 || page > _engine.page + 2 ) {
+                        return;
+                    }
+
+                    final PageImageCache cache = buildCache( page );
+
+                    if ( page < _engine.page - 1 || page > _engine.page + 1 ) {
+                        return;
+                    }
+
+                    _loadPageQueue.add( cache );
+                }
+            } );
+        }
+    };
+
     public CoreImageRenderer( final Context context ) {
         _context = context;
+        _engine.setPageLoader( _loader );
     }
 
     void beginInteraction() {
         _engine.isInteracting = true;
+    }
+
+    private void bindPage( final GL10 gl , final PageImageCache cache ) {
+        for ( int index = 0 ; index < cache.bitmaps.size() ; index++ ) {
+            final Bitmap bitmap = cache.bitmaps.get( index );
+            final PageTextureInfo texture = _pages[ cache.page % _pages.length ].textures.get( index );
+
+            gl.glDeleteTextures( 1 , new int[] { texture.texture } , 0 );
+            bindTexture( gl , texture , bitmap );
+
+            bitmap.recycle();
+        }
+
+        _engine.loaded[ cache.page ] = true;
+    }
+
+    /**
+     * Crop is keeping left and top edge
+     */
+    private void bindTexture( final GL10 gl , final TextureInfo texture , final Bitmap bitmap ) {
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , texture.texture );
+
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MIN_FILTER , GL10.GL_LINEAR );
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MAG_FILTER , GL10.GL_LINEAR );
+
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_S , GL10.GL_CLAMP_TO_EDGE );
+        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_T , GL10.GL_CLAMP_TO_EDGE );
+
+        GLUtils.texImage2D( GL10.GL_TEXTURE_2D , 0 , bitmap , 0 );
+
+        ( ( GL11 ) gl ).glTexParameteriv( GL10.GL_TEXTURE_2D , GL11Ext.GL_TEXTURE_CROP_RECT_OES , //
+                new int[] { 0 , texture.height , texture.width , -texture.height } , 0 );
+    }
+
+    private PageImageCache buildCache( final int page ) {
+        try {
+            final PageImageCache ret = new PageImageCache( page );
+
+            for ( final PageTextureInfo texture : _pages[ page % _pages.length ].textures ) {
+                final InputStream in =
+                        new FileInputStream( Kernel.getLocalProvider().getImagePath( _engine.id , page , 0 ,
+                                texture.px , texture.py ) );
+
+                ret.bitmaps.add( BitmapFactory.decodeStream( in ) );
+
+                IOUtils.closeQuietly( in );
+            }
+
+            return ret;
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     void drag( final PointF delta ) {
@@ -52,42 +142,26 @@ public class CoreImageRenderer implements Renderer {
         _engine.isInteracting = false;
     }
 
-    private PageInfo loadPage( final GL10 gl , final int page ) {
-        try {
-            final int width = 1024;
-            final int height = 1479;
-            final int TEXTURE_SIZE = 512;
+    private int genTexture( final GL10 gl ) {
+        final int[] texture = new int[ 1 ];
 
-            final PageInfo ret = new PageInfo();
-            ret.width = width;
-            ret.height = height;
+        gl.glGenTextures( 1 , texture , 0 );
 
-            ret.textures = Lists.newArrayList();
-            for ( int y = 0 ; y * TEXTURE_SIZE < height ; y++ ) {
-                for ( int x = 0 ; x * TEXTURE_SIZE < width ; x++ ) {
-                    final int tx = x * TEXTURE_SIZE;
-                    final int ty = y * TEXTURE_SIZE;
-                    final int tw = Math.min( width - tx , TEXTURE_SIZE );
-                    final int th = Math.min( height - ty , TEXTURE_SIZE );
+        return texture[ 0 ];
+    }
 
-                    final InputStream in = _context.getAssets().open( String.format( "%d_%d_%d.jpg" , page , x , y ) );
-                    final int tt = prepareTexture( gl , in , tw , th ).texture;
-                    IOUtils.closeQuietly( in );
-
-                    ret.textures.add( new PageTextureInfo( tt , tw , th , tx , ty ) );
-                }
-            }
-
-            return ret;
-        } catch ( final IOException e ) {
-            throw new RuntimeException( e );
-        }
+    CoreImageDirection getDirection() {
+        return _engine.direction;
     }
 
     @Override
     public void onDrawFrame( final GL10 gl ) {
         if ( _fpsCounter == 0 ) {
             _fpsTime = SystemClock.elapsedRealtime();
+        }
+
+        while ( !_loadPageQueue.isEmpty() ) {
+            bindPage( gl , _loadPageQueue.poll() );
         }
 
         _engine.update();
@@ -102,21 +176,24 @@ public class CoreImageRenderer implements Renderer {
             }
         }
 
-        for ( int index = 0 ; index < 3 ; index++ ) {
-            if ( _pages[ index ] != null ) {
-                for ( final PageTextureInfo texture : _pages[ index ].textures ) {
-                    gl.glBindTexture( GL10.GL_TEXTURE_2D , texture.texture );
+        // TODO consider viewport
+        for ( int delta = -1 ; delta <= 1 ; delta++ ) {
+            final int page = _engine.page + delta;
+
+            if ( page >= 0 && page < _engine.loaded.length && _engine.loaded[ page ] ) {
+                for ( final PageTextureInfo tex : _pages[ page % _pages.length ].textures ) {
+                    gl.glBindTexture( GL10.GL_TEXTURE_2D , tex.texture );
 
                     final float x =
-                            _engine.matrix.x( texture.x ) + _engine.getHorizontalPadding()
-                                    + _engine.matrix.length( _engine.pageSize.width ) * ( index - 1 )
+                            _engine.matrix.x( tex.x ) + _engine.getHorizontalPadding()
+                                    + _engine.matrix.length( _engine.pageSize.width ) * delta
                                     * _engine.direction.toXSign();
                     final float y =
-                            _engine.surfaceSize.height - _engine.matrix.y( texture.y + texture.height )
-                                    - _engine.getVerticalPadding() + _engine.matrix.length( _engine.pageSize.height )
-                                    * ( index - 1 ) * _engine.direction.toYSign();
-                    final float w = _engine.matrix.length( texture.width );
-                    final float h = _engine.matrix.length( texture.height );
+                            _engine.surfaceSize.height
+                                    - ( _engine.matrix.y( tex.y + tex.height ) + _engine.getVerticalPadding() + _engine.matrix
+                                            .length( _engine.pageSize.height ) * delta * _engine.direction.toYSign() );
+                    final float w = _engine.matrix.length( tex.width );
+                    final float h = _engine.matrix.length( tex.height );
 
                     ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
                 }
@@ -140,43 +217,54 @@ public class CoreImageRenderer implements Renderer {
 
     @Override
     public void onSurfaceCreated( final GL10 gl , final EGLConfig config ) {
+        _background = new TextureInfo( genTexture( gl ) , 256 , 256 );
+
         final InputStream in = _context.getResources().openRawResource( R.drawable.background );
-        _background = prepareTexture( gl , in , 256 , 256 );
+        final Bitmap bitmap = BitmapFactory.decodeStream( in );
+        bindTexture( gl , _background , bitmap );
+        bitmap.recycle();
         IOUtils.closeQuietly( in );
 
-        _pages = new PageInfo[] { loadPage( gl , 6 ) , loadPage( gl , 7 ) , loadPage( gl , 8 ) };
+        final DocInfo doc = Kernel.getLocalProvider().getDocInfo( _engine.id );
+        final ImageInfo image = Kernel.getLocalProvider().getImageInfo( _engine.id );
 
-        _engine.pageSize = new SizeInfo( _pages[ 0 ].width , _pages[ 0 ].height );
-        _engine.direction = CoreImageDirection.R2L;
+        _pages = new PageInfo[] { preparePageTextureHolder( gl , image.width , image.height ) , //
+                preparePageTextureHolder( gl , image.width , image.height ) , //
+                preparePageTextureHolder( gl , image.width , image.height ) };
+
+        _engine.pageSize = new SizeInfo( image.width , image.height );
+        _engine.page = 0;
+        _engine.loaded = new boolean[ doc.pages ];
+
+        bindPage( gl , buildCache( 0 ) );
+        bindPage( gl , buildCache( 1 ) );
     }
 
-    /**
-     * Crop is keeping left and top edge
-     */
-    private TextureInfo prepareTexture( final GL10 gl , final InputStream in , final int cropWidth ,
-            final int cropHeight ) {
-        final int[] texture = new int[ 1 ];
+    private PageInfo preparePageTextureHolder( final GL10 gl , final int width , final int height ) {
+        final int TEXTURE_SIZE = 512;
 
-        gl.glGenTextures( 1 , texture , 0 );
+        final PageInfo ret = new PageInfo();
 
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , texture[ 0 ] );
+        ret.textures = Lists.newArrayList();
+        for ( int py = 0 ; py * TEXTURE_SIZE < height ; py++ ) {
+            for ( int px = 0 ; px * TEXTURE_SIZE < width ; px++ ) {
+                final int x = px * TEXTURE_SIZE;
+                final int y = py * TEXTURE_SIZE;
 
-        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MIN_FILTER , GL10.GL_LINEAR );
-        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_MAG_FILTER , GL10.GL_LINEAR );
+                ret.textures.add( new PageTextureInfo( genTexture( gl ) , Math.min( width - x , TEXTURE_SIZE ) ,//
+                        Math.min( height - y , TEXTURE_SIZE ) , x , y , px , py ) );
+            }
+        }
 
-        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_S , GL10.GL_CLAMP_TO_EDGE );
-        gl.glTexParameterf( GL10.GL_TEXTURE_2D , GL10.GL_TEXTURE_WRAP_T , GL10.GL_CLAMP_TO_EDGE );
+        return ret;
+    }
 
-        final Bitmap bitmap = BitmapFactory.decodeStream( in );
+    void setDirection( final CoreImageDirection direction ) {
+        _engine.direction = direction;
+    }
 
-        GLUtils.texImage2D( GL10.GL_TEXTURE_2D , 0 , bitmap , 0 );
-
-        bitmap.recycle();
-
-        ( ( GL11 ) gl ).glTexParameteriv( GL10.GL_TEXTURE_2D , GL11Ext.GL_TEXTURE_CROP_RECT_OES , //
-                new int[] { 0 , cropHeight , cropWidth , -cropHeight } , 0 );
-
-        return new TextureInfo( texture[ 0 ] , cropWidth , cropHeight );
+    void setId( final long id ) {
+        _engine.id = id;
     }
 
     void zoom( final float scaleDelta , final PointF center ) {

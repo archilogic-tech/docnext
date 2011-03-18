@@ -53,12 +53,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
                     setProgressBarVisibility( false );
                 }
             } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED ) ) {
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_THUMBNAIL_SUCCEED ) ) {
             } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_DOC_INFO_FAILED )
                     || intent.getAction().equals( RemoteProvider.BROADCAST_GET_FONT_FAILED )
                     || intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_THUMBNAIL_FAILED ) ) {
+                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED ) ) {
             }
         }
     };
@@ -74,8 +72,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_FAILED );
         filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED );
         filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_THUMBNAIL_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_THUMBNAIL_FAILED );
 
         return filter;
     }

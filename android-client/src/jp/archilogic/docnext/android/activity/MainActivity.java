@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.activity;
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.info.DocInfo;
+import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.provider.remote.RemoteProvider;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.app.Activity;
@@ -27,33 +28,46 @@ public class MainActivity extends Activity {
 
                 checkDockInfo( Kernel.getLocalProvider().getDocInfo( id ) );
             } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_FONT_SUCCEED ) ) {
-
             } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_SUCCEED ) ) {
                 final long id = intent.getLongExtra( RemoteProvider.EXTRA_ID , -1 );
                 final int page = intent.getIntExtra( RemoteProvider.EXTRA_PAGE , -1 );
-                // final int level = intent.getIntExtra( RemoteProvider.EXTRA_LEVEL , -1 );
-                // final int px = intent.getIntExtra( RemoteProvider.EXTRA_PX , -1 );
-                // final int py = intent.getIntExtra( RemoteProvider.EXTRA_PY , -1 );
+                final int level = intent.getIntExtra( RemoteProvider.EXTRA_LEVEL , -1 );
+                final int px = intent.getIntExtra( RemoteProvider.EXTRA_PX , -1 );
+                final int py = intent.getIntExtra( RemoteProvider.EXTRA_PY , -1 );
 
                 final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
+                final ImageInfo image = Kernel.getLocalProvider().getImageInfo( id );
 
-                if ( page == 1 ) {
+                if ( page == 2 && level == 0 && px == 0 && py == 0 ) {
                     startCoreView( doc );
                 }
 
-                ensureThumbnail( doc , page + 1 );
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED ) ) {
+                if ( py + 1 < image.ny ) {
+                    ensureImage( doc , page , level , px , py + 1 );
+                } else if ( px + 1 < image.nx ) {
+                    ensureImage( doc , page , level , px + 1 , 0 );
+                } else if ( level + 1 < 1 ) {
+                    ensureImage( doc , page , level + 1 , 0 , 0 );
+                } else if ( page + 1 < doc.pages ) {
+                    setProgress( Window.PROGRESS_END * ( page + 1 ) / doc.pages );
 
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_THUMBNAIL_SUCCEED ) ) {
+                    ensureImage( doc , page + 1 , 0 , 0 , 0 );
+                } else {
+                    setProgressBarVisibility( false );
+
+                    Kernel.getLocalProvider().setCompleted( doc.id );
+                    Kernel.getRemoteProvider().setWorking( false );
+                }
+            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_INFO_SUCCEED ) ) {
                 final long id = intent.getLongExtra( RemoteProvider.EXTRA_ID , -1 );
-                final int page = intent.getIntExtra( RemoteProvider.EXTRA_PAGE , -1 );
 
-                ensureImage( Kernel.getLocalProvider().getDocInfo( id ) , page );
+                ensureImage( Kernel.getLocalProvider().getDocInfo( id ) , 0 , 0 , 0 , 0 );
+            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED ) ) {
             } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_DOC_INFO_FAILED )
                     || intent.getAction().equals( RemoteProvider.BROADCAST_GET_FONT_FAILED )
                     || intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_THUMBNAIL_FAILED ) ) {
+                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_INFO_FAILED )
+                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED ) ) {
                 final TaskErrorType error = ( TaskErrorType ) intent.getSerializableExtra( RemoteProvider.EXTRA_ERROR );
 
                 switch ( error ) {
@@ -79,10 +93,10 @@ public class MainActivity extends Activity {
         filter.addAction( RemoteProvider.BROADCAST_GET_FONT_FAILED );
         filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_SUCCEED );
         filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_FAILED );
+        filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_INFO_SUCCEED );
+        filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_INFO_FAILED );
         filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED );
         filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_THUMBNAIL_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_THUMBNAIL_FAILED );
 
         return filter;
     }
@@ -90,55 +104,40 @@ public class MainActivity extends Activity {
     private void checkDockInfo( final DocInfo doc ) {
         switch ( doc.type ) {
         case IMAGE:
-            if ( Kernel.getLocalProvider().isCompleted( doc.id ) ) {
-                startCoreView( doc );
+            if ( Kernel.getRemoteProvider().isWorking() ) {
+                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
             } else {
-                if ( Kernel.getRemoteProvider().isWorking() ) {
-                    Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
-                } else {
-                    Kernel.getRemoteProvider().setWorking( true );
+                Kernel.getRemoteProvider().setWorking( true );
 
-                    ensureThumbnail( doc , 0 );
-                }
+                ensureImageInfo( doc );
             }
             break;
         case TEXT:
-            // fetchText( id , meta );
             break;
         default:
             throw new RuntimeException();
         }
     }
 
-    private void ensureImage( final DocInfo doc , final int page ) {
-        if ( Kernel.getLocalProvider().getImagePath( doc.id , page , 0 , 0 , 0 ) != null ) {
+    private void ensureImage( final DocInfo doc , final int page , final int level , final int px , final int py ) {
+        if ( Kernel.getLocalProvider().getImagePath( doc.id , page , level , px , py ) != null ) {
             sendBroadcast( new Intent( RemoteProvider.BROADCAST_GET_IMAGE_SUCCEED ). //
                     putExtra( RemoteProvider.EXTRA_ID , doc.id ). //
                     putExtra( RemoteProvider.EXTRA_PAGE , page ). //
-                    putExtra( RemoteProvider.EXTRA_LEVEL , 0 ). //
-                    putExtra( RemoteProvider.EXTRA_PX , 0 ). //
-                    putExtra( RemoteProvider.EXTRA_PY , 0 ) );
+                    putExtra( RemoteProvider.EXTRA_LEVEL , level ). //
+                    putExtra( RemoteProvider.EXTRA_PX , px ). //
+                    putExtra( RemoteProvider.EXTRA_PY , py ) );
         } else {
-            Kernel.getRemoteProvider().getImage( _self , doc.id , page , 0 , 0 , 0 );
+            Kernel.getRemoteProvider().getImage( _self , doc.id , page , level , px , py );
         }
     }
 
-    private void ensureThumbnail( final DocInfo doc , final int page ) {
-        if ( page < doc.pages ) {
-            setProgress( Window.PROGRESS_END * page / doc.pages );
-
-            if ( Kernel.getLocalProvider().getThumbnailPath( doc.id , page ) != null ) {
-                sendBroadcast( new Intent( RemoteProvider.BROADCAST_GET_THUMBNAIL_SUCCEED ). //
-                        putExtra( RemoteProvider.EXTRA_ID , doc.id ). //
-                        putExtra( RemoteProvider.EXTRA_PAGE , page ) );
-            } else {
-                Kernel.getRemoteProvider().getThumbnail( _self , doc.id , page );
-            }
+    private void ensureImageInfo( final DocInfo doc ) {
+        if ( Kernel.getLocalProvider().getImageInfo( doc.id ) != null ) {
+            sendBroadcast( new Intent( RemoteProvider.BROADCAST_GET_IMAGE_INFO_SUCCEED ). //
+                    putExtra( RemoteProvider.EXTRA_ID , doc.id ) );
         } else {
-            setProgressBarVisibility( false );
-
-            Kernel.getLocalProvider().setCompleted( doc.id );
-            Kernel.getRemoteProvider().setWorking( false );
+            Kernel.getRemoteProvider().getImageInfo( _self , doc.id );
         }
     }
 
@@ -160,7 +159,12 @@ public class MainActivity extends Activity {
                 final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
 
                 if ( doc != null ) {
-                    checkDockInfo( doc );
+                    if ( Kernel.getLocalProvider().isCompleted( doc.id ) ) {
+                        startCoreView( doc );
+                    } else {
+                        sendBroadcast( new Intent( RemoteProvider.BROADCAST_GET_DOC_INFO_SUCCEED ). //
+                                putExtra( RemoteProvider.EXTRA_ID , doc.id ) );
+                    }
                 } else {
                     Kernel.getRemoteProvider().getDocInfo( _self , id );
                 }

@@ -13,16 +13,16 @@ public class LocalPathManager {
         }
     }
 
+    public void ensureDocInfoDir() {
+        ensure( getDocInfoDir() );
+    }
+
     public void ensureFontDir() {
         ensure( getFontDir() );
     }
 
     public void ensureImageDir( final long id ) {
         ensure( getImageDir( id ) );
-    }
-
-    public void ensureMetaInfoDir() {
-        ensure( getMetaInfoDir() );
     }
 
     public void ensureTextInfoDir( final long id ) {
@@ -37,6 +37,14 @@ public class LocalPathManager {
         return ROOT + "completed.json";
     }
 
+    private String getDocInfoDir() {
+        return ROOT + "meta/";
+    }
+
+    public String getDocInfoPath( final long id ) {
+        return getDocInfoDir() + id + ".json";
+    }
+
     private String getFontDir() {
         return ROOT + "font/";
     }
@@ -49,16 +57,12 @@ public class LocalPathManager {
         return ROOT + "image/" + id + "/";
     }
 
+    public String getImageInfoPath( final long id ) {
+        return getDocInfoDir() + id + ".image.json";
+    }
+
     public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
-        return getImageDir( id ) + page + ".jpg";
-    }
-
-    private String getMetaInfoDir() {
-        return ROOT + "meta/";
-    }
-
-    public String getMetaInfoPath( final long id ) {
-        return getMetaInfoDir() + id + ".json";
+        return String.format( "%s%d_%d_%d_%d.jpg" , getImageDir( id ) , page , level , px , py );
     }
 
     private String getTextInfoDir( final long id ) {
@@ -69,10 +73,12 @@ public class LocalPathManager {
         return getTextInfoDir( id ) + page + ".json";
     }
 
+    @Deprecated
     private String getThumbDir( final long id ) {
         return ROOT + "thumb/" + id + "/";
     }
 
+    @Deprecated
     public String getThumbnailPath( final long id , final int page ) {
         return getThumbDir( id ) + page + ".jpg";
     }
