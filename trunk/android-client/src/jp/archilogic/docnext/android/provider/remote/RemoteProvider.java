@@ -15,9 +15,13 @@ public interface RemoteProvider {
     final String BROADCAST_GET_FONT_FAILED = PACKAGE_NAME + ".method.getFont.failed";
     final String BROADCAST_GET_IMAGE_SUCCEED = PACKAGE_NAME + ".method.getImage.succeed";
     final String BROADCAST_GET_IMAGE_FAILED = PACKAGE_NAME + ".method.getImage.failed";
+    final String BROADCAST_GET_IMAGE_INFO_SUCCEED = PACKAGE_NAME + ".method.getImageInfo.succeed";
+    final String BROADCAST_GET_IMAGE_INFO_FAILED = PACKAGE_NAME + ".method.getImageInfo.failed";
     final String BROADCAST_GET_TEXT_INFO_SUCCEED = PACKAGE_NAME + ".method.getTextInfo.succeed";
     final String BROADCAST_GET_TEXT_INFO_FAILED = PACKAGE_NAME + ".method.getTextInfo.failed";
+    @Deprecated
     final String BROADCAST_GET_THUMBNAIL_SUCCEED = PACKAGE_NAME + ".method.getThumbnail.succeed";
+    @Deprecated
     final String BROADCAST_GET_THUMBNAIL_FAILED = PACKAGE_NAME + ".method.getThumbnail.failed";
 
     final String EXTRA_ID = PACKAGE_NAME + ".extra.id";
@@ -34,8 +38,11 @@ public interface RemoteProvider {
 
     void getImage( Context context , long id , int page , int level , int px , int py );
 
+    void getImageInfo( Context context , long id );
+
     void getTextInfo( Context context , long id , int page );
 
+    @Deprecated
     void getThumbnail( Context context , long id , int page );
 
     boolean isWorking();

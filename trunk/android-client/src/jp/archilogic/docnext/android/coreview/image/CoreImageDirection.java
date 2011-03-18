@@ -1,6 +1,5 @@
 package jp.archilogic.docnext.android.coreview.image;
 
-
 public enum CoreImageDirection {
     L2R , R2L , T2B , B2T;
 
@@ -46,7 +45,7 @@ public enum CoreImageDirection {
             return engine.matrix.tx > engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD;
         case R2L:
             return engine.matrix.tx < engine.surfaceSize.width - engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD
-                    - engine.pageSize.width * engine.matrix.scale;
+                    - engine.pageSize.width * engine.matrix.scale - engine.getHorizontalPadding() * 2;
         case T2B:
             return engine.matrix.ty > engine.surfaceSize.height / PAGE_CHANGE_THREASHOLD;
         case B2T:

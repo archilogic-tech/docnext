@@ -13,6 +13,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
         super( context );
 
         setRenderer( _renderer = new CoreImageRenderer( context ) );
+        _renderer.setDirection( CoreImageDirection.R2L );
     }
 
     @Override
@@ -36,6 +37,10 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onTapGesture( final PointF point ) {
+        if ( point.x < 50 && point.y < 50 ) {
+            _renderer.setDirection( CoreImageDirection.values()[ ( _renderer.getDirection().ordinal() + 1 )
+                    % CoreImageDirection.values().length ] );
+        }
     }
 
     @Override
@@ -49,5 +54,6 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void setIds( final long[] ids ) {
+        _renderer.setId( ids[ 0 ] );
     }
 }

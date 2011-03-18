@@ -15,7 +15,7 @@ public class RemoteProviderImpl implements RemoteProvider {
 
     @Override
     public void getDocInfo( final Context context , final long id ) {
-        _localPathManager.ensureMetaInfoDir();
+        _localPathManager.ensureDocInfoDir();
 
         new DownloadTask( context , new Receiver< Void >() {
             @Override
@@ -29,7 +29,7 @@ public class RemoteProviderImpl implements RemoteProvider {
             public void receive( final Void result ) {
                 context.sendBroadcast( new Intent( BROADCAST_GET_DOC_INFO_SUCCEED ).putExtra( EXTRA_ID , id ) );
             }
-        } , _remotePathManager.getMetaInfoPath( id ) , _localPathManager.getMetaInfoPath( id ) ).execute();
+        } , _remotePathManager.getDocInfoPath( id ) , _localPathManager.getDocInfoPath( id ) ).execute();
     }
 
     @Override
@@ -82,6 +82,25 @@ public class RemoteProviderImpl implements RemoteProvider {
     }
 
     @Override
+    public void getImageInfo( final Context context , final long id ) {
+        _localPathManager.ensureDocInfoDir();
+
+        new DownloadTask( context , new Receiver< Void >() {
+            @Override
+            public void error( final TaskErrorType error ) {
+                context.sendBroadcast( new Intent( BROADCAST_GET_IMAGE_INFO_FAILED ). //
+                        putExtra( EXTRA_ID , id ). //
+                        putExtra( EXTRA_ERROR , error ) );
+            }
+
+            @Override
+            public void receive( final Void result ) {
+                context.sendBroadcast( new Intent( BROADCAST_GET_IMAGE_INFO_SUCCEED ).putExtra( EXTRA_ID , id ) );
+            }
+        } , _remotePathManager.getImageInfoPath( id ) , _localPathManager.getImageInfoPath( id ) ).execute();
+    }
+
+    @Override
     public void getTextInfo( final Context context , final long id , final int page ) {
         _localPathManager.ensureTextInfoDir( id );
 
@@ -105,6 +124,7 @@ public class RemoteProviderImpl implements RemoteProvider {
     }
 
     @Override
+    @Deprecated
     public void getThumbnail( final Context context , final long id , final int page ) {
         _localPathManager.ensureThumbDir( id );
 

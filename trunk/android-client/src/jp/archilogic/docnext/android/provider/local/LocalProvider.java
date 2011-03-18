@@ -1,6 +1,7 @@
 package jp.archilogic.docnext.android.provider.local;
 
 import jp.archilogic.docnext.android.info.DocInfo;
+import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TextInfo;
 
 /**
@@ -20,6 +21,11 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
+    ImageInfo getImageInfo( long id );
+
+    /**
+     * @return null if not exists
+     */
     String getImagePath( long id , int page , int level , int px , int py );
 
     /**
@@ -32,12 +38,14 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
+    @Deprecated
     String getThumbnailPath( long id , int page );
 
     boolean isCompleted( long id );
 
     boolean isImageExists( long id , int page );
 
+    @Deprecated
     boolean isThumbnailExists( long id , int page );
 
     void setCompleted( long id );

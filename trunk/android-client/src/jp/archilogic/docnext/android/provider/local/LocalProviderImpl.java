@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.archilogic.docnext.android.info.DocInfo;
+import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TextInfo;
 import net.arnx.jsonic.JSON;
 
@@ -22,7 +23,7 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public DocInfo getDocInfo( final long id ) {
-        return getJsonInfo( _pathManager.getMetaInfoPath( id ) , DocInfo.class );
+        return getJsonInfo( _pathManager.getDocInfoPath( id ) , DocInfo.class );
     }
 
     @Override
@@ -34,6 +35,11 @@ public class LocalProviderImpl implements LocalProvider {
         }
 
         return ret;
+    }
+
+    @Override
+    public ImageInfo getImageInfo( final long id ) {
+        return getJsonInfo( _pathManager.getImageInfoPath( id ) , ImageInfo.class );
     }
 
     @Override
@@ -70,6 +76,7 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
+    @Deprecated
     public String getThumbnailPath( final long id , final int page ) {
         final String ret = _pathManager.getThumbnailPath( id , page );
 
@@ -94,10 +101,15 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public boolean isImageExists( final long id , final int page ) {
-        return getImagePath( id , page , 0 , 0 , 0 ) != null;
+        if ( page + 1 < getDocInfo( id ).pages ) {
+            return getImagePath( id , page + 1 , 0 , 0 , 0 ) != null;
+        } else {
+            return isCompleted( id );
+        }
     }
 
     @Override
+    @Deprecated
     public boolean isThumbnailExists( final long id , final int page ) {
         return getThumbnailPath( id , page ) != null;
     }
