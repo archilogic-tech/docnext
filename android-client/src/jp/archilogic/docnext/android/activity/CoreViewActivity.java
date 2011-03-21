@@ -72,6 +72,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     private final OnDoubleTapListener _doubleTapListener = new OnDoubleTapListener() {
         @Override
         public boolean onDoubleTap( final MotionEvent e ) {
+            // hack for this method called before ACTION_UP (actually invoked ACTION_DOWN)
+            _view.onGestureEnd();
             _view.onDoubleTapGesture( new PointF( e.getX() , e.getY() ) );
 
             return true;
@@ -84,6 +86,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         @Override
         public boolean onSingleTapConfirmed( final MotionEvent e ) {
+            // hack for this method called before ACTION_UP (actually invoked ACTION_DOWN)
+            _view.onGestureEnd();
             _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
 
             return true;
