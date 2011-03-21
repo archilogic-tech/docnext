@@ -78,8 +78,8 @@ public class CoreImageEngine {
             delta.y = 0;
         }
 
-        matrix.tx += delta.x;
-        matrix.ty += delta.y;
+        matrix.tx -= delta.x;
+        matrix.ty -= delta.y;
     }
 
     float getHorizontalPadding() {

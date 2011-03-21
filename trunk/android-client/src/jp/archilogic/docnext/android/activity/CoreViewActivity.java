@@ -13,7 +13,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.ScaleGestureDetector.OnScaleGestureListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -22,16 +27,86 @@ import android.widget.FrameLayout;
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
 
-    private static final float TAP_THREASHOLD = 10;
+    private final CoreViewActivity _self = this;
 
     private ViewGroup _rootViewGroup;
     private CoreView _view;
 
-    private int _nTouch;
-    private final PointF[] _prevPoints = new PointF[ 2 ]; // supported multi-touch count
-    private final PointF[] _downPoints = new PointF[ 2 ];
-    private boolean _isTap;
-    private PointF _zoomCenter;
+    private GestureDetector _gestureDetector;
+    private ScaleGestureDetector _scaleGestureDetector;
+
+    private final OnGestureListener _gestureListener = new OnGestureListener() {
+        @Override
+        public boolean onDown( final MotionEvent e ) {
+            return false;
+        }
+
+        @Override
+        public boolean onFling( final MotionEvent e1 , final MotionEvent e2 , final float velocityX ,
+                final float velocityY ) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress( final MotionEvent e ) {
+        }
+
+        @Override
+        public boolean onScroll( final MotionEvent e1 , final MotionEvent e2 , final float distanceX ,
+                final float distanceY ) {
+            _view.onDragGesture( new PointF( distanceX , distanceY ) );
+
+            return true;
+        }
+
+        @Override
+        public void onShowPress( final MotionEvent e ) {
+        }
+
+        @Override
+        public boolean onSingleTapUp( final MotionEvent e ) {
+            return false;
+        }
+    };
+
+    private final OnDoubleTapListener _doubleTapListener = new OnDoubleTapListener() {
+        @Override
+        public boolean onDoubleTap( final MotionEvent e ) {
+            _view.onDoubleTapGesture( new PointF( e.getX() , e.getY() ) );
+
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent( final MotionEvent e ) {
+            return false;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed( final MotionEvent e ) {
+            _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
+
+            return true;
+        }
+    };
+
+    private final OnScaleGestureListener _scaleGestureListener = new OnScaleGestureListener() {
+        @Override
+        public boolean onScale( final ScaleGestureDetector detector ) {
+            _view.onZoomGesture( detector.getScaleFactor() , new PointF( detector.getFocusX() , detector.getFocusY() ) );
+
+            return true;
+        }
+
+        @Override
+        public boolean onScaleBegin( final ScaleGestureDetector detector ) {
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd( final ScaleGestureDetector detector ) {
+        }
+    };
 
     private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
         @Override
@@ -62,16 +137,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         // Not implemented
     }
 
-    private PointF copyPoint( final PointF point ) {
-        return new PointF( point.x , point.y );
-    }
-
-    private void copyPoints( final MotionEvent event , final PointF[] dst ) {
-        for ( int index = 0 ; index < event.getPointerCount() ; index++ ) {
-            dst[ index ] = new PointF( event.getX( index ) , event.getY( index ) );
-        }
-    }
-
     @Override
     public void onCreate( final Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -82,18 +147,22 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         setContentView( _rootViewGroup );
 
-        registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
-
         final long[] ids = getIntent().getLongArrayExtra( EXTRA_IDS );
         if ( ids == null || ids.length == 0 ) {
             throw new RuntimeException();
         }
+
+        registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
         _view = validateCoreViewType( ids ).buildView( this );
 
         _rootViewGroup.addView( ( View ) _view );
 
         _view.setIds( ids );
+
+        _gestureDetector = new GestureDetector( _self , _gestureListener );
+        _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
+        _scaleGestureDetector = new ScaleGestureDetector( _self , _scaleGestureListener );
     }
 
     @Override
@@ -103,102 +172,19 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         unregisterReceiver( _remoteProviderReceiver );
     }
 
-    private boolean onTouchDown( final MotionEvent event ) {
-        _view.onGestureBegin();
-
-        _nTouch = event.getPointerCount();
-
-        if ( _nTouch == 1 ) {
-            copyPoints( event , _prevPoints );
-            copyPoints( event , _downPoints );
-
-            _isTap = true;
-        }
-
-        return true;
-    }
-
     @Override
     public boolean onTouchEvent( final MotionEvent event ) {
-        if ( event.getPointerCount() > 2 ) {
-            return super.onTouchEvent( event );
-        }
-
         switch ( event.getAction() & MotionEvent.ACTION_MASK ) {
         case MotionEvent.ACTION_DOWN:
-            return onTouchDown( event );
-        case MotionEvent.ACTION_POINTER_DOWN:
-            return onTouchPointerDown( event );
-        case MotionEvent.ACTION_MOVE:
-            return onTouchMove( event );
+            _view.onGestureBegin();
+            break;
         case MotionEvent.ACTION_UP:
-            return onTouchUp();
-        case MotionEvent.ACTION_POINTER_UP:
-            return onTouchPointerUp();
+            _view.onGestureEnd();
+            break;
         }
 
-        return super.onTouchEvent( event );
-    }
-
-    private boolean onTouchMove( final MotionEvent event ) {
-        if ( _nTouch == 1 ) {
-            if ( _isTap
-                    && Math.hypot( event.getX() - _downPoints[ 0 ].x , event.getY() - _downPoints[ 0 ].y ) > TAP_THREASHOLD ) {
-                _isTap = false;
-            }
-
-            if ( !_isTap ) {
-                _view.onDragGesture( new PointF( event.getX() - _prevPoints[ 0 ].x , event.getY() - _prevPoints[ 0 ].y ) );
-
-                copyPoints( event , _prevPoints );
-            }
-        } else if ( _nTouch == 2 ) {
-            final PointF prev0 = copyPoint( _prevPoints[ 0 ] );
-            final PointF prev1 = copyPoint( _prevPoints[ 1 ] );
-
-            copyPoints( event , _prevPoints );
-
-            final float prevDist = ( float ) Math.hypot( prev0.x - prev1.x , prev0.y - prev1.y );
-            final float curDist = ( float ) Math.hypot( _prevPoints[ 0 ].x - _prevPoints[ 1 ].x , //
-                    _prevPoints[ 0 ].y - _prevPoints[ 1 ].y );
-
-            _view.onZoomGesture( curDist / prevDist , _zoomCenter );
-        }
-
-        return true;
-    }
-
-    private boolean onTouchPointerDown( final MotionEvent event ) {
-        _nTouch = event.getPointerCount();
-
-        if ( _nTouch == 2 ) {
-            copyPoints( event , _prevPoints );
-
-            _zoomCenter = new PointF( ( _prevPoints[ 0 ].x + _prevPoints[ 1 ].x ) / 2 , //
-                    ( _prevPoints[ 0 ].y + _prevPoints[ 1 ].y ) / 2 );
-        }
-
-        return true;
-    }
-
-    private boolean onTouchPointerUp() {
-        if ( _nTouch == 2 ) {
-            _nTouch = 0;
-        }
-
-        return true;
-    }
-
-    private boolean onTouchUp() {
-        if ( _nTouch == 1 ) {
-            if ( _isTap ) {
-                _view.onTapGesture( _downPoints[ 0 ] );
-            }
-
-            _nTouch = 0;
-        }
-
-        _view.onGestureEnd();
+        _scaleGestureDetector.onTouchEvent( event );
+        _gestureDetector.onTouchEvent( event );
 
         return true;
     }
