@@ -5,7 +5,7 @@ import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.CoreViewType;
-import jp.archilogic.docnext.android.provider.remote.RemoteProvider;
+import jp.archilogic.docnext.android.service.DownloadService;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,27 +36,15 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive( final Context context , final Intent intent ) {
-            if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_DOC_INFO_SUCCEED ) ) {
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_FONT_SUCCEED ) ) {
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_SUCCEED ) ) {
-                final long id = intent.getLongExtra( RemoteProvider.EXTRA_ID , -1 );
-                final int page = intent.getIntExtra( RemoteProvider.EXTRA_PAGE , -1 );
-                // final int level = intent.getIntExtra( RemoteProvider.EXTRA_LEVEL , -1 );
-                // final int px = intent.getIntExtra( RemoteProvider.EXTRA_PX , -1 );
-                // final int py = intent.getIntExtra( RemoteProvider.EXTRA_PY , -1 );
+            if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
+                final int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
+                final int pages = intent.getIntExtra( DownloadService.EXTRA_PAGES , -1 );
 
-                final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
-
-                if ( page + 1 < doc.pages ) {
-                    setProgress( Window.PROGRESS_END * ( page + 1 ) / doc.pages );
+                if ( page < pages ) {
+                    setProgress( Window.PROGRESS_END * page / pages );
                 } else {
                     setProgressBarVisibility( false );
                 }
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED ) ) {
-            } else if ( intent.getAction().equals( RemoteProvider.BROADCAST_GET_DOC_INFO_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_FONT_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_IMAGE_FAILED )
-                    || intent.getAction().equals( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED ) ) {
             }
         }
     };
@@ -64,14 +52,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public IntentFilter buildRemoteProviderReceiverFilter() {
         final IntentFilter filter = new IntentFilter();
 
-        filter.addAction( RemoteProvider.BROADCAST_GET_DOC_INFO_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_DOC_INFO_FAILED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_FONT_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_FONT_FAILED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_IMAGE_FAILED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_SUCCEED );
-        filter.addAction( RemoteProvider.BROADCAST_GET_TEXT_INFO_FAILED );
+        filter.addAction( DownloadService.BROADCAST_DOWNLOAD_PROGRESS );
 
         return filter;
     }
