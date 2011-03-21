@@ -124,8 +124,6 @@ public class CoreImageEngine {
             }
 
             if ( _cleanup != null ) {
-                System.err.println( "_cleaup is not null" );
-
                 float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / CLEANUP_DURATION;
                 boolean willFinish = false;
 
