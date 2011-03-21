@@ -30,7 +30,7 @@ public class DownloadTask extends NetworkTask< Void , Void > {
 
         IOUtils.copy( NetUtil.get( _remotePath ) , out );
 
-        out.close();
+        IOUtils.closeQuietly( out );
 
         return null;
     }

@@ -11,6 +11,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.CoreViewActivity" />
+
+        <service android:name=".service.DownloadService" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

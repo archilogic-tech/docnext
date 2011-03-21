@@ -25,6 +25,10 @@ public class LocalPathManager {
         ensure( getImageDir( id ) );
     }
 
+    public void ensureRoot() {
+        ensure( ROOT );
+    }
+
     public void ensureTextInfoDir( final long id ) {
         ensure( getTextInfoDir( id ) );
     }
@@ -43,6 +47,14 @@ public class LocalPathManager {
 
     public String getDocInfoPath( final long id ) {
         return getDocInfoDir() + id + ".json";
+    }
+
+    public String getDownloadStatePath() {
+        return ROOT + "download_state.txt";
+    }
+
+    public String getDownloadTargetPath() {
+        return ROOT + "download_target.txt";
     }
 
     private String getFontDir() {
