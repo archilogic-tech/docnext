@@ -1,9 +1,35 @@
 package jp.archilogic.docnext.android.coreview.image;
 
 import jp.archilogic.docnext.android.info.SizeInfo;
+import android.graphics.PointF;
 import android.os.SystemClock;
 
 public class CoreImageCleanupValue {
+    static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
+            final SizeInfo page , final float minScale , final float maxScale , final PointF point ,
+            final float horizontalPadding , final float verticalPadding ) {
+        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
+
+        ret.copy( matrix );
+
+        if ( matrix.scale < maxScale ) {
+            ret.dstScale = maxScale;
+        } else {
+            ret.dstScale = minScale;
+        }
+
+        ret.dstX =
+                matrix.tx * maxScale / matrix.scale - ( point.x - horizontalPadding ) * ( maxScale - matrix.scale )
+                        / matrix.scale;
+        ret.dstY =
+                matrix.ty * maxScale / matrix.scale - ( point.y - verticalPadding ) * ( maxScale - matrix.scale )
+                        / matrix.scale;
+
+        ret.adjust( surface , page );
+
+        return ret;
+    }
+
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
             final SizeInfo page , final float minScale , final float maxScale ) {
         if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 ) || //
@@ -11,9 +37,7 @@ public class CoreImageCleanupValue {
                 matrix.tx > 0 || matrix.ty > 0 || matrix.scale < minScale || matrix.scale > maxScale ) {
             final CoreImageCleanupValue ret = new CoreImageCleanupValue();
 
-            ret.srcScale = matrix.scale;
-            ret.srcX = matrix.tx;
-            ret.srcY = matrix.ty;
+            ret.copy( matrix );
 
             if ( matrix.scale < minScale ) {
                 ret.dstScale = minScale;
@@ -29,11 +53,7 @@ public class CoreImageCleanupValue {
                 ret.dstY = matrix.ty;
             }
 
-            ret.dstX = Math.min( Math.max( ret.dstX , Math.min( surface.width - page.width * ret.dstScale , 0 ) ) , 0 );
-            ret.dstY =
-                    Math.min( Math.max( ret.dstY , Math.min( surface.height - page.height * ret.dstScale , 0 ) ) , 0 );
-
-            ret.start = SystemClock.elapsedRealtime();
+            ret.adjust( surface , page );
 
             return ret;
         } else {
@@ -49,4 +69,17 @@ public class CoreImageCleanupValue {
     float dstY;
 
     long start;
+
+    private void adjust( final SizeInfo surface , final SizeInfo page ) {
+        dstX = Math.min( Math.max( dstX , Math.min( surface.width - page.width * dstScale , 0 ) ) , 0 );
+        dstY = Math.min( Math.max( dstY , Math.min( surface.height - page.height * dstScale , 0 ) ) , 0 );
+
+        start = SystemClock.elapsedRealtime();
+    }
+
+    private void copy( final CoreImageMatrix matrix ) {
+        srcScale = matrix.scale;
+        srcX = matrix.tx;
+        srcY = matrix.ty;
+    }
 }

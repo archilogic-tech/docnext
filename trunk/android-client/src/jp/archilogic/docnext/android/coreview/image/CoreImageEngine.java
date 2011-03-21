@@ -28,8 +28,8 @@ public class CoreImageEngine {
     private float _minScale;
     private float _maxScale;
 
-    private final Interpolator interpolator = new DecelerateInterpolator();
-    private CoreImageCleanupValue cleanup = null;
+    private final Interpolator _interpolator = new DecelerateInterpolator();
+    private CoreImageCleanupValue _cleanup = null;
     private boolean _preventCheckChangePage = false;
 
     private void changeToNextPage() {
@@ -70,10 +70,17 @@ public class CoreImageEngine {
         }
     }
 
+    void doubleTap( final PointF point ) {
+        _cleanup =
+                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
+                        point , getHorizontalPadding() , getVerticalPadding() );
+    }
+
     void drag( final PointF delta ) {
         if ( surfaceSize.width >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
             delta.x = 0;
         }
+
         if ( surfaceSize.height >= pageSize.height * matrix.scale && !direction.canMoveVertical() ) {
             delta.y = 0;
         }
@@ -106,18 +113,20 @@ public class CoreImageEngine {
      */
     void update() {
         if ( !isInteracting ) {
-            if ( cleanup == null ) {
+            if ( _cleanup == null ) {
                 if ( _preventCheckChangePage ) {
                     _preventCheckChangePage = false;
                 } else {
                     checkChangePage();
                 }
 
-                cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
+                _cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
             }
 
-            if ( cleanup != null ) {
-                float elapsed = 1f * ( SystemClock.elapsedRealtime() - cleanup.start ) / CLEANUP_DURATION;
+            if ( _cleanup != null ) {
+                System.err.println( "_cleaup is not null" );
+
+                float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / CLEANUP_DURATION;
                 boolean willFinish = false;
 
                 if ( elapsed > 1f ) {
@@ -125,17 +134,19 @@ public class CoreImageEngine {
                     willFinish = true;
                 }
 
-                matrix.scale = cleanup.srcScale + ( cleanup.dstScale - cleanup.srcScale ) * //
-                        interpolator.getInterpolation( elapsed );
-                matrix.tx = cleanup.srcX + ( cleanup.dstX - cleanup.srcX ) * interpolator.getInterpolation( elapsed );
-                matrix.ty = cleanup.srcY + ( cleanup.dstY - cleanup.srcY ) * interpolator.getInterpolation( elapsed );
+                matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
+                        _interpolator.getInterpolation( elapsed );
+                matrix.tx =
+                        _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX ) * _interpolator.getInterpolation( elapsed );
+                matrix.ty =
+                        _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY ) * _interpolator.getInterpolation( elapsed );
 
                 if ( willFinish ) {
-                    cleanup = null;
+                    _cleanup = null;
                 }
             }
         } else {
-            cleanup = null;
+            _cleanup = null;
         }
     }
 

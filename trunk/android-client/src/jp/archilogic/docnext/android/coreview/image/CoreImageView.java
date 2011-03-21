@@ -18,6 +18,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onDoubleTapGesture( final PointF point ) {
+        _renderer.doubleTap( point );
     }
 
     @Override
@@ -37,7 +38,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onTapGesture( final PointF point ) {
-        if ( point.x < 50 && point.y < 50 ) {
+        if ( point.x < 100 && point.y < 100 ) {
             _renderer.setDirection( CoreImageDirection.values()[ ( _renderer.getDirection().ordinal() + 1 )
                     % CoreImageDirection.values().length ] );
         }

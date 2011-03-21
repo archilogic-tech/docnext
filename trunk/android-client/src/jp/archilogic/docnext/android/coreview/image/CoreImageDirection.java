@@ -26,12 +26,12 @@ public enum CoreImageDirection {
         switch ( this ) {
         case L2R:
             return engine.matrix.tx < engine.surfaceSize.width - engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD
-                    - engine.pageSize.width * engine.matrix.scale;
+                    - engine.pageSize.width * engine.matrix.scale - engine.getHorizontalPadding() * 2;
         case R2L:
             return engine.matrix.tx > engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD;
         case T2B:
             return engine.matrix.ty < engine.surfaceSize.height - engine.surfaceSize.height / PAGE_CHANGE_THREASHOLD
-                    - engine.pageSize.height * engine.matrix.scale;
+                    - engine.pageSize.height * engine.matrix.scale - engine.getVerticalPadding() * 2;
         case B2T:
             return engine.matrix.ty > engine.surfaceSize.height / PAGE_CHANGE_THREASHOLD;
         default:
@@ -50,7 +50,7 @@ public enum CoreImageDirection {
             return engine.matrix.ty > engine.surfaceSize.height / PAGE_CHANGE_THREASHOLD;
         case B2T:
             return engine.matrix.ty < engine.surfaceSize.height - engine.surfaceSize.height / PAGE_CHANGE_THREASHOLD
-                    - engine.pageSize.height * engine.matrix.scale;
+                    - engine.pageSize.height * engine.matrix.scale - engine.getVerticalPadding() * 2;
         default:
             throw new RuntimeException();
         }

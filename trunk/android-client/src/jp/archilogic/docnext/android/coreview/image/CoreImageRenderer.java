@@ -134,6 +134,10 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
+    void doubleTap( final PointF point ) {
+        _engine.doubleTap( point );
+    }
+
     void drag( final PointF delta ) {
         _engine.drag( delta );
     }
