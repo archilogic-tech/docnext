@@ -63,9 +63,11 @@ public class DownloadService extends Service {
 
     private void ensureImage( final ImageInfo image , final int page , final int level , final int px , final int py ) {
         if ( page < _doc.pages ) {
-            if ( level < 1 ) {
-                if ( px < image.nx ) {
-                    if ( py < image.ny ) {
+            if ( level < 2 ) {
+                final int factor = ( int ) Math.pow( 2 , level );
+
+                if ( px < image.nx * factor ) {
+                    if ( py < image.ny * factor ) {
                         if ( Kernel.getLocalProvider().getImagePath( _id , page , level , px , py ) == null ) {
                             Kernel.getRemoteProvider().getImage( getApplicationContext() , new DownloadReceiver() {
                                 @Override

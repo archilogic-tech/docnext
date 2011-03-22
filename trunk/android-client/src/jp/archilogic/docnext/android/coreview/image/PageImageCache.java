@@ -1,17 +1,17 @@
 package jp.archilogic.docnext.android.coreview.image;
 
-import java.util.List;
-
 import android.graphics.Bitmap;
 
-import com.google.common.collect.Lists;
-
-public class PageImageCache {
+class PageImageCache {
     int page;
-    List< Bitmap > bitmaps;
+    int px;
+    int py;
+    Bitmap bitmap;
 
-    public PageImageCache( final int page ) {
+    PageImageCache( final int page , final int px , final int py , final Bitmap bitmap ) {
         this.page = page;
-        bitmaps = Lists.newArrayList();
+        this.px = px;
+        this.py = py;
+        this.bitmap = bitmap;
     }
 }
