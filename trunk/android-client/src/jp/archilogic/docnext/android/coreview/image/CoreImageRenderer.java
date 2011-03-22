@@ -180,22 +180,27 @@ public class CoreImageRenderer implements Renderer {
             }
         }
 
-        // TODO consider viewport
+        final float hPad = _engine.getHorizontalPadding();
+        final float vPad = _engine.getVerticalPadding();
+        final int xSign = _engine.direction.toXSign();
+        final int ySign = _engine.direction.toYSign();
+
         for ( int delta = -1 ; delta <= 1 ; delta++ ) {
             final int page = _engine.page + delta;
 
             if ( page >= 0 && page < _engine.loaded.length && _engine.loaded[ page ] ) {
                 for ( final PageTextureInfo tex : _pages[ page % _pages.length ].textures ) {
+                    // manual clipping seems no effect, so draw all texture
+
                     gl.glBindTexture( GL10.GL_TEXTURE_2D , tex.texture );
 
                     final float x =
-                            _engine.matrix.x( tex.x ) + _engine.getHorizontalPadding()
-                                    + _engine.matrix.length( _engine.pageSize.width ) * delta
-                                    * _engine.direction.toXSign();
+                            _engine.matrix.x( tex.x ) + hPad + _engine.matrix.length( _engine.pageSize.width ) * delta
+                                    * xSign;
                     final float y =
                             _engine.surfaceSize.height
-                                    - ( _engine.matrix.y( tex.y + tex.height ) + _engine.getVerticalPadding() + _engine.matrix
-                                            .length( _engine.pageSize.height ) * delta * _engine.direction.toYSign() );
+                                    - ( _engine.matrix.y( tex.y + tex.height ) + vPad + _engine.matrix
+                                            .length( _engine.pageSize.height ) * delta * ySign );
                     final float w = _engine.matrix.length( tex.width );
                     final float h = _engine.matrix.length( tex.height );
 
@@ -205,9 +210,9 @@ public class CoreImageRenderer implements Renderer {
         }
 
         _fpsCounter++;
-        if ( _fpsCounter == 180 ) {
+        if ( _fpsCounter == 300 ) {
             _fpsCounter = 0;
-            System.err.println( "FPS: " + 180.0 * 1000 / ( SystemClock.elapsedRealtime() - _fpsTime ) );
+            System.err.println( "FPS: " + 300.0 * 1000 / ( SystemClock.elapsedRealtime() - _fpsTime ) );
         }
     }
 
