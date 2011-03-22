@@ -151,7 +151,7 @@ public class PackManager {
     public String readInfoJson( final long docId ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" , prop.repository ,
-                    docId ) ) );
+                    docId ) ), "UTF-8" );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
@@ -291,7 +291,8 @@ public class PackManager {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/info.json" , prop.repository , documentId ) ) ,
-                    JSON.encode( info ) );
+                    JSON.encode( info ) ,
+                    "UTF-8" );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
