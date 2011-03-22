@@ -1,9 +1,12 @@
 package jp.archilogic.docnext.android.coreview.image;
 
-import java.util.List;
-
 public class PageInfo {
+    enum PageTextureStatus {
+        UNBIND , LOAD , BIND;
+    }
+
     int width;
     int height;
-    List< PageTextureInfo > textures;
+    PageTextureInfo[][][] textures;
+    PageTextureStatus[][][] statuses;
 }

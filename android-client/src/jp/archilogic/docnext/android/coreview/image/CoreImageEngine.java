@@ -20,6 +20,7 @@ public class CoreImageEngine {
     SizeInfo pageSize;
     SizeInfo surfaceSize;
     CoreImageDirection direction;
+    // deprecated
     boolean[] loaded;
     boolean isInteracting = false;
 
@@ -35,6 +36,7 @@ public class CoreImageEngine {
     private void changeToNextPage() {
         if ( page - 1 >= 0 ) {
             loaded[ page - 1 ] = false;
+            _loader.unload( page - 1 );
         }
 
         if ( page + 2 < loaded.length ) {
@@ -49,6 +51,7 @@ public class CoreImageEngine {
     private void changeToPrevPage() {
         if ( page + 1 < loaded.length ) {
             loaded[ page + 1 ] = false;
+            _loader.unload( page + 1 );
         }
 
         if ( page - 2 >= 0 ) {
