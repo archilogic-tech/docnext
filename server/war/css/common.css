@@ -1,8 +1,19 @@
+table {
+	border-collapse: collapse;
+	border: 1px solid #D7D7D7;
+}
+
+table td,
+table th {
+	border: 1px solid #DDD;
+}
+
 #site_contain {
-	width:850px;
+	width:650px;
 	margin: 30px auto;
 	padding: 30px;
 	border: 1px solid;
+	border-radius: 20px;
 }
 
 #navigation ul {
