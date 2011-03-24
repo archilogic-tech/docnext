@@ -56,6 +56,9 @@ public class CoreImageRenderer implements Renderer {
 
     int _fpsCounter = 0;
     long _fpsTime;
+    long foo;
+    long bar;
+    long baz;
 
     private final PageLoader _loader = new PageLoader() {
         @Override
@@ -71,7 +74,7 @@ public class CoreImageRenderer implements Renderer {
                     final PageTextureInfo[][] textures = _pages[ page ].textures[ 0 ];
                     for ( int py = 0 ; py < textures.length ; py++ ) {
                         for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
-                            _loadQueue.add( buildCache( page , py , px ) );
+                            _loadQueue.add( buildCache( page , 0 , px , py ) );
 
                             if ( page < _engine.page - 2 || page > _engine.page + 2 ) {
                                 unload( page );
@@ -85,10 +88,13 @@ public class CoreImageRenderer implements Renderer {
 
         @Override
         public void unload( final int page ) {
-            final PageTextureInfo[][] textures = _pages[ page ].textures[ 0 ];
-            for ( int py = 0 ; py < textures.length ; py++ ) {
-                for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
-                    _unloadQueue.add( new PageImageCache( page , px , py , null ) );
+            for ( int level = 0 ; level < N_LEVEL ; level++ ) {
+                final PageTextureInfo[][] textures = _pages[ page ].textures[ level ];
+                for ( int py = 0 ; py < textures.length ; py++ ) {
+                    for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
+                        // XXX consider to delete _loadQueue (load is x10 heavy than unload)
+                        _unloadQueue.add( new PageImageCache( page , level , px , py , null ) );
+                    }
                 }
             }
         }
@@ -104,14 +110,11 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private void bindPageImage( final GL10 gl , final PageImageCache cache ) {
-        final PageTextureInfo texture = _pages[ cache.page ].textures[ 0 ][ cache.py ][ cache.px ];
+        final PageTextureInfo texture = _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ];
 
-        gl.glDeleteTextures( 1 , new int[] { texture.texture } , 0 );
         bindTexture( gl , texture , cache.bitmap );
 
-        _pages[ cache.page ].statuses[ 0 ][ cache.py ][ cache.px ] = PageTextureStatus.BIND;
-
-        cache.bitmap.recycle();
+        _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.BIND;
     }
 
     /**
@@ -136,21 +139,62 @@ public class CoreImageRenderer implements Renderer {
         final PageTextureInfo[][] texture = _pages[ page ].textures[ 0 ];
         for ( int py = 0 ; py < texture.length ; py++ ) {
             for ( int px = 0 ; px < texture[ py ].length ; px++ ) {
-                bindPageImage( gl , buildCache( page , py , px ) );
+                bindPageImage( gl , buildCache( page , 0 , px , py ) );
             }
         }
     }
 
-    private PageImageCache buildCache( final int page , final int py , final int px ) {
+    private PageImageCache buildCache( final int page , final int level , final int px , final int py ) {
         InputStream in = null;
         try {
-            in = new FileInputStream( Kernel.getLocalProvider().getImagePath( _engine.id , page , 0 , px , py ) );
+            in = new FileInputStream( Kernel.getLocalProvider().getImagePath( _engine.id , page , level , px , py ) );
 
-            return new PageImageCache( page , px , py , BitmapFactory.decodeStream( in ) );
+            return new PageImageCache( page , level , px , py , BitmapFactory.decodeStream( in ) );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         } finally {
             IOUtils.closeQuietly( in );
+        }
+    }
+
+    public void checkAndDrawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
+            final int ySign , final int level , final float factor , final int delta , final int page ,
+            final PageTextureInfo[][] textures , final PageTextureStatus[][] statuses , final int py , final int px ,
+            final PageTextureInfo tex ) {
+        final float x =
+                _engine.matrix.x( tex.x / factor ) + hPad + _engine.matrix.length( _engine.pageSize.width ) * delta
+                        * xSign;
+        final float y =
+                _engine.surfaceSize.height
+                        - ( _engine.matrix.y( ( tex.y + tex.height ) / factor ) + vPad + _engine.matrix
+                                .length( _engine.pageSize.height ) * delta * ySign );
+        final float w = _engine.matrix.length( tex.width ) / factor;
+        final float h = _engine.matrix.length( tex.height ) / factor;
+
+        final boolean isNeeded = ( level == 0 || _engine.matrix.scale >= Math.pow( 2 , level - 1 ) ) && //
+                x + w >= 0 && x < _engine.surfaceSize.width && //
+                y + h >= 0 && y < _engine.surfaceSize.height;
+
+        if ( level == 0 ) {
+            if ( isNeeded ) {
+                if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
+                    // manual clipping seems no effect, so draw all texture
+                    drawSingleImage( gl , hPad , vPad , xSign , ySign , delta , textures[ py ][ px ] , x , y , w , h );
+                }
+            }
+        } else {
+            if ( isNeeded ) {
+                if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
+                    drawSingleImage( gl , hPad , vPad , xSign , ySign , delta , textures[ py ][ px ] , x , y , w , h );
+                } else if ( statuses[ py ][ px ] == PageTextureStatus.UNBIND ) {
+                    requestTexture( page , level , px , py );
+                }
+            } else {
+                if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
+                    _pages[ page ].statuses[ level ][ py ][ px ] = PageTextureStatus.UNBIND;
+                    gl.glDeleteTextures( 1 , new int[] { _pages[ page ].textures[ level ][ py ][ px ].texture } , 0 );
+                }
+            }
         }
     }
 
@@ -178,18 +222,22 @@ public class CoreImageRenderer implements Renderer {
         final int xSign = _engine.direction.toXSign();
         final int ySign = _engine.direction.toYSign();
 
-        for ( int delta = -1 ; delta <= 1 ; delta++ ) {
-            final int page = _engine.page + delta;
+        for ( int level = 0 ; level < N_LEVEL ; level++ ) {
+            final float factor = ( float ) Math.pow( 2 , level );
 
-            if ( page >= 0 && page < _engine.loaded.length /* && _engine.loaded[ page ] */) {
-                final PageTextureInfo[][] textures = _pages[ page ].textures[ 0 ];
-                final PageTextureStatus[][] statuses = _pages[ page ].statuses[ 0 ];
+            for ( int delta = -1 ; delta <= 1 ; delta++ ) {
+                final int page = _engine.page + delta;
 
-                for ( int py = 0 ; py < textures.length ; py++ ) {
-                    for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
-                        if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
-                            // manual clipping seems no effect, so draw all texture
-                            drawSingleImage( gl , hPad , vPad , xSign , ySign , delta , textures[ py ][ px ] );
+                if ( page >= 0 && page < _pages.length ) {
+                    final PageTextureInfo[][] textures = _pages[ page ].textures[ level ];
+                    final PageTextureStatus[][] statuses = _pages[ page ].statuses[ level ];
+
+                    for ( int py = 0 ; py < textures.length ; py++ ) {
+                        for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
+                            final long t = SystemClock.elapsedRealtime();
+                            checkAndDrawSingleImage( gl , hPad , vPad , xSign , ySign , level , factor , delta , page ,
+                                    textures , statuses , py , px , textures[ py ][ px ] );
+                            baz += SystemClock.elapsedRealtime() - t;
                         }
                     }
                 }
@@ -198,19 +246,14 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private void drawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
-            final int ySign , final int delta , final PageTextureInfo tex ) {
+            final int ySign , final int delta , final PageTextureInfo tex , final float x , final float y ,
+            final float w , final float h ) {
+        long t = SystemClock.elapsedRealtime();
         gl.glBindTexture( GL10.GL_TEXTURE_2D , tex.texture );
-
-        final float x =
-                _engine.matrix.x( tex.x ) + hPad + _engine.matrix.length( _engine.pageSize.width ) * delta * xSign;
-        final float y =
-                _engine.surfaceSize.height
-                        - ( _engine.matrix.y( tex.y + tex.height ) + vPad + _engine.matrix
-                                .length( _engine.pageSize.height ) * delta * ySign );
-        final float w = _engine.matrix.length( tex.width );
-        final float h = _engine.matrix.length( tex.height );
-
+        foo += SystemClock.elapsedRealtime() - t;
+        t = SystemClock.elapsedRealtime();
         ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
+        bar += SystemClock.elapsedRealtime() - t;
 
         // for debugging
         final int BORDER_WIDTH = 1;
@@ -243,24 +286,49 @@ public class CoreImageRenderer implements Renderer {
             _fpsTime = SystemClock.elapsedRealtime();
         }
 
+        final long t = SystemClock.elapsedRealtime();
+
+        final int nLoad = _loadQueue.size();
+        final int nUnload = _unloadQueue.size();
+
+        long ttt = SystemClock.elapsedRealtime();
         while ( !_loadQueue.isEmpty() ) {
             bindPageImage( gl , _loadQueue.poll() );
         }
+        final long tLoad = SystemClock.elapsedRealtime() - ttt;
 
+        ttt = SystemClock.elapsedRealtime();
         while ( !_unloadQueue.isEmpty() ) {
-            final PageImageCache cache = _unloadQueue.poll();
-
-            gl.glDeleteTextures( 1 , new int[] { _pages[ cache.page ].textures[ 0 ][ cache.py ][ cache.px ].texture } ,
-                    0 );
-            _pages[ cache.page ].statuses[ 0 ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
+            unbindPageImage( gl , _unloadQueue.poll() );
         }
+        final long tUnload = SystemClock.elapsedRealtime() - ttt;
 
+        ttt = SystemClock.elapsedRealtime();
         _engine.update();
+        final long tUpdate = SystemClock.elapsedRealtime() - ttt;
 
+        ttt = SystemClock.elapsedRealtime();
         gl.glClear( GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT );
+        final long tClear = SystemClock.elapsedRealtime() - ttt;
 
+        ttt = SystemClock.elapsedRealtime();
         drawBackground( gl );
+        final long tBG = SystemClock.elapsedRealtime() - ttt;
+
+        foo = 0;
+        bar = 0;
+        baz = 0;
+        ttt = SystemClock.elapsedRealtime();
         drawImage( gl );
+        final long tImage = SystemClock.elapsedRealtime() - ttt;
+
+        final long tt = SystemClock.elapsedRealtime() - t;
+        // System.err.println( "tt: " + tt );
+        if ( tt > 50 ) {
+            System.err.println( "duration: " + tt + ", nLoad: " + nLoad + ", nUnload: " + nUnload + ", tLoad: " + tLoad
+                    + ", tUnload: " + tUnload + ", tUpdate: " + tUpdate + ", tClear: " + tClear + ", tBG: " + tBG
+                    + ", tImage: " + tImage + ", foo: " + foo + ", bar: " + bar + ", baz: " + baz );
+        }
 
         _fpsCounter++;
         if ( _fpsCounter == 300 ) {
@@ -294,7 +362,7 @@ public class CoreImageRenderer implements Renderer {
 
         _engine.pageSize = new SizeInfo( image.width , image.height );
         _engine.page = 0;
-        _engine.loaded = new boolean[ doc.pages ];
+        _engine.pages = doc.pages;
 
         buildAndBindPage( gl , 0 );
         buildAndBindPage( gl , 1 );
@@ -343,12 +411,29 @@ public class CoreImageRenderer implements Renderer {
         return ret;
     }
 
+    private void requestTexture( final int page , final int level , final int px , final int py ) {
+        _pages[ page ].statuses[ level ][ py ][ px ] = PageTextureStatus.LOAD;
+        _executor.execute( new Runnable() {
+            @Override
+            public void run() {
+                _loadQueue.add( buildCache( page , level , px , py ) );
+            }
+        } );
+    }
+
     void setDirection( final CoreImageDirection direction ) {
         _engine.direction = direction;
     }
 
     void setId( final long id ) {
         _engine.id = id;
+    }
+
+    public void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
+        _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
+
+        gl.glDeleteTextures( 1 ,
+                new int[] { _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ].texture } , 0 );
     }
 
     void zoom( final float scaleDelta , final PointF center ) {

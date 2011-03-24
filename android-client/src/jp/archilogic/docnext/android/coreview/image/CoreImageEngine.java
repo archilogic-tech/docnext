@@ -16,12 +16,11 @@ public class CoreImageEngine {
 
     long id;
     int page = 0;
+    int pages;
     CoreImageMatrix matrix = new CoreImageMatrix();
     SizeInfo pageSize;
     SizeInfo surfaceSize;
     CoreImageDirection direction;
-    // deprecated
-    boolean[] loaded;
     boolean isInteracting = false;
 
     private PageLoader _loader;
@@ -35,11 +34,10 @@ public class CoreImageEngine {
 
     private void changeToNextPage() {
         if ( page - 1 >= 0 ) {
-            loaded[ page - 1 ] = false;
             _loader.unload( page - 1 );
         }
 
-        if ( page + 2 < loaded.length ) {
+        if ( page + 2 < pages ) {
             _loader.load( page + 2 );
         }
 
@@ -49,8 +47,7 @@ public class CoreImageEngine {
     }
 
     private void changeToPrevPage() {
-        if ( page + 1 < loaded.length ) {
-            loaded[ page + 1 ] = false;
+        if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
         }
 
@@ -64,8 +61,8 @@ public class CoreImageEngine {
     }
 
     private void checkChangePage() {
-        if ( direction.shouldChangeToNext( this ) && page + 1 < loaded.length
-                && ( page + 2 >= loaded.length || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
+        if ( direction.shouldChangeToNext( this ) && page + 1 < pages
+                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
             changeToNextPage();
         } else if ( direction.shouldChangeToPrev( this ) && page - 1 >= 0
                 && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) ) ) {
@@ -104,7 +101,7 @@ public class CoreImageEngine {
         matrix.scale = Math.min( 1f * surfaceSize.width / pageSize.width , 1f * surfaceSize.height / pageSize.height );
 
         _minScale = matrix.scale;
-        _maxScale = 1f;
+        _maxScale = ( float ) Math.pow( 2 , CoreImageRenderer.N_LEVEL - 1 );
     }
 
     void setPageLoader( final PageLoader loader ) {
