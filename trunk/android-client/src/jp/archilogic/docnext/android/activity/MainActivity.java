@@ -91,9 +91,7 @@ public class MainActivity extends Activity {
                     if ( Kernel.getAppStateManager().getDownloadTarget() == -1 ) {
                         Kernel.getAppStateManager().setDownloadTarget( id );
 
-                        System.err.println( "start service" );
                         startService( new Intent( _self , DownloadService.class ) );
-                        System.err.println( "start service done" );
                     } else {
                         Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
                     }

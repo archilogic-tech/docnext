@@ -23,6 +23,8 @@ public interface LocalProvider {
      */
     ImageInfo getImageInfo( long id );
 
+    int getImageLevel( long id );
+
     /**
      * @return null if not exists
      */
@@ -35,18 +37,9 @@ public interface LocalProvider {
      */
     TextInfo getTextInfo( long id , int page );
 
-    /**
-     * @return null if not exists
-     */
-    @Deprecated
-    String getThumbnailPath( long id , int page );
-
     boolean isCompleted( long id );
 
     boolean isImageExists( long id , int page );
-
-    @Deprecated
-    boolean isThumbnailExists( long id , int page );
 
     void setCompleted( long id );
 }

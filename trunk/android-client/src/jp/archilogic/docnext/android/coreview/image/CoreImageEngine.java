@@ -17,6 +17,7 @@ public class CoreImageEngine {
     long id;
     int page = 0;
     int pages;
+    int nLevel;
     CoreImageMatrix matrix = new CoreImageMatrix();
     SizeInfo pageSize;
     SizeInfo surfaceSize;
@@ -101,7 +102,7 @@ public class CoreImageEngine {
         matrix.scale = Math.min( 1f * surfaceSize.width / pageSize.width , 1f * surfaceSize.height / pageSize.height );
 
         _minScale = matrix.scale;
-        _maxScale = ( float ) Math.pow( 2 , CoreImageRenderer.N_LEVEL - 1 );
+        _maxScale = ( float ) Math.pow( 2 , nLevel - 1 );
     }
 
     void setPageLoader( final PageLoader loader ) {

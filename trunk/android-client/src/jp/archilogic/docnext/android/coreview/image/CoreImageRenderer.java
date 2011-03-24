@@ -41,8 +41,6 @@ public class CoreImageRenderer implements Renderer {
         void unload( int page );
     }
 
-    static final int N_LEVEL = 2;
-
     private final Context _context;
     private final CoreImageEngine _engine = new CoreImageEngine();
 
@@ -85,7 +83,7 @@ public class CoreImageRenderer implements Renderer {
 
         @Override
         public void unload( final int page ) {
-            for ( int level = 0 ; level < N_LEVEL ; level++ ) {
+            for ( int level = 0 ; level < _engine.nLevel ; level++ ) {
                 final PageTextureInfo[][] textures = _pages[ page ].textures[ level ];
                 for ( int py = 0 ; py < textures.length ; py++ ) {
                     for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
@@ -219,7 +217,7 @@ public class CoreImageRenderer implements Renderer {
         final int xSign = _engine.direction.toXSign();
         final int ySign = _engine.direction.toYSign();
 
-        for ( int level = 0 ; level < N_LEVEL ; level++ ) {
+        for ( int level = 0 ; level < _engine.nLevel ; level++ ) {
             final float factor = ( float ) Math.pow( 2 , level );
 
             for ( int delta = -1 ; delta <= 1 ; delta++ ) {
@@ -316,6 +314,7 @@ public class CoreImageRenderer implements Renderer {
 
         final DocInfo doc = Kernel.getLocalProvider().getDocInfo( _engine.id );
         final ImageInfo image = Kernel.getLocalProvider().getImageInfo( _engine.id );
+        _engine.nLevel = Kernel.getLocalProvider().getImageLevel( _engine.id );
 
         _pages = new PageInfo[ doc.pages ];
         for ( int page = 0 ; page < _pages.length ; page++ ) {
@@ -335,9 +334,9 @@ public class CoreImageRenderer implements Renderer {
 
         final PageInfo ret = new PageInfo();
 
-        ret.textures = new PageTextureInfo[ N_LEVEL ][][];
-        ret.statuses = new PageTextureStatus[ N_LEVEL ][][];
-        for ( int level = 0 ; level < N_LEVEL ; level++ ) {
+        ret.textures = new PageTextureInfo[ _engine.nLevel ][][];
+        ret.statuses = new PageTextureStatus[ _engine.nLevel ][][];
+        for ( int level = 0 ; level < _engine.nLevel ; level++ ) {
             final int factor = ( int ) Math.pow( 2 , level );
             ret.textures[ level ] = new PageTextureInfo[ image.ny * factor ][ image.nx * factor ];
             ret.statuses[ level ] = new PageTextureStatus[ image.ny * factor ][ image.nx * factor ];

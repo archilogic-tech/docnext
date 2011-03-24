@@ -7,6 +7,7 @@ import jp.archilogic.docnext.android.task.Receiver;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 
 public class DownloadService extends Service {
@@ -61,9 +62,10 @@ public class DownloadService extends Service {
         }
     }
 
-    private void ensureImage( final ImageInfo image , final int page , final int level , final int px , final int py ) {
+    private void ensureImage( final ImageInfo image , final int nLevel , final int page , final int level ,
+            final int px , final int py ) {
         if ( page < _doc.pages ) {
-            if ( level < 2 ) {
+            if ( level < nLevel ) {
                 final int factor = ( int ) Math.pow( 2 , level );
 
                 if ( px < image.nx * factor ) {
@@ -72,22 +74,30 @@ public class DownloadService extends Service {
                             Kernel.getRemoteProvider().getImage( getApplicationContext() , new DownloadReceiver() {
                                 @Override
                                 public void receive( final Void result ) {
-                                    ensureImage( image , page , level , px , py + 1 );
+                                    ensureImage( image , nLevel , page , level , px , py + 1 );
                                 }
-                            } , _id , page , level , px , py ).execute();
+                            } , _id , page , level , px , py , getShortWidth() ).execute();
+                        } else {
+                            // for stack over flow :(
+                            new Handler().post( new Runnable() {
+                                @Override
+                                public void run() {
+                                    ensureImage( image , nLevel , page , level , px , py + 1 );
+                                }
+                            } );
                         }
                     } else {
-                        ensureImage( image , page , level , px + 1 , 0 );
+                        ensureImage( image , nLevel , page , level , px + 1 , 0 );
                     }
                 } else {
-                    ensureImage( image , page , level + 1 , 0 , 0 );
+                    ensureImage( image , nLevel , page , level + 1 , 0 , 0 );
                 }
             } else {
                 getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_PROGRESS ). //
                         putExtra( EXTRA_PAGE , page + 1 ). //
                         putExtra( EXTRA_PAGES , _doc.pages ) );
 
-                ensureImage( image , page + 1 , 0 , 0 , 0 );
+                ensureImage( image , nLevel , page + 1 , 0 , 0 , 0 );
             }
         } else {
             Kernel.getLocalProvider().setCompleted( _id );
@@ -104,12 +114,32 @@ public class DownloadService extends Service {
             Kernel.getRemoteProvider().getImageInfo( getApplicationContext() , new DownloadReceiver() {
                 @Override
                 public void receive( final Void result ) {
-                    ensureImage( Kernel.getLocalProvider().getImageInfo( _id ) , 0 , 0 , 0 , 0 );
+                    ensureImageLevel( Kernel.getLocalProvider().getImageInfo( _id ) );
                 }
             } , _id ).execute();
         } else {
-            ensureImage( image , 0 , 0 , 0 , 0 );
+            ensureImageLevel( image );
         }
+    }
+
+    private void ensureImageLevel( final ImageInfo image ) {
+        final int level = Kernel.getLocalProvider().getImageLevel( _id );
+
+        if ( level == -1 ) {
+            Kernel.getRemoteProvider().getImageLevel( getApplicationContext() , new DownloadReceiver() {
+                @Override
+                public void receive( final Void result ) {
+                    ensureImage( image , Kernel.getLocalProvider().getImageLevel( _id ) , 0 , 0 , 0 , 0 );
+                }
+            } , _id , getShortWidth() ).execute();
+        } else {
+            ensureImage( image , level , 0 , 0 , 0 , 0 );
+        }
+    }
+
+    public int getShortWidth() {
+        return Math.min( getResources().getDisplayMetrics().widthPixels ,
+                getResources().getDisplayMetrics().heightPixels );
     }
 
     @Override
