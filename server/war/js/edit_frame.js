@@ -1,7 +1,6 @@
-var drawing = false;
+var editing = false;
 var start = {};
 var img = new Image();
-var nextImg = new Image();
 var frames = [];
 
 var order = 0;
@@ -20,38 +19,38 @@ var page = {
 	total: 0
 };
 var ctx;
-
-img.src = "/dispatch/viewer/getPage?documentId=17&level=0&type=iPad&px=0&py=0&page=" + page.number;
+var id = 0;
 
 window.addEventListener("load", function() {
-	load();
+	id = readCookie('document_id');
+	
+	DocumentService.getFrames(id, function(data){
+		frames = data;
+		loadFrame();
+		//can.width = img.width;
+		//can.height = img.height;
+		//draw();
+	});
 	
 	var can = document.getElementById("frame");
 	ctx = document.getElementById("frame").getContext("2d");
 	
-	can.addEventListener("click", set_rect, true);
-	can.addEventListener("mousemove", draw, true);
-	can.addEventListener("mousemove", draw_editing, true);
-	
-	can.width = img.width;
-	can.height = img.height;
+	can.addEventListener("click", canvasClicked, true);
+	//can.addEventListener("mousemove", drawEditing, true);
 
-	draw();
+	drawImage();
 }, true);
 
-function draw() {
-	img.src = "/dispatch/viewer/getPage?documentId=17&level=0&type=iPad&px=0&py=0&page=" + page.number;
-
+function drawImage(){
+	img.src = "/dispatch/viewer/getPage?documentId=" + id + "&level=0&type=iPhone&px=0&py=0&page=" + page.number;
 	img.onload = function(){
-		draw_frame();
+		ctx.drawImage(img, 0, 0);
 	}
-	draw_frame();
 }
 
-function draw_frame(){
+function drawFrame(){
 	// clear canvas
 	ctx.clearRect(0, 0, 8000, 8000);
-	ctx.drawImage(img, 0, 0);
 	ctx.globalCompositeOperation = "darker";
 	for (var i = 0; i < frames.length; i++) {
 		if (frames[i].page == page.number) {
@@ -62,66 +61,68 @@ function draw_frame(){
 	}
 }
 
-function draw_editing(e) {
-	if (drawing) {
+function addFrame(frame){
+	if (frame == null)
+		frame = {x:200, y:200, width:200, height:200};
+	var offset = "top:" + frame.x + "px; left:" + frame.y + "px;";
+	var size = "width:" + frame.width + "px;height:" + frame.height + "px;";
+	$("#controller").append("<div class='youjo editing' style='position:absolute;" +  size + "opacity:0.2; background-color:red;" + offset + "'></div>");
+	$(".youjo").draggable();
+	$(".youjo").resizable();
+}
+
+function loadFrame(){
+	for (var i = 0; i < frames.length; i++) {
+		if (frames[i].page == page.number) {
+			addFrame(frames[i]);
+		}
+	}
+}
+
+function drawEditing(e) {
+	if (editing) {
 		ctx.restore();
 		ctx.fillStyle = "rgba(255, 0, 0, 1)";
 
-		var org = {};
-		var width, height;
+		var org = {
+				x: (start.x < e.offsetX ? start.x : e.offsetX),
+				y: (start.y < e.offsetY ? start.y : e.offsetY)};
 
-		if (start.x < e.offsetX) {
-			org.x = start.x;
-		} else {
-			org.x = e.offsetX;
-		}
-		if (start.y < e.offsetY) {
-			org.y = start.y;
-		} else {
-			org.y = e.offsetY;
-		}
-		
-		width = Math.abs(start.x - e.offsetX);
-		height = Math.abs(start.y - e.offsetY);
+		var width = Math.abs(start.x - e.offsetX);
+		var height = Math.abs(start.y - e.offsetY);
+
 		ctx.save();
 		ctx.fillRect(org.x, org.y, width, height);
 	}
 }
 
-function set_rect(e) {
+function canvasClicked(e) {
 	var x = e.offsetX;
 	var y = e.offsetY;
 	
-	if (!drawing) {
+	if (!editing) {
 		start = {x:x, y:y};
+		addFrame();
 	}
 	
-	if (drawing) {
-		var org = {};
-		var width, height;
+	if (editing) {
+		var offset = {
+				x: (start.x < x ? start.x : x),
+				y: (start.y < y ? start.y : y)};
+		$(".editinig").offset(offset);
 
-		if (start.x < x) {
-			org.x = start.x;
-		} else {
-			org.x = x;
-		}
-		if (start.y < y) {
-			org.y = start.y;
-		} else {
-			org.y = y;
-		}
-		
-		width = Math.abs(start.x - x);
-		height = Math.abs(start.y - y);
+		var width = Math.abs(start.x - x);
+		var height = Math.abs(start.y - y);
+		$(".editing").width(width);
+		$(".editing").height(height);
 
-		frames[frames.length] = {x:org.x, y:org.y, width:width, height:height, page:page.number, order:order++};
+		//frames[frames.length] = {x:offset.x, y:offset.y, width:width, height:height, page:page.number, order:order++};
 	}
-
-	drawing = !drawing;
+	editing = !editing;
 	save();
 }
 
-function clear_page() {
+function clearPage() {
 	for (var i = 0; i < frames.length; i++) {
 		if (frames[i].page == page.number) {
 			frames.splice(i, 1);
@@ -131,27 +132,6 @@ function clear_page() {
 	order = 0;
 	save();
 	draw();
-}
-
-function getInfo() {
-  DocumentService.getInfo(id,
-    function(data) {
-      document.getElementById('title').value = data;
-    }
-  );
-}
-
-//
-// persistence
-//
-var id;
-function load(){
-	id = readCookie('document_id');
-	
-	DocumentService.getFrames(id, function(data){
-		frames = data;
-		draw();
-	});
 }
 
 function save() {
