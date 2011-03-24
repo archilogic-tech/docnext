@@ -15,16 +15,17 @@ public class RemotePathManager {
         return Config.ENDPOINT + "meta/" + id + ".image.json";
     }
 
-    public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
-        return String.format( "%simage/%d/%d_%d_%d_%d.jpg" , Config.ENDPOINT , id , page , level , px , py );
+    public String getImageLevelPath( final long id , final int shortWidth ) {
+        return Config.ENDPOINT + "meta/" + id + ".image.level.txt?shortWidth=" + shortWidth;
+    }
+
+    public String getImagePath( final long id , final int page , final int level , final int px , final int py ,
+            final int shortWidth ) {
+        return String.format( "%simage/%d/%d_%d_%d_%d.jpg?shortWidth=%d" , Config.ENDPOINT , id , page , level , px ,
+                py , shortWidth );
     }
 
     public String getTextInfoPath( final long id , final int page ) {
         return Config.ENDPOINT + "text/" + id + "/" + page + ".json";
-    }
-
-    @Deprecated
-    public String getThumbnailPath( final long id , final int page ) {
-        return Config.ENDPOINT + "thumb/" + id + "/" + page + ".jpg";
     }
 }

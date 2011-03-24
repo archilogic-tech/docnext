@@ -14,9 +14,11 @@ public interface RemoteProvider {
     DownloadTask getFont( Context context , Receiver< Void > receiver , String name );
 
     DownloadTask getImage( Context context , Receiver< Void > receiver , long id , int page , int level , int px ,
-            int py );
+            int py , int shortWidth );
 
     DownloadTask getImageInfo( Context context , Receiver< Void > receiver , long id );
+
+    DownloadTask getImageLevel( Context context , Receiver< Void > receiver , long id , int shortWidth );
 
     DownloadTask getTextInfo( Context context , Receiver< Void > receiver , long id , int page );
 }

@@ -27,11 +27,11 @@ public class RemoteProviderImpl implements RemoteProvider {
 
     @Override
     public DownloadTask getImage( final Context context , final Receiver< Void > receiver , final long id ,
-            final int page , final int level , final int px , final int py ) {
+            final int page , final int level , final int px , final int py , final int shortWidth ) {
         _localPathManager.ensureImageDir( id );
 
-        return new DownloadTask( context , receiver , _remotePathManager.getImagePath( id , page , level , px , py ) ,
-                _localPathManager.getImagePath( id , page , level , px , py ) );
+        return new DownloadTask( context , receiver , _remotePathManager.getImagePath( id , page , level , px , py ,
+                shortWidth ) , _localPathManager.getImagePath( id , page , level , px , py ) );
     }
 
     @Override
@@ -40,6 +40,15 @@ public class RemoteProviderImpl implements RemoteProvider {
 
         return new DownloadTask( context , receiver , _remotePathManager.getImageInfoPath( id ) ,
                 _localPathManager.getImageInfoPath( id ) );
+    }
+
+    @Override
+    public DownloadTask getImageLevel( final Context context , final Receiver< Void > receiver , final long id ,
+            final int shortWidth ) {
+        _localPathManager.ensureDocInfoDir();
+
+        return new DownloadTask( context , receiver , _remotePathManager.getImageLevelPath( id , shortWidth ) ,
+                _localPathManager.getImageLevelPath( id ) );
     }
 
     @Override
