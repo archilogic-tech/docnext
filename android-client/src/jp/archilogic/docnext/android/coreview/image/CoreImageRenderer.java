@@ -56,9 +56,6 @@ public class CoreImageRenderer implements Renderer {
 
     int _fpsCounter = 0;
     long _fpsTime;
-    long foo;
-    long bar;
-    long baz;
 
     private final PageLoader _loader = new PageLoader() {
         @Override
@@ -234,10 +231,8 @@ public class CoreImageRenderer implements Renderer {
 
                     for ( int py = 0 ; py < textures.length ; py++ ) {
                         for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
-                            final long t = SystemClock.elapsedRealtime();
                             checkAndDrawSingleImage( gl , hPad , vPad , xSign , ySign , level , factor , delta , page ,
                                     textures , statuses , py , px , textures[ py ][ px ] );
-                            baz += SystemClock.elapsedRealtime() - t;
                         }
                     }
                 }
@@ -248,12 +243,8 @@ public class CoreImageRenderer implements Renderer {
     private void drawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
             final int ySign , final int delta , final PageTextureInfo tex , final float x , final float y ,
             final float w , final float h ) {
-        long t = SystemClock.elapsedRealtime();
         gl.glBindTexture( GL10.GL_TEXTURE_2D , tex.texture );
-        foo += SystemClock.elapsedRealtime() - t;
-        t = SystemClock.elapsedRealtime();
         ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
-        bar += SystemClock.elapsedRealtime() - t;
 
         // for debugging
         final int BORDER_WIDTH = 1;
@@ -286,49 +277,20 @@ public class CoreImageRenderer implements Renderer {
             _fpsTime = SystemClock.elapsedRealtime();
         }
 
-        final long t = SystemClock.elapsedRealtime();
-
-        final int nLoad = _loadQueue.size();
-        final int nUnload = _unloadQueue.size();
-
-        long ttt = SystemClock.elapsedRealtime();
         while ( !_loadQueue.isEmpty() ) {
             bindPageImage( gl , _loadQueue.poll() );
         }
-        final long tLoad = SystemClock.elapsedRealtime() - ttt;
 
-        ttt = SystemClock.elapsedRealtime();
         while ( !_unloadQueue.isEmpty() ) {
             unbindPageImage( gl , _unloadQueue.poll() );
         }
-        final long tUnload = SystemClock.elapsedRealtime() - ttt;
 
-        ttt = SystemClock.elapsedRealtime();
         _engine.update();
-        final long tUpdate = SystemClock.elapsedRealtime() - ttt;
 
-        ttt = SystemClock.elapsedRealtime();
         gl.glClear( GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT );
-        final long tClear = SystemClock.elapsedRealtime() - ttt;
 
-        ttt = SystemClock.elapsedRealtime();
         drawBackground( gl );
-        final long tBG = SystemClock.elapsedRealtime() - ttt;
-
-        foo = 0;
-        bar = 0;
-        baz = 0;
-        ttt = SystemClock.elapsedRealtime();
         drawImage( gl );
-        final long tImage = SystemClock.elapsedRealtime() - ttt;
-
-        final long tt = SystemClock.elapsedRealtime() - t;
-        // System.err.println( "tt: " + tt );
-        if ( tt > 50 ) {
-            System.err.println( "duration: " + tt + ", nLoad: " + nLoad + ", nUnload: " + nUnload + ", tLoad: " + tLoad
-                    + ", tUnload: " + tUnload + ", tUpdate: " + tUpdate + ", tClear: " + tClear + ", tBG: " + tBG
-                    + ", tImage: " + tImage + ", foo: " + foo + ", bar: " + bar + ", baz: " + baz );
-        }
 
         _fpsCounter++;
         if ( _fpsCounter == 300 ) {
@@ -416,6 +378,11 @@ public class CoreImageRenderer implements Renderer {
         _executor.execute( new Runnable() {
             @Override
             public void run() {
+                // 2 for waiting index update
+                if ( page < _engine.page - 2 || page > _engine.page + 2 ) {
+                    return;
+                }
+
                 _loadQueue.add( buildCache( page , level , px , py ) );
             }
         } );
