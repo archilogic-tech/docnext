@@ -64,12 +64,14 @@ public class DownloadService extends Service {
 
     private void ensureImage( final ImageInfo image , final int nLevel , final int page , final int level ,
             final int px , final int py ) {
+        final int TEXTURE_SIZE = 512;
+
         if ( page < _doc.pages ) {
             if ( level < nLevel ) {
                 final int factor = ( int ) Math.pow( 2 , level );
 
-                if ( px < image.nx * factor ) {
-                    if ( py < image.ny * factor ) {
+                if ( px < ( image.width * factor - 1 ) / TEXTURE_SIZE + 1 ) {
+                    if ( py < ( image.height * factor - 1 ) / TEXTURE_SIZE + 1 ) {
                         if ( Kernel.getLocalProvider().getImagePath( _id , page , level , px , py ) == null ) {
                             Kernel.getRemoteProvider().getImage( getApplicationContext() , new DownloadReceiver() {
                                 @Override

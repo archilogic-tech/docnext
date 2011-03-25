@@ -141,6 +141,8 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private PageImageCache buildCache( final int page , final int level , final int px , final int py ) {
+        System.err.println( "*** buildCache: page: " + page + ", level: " + level + ", px: " + px + ", py: " + py );
+
         InputStream in = null;
         try {
             in = new FileInputStream( Kernel.getLocalProvider().getImagePath( _engine.id , page , level , px , py ) );
@@ -339,11 +341,13 @@ public class CoreImageRenderer implements Renderer {
         ret.statuses = new PageTextureStatus[ _engine.nLevel ][][];
         for ( int level = 0 ; level < _engine.nLevel ; level++ ) {
             final int factor = ( int ) Math.pow( 2 , level );
-            ret.textures[ level ] = new PageTextureInfo[ image.ny * factor ][ image.nx * factor ];
-            ret.statuses[ level ] = new PageTextureStatus[ image.ny * factor ][ image.nx * factor ];
+            final int nx = ( image.width * factor - 1 ) / TEXTURE_SIZE + 1;
+            final int ny = ( image.height * factor - 1 ) / TEXTURE_SIZE + 1;
+            ret.textures[ level ] = new PageTextureInfo[ ny ][ nx ];
+            ret.statuses[ level ] = new PageTextureStatus[ ny ][ nx ];
 
-            for ( int py = 0 ; py < image.ny * factor ; py++ ) {
-                for ( int px = 0 ; px < image.nx * factor ; px++ ) {
+            for ( int py = 0 ; py < ny ; py++ ) {
+                for ( int px = 0 ; px < nx ; px++ ) {
                     final int x = px * TEXTURE_SIZE;
                     final int y = py * TEXTURE_SIZE;
 
