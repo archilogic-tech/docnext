@@ -141,8 +141,6 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private PageImageCache buildCache( final int page , final int level , final int px , final int py ) {
-        System.err.println( "*** buildCache: page: " + page + ", level: " + level + ", px: " + px + ", py: " + py );
-
         InputStream in = null;
         try {
             in = new FileInputStream( Kernel.getLocalProvider().getImagePath( _engine.id , page , level , px , py ) );
