@@ -17,8 +17,6 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.OnScaleGestureListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -33,7 +31,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     private CoreView _view;
 
     private GestureDetector _gestureDetector;
-    private ScaleGestureDetector _scaleGestureDetector;
+    private ScaleGestureDetectorWrapper _scaleGestureDetector;
 
     private final OnGestureListener _gestureListener = new OnGestureListener() {
         @Override
@@ -94,21 +92,21 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
-    private final OnScaleGestureListener _scaleGestureListener = new OnScaleGestureListener() {
+    private final OnScaleGestureWrapperListener _scaleGestureListener = new OnScaleGestureWrapperListener() {
         @Override
-        public boolean onScale( final ScaleGestureDetector detector ) {
+        public boolean onScale( final ScaleGestureDetectorWrapper detector ) {
             _view.onZoomGesture( detector.getScaleFactor() , new PointF( detector.getFocusX() , detector.getFocusY() ) );
 
             return true;
         }
 
         @Override
-        public boolean onScaleBegin( final ScaleGestureDetector detector ) {
+        public boolean onScaleBegin( final ScaleGestureDetectorWrapper detector ) {
             return true;
         }
 
         @Override
-        public void onScaleEnd( final ScaleGestureDetector detector ) {
+        public void onScaleEnd( final ScaleGestureDetectorWrapper detector ) {
         }
     };
 
@@ -166,7 +164,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
-        _scaleGestureDetector = new ScaleGestureDetector( _self , _scaleGestureListener );
+        _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
     }
 
     @Override
@@ -178,7 +176,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     @Override
     public boolean onTouchEvent( final MotionEvent event ) {
-        switch ( event.getAction() & MotionEvent.ACTION_MASK ) {
+        // TODO need research
+        switch ( event.getAction() /* & MotionEvent.ACTION_MASK */) {
         case MotionEvent.ACTION_DOWN:
             _view.onGestureBegin();
             break;
