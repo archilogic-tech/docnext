@@ -39,7 +39,7 @@ public class CoreImageEngine {
     private final Interpolator _interpolator = new DecelerateInterpolator();
     private CoreImageCleanupValue _cleanup = null;
     private boolean _preventCheckChangePage = false;
-    private OnScaleChangeListener _scaleChangeLisetener;
+    private OnScaleChangeListener _scaleChangeLisetener = null;
 
     private void changeToNextPage() {
         if ( page - 1 >= 0 ) {
@@ -120,7 +120,9 @@ public class CoreImageEngine {
     private void onScaleChange( final float scale ) {
         final float EPS = ( float ) 1e-5;
 
-        _scaleChangeLisetener.onScaleChange( scale <= _minScale + EPS , scale >= _maxScale - EPS );
+        if ( _scaleChangeLisetener != null ) {
+            _scaleChangeLisetener.onScaleChange( scale <= _minScale + EPS , scale >= _maxScale - EPS );
+        }
     }
 
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {

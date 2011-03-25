@@ -6,13 +6,14 @@ import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChang
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.widget.ZoomButtonsController;
 import android.widget.ZoomButtonsController.OnZoomListener;
 
 public class CoreImageView extends GLSurfaceView implements CoreView {
     private CoreImageRenderer _renderer;
 
-    private final ZoomButtonsController _zoomButtonsController;
+    private ZoomButtonsController _zoomButtonsController = null;
 
     private final OnZoomListener _zoomButtonsControllerZoom = new OnZoomListener() {
         @Override
@@ -38,17 +39,22 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
         setRenderer( _renderer = new CoreImageRenderer( context ) );
         _renderer.setDirection( CoreImageDirection.R2L );
-        _renderer.setOnScaleChangeListener( _scaleChangeListener );
 
-        _zoomButtonsController = new ZoomButtonsController( this );
-        _zoomButtonsController.setOnZoomListener( _zoomButtonsControllerZoom );
+        if ( Build.VERSION.SDK_INT < 8 ) {
+            _renderer.setOnScaleChangeListener( _scaleChangeListener );
+
+            _zoomButtonsController = new ZoomButtonsController( this );
+            _zoomButtonsController.setOnZoomListener( _zoomButtonsControllerZoom );
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        _zoomButtonsController.setVisible( false );
+        if ( _zoomButtonsController != null ) {
+            _zoomButtonsController.setVisible( false );
+        }
     }
 
     @Override
@@ -64,7 +70,10 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
     @Override
     public void onGestureBegin() {
         _renderer.beginInteraction();
-        _zoomButtonsController.setVisible( true );
+
+        if ( _zoomButtonsController != null ) {
+            _zoomButtonsController.setVisible( true );
+        }
     }
 
     @Override
