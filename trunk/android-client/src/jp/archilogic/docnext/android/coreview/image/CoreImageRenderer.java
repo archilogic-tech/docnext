@@ -14,6 +14,7 @@ import javax.microedition.khronos.opengles.GL11Ext;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChangeListener;
 import jp.archilogic.docnext.android.coreview.image.PageInfo.PageTextureStatus;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
@@ -395,11 +396,19 @@ public class CoreImageRenderer implements Renderer {
         _engine.id = id;
     }
 
+    public void setOnScaleChangeListener( final OnScaleChangeListener l ) {
+        _engine.setOnScaleChangeListener( l );
+    }
+
     public void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
         _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
 
         gl.glDeleteTextures( 1 ,
                 new int[] { _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ].texture } , 0 );
+    }
+
+    void zoom( final float scaleDelta ) {
+        _engine.zoom( scaleDelta );
     }
 
     void zoom( final float scaleDelta , final PointF center ) {
