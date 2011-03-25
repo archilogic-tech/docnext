@@ -2,18 +2,53 @@ package jp.archilogic.docnext.android.coreview.image;
 
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
+import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChangeListener;
 import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
+import android.widget.ZoomButtonsController;
+import android.widget.ZoomButtonsController.OnZoomListener;
 
 public class CoreImageView extends GLSurfaceView implements CoreView {
     private CoreImageRenderer _renderer;
+
+    private final ZoomButtonsController _zoomButtonsController;
+
+    private final OnZoomListener _zoomButtonsControllerZoom = new OnZoomListener() {
+        @Override
+        public void onVisibilityChanged( final boolean visible ) {
+        }
+
+        @Override
+        public void onZoom( final boolean zoomIn ) {
+            _renderer.zoom( zoomIn ? ( float ) Math.pow( 2 , 0.5 ) : ( float ) Math.pow( 2 , -0.5 ) );
+        }
+    };
+
+    private final OnScaleChangeListener _scaleChangeListener = new OnScaleChangeListener() {
+        @Override
+        public void onScaleChange( final boolean isMin , final boolean isMax ) {
+            _zoomButtonsController.setZoomOutEnabled( !isMin );
+            _zoomButtonsController.setZoomInEnabled( !isMax );
+        }
+    };
 
     public CoreImageView( final Context context ) {
         super( context );
 
         setRenderer( _renderer = new CoreImageRenderer( context ) );
         _renderer.setDirection( CoreImageDirection.R2L );
+        _renderer.setOnScaleChangeListener( _scaleChangeListener );
+
+        _zoomButtonsController = new ZoomButtonsController( this );
+        _zoomButtonsController.setOnZoomListener( _zoomButtonsControllerZoom );
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        _zoomButtonsController.setVisible( false );
     }
 
     @Override
@@ -29,6 +64,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
     @Override
     public void onGestureBegin() {
         _renderer.beginInteraction();
+        _zoomButtonsController.setVisible( true );
     }
 
     @Override

@@ -12,6 +12,13 @@ import android.view.animation.Interpolator;
  * Handle non-OpenGL parameters
  */
 public class CoreImageEngine {
+    interface OnScaleChangeListener {
+        /**
+         * This is invoked by future value (ie. not current value)
+         */
+        void onScaleChange( boolean isMin , boolean isMax );
+    }
+
     private static final long CLEANUP_DURATION = 200L;
 
     long id;
@@ -32,6 +39,7 @@ public class CoreImageEngine {
     private final Interpolator _interpolator = new DecelerateInterpolator();
     private CoreImageCleanupValue _cleanup = null;
     private boolean _preventCheckChangePage = false;
+    private OnScaleChangeListener _scaleChangeLisetener;
 
     private void changeToNextPage() {
         if ( page - 1 >= 0 ) {
@@ -75,6 +83,8 @@ public class CoreImageEngine {
         _cleanup =
                 CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
                         point , getHorizontalPadding() , getVerticalPadding() );
+
+        onScaleChange( _cleanup.dstScale );
     }
 
     void drag( final PointF delta ) {
@@ -103,6 +113,18 @@ public class CoreImageEngine {
 
         _minScale = matrix.scale;
         _maxScale = ( float ) Math.pow( 2 , nLevel - 1 );
+
+        onScaleChange( matrix.scale );
+    }
+
+    private void onScaleChange( final float scale ) {
+        final float EPS = ( float ) 1e-5;
+
+        _scaleChangeLisetener.onScaleChange( scale <= _minScale + EPS , scale >= _maxScale - EPS );
+    }
+
+    void setOnScaleChangeListener( final OnScaleChangeListener l ) {
+        _scaleChangeLisetener = l;
     }
 
     void setPageLoader( final PageLoader loader ) {
@@ -149,6 +171,12 @@ public class CoreImageEngine {
         }
     }
 
+    void zoom( float scaleDelta ) {
+        scaleDelta = Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) );
+
+        zoom( scaleDelta , new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) );
+    }
+
     void zoom( float scaleDelta , final PointF center ) {
         if ( matrix.scale < _minScale || matrix.scale > _maxScale ) {
             scaleDelta = ( float ) Math.pow( scaleDelta , 0.2 );
@@ -161,5 +189,7 @@ public class CoreImageEngine {
         matrix.ty = matrix.ty * scaleDelta + ( 1 - scaleDelta ) * ( center.y - getVerticalPadding() );
 
         _preventCheckChangePage = true;
+
+        onScaleChange( matrix.scale );
     }
 }
