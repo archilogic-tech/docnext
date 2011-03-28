@@ -80,11 +80,11 @@ public class CoreImageEngine {
     }
 
     void doubleTap( final PointF point ) {
-        _cleanup =
-                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
-                        point , getHorizontalPadding() , getVerticalPadding() );
-
-        onScaleChange( _cleanup.dstScale );
+        if ( matrix.scale < _maxScale ) {
+            smartZoom( 1 );
+        } else {
+            zoom( _minScale / matrix.scale , new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) );
+        }
     }
 
     void drag( final PointF delta ) {
@@ -133,6 +133,23 @@ public class CoreImageEngine {
         _loader = loader;
     }
 
+    void smartZoom( final int delta ) {
+        final int n = ( int ) Math.floor( Math.log( _maxScale / _minScale ) / Math.log( 2 ) );
+
+        final float scaleDelta = ( float ) Math.pow( _maxScale / _minScale , 1.0 / n * delta );
+
+        zoom( Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) ) , new PointF(
+                surfaceSize.width / 2 , surfaceSize.height / 2 ) );
+    }
+
+    void smartZoom( final int delta , final PointF center ) {
+        final int n = ( int ) Math.floor( Math.log( _maxScale / _minScale ) / Math.log( 2 ) );
+
+        final float scaleDelta = ( float ) Math.pow( _maxScale / _minScale , 1.0 / n * delta );
+
+        zoom( Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) ) , center );
+    }
+
     /**
      * Check cleanup, Check change page, etc...
      */
@@ -171,12 +188,6 @@ public class CoreImageEngine {
         } else {
             _cleanup = null;
         }
-    }
-
-    void zoom( float scaleDelta ) {
-        scaleDelta = Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) );
-
-        zoom( scaleDelta , new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) );
     }
 
     void zoom( float scaleDelta , final PointF center ) {
