@@ -27,28 +27,20 @@ public class RemoteProviderImpl implements RemoteProvider {
 
     @Override
     public DownloadTask getImage( final Context context , final Receiver< Void > receiver , final long id ,
-            final int page , final int level , final int px , final int py , final int shortWidth ) {
+            final int page , final int level , final int px , final int py , final int shortSide ) {
         _localPathManager.ensureImageDir( id );
 
         return new DownloadTask( context , receiver , _remotePathManager.getImagePath( id , page , level , px , py ,
-                shortWidth ) , _localPathManager.getImagePath( id , page , level , px , py ) );
+                shortSide ) , _localPathManager.getImagePath( id , page , level , px , py ) );
     }
 
     @Override
-    public DownloadTask getImageInfo( final Context context , final Receiver< Void > receiver , final long id ) {
+    public DownloadTask getImageInfo( final Context context , final Receiver< Void > receiver , final long id ,
+            final int shortSide ) {
         _localPathManager.ensureDocInfoDir();
 
-        return new DownloadTask( context , receiver , _remotePathManager.getImageInfoPath( id ) ,
+        return new DownloadTask( context , receiver , _remotePathManager.getImageInfoPath( id , shortSide ) ,
                 _localPathManager.getImageInfoPath( id ) );
-    }
-
-    @Override
-    public DownloadTask getImageLevel( final Context context , final Receiver< Void > receiver , final long id ,
-            final int shortWidth ) {
-        _localPathManager.ensureDocInfoDir();
-
-        return new DownloadTask( context , receiver , _remotePathManager.getImageLevelPath( id , shortWidth ) ,
-                _localPathManager.getImageLevelPath( id ) );
     }
 
     @Override

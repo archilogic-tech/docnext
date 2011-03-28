@@ -23,8 +23,6 @@ public interface LocalProvider {
      */
     ImageInfo getImageInfo( long id );
 
-    int getImageLevel( long id );
-
     /**
      * @return null if not exists
      */

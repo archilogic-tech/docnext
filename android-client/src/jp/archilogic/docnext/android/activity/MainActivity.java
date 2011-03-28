@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
         findViewById( R.id.button ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
-                final long id = 0;
+                final long id = 7;
 
                 final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
 
