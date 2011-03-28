@@ -114,11 +114,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         @Override
         public void onReceive( final Context context , final Intent intent ) {
             if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
-                final int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
-                final int pages = intent.getIntExtra( DownloadService.EXTRA_PAGES , -1 );
+                final int current = intent.getIntExtra( DownloadService.EXTRA_CURRENT , -1 );
+                final int total = intent.getIntExtra( DownloadService.EXTRA_TOTAL , -1 );
 
-                if ( page < pages ) {
-                    setProgress( Window.PROGRESS_END * page / pages );
+                if ( current < total ) {
+                    setProgress( Window.PROGRESS_END * current / total );
                 } else {
                     setProgressBarVisibility( false );
                 }
