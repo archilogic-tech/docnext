@@ -176,7 +176,7 @@ public class ThumbnailCreator {
                     final int h = deviceHeight * maxFactor / factor;
                     cropAndResize( getPngPath( prefix , page ) ,
                             String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) , px * w , py * h ,
-                            w , h , deviceWidth , deviceHeight );
+                            w , h , deviceWidth , deviceHeight , 0 , 0 );
                 }
             }
         }
@@ -194,13 +194,23 @@ public class ThumbnailCreator {
                 break;
             }
 
-            for ( int py = 0 ; py < factor ; py++ ) {
-                for ( int px = 0 ; px < factor ; px++ ) {
+            final int l = size[ 0 ] / factor;
+
+            for ( int py = 0 ; py * l < size[ 1 ] ; py++ ) {
+                for ( int px = 0 ; px * l < size[ 0 ] ; px++ ) {
                     LOGGER.info( "Proc part: " + px + "," + py );
 
-                    final int l = size[ 0 ] / factor;
-                    cropAndResize( imagePath , String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) ,
-                            px * l , py * l , l , l , TEXTURE_SIZE , TEXTURE_SIZE );
+                    cropAndResize(
+                            imagePath ,
+                            String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) ,
+                            px * l ,
+                            py * l ,
+                            l ,
+                            l ,
+                            TEXTURE_SIZE ,
+                            TEXTURE_SIZE ,
+                            Math.max( ( int ) Math.round( 1.0 * ( ( px + 1 ) * l - size[ 0 ] ) * TEXTURE_SIZE / l ) , 0 ) ,
+                            Math.max( ( int ) Math.round( 1.0 * ( ( py + 1 ) * l - size[ 1 ] ) * TEXTURE_SIZE / l ) , 0 ) );
                 }
             }
         }
@@ -231,9 +241,17 @@ public class ThumbnailCreator {
     }
 
     private void cropAndResize( final String pngPath , final String destPath , final int x , final int y ,
-            final int cropWidth , final int cropHeight , final int resizeWidth , final int resizeHeight ) {
-        ProcUtil.doProc( String.format( "%s %s -crop %dx%d+%d+%d -resize %dx%d %s" , prop.convert , pngPath ,
-                cropWidth , cropHeight , x , y , resizeWidth , resizeHeight , destPath ) );
+            final int cropWidth , final int cropHeight , final int resizeWidth , final int resizeHeight ,
+            final int padWidth , final int padHeight ) {
+        if ( padWidth == 0 && padHeight == 0 ) {
+            ProcUtil.doProc( String.format( "%s %s -crop %dx%d+%d+%d -resize %dx%d %s" , prop.convert , pngPath ,
+                    cropWidth , cropHeight , x , y , resizeWidth , resizeHeight , destPath ) );
+        } else {
+            ProcUtil.doProc( String.format(
+                    "%s %s -crop %dx%d+%d+%d -resize %dx%d -gravity southeast -splice %dx%d %s" , prop.convert ,
+                    pngPath , cropWidth , cropHeight , x , y , resizeWidth , resizeHeight , padWidth , padHeight ,
+                    destPath ) );
+        }
     }
 
     private int[] getImageSize( final String path ) {
