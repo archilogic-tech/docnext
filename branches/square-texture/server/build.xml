@@ -23,6 +23,6 @@
             </classpath>
         </javac>
 
-        <jar basedir="${output}" jarfile="${output}/docman_optimage.war" />
+        <jar basedir="${output}" jarfile="${output}/docnext.war" />
     </target>
 </project>
