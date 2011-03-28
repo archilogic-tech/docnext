@@ -18,7 +18,13 @@ public class Document {
     public String fileName;
 
     @Column( nullable = false )
-    public Integer nLevel;
+    public Integer width;
+
+    @Column( nullable = false )
+    public Integer height;
+
+    @Column( nullable = false )
+    public Integer maxLevel;
 
     @Column( nullable = false )
     public Boolean processing;

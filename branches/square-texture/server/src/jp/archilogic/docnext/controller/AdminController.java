@@ -44,7 +44,9 @@ public class AdminController {
         doc.name = name;
         doc.fileName = file.getOriginalFilename();
         doc.processing = true;
-        doc.nLevel = -1;
+        doc.width = -1;
+        doc.height = -1;
+        doc.maxLevel = -1;
         documentDao.create( doc );
 
         final String path = "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
