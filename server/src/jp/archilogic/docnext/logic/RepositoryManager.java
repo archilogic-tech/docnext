@@ -10,12 +10,17 @@ public class RepositoryManager {
     @Autowired
     private PropBean prop;
 
-    public String getImagePath( String type , long docId , int page ) {
+    public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
+        return String.format( "%s/thumb/%d/texture%d-%d-%d-%d.jpg" , prop.repository , id , page , level , px , py );
+    }
+
+    public String getImagePath( final String type , final long docId , final int page ) {
         return String.format( "%s/thumb/%d/%s-%d.jpg" , prop.repository , docId , type , page );
     }
 
-    public String getImagePath( String type , long docId , int page , int level , int px , int py ) {
-        return String.format( "%s/thumb/%d/%s%d-%d-%d-%d.jpg" , prop.repository , docId , type , page , level ,
-                px , py );
+    public String getImagePath( final String type , final long docId , final int page , final int level , final int px ,
+            final int py ) {
+        return String
+                .format( "%s/thumb/%d/%s%d-%d-%d-%d.jpg" , prop.repository , docId , type , page , level , px , py );
     }
 }

@@ -125,8 +125,9 @@ public class UploadProcessor {
                 page++;
             }
 
-            doc.nLevel =
-                    ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) ) + 1;
+            doc.width = width;
+            doc.height = height;
+            doc.maxLevel = ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) );
 
             return true;
         }
