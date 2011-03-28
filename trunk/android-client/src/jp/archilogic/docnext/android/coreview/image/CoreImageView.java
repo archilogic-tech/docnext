@@ -22,7 +22,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
         @Override
         public void onZoom( final boolean zoomIn ) {
-            _renderer.zoom( zoomIn ? ( float ) Math.pow( 2 , 0.5 ) : ( float ) Math.pow( 2 , -0.5 ) );
+            _renderer.smartZoom( zoomIn ? 1 : -1 );
         }
     };
 

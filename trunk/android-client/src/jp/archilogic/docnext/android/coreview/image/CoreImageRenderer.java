@@ -107,9 +107,6 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private void bindPageImage( final GL10 gl , final PageImageCache cache ) {
-        System.err.println( "*** bind, page: " + cache.page + ", level: " + cache.level + ", px: " + cache.px
-                + ", py: " + cache.py );
-
         final PageTextureInfo texture = _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ];
 
         bindTexture( gl , texture , cache.bitmap );
@@ -419,18 +416,15 @@ public class CoreImageRenderer implements Renderer {
         _engine.setOnScaleChangeListener( l );
     }
 
-    private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
-        System.err.println( "*** unbind, page: " + cache.page + ", level: " + cache.level + ", px: " + cache.px
-                + ", py: " + cache.py );
+    void smartZoom( final int delta ) {
+        _engine.smartZoom( delta );
+    }
 
+    private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
         _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
 
         gl.glDeleteTextures( 1 ,
                 new int[] { _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ].texture } , 0 );
-    }
-
-    void zoom( final float scaleDelta ) {
-        _engine.zoom( scaleDelta );
     }
 
     void zoom( final float scaleDelta , final PointF center ) {
