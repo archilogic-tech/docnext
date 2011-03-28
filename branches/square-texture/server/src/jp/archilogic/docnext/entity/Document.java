@@ -18,6 +18,9 @@ public class Document {
     public String fileName;
 
     @Column( nullable = false )
+    public Integer pages;
+
+    @Column( nullable = false )
     public Integer width;
 
     @Column( nullable = false )

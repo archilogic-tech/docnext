@@ -315,7 +315,7 @@ public class CoreImageRenderer implements Renderer {
 
         final DocInfo doc = Kernel.getLocalProvider().getDocInfo( _engine.id );
         final ImageInfo image = Kernel.getLocalProvider().getImageInfo( _engine.id );
-        _engine.nLevel = Kernel.getLocalProvider().getImageLevel( _engine.id );
+        _engine.nLevel = image.nLevel;
 
         _pages = new PageInfo[ doc.pages ];
         for ( int page = 0 ; page < _pages.length ; page++ ) {

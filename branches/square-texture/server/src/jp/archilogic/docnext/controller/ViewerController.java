@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import jp.archilogic.docnext.dao.DocumentDao;
+import jp.archilogic.docnext.dto.DocInfo;
 import jp.archilogic.docnext.dto.ImageInfo;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.logic.PackManager;
@@ -38,6 +39,14 @@ public class ViewerController {
     public void download( @RequestParam( "documentId" ) final long documentId , final HttpServletResponse res )
             throws IOException {
         FileCopyUtils.copy( new FileInputStream( packManager.getPackPath( documentId ) ) , res.getOutputStream() );
+    }
+
+    @RequestMapping( "/viewer/getDocInfo" )
+    @ResponseBody
+    public String getDocInfo( @RequestParam( "id" ) final long id ) {
+        final Document doc = documentDao.findById( id );
+
+        return JSON.encode( new DocInfo( id , 0 , doc.pages ) );
     }
 
     @RequestMapping( "/viewer/getImageInfo" )

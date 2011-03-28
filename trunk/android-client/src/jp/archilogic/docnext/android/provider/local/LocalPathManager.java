@@ -69,10 +69,6 @@ public class LocalPathManager {
         return getDocInfoDir() + id + ".image.json";
     }
 
-    public String getImageLevelPath( final long id ) {
-        return getDocInfoDir() + id + ".image.level.txt";
-    }
-
     public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
         return String.format( "%s%d_%d_%d_%d.jpg" , getImageDir( id ) , page , level , px , py );
     }

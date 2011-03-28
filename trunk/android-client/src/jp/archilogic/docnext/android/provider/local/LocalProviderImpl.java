@@ -14,7 +14,6 @@ import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TextInfo;
 import net.arnx.jsonic.JSON;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.collect.Lists;
@@ -41,16 +40,6 @@ public class LocalProviderImpl implements LocalProvider {
     @Override
     public ImageInfo getImageInfo( final long id ) {
         return getJsonInfo( _pathManager.getImageInfoPath( id ) , ImageInfo.class );
-    }
-
-    @Override
-    public int getImageLevel( final long id ) {
-        try {
-            return Integer.valueOf( FileUtils.readFileToString( new File( _pathManager.getImageLevelPath( id ) ) )
-                    .trim() );
-        } catch ( final IOException e ) {
-            return -1;
-        }
     }
 
     @Override
