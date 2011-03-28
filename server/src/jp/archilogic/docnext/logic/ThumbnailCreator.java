@@ -16,13 +16,9 @@ import org.springframework.stereotype.Component;
 public class ThumbnailCreator {
     static class CreateResult {
         double ratio;
-        int nHorizontal;
-        int nVertical;
 
-        CreateResult( final double ratio , final int nHorizontal , final int nVertical ) {
+        CreateResult( final double ratio ) {
             this.ratio = ratio;
-            this.nHorizontal = nHorizontal;
-            this.nVertical = nVertical;
         }
     }
 
@@ -36,6 +32,8 @@ public class ThumbnailCreator {
         }
     }
 
+    public static final int TEXTURE_SIZE = 512;
+
     private static final Logger LOGGER = LoggerFactory.getLogger( ThumbnailCreator.class );
 
     private static final int IPAD_MAX_LEVEL = 2;
@@ -46,9 +44,6 @@ public class ThumbnailCreator {
     private static final int IPHONE_DEVICE_HEIGHT = 480 - 20;
     private static final int THUMBNAIL_SIZE = 256;
     private static final int WEB_HEIGHT = 1600;
-    private static final int TEXTURE_BASE_SIZE = 256;
-    private static final int TEXTURE_N_HORIZONATL = 4;
-    private static final int TEXTURE_N_VERTICAL = 6;
 
     @Autowired
     private PropBean prop;
@@ -82,10 +77,43 @@ public class ThumbnailCreator {
         }
     }
 
-    /**
-     * @return width / height ratio
-     */
-    public CreateResult create( final String outDir , final String pdfPath , final String prefix , final long id ) {
+    private void createByResolution( final String pdfPath , final String prefix , final int page , final int resolution ) {
+        ProcUtil.doProc( String.format( "%s -r %d -f %d -l %d %s %s" , prop.pdfToPpm , resolution , page + 1 ,
+                page + 1 , pdfPath , prefix ) , true );
+    }
+
+    public void createFromImage( final String outDir , final String imagePath , final int page , final long id ) {
+        LOGGER.info( "Begin create thumbanil" );
+        final long t = System.currentTimeMillis();
+
+        new File( outDir ).mkdir();
+
+        LOGGER.info( "Proc page: " + page );
+
+        if ( prop.forIOS ) {
+            // createImage( outDir + "iPad" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+            // IPAD_DEVICE_HEIGHT );
+            // createImage( outDir + "iPhone" , pdfPath , prefix , info , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH
+            // ,
+            // IPHONE_DEVICE_HEIGHT );
+        }
+
+        if ( prop.forWeb ) {
+            // createWeb( outDir , pdfPath , prefix , info , page );
+        }
+
+        if ( prop.forTexture ) {
+            createTextureImage( outDir + "texture" , imagePath , page );
+        }
+
+        // createThumbnail( outDir , pdfPath , prefix , info , page );
+
+        progressManager.setCreatedThumbnail( id , page + 1 );
+
+        LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
+    }
+
+    public CreateResult createFromPDF( final String outDir , final String pdfPath , final String prefix , final long id ) {
         LOGGER.info( "Begin create thumbanil" );
         final long t = System.currentTimeMillis();
 
@@ -108,8 +136,6 @@ public class ThumbnailCreator {
             }
 
             if ( prop.forTexture ) {
-                createTextureImage( outDir + "texture256-" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , 1 );
-                createTextureImage( outDir + "texture512-" , pdfPath , prefix , info , page , IPAD_MAX_LEVEL , 2 );
             }
 
             createThumbnail( outDir , pdfPath , prefix , info , page );
@@ -119,12 +145,7 @@ public class ThumbnailCreator {
 
         LOGGER.info( "End create thumbnail. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return new CreateResult( info.unitWidth / info.unitHeight , TEXTURE_N_HORIZONATL , TEXTURE_N_VERTICAL );
-    }
-
-    private void createByResolution( final String pdfPath , final String prefix , final int page , final int resolution ) {
-        ProcUtil.doProc( String.format( "%s -r %d -f %d -l %d %s %s" , prop.pdfToPpm , resolution , page + 1 ,
-                page + 1 , pdfPath , prefix ) , true );
+        return new CreateResult( info.unitWidth / info.unitHeight );
     }
 
     private void createImage( final String outPath , final String pdfPath , final String prefix , final ImageInfo info ,
@@ -161,37 +182,25 @@ public class ThumbnailCreator {
         }
     }
 
-    private void createTextureImage( final String outPath , final String pdfPath , final String prefix ,
-            final ImageInfo info , final int page , final int maxLevel , final int textureFactor ) {
-        final int deviceWidth = TEXTURE_BASE_SIZE * TEXTURE_N_HORIZONATL;
-        final int deviceHeight = TEXTURE_BASE_SIZE * TEXTURE_N_VERTICAL;
-        final int maxFactor = ( int ) Math.pow( 2 , maxLevel - 1 );
+    private void createTextureImage( final String outPath , final String imagePath , final int page ) {
+        final int[] size = getImageSize( imagePath );
 
-        double maxResolution;
-        if ( info.unitWidth * deviceHeight > info.unitHeight * deviceWidth ) {
-            maxResolution = deviceWidth / info.unitWidth * maxFactor;
-        } else {
-            maxResolution = deviceHeight / info.unitHeight * maxFactor;
-        }
-
-        createByResolution( pdfPath , prefix , page , ( int ) Math.ceil( maxResolution ) );
-        convertAndResize( getPpmPath( prefix , page ) , getPngPath( prefix , page ) , deviceWidth * maxFactor ,
-                deviceHeight * maxFactor , info.unitWidth * maxResolution , info.unitHeight * maxResolution , true );
-
-        for ( int level = 0 ; level < maxLevel ; level++ ) {
+        for ( int level = 0 ; ; level++ ) {
             LOGGER.info( "Proc level: " + level );
 
             final int factor = ( int ) Math.pow( 2 , level );
 
-            for ( int py = 0 ; py < TEXTURE_N_VERTICAL / textureFactor * factor ; py++ ) {
-                for ( int px = 0 ; px < TEXTURE_N_HORIZONATL / textureFactor * factor ; px++ ) {
+            if ( factor * TEXTURE_SIZE > size[ 0 ] ) {
+                break;
+            }
+
+            for ( int py = 0 ; py < factor ; py++ ) {
+                for ( int px = 0 ; px < factor ; px++ ) {
                     LOGGER.info( "Proc part: " + px + "," + py );
 
-                    final int w = TEXTURE_BASE_SIZE * textureFactor * maxFactor / factor;
-                    final int h = TEXTURE_BASE_SIZE * textureFactor * maxFactor / factor;
-                    cropAndResize( getPngPath( prefix , page ) ,
-                            String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) , px * w , py * h ,
-                            w , h , TEXTURE_BASE_SIZE * textureFactor , TEXTURE_BASE_SIZE * textureFactor );
+                    final int l = size[ 0 ] / factor;
+                    cropAndResize( imagePath , String.format( "%s%d-%d-%d-%d.jpg" , outPath , page , level , px , py ) ,
+                            px * l , py * l , l , l , TEXTURE_SIZE , TEXTURE_SIZE );
                 }
             }
         }

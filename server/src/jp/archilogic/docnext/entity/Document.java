@@ -18,5 +18,8 @@ public class Document {
     public String fileName;
 
     @Column( nullable = false )
+    public Integer nLevel;
+
+    @Column( nullable = false )
     public Boolean processing;
 }

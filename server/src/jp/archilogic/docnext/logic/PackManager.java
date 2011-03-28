@@ -15,9 +15,9 @@ import java.util.zip.ZipOutputStream;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dto.DividePage;
+import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.dto.Region;
 import jp.archilogic.docnext.dto.TOCElem;
-import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import net.arnx.jsonic.JSON;
@@ -39,8 +39,6 @@ public class PackManager {
         public double ratio;
         public String binding;
         public String flow;
-        public int nHorizontal;
-        public int nVertical;
     }
 
     @SuppressWarnings( "unused" )
@@ -135,6 +133,20 @@ public class PackManager {
         return readInfo( documentId ).flow;
     }
 
+    public String readFrameJson( final long docId ) {
+        try {
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/frames.json" , prop.repository ,
+                    docId ) ) );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public List< Frame > readFrames( final long documentId ) {
+        return Arrays.asList( JSON.decode( readFrameJson( documentId ) , Frame[].class ) );
+    }
+
     public String readImageText( final long documentId , final int page ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/texts/%d.image.txt" ,
@@ -150,23 +162,9 @@ public class PackManager {
 
     public String readInfoJson( final long docId ) {
         try {
-            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" , prop.repository ,
-                    docId ) ), "UTF-8" );
+            return FileUtils.readFileToString(
+                    new File( String.format( "%s/pack/%d/info.json" , prop.repository , docId ) ) , "UTF-8" );
         } catch ( final IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public List < Frame > readFrames( long documentId ) {
-    	return Arrays.asList(JSON.decode( readFrameJson( documentId ), Frame[].class ));
-    }
-    
-    public String readFrameJson( long docId ) {
-        try {
-            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/frames.json" , prop.repository ,
-                    docId ) ) );
-        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
@@ -269,11 +267,19 @@ public class PackManager {
         writeInfo( documentId , info );
     }
 
+    public void writeFrames( final long documentId , final List< Frame > frames ) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/frames.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( frames ) );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     public void writeImageCreateResult( final long documentId , final CreateResult result ) {
         final Info info = readInfo( documentId );
         info.ratio = result.ratio;
-        info.nHorizontal = result.nHorizontal;
-        info.nVertical = result.nVertical;
         writeInfo( documentId , info );
     }
 
@@ -291,8 +297,7 @@ public class PackManager {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/info.json" , prop.repository , documentId ) ) ,
-                    JSON.encode( info ) ,
-                    "UTF-8" );
+                    JSON.encode( info ) , "UTF-8" );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
@@ -337,16 +342,6 @@ public class PackManager {
                     new File( String.format( "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ,
                     JSON.encode( singlePageInfo ) );
         } catch ( final IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    public void writeFrames( long documentId , List< Frame > frames) {
-        try {
-            FileUtils.writeStringToFile(
-                    new File( String.format( "%s/pack/%d/frames.json" , prop.repository , documentId ) ) ,
-                    JSON.encode( frames ) );
-        } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }

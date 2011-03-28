@@ -1,7 +1,14 @@
 package jp.archilogic.docnext.logic;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dao.DocumentDao;
@@ -17,8 +24,11 @@ import jp.archilogic.docnext.logic.ProgressManager.Step;
 import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import jp.archilogic.docnext.util.FileUtil;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
@@ -37,6 +47,18 @@ public class UploadProcessor {
         public UploadTask( final String tempPath , final Document doc ) {
             this.tempPath = tempPath;
             this.doc = doc;
+        }
+
+        private boolean isSupportedImage( final String path ) {
+            final String[] WHITE_LIST = { ".jpg" , ".png" , ".bmp" , ".gif" };
+
+            for ( final String ext : WHITE_LIST ) {
+                if ( path.endsWith( ext ) ) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void parseAnnotation( final String tempPdfPath ) {
@@ -59,6 +81,97 @@ public class UploadProcessor {
             }
         }
 
+        private boolean procArchive() throws Exception {
+            packManager.createStruct( doc.id );
+
+            final ZipFile file = new ZipFile( tempPath );
+
+            final List< String > paths = Lists.newArrayList();
+            for ( final Enumeration< ? > e = file.getEntries() ; e.hasMoreElements() ; ) {
+                final ZipArchiveEntry entry = ( ZipArchiveEntry ) e.nextElement();
+
+                if ( !entry.isDirectory() && isSupportedImage( entry.getName() ) ) {
+                    paths.add( entry.getName() );
+                }
+            }
+
+            Collections.sort( paths );
+
+            int width = -1;
+            int height = -1;
+
+            int page = 0;
+            for ( final String path : paths ) {
+                final BufferedImage image = ImageIO.read( file.getInputStream( file.getEntry( path ) ) );
+
+                if ( width == -1 && height == -1 ) {
+                    width = image.getWidth();
+                    height = image.getHeight();
+                }
+
+                if ( width != image.getWidth() || height != image.getHeight() ) {
+                    progressManager.setError( doc.id , ErrorType.MALFORMED );
+                    return false;
+                }
+
+                final String tmpPath = prop.tmp + "/tmp.png";
+
+                final OutputStream out = new FileOutputStream( tmpPath );
+                ImageIO.write( image , "jpg" , out );
+                IOUtils.closeQuietly( out );
+
+                thumbnailCreator.createFromImage( prop.repository + "/thumb/" + doc.id + "/" , tmpPath , page , doc.id );
+
+                page++;
+            }
+
+            doc.nLevel =
+                    ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) ) + 1;
+
+            return true;
+        }
+
+        private boolean procDocument() {
+            final String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
+            final String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
+
+            try {
+                pdfAnnotationParser.checkCanParse( tempPdfPath );
+            } catch ( final MalformedPDFException e ) {
+                progressManager.setError( doc.id , ErrorType.MALFORMED );
+                return false;
+            } catch ( final EncryptedPDFException e ) {
+                progressManager.setError( doc.id , ErrorType.ENCRYPTED );
+                return false;
+            }
+
+            packManager.createStruct( doc.id );
+
+            parseAnnotation( tempPdfPath );
+
+            final String cleanedPath = FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
+                    "cleaned" + doc.id + ".pdf";
+            pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
+
+            progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
+            progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
+
+            final CreateResult res = thumbnailCreator.createFromPDF( prop.repository + "/thumb/" + doc.id + "/" , //
+                    cleanedPath , ppmPath + doc.id , doc.id );
+
+            packManager.copyThumbnails( doc.id );
+            packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
+            packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
+            packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
+            packManager.writeImageCreateResult( doc.id , res );
+
+            parseText( cleanedPath );
+
+            packManager.repack( doc.id );
+
+            return true;
+        }
+
         @Override
         public void run() {
             try {
@@ -66,42 +179,15 @@ public class UploadProcessor {
 
                 FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
 
-                final String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
-                final String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
-
-                try {
-                    pdfAnnotationParser.checkCanParse( tempPdfPath );
-                } catch ( final MalformedPDFException e ) {
-                    progressManager.setError( doc.id , ErrorType.MALFORMED );
-                    return;
-                } catch ( final EncryptedPDFException e ) {
-                    progressManager.setError( doc.id , ErrorType.ENCRYPTED );
-                    return;
+                if ( doc.fileName.endsWith( ".zip" ) ) {
+                    if ( !procArchive() ) {
+                        return;
+                    }
+                } else {
+                    if ( !procDocument() ) {
+                        return;
+                    }
                 }
-
-                packManager.createStruct( doc.id );
-
-                parseAnnotation( tempPdfPath );
-
-                final String cleanedPath = FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
-                        "cleaned" + doc.id + ".pdf";
-                pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
-
-                progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
-                progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
-
-                final CreateResult res = thumbnailCreator.create( prop.repository + "/thumb/" + doc.id + "/" , //
-                        cleanedPath , ppmPath + doc.id , doc.id );
-
-                packManager.copyThumbnails( doc.id );
-                packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
-                packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
-                packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
-                packManager.writeImageCreateResult( doc.id , res );
-
-                parseText( cleanedPath );
-
-                packManager.repack( doc.id );
 
                 doc.processing = false;
                 documentDao.update( doc );

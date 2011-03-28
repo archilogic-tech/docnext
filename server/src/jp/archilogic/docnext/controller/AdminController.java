@@ -32,32 +32,23 @@ public class AdminController {
 
     @RequestMapping( "/admin/getProgress" )
     @ResponseBody
-    public String getProgress( @RequestParam( "id" ) long id ) {
+    public String getProgress( @RequestParam( "id" ) final long id ) {
         return progressManager.getProgressJSON( id );
-    }
-
-    private String getTempPath() {
-        String path = prop.tmp;
-
-        if ( path == null || path.isEmpty() ) {
-            path = System.getProperty( "java.io.tmpdir" );
-        }
-
-        return path;
     }
 
     @RequestMapping( "/admin/upload" )
     @ResponseBody
-    public String upload( @RequestParam( "name" ) String name , @RequestParam( "file" ) MultipartFile file )
+    public String upload( @RequestParam( "name" ) final String name , @RequestParam( "file" ) final MultipartFile file )
             throws IOException {
-        Document doc = new Document();
+        final Document doc = new Document();
         doc.name = name;
         doc.fileName = file.getOriginalFilename();
         doc.processing = true;
+        doc.nLevel = -1;
         documentDao.create( doc );
 
-        String path = "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
-        String uploadPath = getTempPath() + File.separator + doc.id + File.separator + path;
+        final String path = "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
+        final String uploadPath = prop.tmp + File.separator + doc.id + File.separator + path;
         FileUtils.writeByteArrayToFile( new File( uploadPath ) , file.getBytes() );
 
         uploadProcessor.proc( uploadPath , doc );
