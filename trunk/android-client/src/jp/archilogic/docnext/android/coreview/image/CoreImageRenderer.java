@@ -47,6 +47,7 @@ public class CoreImageRenderer implements Renderer {
 
     private TextureInfo _background;
     private TextureInfo _border;
+    private TextureInfo _blank;
     private PageInfo[] _pages;
 
     private final Queue< PageImageCache > _loadQueue = Lists.newLinkedList();
@@ -106,6 +107,9 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private void bindPageImage( final GL10 gl , final PageImageCache cache ) {
+        System.err.println( "*** bind, page: " + cache.page + ", level: " + cache.level + ", px: " + cache.px
+                + ", py: " + cache.py );
+
         final PageTextureInfo texture = _pages[ cache.page ].textures[ cache.level ][ cache.py ][ cache.px ];
 
         bindTexture( gl , texture , cache.bitmap );
@@ -153,7 +157,7 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
-    public void checkAndDrawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
+    void checkAndDrawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
             final int ySign , final int level , final float factor , final int delta , final int page ,
             final PageTextureInfo[][] textures , final PageTextureStatus[][] statuses , final int py , final int px ,
             final PageTextureInfo tex ) {
@@ -167,21 +171,21 @@ public class CoreImageRenderer implements Renderer {
         final float w = _engine.matrix.length( tex.width ) / factor;
         final float h = _engine.matrix.length( tex.height ) / factor;
 
-        final boolean isNeeded = ( level == 0 || _engine.matrix.scale >= Math.pow( 2 , level - 1 ) ) && //
-                x + w >= 0 && x < _engine.surfaceSize.width && //
-                y + h >= 0 && y < _engine.surfaceSize.height;
-
         if ( level == 0 ) {
-            if ( isNeeded ) {
-                if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
-                    // manual clipping seems no effect, so draw all texture
-                    drawSingleImage( gl , hPad , vPad , xSign , ySign , delta , textures[ py ][ px ] , x , y , w , h );
-                }
+            if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
+                // manual clipping seems no effect, so draw all texture
+                drawSingleImage( gl , textures[ py ][ px ].texture , x , y , w , h );
+            } else {
+                drawSingleBlank( gl , x , y , w , h );
             }
         } else {
+            final boolean isNeeded = ( level == 0 || _engine.matrix.scale >= Math.pow( 2 , level - 1 ) ) && //
+                    x + w >= 0 && x < _engine.surfaceSize.width && //
+                    y + h >= 0 && y < _engine.surfaceSize.height;
+
             if ( isNeeded ) {
                 if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
-                    drawSingleImage( gl , hPad , vPad , xSign , ySign , delta , textures[ py ][ px ] , x , y , w , h );
+                    drawSingleImage( gl , textures[ py ][ px ].texture , x , y , w , h );
                 } else if ( statuses[ py ][ px ] == PageTextureStatus.UNBIND ) {
                     requestTexture( page , level , px , py );
                 }
@@ -239,10 +243,22 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
-    private void drawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
-            final int ySign , final int delta , final PageTextureInfo tex , final float x , final float y ,
-            final float w , final float h ) {
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , tex.texture );
+    private void drawSingleBlank( final GL10 gl , final float x , final float y , final float w , final float h ) {
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , _blank.texture );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
+
+        // for debugging
+        final int BORDER_WIDTH = 1;
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , _border.texture );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , BORDER_WIDTH );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( x + w - BORDER_WIDTH , y , 0 , BORDER_WIDTH , h );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y + h - BORDER_WIDTH , 0 , w , BORDER_WIDTH );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , BORDER_WIDTH , h );
+    }
+
+    private void drawSingleImage( final GL10 gl , final int texture , final float x , final float y , final float w ,
+            final float h ) {
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , texture );
         ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
 
         // for debugging
@@ -312,6 +328,7 @@ public class CoreImageRenderer implements Renderer {
     public void onSurfaceCreated( final GL10 gl , final EGLConfig config ) {
         _background = prepareTexture( gl , R.drawable.background );
         _border = prepareTexture( gl , R.drawable.border );
+        _blank = prepareTexture( gl , R.drawable.blank );
 
         final DocInfo doc = Kernel.getLocalProvider().getDocInfo( _engine.id );
         final ImageInfo image = Kernel.getLocalProvider().getImageInfo( _engine.id );
@@ -398,11 +415,14 @@ public class CoreImageRenderer implements Renderer {
         _engine.id = id;
     }
 
-    public void setOnScaleChangeListener( final OnScaleChangeListener l ) {
+    void setOnScaleChangeListener( final OnScaleChangeListener l ) {
         _engine.setOnScaleChangeListener( l );
     }
 
-    public void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
+    private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
+        System.err.println( "*** unbind, page: " + cache.page + ", level: " + cache.level + ", px: " + cache.px
+                + ", py: " + cache.py );
+
         _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
 
         gl.glDeleteTextures( 1 ,
