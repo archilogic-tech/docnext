@@ -18,6 +18,7 @@ import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChang
 import jp.archilogic.docnext.android.coreview.image.PageInfo.PageTextureStatus;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
+import jp.archilogic.docnext.android.info.SizeFInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 
 import org.apache.commons.io.IOUtils;
@@ -41,6 +42,8 @@ public class CoreImageRenderer implements Renderer {
 
         void unload( int page );
     }
+
+    private static final boolean DEBUG = false;
 
     private final Context _context;
     private final CoreImageEngine _engine = new CoreImageEngine();
@@ -154,29 +157,28 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
-    void checkAndDrawSingleImage( final GL10 gl , final float hPad , final float vPad , final int xSign ,
-            final int ySign , final int level , final float factor , final int delta , final int page ,
-            final PageTextureInfo[][] textures , final PageTextureStatus[][] statuses , final int py , final int px ,
-            final PageTextureInfo tex ) {
+    void checkAndDrawSingleImage( final GL10 gl , final CoreImageMatrix matrix , final SizeFInfo padding ,
+            final int xSign , final int ySign , final int level , final float factor , final int delta ,
+            final int page , final PageTextureInfo[][] textures , final PageTextureStatus[][] statuses , final int py ,
+            final int px , final PageTextureInfo tex ) {
         final float x =
-                _engine.matrix.x( tex.x / factor ) + hPad + _engine.matrix.length( _engine.pageSize.width ) * delta
-                        * xSign;
+                matrix.x( tex.x / factor ) + padding.width + matrix.length( _engine.pageSize.width ) * delta * xSign;
         final float y =
                 _engine.surfaceSize.height
-                        - ( _engine.matrix.y( ( tex.y + tex.height ) / factor ) + vPad + _engine.matrix
+                        - ( matrix.y( ( tex.y + tex.height ) / factor ) + padding.height + matrix
                                 .length( _engine.pageSize.height ) * delta * ySign );
-        final float w = _engine.matrix.length( tex.width ) / factor;
-        final float h = _engine.matrix.length( tex.height ) / factor;
+        final float w = matrix.length( tex.width ) / factor;
+        final float h = matrix.length( tex.height ) / factor;
 
         if ( level == 0 ) {
             if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
                 // manual clipping seems no effect, so draw all texture
                 drawSingleImage( gl , textures[ py ][ px ].texture , x , y , w , h );
             } else {
-                drawSingleBlank( gl , x , y , w , h );
+                drawSingleImage( gl , _blank.texture , x , y , w , h );
             }
         } else {
-            final boolean isNeeded = ( level == 0 || _engine.matrix.scale >= Math.pow( 2 , level - 1 ) ) && //
+            final boolean isNeeded = ( level == 0 || matrix.scale >= Math.pow( 2 , level - 1 ) ) && //
                     x + w >= 0 && x < _engine.surfaceSize.width && //
                     y + h >= 0 && y < _engine.surfaceSize.height;
 
@@ -213,9 +215,7 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
-    private void drawImage( final GL10 gl ) {
-        final float hPad = _engine.getHorizontalPadding();
-        final float vPad = _engine.getVerticalPadding();
+    private void drawImage( final GL10 gl , final CoreImageMatrix matrix , final SizeFInfo padding ) {
         final int xSign = _engine.direction.toXSign();
         final int ySign = _engine.direction.toYSign();
 
@@ -231,8 +231,8 @@ public class CoreImageRenderer implements Renderer {
 
                     for ( int py = 0 ; py < textures.length ; py++ ) {
                         for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
-                            checkAndDrawSingleImage( gl , hPad , vPad , xSign , ySign , level , factor , delta , page ,
-                                    textures , statuses , py , px , textures[ py ][ px ] );
+                            checkAndDrawSingleImage( gl , matrix , padding , xSign , ySign , level , factor , delta ,
+                                    page , textures , statuses , py , px , textures[ py ][ px ] );
                         }
                     }
                 }
@@ -240,31 +240,19 @@ public class CoreImageRenderer implements Renderer {
         }
     }
 
-    private void drawSingleBlank( final GL10 gl , final float x , final float y , final float w , final float h ) {
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , _blank.texture );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
-
-        // for debugging
-        final int BORDER_WIDTH = 1;
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , _border.texture );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , BORDER_WIDTH );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x + w - BORDER_WIDTH , y , 0 , BORDER_WIDTH , h );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y + h - BORDER_WIDTH , 0 , w , BORDER_WIDTH );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , BORDER_WIDTH , h );
-    }
-
     private void drawSingleImage( final GL10 gl , final int texture , final float x , final float y , final float w ,
             final float h ) {
         gl.glBindTexture( GL10.GL_TEXTURE_2D , texture );
         ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
 
-        // for debugging
-        final int BORDER_WIDTH = 1;
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , _border.texture );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , BORDER_WIDTH );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x + w - BORDER_WIDTH , y , 0 , BORDER_WIDTH , h );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y + h - BORDER_WIDTH , 0 , w , BORDER_WIDTH );
-        ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , BORDER_WIDTH , h );
+        if ( DEBUG ) {
+            final int BORDER_WIDTH = 1;
+            gl.glBindTexture( GL10.GL_TEXTURE_2D , _border.texture );
+            ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , BORDER_WIDTH );
+            ( ( GL11Ext ) gl ).glDrawTexfOES( x + w - BORDER_WIDTH , y , 0 , BORDER_WIDTH , h );
+            ( ( GL11Ext ) gl ).glDrawTexfOES( x , y + h - BORDER_WIDTH , 0 , w , BORDER_WIDTH );
+            ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , BORDER_WIDTH , h );
+        }
     }
 
     void endInteraction() {
@@ -299,10 +287,14 @@ public class CoreImageRenderer implements Renderer {
 
         _engine.update();
 
+        // copy for thread consistency
+        final CoreImageMatrix matrix = new CoreImageMatrix( _engine.matrix );
+        final SizeFInfo padding = new SizeFInfo( _engine.getHorizontalPadding() , _engine.getVerticalPadding() );
+
         gl.glClear( GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT );
 
         drawBackground( gl );
-        drawImage( gl );
+        drawImage( gl , matrix , padding );
 
         _fpsCounter++;
         if ( _fpsCounter == 300 ) {

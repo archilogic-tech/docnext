@@ -181,9 +181,10 @@ public class CoreImageEngine {
 
         matrix.scale *= scaleDelta;
 
-        // This formula may be wrong...
-        matrix.tx = matrix.tx * scaleDelta + ( 1 - scaleDelta ) * ( center.x - getHorizontalPadding() );
-        matrix.ty = matrix.ty * scaleDelta + ( 1 - scaleDelta ) * ( center.y - getVerticalPadding() );
+        final float hPad = getHorizontalPadding();
+        final float vPad = getVerticalPadding();
+        matrix.tx = scaleDelta * ( matrix.tx - ( center.x - hPad ) ) + center.x - hPad;
+        matrix.ty = scaleDelta * ( matrix.ty - ( center.y - vPad ) ) + center.y - vPad;
 
         _preventCheckChangePage = true;
 

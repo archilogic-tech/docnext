@@ -91,6 +91,8 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
+        System.err.println( "onZoomGesture: " + scaleDelta + ", " + center.x + ", " + center.y );
+
         _renderer.zoom( scaleDelta , center );
     }
 

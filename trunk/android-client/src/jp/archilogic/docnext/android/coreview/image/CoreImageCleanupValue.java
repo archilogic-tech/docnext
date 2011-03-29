@@ -46,9 +46,7 @@ public class CoreImageCleanupValue {
                 ret.dstY = matrix.ty;
             }
 
-            ret.adjust( surface , page );
-
-            return ret;
+            return ret.adjust( surface , page );
         } else {
             return null;
         }
@@ -66,8 +64,7 @@ public class CoreImageCleanupValue {
     }
 
     private static int getNumberOfZoomLevel( final float minScale , final float maxScale ) {
-        final int n = ( int ) Math.floor( Math.log( maxScale / minScale ) / Math.log( 2 ) );
-        return n;
+        return ( int ) Math.floor( Math.log( maxScale / minScale ) / Math.log( 2 ) );
     }
 
     private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
@@ -78,16 +75,10 @@ public class CoreImageCleanupValue {
 
         ret.dstScale = scale;
 
-        ret.dstX =
-                matrix.tx * ret.dstScale / matrix.scale + ( point.x - padding.width ) * ( matrix.scale - ret.dstScale )
-                        / matrix.scale;
-        ret.dstY =
-                matrix.ty * ret.dstScale / matrix.scale + ( point.y - padding.height ) * ( matrix.scale - ret.dstScale )
-                        / matrix.scale;
+        ret.dstX = ret.dstScale / matrix.scale * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2;
+        ret.dstY = ret.dstScale / matrix.scale * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2;
 
-        ret.adjust( surface , page );
-
-        return ret;
+        return ret.adjust( surface , page );
     }
 
     float srcScale;
@@ -99,11 +90,13 @@ public class CoreImageCleanupValue {
 
     long start;
 
-    private void adjust( final SizeInfo surface , final SizeInfo page ) {
+    private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
         dstX = Math.min( Math.max( dstX , Math.min( surface.width - page.width * dstScale , 0 ) ) , 0 );
         dstY = Math.min( Math.max( dstY , Math.min( surface.height - page.height * dstScale , 0 ) ) , 0 );
 
         start = SystemClock.elapsedRealtime();
+
+        return this;
     }
 
     private void copy( final CoreImageMatrix matrix ) {
