@@ -125,16 +125,16 @@ public class UploadProcessor {
                 page++;
             }
 
-            doc.pages = page;
-            doc.width = width;
-            doc.height = height;
-            doc.maxLevel = ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) );
+            doc.setPages( page );
+            doc.setWidth( width );
+            doc.setHeight( height );
+            doc.setMaxLevel( ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) ) );
 
             return true;
         }
 
         private boolean procDocument() {
-            final String tempPdfPath = saveAsPdf( doc.fileName , tempPath , doc.id );
+            final String tempPdfPath = saveAsPdf( doc.getFileName() , tempPath , doc.id );
             final String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
             try {
@@ -181,7 +181,7 @@ public class UploadProcessor {
 
                 FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
 
-                if ( doc.fileName.endsWith( ".zip" ) ) {
+                if ( doc.getFileName().endsWith( ".zip" ) ) {
                     if ( !procArchive() ) {
                         return;
                     }

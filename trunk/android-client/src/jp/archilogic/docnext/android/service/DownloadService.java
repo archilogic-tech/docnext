@@ -30,7 +30,7 @@ public class DownloadService extends Service {
 
     public static final String EXTRA_CURRENT = PREFIX + ".extra.current";
     public static final String EXTRA_TOTAL = PREFIX + ".extra.total";
-    public static final String EXTRA_IMAGE_PER_PAGE = PREFIX + ".extra.imagePerPage";
+    public static final String EXTRA_ITEM_PER_PAGE = PREFIX + ".extra.itemPerPage";
     public static final String EXTRA_ERROR = PREFIX + ".extra.error";
 
     private long _id;
@@ -56,11 +56,13 @@ public class DownloadService extends Service {
     private void checkDockInfo() {
         _doc = Kernel.getLocalProvider().getDocInfo( _id );
 
-        switch ( _doc.type ) {
+        // TODO
+        switch ( _doc.types[ 0 ] ) {
         case IMAGE:
             ensureImageInfo();
             break;
         case TEXT:
+            ensureText( 0 );
             break;
         default:
             throw new RuntimeException();
@@ -94,12 +96,12 @@ public class DownloadService extends Service {
                             Kernel.getRemoteProvider().getImage( getApplicationContext() , new DownloadReceiver() {
                                 @Override
                                 public void receive( final Void result ) {
-                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
-
                                     getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_PROGRESS ). //
                                             putExtra( EXTRA_CURRENT , current + 1 ). //
                                             putExtra( EXTRA_TOTAL , _doc.pages * imagePerPage ). //
-                                            putExtra( EXTRA_IMAGE_PER_PAGE , imagePerPage ) );
+                                            putExtra( EXTRA_ITEM_PER_PAGE , imagePerPage ) );
+
+                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
                                 }
                             } , _id , page , level , px , py , getShortSide() ).execute();
                         } else {
@@ -107,12 +109,12 @@ public class DownloadService extends Service {
                             new Handler().post( new Runnable() {
                                 @Override
                                 public void run() {
-                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
-
                                     getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_PROGRESS ). //
                                             putExtra( EXTRA_CURRENT , current + 1 ). //
                                             putExtra( EXTRA_TOTAL , _doc.pages * imagePerPage ). //
-                                            putExtra( EXTRA_IMAGE_PER_PAGE , imagePerPage ) );
+                                            putExtra( EXTRA_ITEM_PER_PAGE , imagePerPage ) );
+
+                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
                                 }
                             } );
                         }
@@ -150,6 +152,27 @@ public class DownloadService extends Service {
         }
     }
 
+    private void ensureText( final int page ) {
+        if ( page < _doc.pages ) {
+            Kernel.getRemoteProvider().getText( getApplicationContext() , new DownloadReceiver() {
+                @Override
+                public void receive( final Void result ) {
+                    getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_PROGRESS ). //
+                            putExtra( EXTRA_CURRENT , page + 1 ). //
+                            putExtra( EXTRA_TOTAL , _doc.pages ). //
+                            putExtra( EXTRA_ITEM_PER_PAGE , 1 ) );
+
+                    ensureText( page + 1 );
+                }
+            } , _id , page ).execute();
+        } else {
+            Kernel.getLocalProvider().setCompleted( _id );
+            Kernel.getAppStateManager().setDownloadTarget( -1 );
+
+            stopSelf();
+        }
+    }
+
     public int getShortSide() {
         return Math.min( getResources().getDisplayMetrics().widthPixels ,
                 getResources().getDisplayMetrics().heightPixels );
@@ -169,7 +192,7 @@ public class DownloadService extends Service {
         getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_PROGRESS ). //
                 putExtra( EXTRA_CURRENT , 0 ). //
                 putExtra( EXTRA_TOTAL , Integer.MAX_VALUE ). //
-                putExtra( EXTRA_IMAGE_PER_PAGE , 1 ) );
+                putExtra( EXTRA_ITEM_PER_PAGE , 1 ) );
 
         ensureDocInfo();
     }

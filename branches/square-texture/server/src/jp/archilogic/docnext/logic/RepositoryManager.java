@@ -23,4 +23,8 @@ public class RepositoryManager {
         return String
                 .format( "%s/thumb/%d/%s%d-%d-%d-%d.jpg" , prop.repository , docId , type , page , level , px , py );
     }
+
+    public String getTextPath( final long id , final int page ) {
+        return String.format( "%s/pack/%d/texts/%d.json" , prop.repository , id , page );
+    }
 }

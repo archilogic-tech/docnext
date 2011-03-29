@@ -30,7 +30,7 @@ public class LocalPathManager {
     }
 
     public void ensureTextInfoDir( final long id ) {
-        ensure( getTextInfoDir( id ) );
+        ensure( getTextDir( id ) );
     }
 
     public String getCompletedInfoPath() {
@@ -73,11 +73,11 @@ public class LocalPathManager {
         return String.format( "%s%d_%d_%d_%d.jpg" , getImageDir( id ) , page , level , px , py );
     }
 
-    private String getTextInfoDir( final long id ) {
+    private String getTextDir( final long id ) {
         return ROOT + "text/" + id + "/";
     }
 
-    public String getTextInfoPath( final long id , final int page ) {
-        return getTextInfoDir( id ) + page + ".json";
+    public String getTextPath( final long id , final int page ) {
+        return getTextDir( id ) + page + ".json";
     }
 }

@@ -44,11 +44,11 @@ public class RemoteProviderImpl implements RemoteProvider {
     }
 
     @Override
-    public DownloadTask getTextInfo( final Context context , final Receiver< Void > receiver , final long id ,
+    public DownloadTask getText( final Context context , final Receiver< Void > receiver , final long id ,
             final int page ) {
         _localPathManager.ensureTextInfoDir( id );
 
-        return new DownloadTask( context , receiver , _remotePathManager.getTextInfoPath( id , page ) ,
-                _localPathManager.getTextInfoPath( id , page ) );
+        return new DownloadTask( context , receiver , _remotePathManager.getTextPath( id , page ) ,
+                _localPathManager.getTextPath( id , page ) );
     }
 }

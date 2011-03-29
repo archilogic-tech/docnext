@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocumentConverter implements IEntityToDtoConverter< Document , DocumentResDto > {
     @Override
-    public DocumentResDto toDto( Document entity ) {
-        DocumentResDto dto = new DocumentResDto();
+    public DocumentResDto toDto( final Document entity ) {
+        final DocumentResDto dto = new DocumentResDto();
 
         dto.id = entity.id;
-        dto.name = entity.name;
+        dto.name = entity.getName();
 
         return dto;
     }

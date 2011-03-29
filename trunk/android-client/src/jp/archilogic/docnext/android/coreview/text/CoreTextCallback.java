@@ -244,7 +244,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
         _sources = Lists.newArrayList();
         for ( int page = 0 ; page < doc.pages ; page++ ) {
-            _sources.add( Kernel.getLocalProvider().getTextInfo( id , page ) );
+            _sources.add( Kernel.getLocalProvider().getText( id , page ) );
         }
 
         _index = 0;

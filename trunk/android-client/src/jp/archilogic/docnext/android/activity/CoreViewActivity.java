@@ -5,7 +5,7 @@ import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.info.DocInfo;
-import jp.archilogic.docnext.android.meta.CoreViewType;
+import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -30,7 +30,7 @@ import android.widget.FrameLayout;
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
 
-	private static final int REQUEST_PAGE = 1;
+    private static final int REQUEST_PAGE = 1;
 
     private final CoreViewActivity _self = this;
 
@@ -77,7 +77,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     private final OnDoubleTapListener _doubleTapListener = new OnDoubleTapListener() {
         @Override
         public boolean onDoubleTap( final MotionEvent e ) {
-            // hack for this method called before ACTION_UP (actually invoked ACTION_DOWN)
+            // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
             _view.onGestureEnd();
             _view.onDoubleTapGesture( new PointF( e.getX() , e.getY() ) );
 
@@ -91,7 +91,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         @Override
         public boolean onSingleTapConfirmed( final MotionEvent e ) {
-            // hack for this method called before ACTION_UP (actually invoked ACTION_DOWN)
+            // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
             _view.onGestureEnd();
             _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
 
@@ -142,20 +142,31 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     @Override
-    public void changeCoreViewType( final CoreViewType type ) {
+    public void changeCoreViewType( final DocumentType type ) {
         // Not implemented
     }
-    
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	switch (requestCode) {
-    	case REQUEST_PAGE:
-    		if (resultCode == Activity.RESULT_OK) {
-    			int page = data.getExtras().getInt(TableOfContentsActivity.EXTRA_PAGE);
-    			Log.d("docnext", "onActivityResult: page:" + page);
-    			// TODO: change page
-    		}
-    		break;
-    	}
+
+    private boolean contains( final DocumentType[] types , final DocumentType type ) {
+        for ( final DocumentType o : types ) {
+            if ( o == type ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onActivityResult( final int requestCode , final int resultCode , final Intent data ) {
+        switch ( requestCode ) {
+        case REQUEST_PAGE:
+            if ( resultCode == Activity.RESULT_OK ) {
+                final int page = data.getExtras().getInt( TableOfContentsActivity.EXTRA_PAGE );
+                Log.d( "docnext" , "onActivityResult: page:" + page );
+                // TODO: change page
+            }
+            break;
+        }
     }
 
     @Override
@@ -185,12 +196,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
     }
-    
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.document_menu, menu);
-    	return true;
+    public boolean onCreateOptionsMenu( final Menu menu ) {
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.document_menu , menu );
+        return true;
     }
 
     @Override
@@ -199,23 +210,22 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         unregisterReceiver( _remoteProviderReceiver );
     }
-    
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	Intent intent = null;
-    	switch (item.getItemId()) {
-    	case R.id.table_of_contents_item:
-    		intent = new Intent(this, TableOfContentsActivity.class);
-    		startActivityForResult(intent, REQUEST_PAGE);
-    		return true;
-    	}
-    	return false;
+    public boolean onOptionsItemSelected( final MenuItem item ) {
+        Intent intent = null;
+        switch ( item.getItemId() ) {
+        case R.id.table_of_contents_item:
+            intent = new Intent( this , TableOfContentsActivity.class );
+            startActivityForResult( intent , REQUEST_PAGE );
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean onTouchEvent( final MotionEvent event ) {
-        // TODO need research
-        switch ( event.getAction() /* & MotionEvent.ACTION_MASK */) {
+        switch ( event.getAction() ) {
         case MotionEvent.ACTION_DOWN:
             _view.onGestureBegin();
             break;
@@ -230,15 +240,15 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         return true;
     }
 
-    private CoreViewType validateCoreViewType( final long[] ids ) {
-        CoreViewType ret = null;
+    private DocumentType validateCoreViewType( final long[] ids ) {
+        DocumentType ret = null;
 
         for ( final long id : ids ) {
             final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
 
             if ( ret == null ) {
-                ret = doc.type;
-            } else if ( ret != doc.type ) {
+                ret = doc.types[ 0 ];
+            } else if ( !contains( doc.types , ret ) ) {
                 throw new RuntimeException();
             }
         }

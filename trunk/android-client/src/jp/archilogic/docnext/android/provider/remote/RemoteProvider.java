@@ -18,5 +18,5 @@ public interface RemoteProvider {
 
     DownloadTask getImageInfo( Context context , Receiver< Void > receiver , long id , int shortSide );
 
-    DownloadTask getTextInfo( Context context , Receiver< Void > receiver , long id , int page );
+    DownloadTask getText( Context context , Receiver< Void > receiver , long id , int page );
 }

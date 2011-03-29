@@ -1,13 +1,15 @@
 package jp.archilogic.docnext.dto;
 
+import jp.archilogic.docnext.type.DocumentType;
+
 public class DocInfo {
     public long id;
-    public int type;
+    public DocumentType[] types;
     public int pages;
 
-    public DocInfo( final long id , final int type , final int pages ) {
+    public DocInfo( final long id , final DocumentType[] types , final int pages ) {
         this.id = id;
-        this.type = type;
+        this.types = types;
         this.pages = pages;
     }
 }

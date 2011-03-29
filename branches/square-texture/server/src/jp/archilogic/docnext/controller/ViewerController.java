@@ -46,7 +46,7 @@ public class ViewerController {
     public String getDocInfo( @RequestParam( "id" ) final long id ) {
         final Document doc = documentDao.findById( id );
 
-        return JSON.encode( new DocInfo( id , 0 , doc.pages ) );
+        return JSON.encode( new DocInfo( id , doc.getTypes() , doc.getPages() ) );
     }
 
     @RequestMapping( "/viewer/getImageInfo" )
@@ -59,8 +59,8 @@ public class ViewerController {
         final int minLevel = getMinLevel( shortSide );
 
         final int width = ( int ) ( ThumbnailCreator.TEXTURE_SIZE * Math.pow( 2 , minLevel ) );
-        final int height = doc.height * width / doc.width;
-        final int nLevel = Math.min( doc.maxLevel - minLevel + 1 , LIMIT );
+        final int height = doc.getHeight() * width / doc.getWidth();
+        final int nLevel = Math.min( doc.getMaxLevel() - minLevel + 1 , LIMIT );
 
         return JSON.encode( new ImageInfo( width , height , nLevel ) );
     }
@@ -83,6 +83,16 @@ public class ViewerController {
             IOUtils.copy( in , out );
 
             IOUtils.closeQuietly( in );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    @RequestMapping( "/viewer/getText" )
+    @ResponseBody
+    public String getText( @RequestParam( "id" ) final long id , @RequestParam( "page" ) final int page ) {
+        try {
+            return FileUtils.readFileToString( new File( repositoryManager.getTextPath( id , page ) ) );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
