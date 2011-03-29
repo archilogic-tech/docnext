@@ -1,6 +1,7 @@
 package jp.archilogic.docnext.android.activity;
 
 import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.info.DocInfo;
@@ -13,9 +14,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +29,8 @@ import android.widget.FrameLayout;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
+
+	private static final int REQUEST_PAGE = 1;
 
     private final CoreViewActivity _self = this;
 
@@ -138,6 +145,18 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public void changeCoreViewType( final CoreViewType type ) {
         // Not implemented
     }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch (requestCode) {
+    	case REQUEST_PAGE:
+    		if (resultCode == Activity.RESULT_OK) {
+    			String page = data.getExtras().getString(TableOfContentsActivity.EXTRA_PAGE);
+    			Log.d("docnext", "onActivityResult: page:" + page);
+    			// TODO: change page
+    		}
+    		break;
+    	}
+    }
 
     @Override
     public void onCreate( final Bundle savedInstanceState ) {
@@ -166,12 +185,31 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.document_menu, menu);
+    	return true;
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         unregisterReceiver( _remoteProviderReceiver );
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	Intent intent = null;
+    	switch (item.getItemId()) {
+    	case R.id.table_of_contents_item:
+    		intent = new Intent(this, TableOfContentsActivity.class);
+    		startActivityForResult(intent, REQUEST_PAGE);
+    		return true;
+    	}
+    	return false;
     }
 
     @Override
