@@ -5,6 +5,15 @@ public class CoreImageMatrix {
     float tx;
     float ty;
 
+    CoreImageMatrix() {
+    }
+
+    CoreImageMatrix( final CoreImageMatrix o ) {
+        scale = o.scale;
+        tx = o.tx;
+        ty = o.ty;
+    }
+
     float length( final float length ) {
         return length * scale;
     }
