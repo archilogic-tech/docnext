@@ -9,6 +9,7 @@ import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.logic.ProgressManager;
 import jp.archilogic.docnext.logic.ProgressManager.Step;
 import jp.archilogic.docnext.logic.UploadProcessor;
+import jp.archilogic.docnext.type.DocumentType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -41,12 +42,13 @@ public class AdminController {
     public String upload( @RequestParam( "name" ) final String name , @RequestParam( "file" ) final MultipartFile file )
             throws IOException {
         final Document doc = new Document();
-        doc.name = name;
-        doc.fileName = file.getOriginalFilename();
-        doc.pages = -1;
-        doc.width = -1;
-        doc.height = -1;
-        doc.maxLevel = -1;
+        doc.setName( name );
+        doc.setFileName( file.getOriginalFilename() );
+        doc.setTypes( new DocumentType[] { DocumentType.IMAGE } );
+        doc.setPages( -1 );
+        doc.setWidth( -1 );
+        doc.setHeight( -1 );
+        doc.setMaxLevel( -1 );
         doc.processing = true;
         documentDao.create( doc );
 
