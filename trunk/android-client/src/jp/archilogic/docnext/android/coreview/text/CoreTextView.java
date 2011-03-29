@@ -7,14 +7,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.AttributeSet;
 import android.view.SurfaceView;
 
 public class CoreTextView extends SurfaceView implements CoreView {
     private CoreTextCallback _callback;
 
-    public CoreTextView( final Context context , final AttributeSet attrs ) {
-        super( context , attrs );
+    public CoreTextView( final Context context ) {
+        super( context );
     }
 
     @Override
