@@ -71,8 +71,8 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
-    public TextInfo getTextInfo( final long id , final int page ) {
-        return getJsonInfo( _pathManager.getTextInfoPath( id , page ) , TextInfo.class );
+    public TextInfo getText( final long id , final int page ) {
+        return getJsonInfo( _pathManager.getTextPath( id , page ) , TextInfo.class );
     }
 
     @Override

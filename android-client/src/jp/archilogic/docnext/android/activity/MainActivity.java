@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
             if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
                 final int current = intent.getIntExtra( DownloadService.EXTRA_CURRENT , -1 );
                 final int total = intent.getIntExtra( DownloadService.EXTRA_TOTAL , -1 );
-                final int imagePerPage = intent.getIntExtra( DownloadService.EXTRA_IMAGE_PER_PAGE , -1 );
+                final int imagePerPage = intent.getIntExtra( DownloadService.EXTRA_ITEM_PER_PAGE , -1 );
 
                 if ( current < total ) {
                     setProgress( Window.PROGRESS_END * current / total );
@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         findViewById( R.id.button ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
-                final long id = 7;
+                final long id = 2;
 
                 final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
 

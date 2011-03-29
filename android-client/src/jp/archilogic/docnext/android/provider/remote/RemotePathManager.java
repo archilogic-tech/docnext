@@ -21,7 +21,7 @@ public class RemotePathManager {
                 Config.ENDPOINT , id , page , level , px , py , shortSide );
     }
 
-    public String getTextInfoPath( final long id , final int page ) {
-        return Config.ENDPOINT + "text/" + id + "/" + page + ".json";
+    public String getTextPath( final long id , final int page ) {
+        return String.format( "%sviewer/getText?id=%d&page=%d" , Config.ENDPOINT , id , page );
     }
 }

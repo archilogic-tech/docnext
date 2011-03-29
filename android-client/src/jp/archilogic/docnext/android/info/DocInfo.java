@@ -1,10 +1,9 @@
 package jp.archilogic.docnext.android.info;
 
-import jp.archilogic.docnext.android.meta.CoreViewType;
+import jp.archilogic.docnext.android.meta.DocumentType;
 
 public class DocInfo {
     public long id;
-    // public List< CoreViewType > enableTypes;
-    public CoreViewType type;
+    public DocumentType[] types;
     public int pages;
 }

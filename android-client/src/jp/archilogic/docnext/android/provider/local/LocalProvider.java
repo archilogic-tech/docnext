@@ -33,7 +33,7 @@ public interface LocalProvider {
      * 
      * @return null if not exists
      */
-    TextInfo getTextInfo( long id , int page );
+    TextInfo getText( long id , int page );
 
     boolean isCompleted( long id );
 

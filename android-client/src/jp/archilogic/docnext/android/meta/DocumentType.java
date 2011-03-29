@@ -5,7 +5,7 @@ import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
 import android.content.Context;
 
-public enum CoreViewType {
+public enum DocumentType {
     IMAGE , TEXT;
 
     public CoreView buildView( final Context context ) {
