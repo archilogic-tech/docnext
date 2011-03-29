@@ -81,9 +81,9 @@ public class CoreImageEngine {
 
     void doubleTap( final PointF point ) {
         if ( matrix.scale < _maxScale ) {
-            smartZoom( 1 );
+            smartZoom( 1 , point );
         } else {
-            zoom( _minScale / matrix.scale , new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) );
+            zoom( _minScale / matrix.scale , point );
         }
     }
 
