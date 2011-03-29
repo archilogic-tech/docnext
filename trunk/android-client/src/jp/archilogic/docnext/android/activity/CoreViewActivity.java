@@ -150,7 +150,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     	switch (requestCode) {
     	case REQUEST_PAGE:
     		if (resultCode == Activity.RESULT_OK) {
-    			String page = data.getExtras().getString(TableOfContentsActivity.EXTRA_PAGE);
+    			int page = data.getExtras().getInt(TableOfContentsActivity.EXTRA_PAGE);
     			Log.d("docnext", "onActivityResult: page:" + page);
     			// TODO: change page
     		}
