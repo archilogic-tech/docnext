@@ -1,5 +1,6 @@
 package jp.archilogic.docnext.android.coreview.image;
 
+import jp.archilogic.docnext.android.info.SizeFInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.graphics.PointF;
 import android.os.SystemClock;
@@ -7,27 +8,19 @@ import android.os.SystemClock;
 public class CoreImageCleanupValue {
     static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
             final SizeInfo page , final float minScale , final float maxScale , final PointF point ,
-            final float horizontalPadding , final float verticalPadding ) {
-        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
-
-        ret.copy( matrix );
+            final SizeFInfo padding ) {
+        float scale;
 
         if ( matrix.scale < maxScale ) {
-            ret.dstScale = maxScale;
+            final float delta =
+                    ( float ) Math.pow( maxScale / minScale , 1.0 / getNumberOfZoomLevel( minScale , maxScale ) );
+
+            scale = Math.max( minScale , Math.min( maxScale , delta * matrix.scale ) );
         } else {
-            ret.dstScale = minScale;
+            scale = minScale;
         }
 
-        ret.dstX =
-                matrix.tx * maxScale / matrix.scale - ( point.x - horizontalPadding ) * ( maxScale - matrix.scale )
-                        / matrix.scale;
-        ret.dstY =
-                matrix.ty * maxScale / matrix.scale - ( point.y - verticalPadding ) * ( maxScale - matrix.scale )
-                        / matrix.scale;
-
-        ret.adjust( surface , page );
-
-        return ret;
+        return getZoomInstance( matrix , surface , page , point , padding , scale );
     }
 
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
@@ -59,6 +52,42 @@ public class CoreImageCleanupValue {
         } else {
             return null;
         }
+    }
+
+    static CoreImageCleanupValue getLevelZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
+            final SizeInfo page , final float minScale , final float maxScale , final PointF point ,
+            final SizeFInfo padding , final int delta ) {
+        final float scaleDelta =
+                ( float ) Math.pow( maxScale / minScale , 1.0 / getNumberOfZoomLevel( minScale , maxScale ) * delta );
+
+        final float scale = Math.max( minScale , Math.min( maxScale , scaleDelta * matrix.scale ) );
+
+        return getZoomInstance( matrix , surface , page , point , padding , scale );
+    }
+
+    private static int getNumberOfZoomLevel( final float minScale , final float maxScale ) {
+        final int n = ( int ) Math.floor( Math.log( maxScale / minScale ) / Math.log( 2 ) );
+        return n;
+    }
+
+    private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
+            final SizeInfo page , final PointF point , final SizeFInfo padding , final float scale ) {
+        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
+
+        ret.copy( matrix );
+
+        ret.dstScale = scale;
+
+        ret.dstX =
+                matrix.tx * ret.dstScale / matrix.scale + ( point.x - padding.width ) * ( matrix.scale - ret.dstScale )
+                        / matrix.scale;
+        ret.dstY =
+                matrix.ty * ret.dstScale / matrix.scale + ( point.y - padding.height ) * ( matrix.scale - ret.dstScale )
+                        / matrix.scale;
+
+        ret.adjust( surface , page );
+
+        return ret;
     }
 
     float srcScale;

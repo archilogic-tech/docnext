@@ -416,10 +416,6 @@ public class CoreImageRenderer implements Renderer {
         _engine.setOnScaleChangeListener( l );
     }
 
-    void smartZoom( final int delta ) {
-        _engine.smartZoom( delta );
-    }
-
     private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
         _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
 
@@ -429,5 +425,9 @@ public class CoreImageRenderer implements Renderer {
 
     void zoom( final float scaleDelta , final PointF center ) {
         _engine.zoom( scaleDelta , center );
+    }
+
+    void zoomByLevel( final int delta ) {
+        _engine.zoomByLevel( delta );
     }
 }

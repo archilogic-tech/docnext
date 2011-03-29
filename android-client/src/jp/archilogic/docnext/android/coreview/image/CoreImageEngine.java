@@ -2,6 +2,7 @@ package jp.archilogic.docnext.android.coreview.image;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer.PageLoader;
+import jp.archilogic.docnext.android.info.SizeFInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.graphics.PointF;
 import android.os.SystemClock;
@@ -80,11 +81,11 @@ public class CoreImageEngine {
     }
 
     void doubleTap( final PointF point ) {
-        if ( matrix.scale < _maxScale ) {
-            smartZoom( 1 , point );
-        } else {
-            zoom( _minScale / matrix.scale , point );
-        }
+        _cleanup =
+                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
+                        point , new SizeFInfo( getHorizontalPadding() , getVerticalPadding() ) );
+
+        onScaleChange( _cleanup.dstScale );
     }
 
     void drag( final PointF delta ) {
@@ -131,23 +132,6 @@ public class CoreImageEngine {
 
     void setPageLoader( final PageLoader loader ) {
         _loader = loader;
-    }
-
-    void smartZoom( final int delta ) {
-        final int n = ( int ) Math.floor( Math.log( _maxScale / _minScale ) / Math.log( 2 ) );
-
-        final float scaleDelta = ( float ) Math.pow( _maxScale / _minScale , 1.0 / n * delta );
-
-        zoom( Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) ) , new PointF(
-                surfaceSize.width / 2 , surfaceSize.height / 2 ) );
-    }
-
-    void smartZoom( final int delta , final PointF center ) {
-        final int n = ( int ) Math.floor( Math.log( _maxScale / _minScale ) / Math.log( 2 ) );
-
-        final float scaleDelta = ( float ) Math.pow( _maxScale / _minScale , 1.0 / n * delta );
-
-        zoom( Math.max( _minScale / matrix.scale , Math.min( _maxScale / matrix.scale , scaleDelta ) ) , center );
     }
 
     /**
@@ -204,5 +188,14 @@ public class CoreImageEngine {
         _preventCheckChangePage = true;
 
         onScaleChange( matrix.scale );
+    }
+
+    void zoomByLevel( final int delta ) {
+        _cleanup =
+                CoreImageCleanupValue.getLevelZoomInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
+                        new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) , new SizeFInfo(
+                                getHorizontalPadding() , getVerticalPadding() ) , delta );
+
+        onScaleChange( _cleanup.dstScale );
     }
 }
