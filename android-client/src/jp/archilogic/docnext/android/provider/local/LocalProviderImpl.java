@@ -11,6 +11,7 @@ import java.util.List;
 
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
+import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.info.TextInfo;
 import net.arnx.jsonic.JSON;
 
@@ -68,6 +69,11 @@ public class LocalProviderImpl implements LocalProvider {
         } finally {
             IOUtils.closeQuietly( in );
         }
+    }
+
+    @Override
+    public List<TOCElement> getTableOfContentsInfo( final long id ) {
+        return Arrays.asList( getJsonInfo( _pathManager.getTableOfContentsInfoPath( id ) , TOCElement[].class ) );
     }
 
     @Override

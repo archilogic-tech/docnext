@@ -70,6 +70,16 @@ public class CoreImageEngine {
         direction.updateOffset( this , false );
     }
 
+    void changeToPage( int page ) {
+    	if ( page >= 0 && page + 1 < pages ) {
+    		_loader.load( page );
+    	}
+    	
+    	this.page = page;
+
+    	direction.updateOffset( this, true );
+    }
+    
     private void checkChangePage() {
         if ( direction.shouldChangeToNext( this ) && page + 1 < pages
                 && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
@@ -128,6 +138,10 @@ public class CoreImageEngine {
 
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {
         _scaleChangeLisetener = l;
+    }
+
+    void setPage( int page2 ) {
+    	changeToPage( page2 );
     }
 
     void setPageLoader( final PageLoader loader ) {

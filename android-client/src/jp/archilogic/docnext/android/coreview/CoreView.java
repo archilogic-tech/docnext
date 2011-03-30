@@ -24,4 +24,6 @@ public interface CoreView {
     void setDelegate( CoreViewDelegate delegate );
 
     void setIds( long[] ids );
+
+	void setPage( int page );
 }

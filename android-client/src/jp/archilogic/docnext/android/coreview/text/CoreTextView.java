@@ -65,4 +65,8 @@ public class CoreTextView extends SurfaceView implements CoreView {
     public void setIds( final long[] ids ) {
         _callback.setId( ids[ 0 ] );
     }
+    
+    @Override
+    public void setPage( final int page ) {
+    }
 }

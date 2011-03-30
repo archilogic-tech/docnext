@@ -1,7 +1,10 @@
 package jp.archilogic.docnext.android.provider.local;
 
+import java.util.List;
+
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
+import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.info.TextInfo;
 
 /**
@@ -29,6 +32,11 @@ public interface LocalProvider {
     String getImagePath( long id , int page , int level , int px , int py );
 
     /**
+     * @return null if not exists
+     */
+	List <TOCElement> getTableOfContentsInfo(long _id);
+	
+    /**
      * more partial? (for large text)
      * 
      * @return null if not exists
@@ -40,4 +48,5 @@ public interface LocalProvider {
     boolean isImageExists( long id , int page );
 
     void setCompleted( long id );
+
 }
