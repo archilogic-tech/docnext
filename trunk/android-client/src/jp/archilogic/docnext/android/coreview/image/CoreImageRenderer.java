@@ -408,6 +408,10 @@ public class CoreImageRenderer implements Renderer {
         _engine.setOnScaleChangeListener( l );
     }
 
+    public void setPage(int page) {
+        _engine.setPage( page );
+    }
+
     private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
         _pages[ cache.page ].statuses[ cache.level ][ cache.py ][ cache.px ] = PageTextureStatus.UNBIND;
 

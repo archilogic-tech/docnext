@@ -104,4 +104,9 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
     public void setIds( final long[] ids ) {
         _renderer.setId( ids[ 0 ] );
     }
+    
+    @Override
+    public void setPage( final int page ) {
+    	_renderer.setPage( page );
+    }
 }

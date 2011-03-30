@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -145,7 +144,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public void changeCoreViewType( final DocumentType type ) {
         // Not implemented
     }
-
+    
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
         for ( final DocumentType o : types ) {
             if ( o == type ) {
@@ -156,14 +155,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         return false;
     }
 
-    @Override
-    public void onActivityResult( final int requestCode , final int resultCode , final Intent data ) {
+    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
         switch ( requestCode ) {
         case REQUEST_PAGE:
             if ( resultCode == Activity.RESULT_OK ) {
-                final int page = data.getExtras().getInt( TableOfContentsActivity.EXTRA_PAGE );
-                Log.d( "docnext" , "onActivityResult: page:" + page );
-                // TODO: change page
+                int page = data.getExtras().getInt( TableOfContentsActivity.EXTRA_PAGE );
+                _view.setPage( page );
             }
             break;
         }

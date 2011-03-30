@@ -77,6 +77,10 @@ public class LocalPathManager {
         return ROOT + "text/" + id + "/";
     }
 
+    public String getTableOfContentsInfoPath( long id ) {
+        return getDocInfoDir() + id + ".toc.json";
+    }
+
     public String getTextPath( final long id , final int page ) {
         return getTextDir( id ) + page + ".json";
     }
