@@ -87,13 +87,6 @@ public class ViewerController {
             throw new RuntimeException( e );
         }
     }
-    
-    @RequestMapping( "/viewer/getTOC" )
-    @ResponseBody
-    public String getTOC( @RequestParam( "id" ) final long id )
-    throws IOException {
-    	return JSON.encode( packManager.readTOC( id ) );
-    }
 
     @RequestMapping( "/viewer/getText" )
     @ResponseBody
@@ -103,6 +96,12 @@ public class ViewerController {
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    @RequestMapping( "/viewer/getTOC" )
+    @ResponseBody
+    public String getTOC( @RequestParam( "id" ) final long id ) throws IOException {
+        return JSON.encode( packManager.readTOC( id ) );
     }
 
     @RequestMapping( "/viewer/smartGetPage" )
