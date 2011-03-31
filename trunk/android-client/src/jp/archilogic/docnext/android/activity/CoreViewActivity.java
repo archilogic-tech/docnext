@@ -7,6 +7,7 @@ import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
+import jp.archilogic.docnext.android.thumnail.ThumnailActivity;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,6 +29,7 @@ import android.widget.FrameLayout;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
+    public static final String EXTRA_PAGE = "page";
 
     private static final int REQUEST_PAGE = 1;
 
@@ -159,7 +161,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         switch ( requestCode ) {
         case REQUEST_PAGE:
             if ( resultCode == Activity.RESULT_OK ) {
-                int page = data.getExtras().getInt( TableOfContentsActivity.EXTRA_PAGE );
+                int page = data.getExtras().getInt( EXTRA_PAGE );
                 _view.setPage( page );
             }
             break;
@@ -214,7 +216,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         switch ( item.getItemId() ) {
         case R.id.table_of_contents_item:
             intent = new Intent( this , TableOfContentsActivity.class );
+            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS ) );
             startActivityForResult( intent , REQUEST_PAGE );
+            return true;
+        case R.id.thumnail_item:
+            intent = new Intent( this , ThumnailActivity.class );
+            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS ) );
+            startActivityForResult( intent, REQUEST_PAGE );
             return true;
         }
         return false;

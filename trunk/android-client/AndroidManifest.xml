@@ -12,6 +12,7 @@
         </activity>
         <activity android:name=".activity.CoreViewActivity" />
         <activity android:name=".activity.TableOfContentsActivity" />
+        <activity android:name="thumnail.ThumnailActivity" />
 
         <service android:name=".service.DownloadService" />
     </application>
