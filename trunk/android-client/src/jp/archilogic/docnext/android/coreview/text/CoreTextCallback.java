@@ -9,12 +9,14 @@ import jp.archilogic.docnext.android.coreview.text.engine.CoreTextEngine;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import jp.archilogic.docnext.android.info.TextInfo;
+import jp.archilogic.docnext.android.provider.local.LocalPathManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.SystemClock;
 import android.view.SurfaceHolder;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -75,8 +77,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     private Paint buildPaint() {
         final Paint p = new Paint();
         p.setAntiAlias( true );
-        // TODO
-        // p.setTypeface( Typeface.createFromFile( StorageUtil.getFontPath( "default" ) ) );
+        p.setTypeface( Typeface.createFromFile( new LocalPathManager().getFontPath( "default" ) ) );
 
         return p;
     }
