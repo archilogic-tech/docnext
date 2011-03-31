@@ -3,4 +3,7 @@
     <item android:id="@+id/table_of_contents_item"
           android:icon="@drawable/ic_toc"
           android:title="@string/table_of_contents" />
+    <item android:id="@+id/thumnail_item"
+          android:icon="@drawable/ic_thumnail"
+          android:title="@string/thumnail" />
 </menu>
