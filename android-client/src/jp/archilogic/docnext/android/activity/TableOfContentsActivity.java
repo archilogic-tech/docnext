@@ -21,16 +21,13 @@ public class TableOfContentsActivity extends Activity {
     private ArrayAdapter<String> tableOfContentsArrayAdapter;
     private ArrayList<Integer> pageList;
 
-    public static String EXTRA_ID = "id";
-    public static String EXTRA_PAGE = "page";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        final long id = getIntent().getLongExtra( EXTRA_ID, -1 );
-
-        if (id < 0) {
+        final long[] ids = getIntent().getLongArrayExtra( CoreViewActivity.EXTRA_IDS );
+        if ( ids == null || ids.length == 0 ) {
             throw new RuntimeException();
         }
 
@@ -50,7 +47,7 @@ public class TableOfContentsActivity extends Activity {
 
         pageList = new ArrayList<Integer>();
         List<TOCElement> tableOfContents = Kernel.getLocalProvider()
-                .getTableOfContentsInfo( id );
+                .getTableOfContentsInfo( ids[0] );
 
         for (TOCElement element : tableOfContents) {
             pageList.add( element.page );
@@ -66,7 +63,7 @@ public class TableOfContentsActivity extends Activity {
     private OnItemClickListener mTcoClickListener = new OnItemClickListener() {
         public void onItemClick( AdapterView<?> av, View v, int arg2, long arg3 ) {
             Intent intent = new Intent();
-            intent.putExtra( EXTRA_PAGE, pageList.get( arg2 ) );
+            intent.putExtra( CoreViewActivity.EXTRA_PAGE, pageList.get( arg2 ) );
 
             setResult( Activity.RESULT_OK, intent );
             finish();
