@@ -14,6 +14,10 @@ public interface CoreView {
 
     void onGestureEnd();
 
+    void onPause();
+
+    void onResume();
+
     void onTapGesture( PointF point );
 
     /**
@@ -25,5 +29,5 @@ public interface CoreView {
 
     void setIds( long[] ids );
 
-	void setPage( int page );
+    void setPage( int page );
 }
