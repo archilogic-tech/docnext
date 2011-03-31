@@ -1,10 +1,16 @@
 package jp.archilogic.docnext.android.activity;
 
+import java.io.File;
+import java.io.IOException;
+
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.service.DownloadService;
 import jp.archilogic.docnext.android.type.TaskErrorType;
+
+import org.apache.commons.io.FileUtils;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -83,6 +89,16 @@ public class MainActivity extends Activity {
             @Override
             public void onClick( final View v ) {
                 requestDocument( 3 );
+            }
+        } );
+        findViewById( R.id.reset ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                try {
+                    FileUtils.deleteDirectory( new File( "/sdcard/docnext" ) );
+                } catch ( final IOException e ) {
+                    throw new RuntimeException( e );
+                }
             }
         } );
     }
