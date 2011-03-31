@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,6 +48,19 @@ public class ViewerController {
         return JSON.encode( new DocInfo( id , doc.getTypes() , doc.getPages() ) );
     }
 
+    @RequestMapping( "/viewer/getFont" )
+    public void getFont( @RequestParam( "name" ) final String name , final HttpServletResponse res ) {
+        try {
+            final InputStream in = FileUtils.openInputStream( new File( repositoryManager.getFontPath( name ) ) );
+
+            IOUtils.copy( in , res.getOutputStream() );
+
+            IOUtils.closeQuietly( in );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
     @RequestMapping( "/viewer/getImageInfo" )
     @ResponseBody
     public String getImageInfo( @RequestParam( "id" ) final long id , @RequestParam( "shortSide" ) final int shortSide ) {
@@ -78,9 +90,8 @@ public class ViewerController {
             final InputStream in =
                     FileUtils.openInputStream( new File( repositoryManager.getImagePath( type , documentId , page ,
                             level , px , py ) ) );
-            final OutputStream out = res.getOutputStream();
 
-            IOUtils.copy( in , out );
+            IOUtils.copy( in , res.getOutputStream() );
 
             IOUtils.closeQuietly( in );
         } catch ( final IOException e ) {
@@ -113,9 +124,8 @@ public class ViewerController {
             final InputStream in =
                     FileUtils.openInputStream( new File( repositoryManager.getImagePath( id , page ,
                             getMinLevel( shortSide ) + level , px , py ) ) );
-            final OutputStream out = res.getOutputStream();
 
-            IOUtils.copy( in , out );
+            IOUtils.copy( in , res.getOutputStream() );
 
             IOUtils.closeQuietly( in );
         } catch ( final IOException e ) {

@@ -10,6 +10,10 @@ public class RepositoryManager {
     @Autowired
     private PropBean prop;
 
+    public String getFontPath( final String name ) {
+        return String.format( "%s/font/%s" , prop.repository , name );
+    }
+
     public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
         return String.format( "%s/thumb/%d/texture%d-%d-%d-%d.jpg" , prop.repository , id , page , level , px , py );
     }
