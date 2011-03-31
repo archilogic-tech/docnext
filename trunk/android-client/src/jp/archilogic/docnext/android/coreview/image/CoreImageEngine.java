@@ -20,7 +20,7 @@ public class CoreImageEngine {
         void onScaleChange( boolean isMin , boolean isMax );
     }
 
-    private static final long CLEANUP_DURATION = 200L;
+    private static final long CLEANUP_DURATION = 500L;
 
     long id;
     int page = 0;
@@ -56,6 +56,16 @@ public class CoreImageEngine {
         direction.updateOffset( this , true );
     }
 
+    void changeToPage( final int page ) {
+        if ( page >= 0 && page + 1 < pages ) {
+            _loader.load( page );
+        }
+
+        this.page = page;
+
+        direction.updateOffset( this , true );
+    }
+
     private void changeToPrevPage() {
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
@@ -70,16 +80,6 @@ public class CoreImageEngine {
         direction.updateOffset( this , false );
     }
 
-    void changeToPage( int page ) {
-    	if ( page >= 0 && page + 1 < pages ) {
-    		_loader.load( page );
-    	}
-    	
-    	this.page = page;
-
-    	direction.updateOffset( this, true );
-    }
-    
     private void checkChangePage() {
         if ( direction.shouldChangeToNext( this ) && page + 1 < pages
                 && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
@@ -92,8 +92,8 @@ public class CoreImageEngine {
 
     void doubleTap( final PointF point ) {
         _cleanup =
-                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
-                        point , new SizeFInfo( getHorizontalPadding() , getVerticalPadding() ) );
+                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , _minScale , _maxScale , point ,
+                        new SizeFInfo( getHorizontalPadding() , getVerticalPadding() ) );
 
         onScaleChange( _cleanup.dstScale );
     }
@@ -140,8 +140,8 @@ public class CoreImageEngine {
         _scaleChangeLisetener = l;
     }
 
-    void setPage( int page2 ) {
-    	changeToPage( page2 );
+    void setPage( final int page2 ) {
+        changeToPage( page2 );
     }
 
     void setPageLoader( final PageLoader loader ) {
@@ -179,6 +179,8 @@ public class CoreImageEngine {
                 matrix.ty =
                         _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY ) * _interpolator.getInterpolation( elapsed );
 
+                matrix.adjust( surfaceSize , pageSize );
+
                 if ( willFinish ) {
                     _cleanup = null;
                 }
@@ -207,9 +209,9 @@ public class CoreImageEngine {
 
     void zoomByLevel( final int delta ) {
         _cleanup =
-                CoreImageCleanupValue.getLevelZoomInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale ,
-                        new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) , new SizeFInfo(
-                                getHorizontalPadding() , getVerticalPadding() ) , delta );
+                CoreImageCleanupValue.getLevelZoomInstance( matrix , surfaceSize , _minScale , _maxScale , new PointF(
+                        surfaceSize.width / 2 , surfaceSize.height / 2 ) , new SizeFInfo( getHorizontalPadding() ,
+                        getVerticalPadding() ) , delta );
 
         onScaleChange( _cleanup.dstScale );
     }

@@ -7,20 +7,20 @@ import android.os.SystemClock;
 
 public class CoreImageCleanupValue {
     static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final SizeInfo page , final float minScale , final float maxScale , final PointF point ,
-            final SizeFInfo padding ) {
+            final float minScale , final float maxScale , final PointF point , final SizeFInfo padding ) {
         float scale;
 
         if ( matrix.scale < maxScale ) {
+            // 1.01 for rounding
             final float delta =
-                    ( float ) Math.pow( maxScale / minScale , 1.0 / getNumberOfZoomLevel( minScale , maxScale ) );
+                    ( float ) Math.pow( maxScale / minScale , 1.01 / getNumberOfZoomLevel( minScale , maxScale ) );
 
-            scale = Math.max( minScale , Math.min( maxScale , delta * matrix.scale ) );
+            scale = Math.min( maxScale , delta * matrix.scale );
         } else {
             scale = minScale;
         }
 
-        return getZoomInstance( matrix , surface , page , point , padding , scale );
+        return getZoomInstance( matrix , surface , point , padding , scale );
     }
 
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
@@ -46,21 +46,23 @@ public class CoreImageCleanupValue {
                 ret.dstY = matrix.ty;
             }
 
-            return ret.adjust( surface , page );
+            ret.start = SystemClock.elapsedRealtime();
+
+            return ret;
         } else {
             return null;
         }
     }
 
     static CoreImageCleanupValue getLevelZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final SizeInfo page , final float minScale , final float maxScale , final PointF point ,
-            final SizeFInfo padding , final int delta ) {
+            final float minScale , final float maxScale , final PointF point , final SizeFInfo padding , final int delta ) {
+        // 1.01 for rounding
         final float scaleDelta =
-                ( float ) Math.pow( maxScale / minScale , 1.0 / getNumberOfZoomLevel( minScale , maxScale ) * delta );
+                ( float ) Math.pow( maxScale / minScale , 1.01 / getNumberOfZoomLevel( minScale , maxScale ) * delta );
 
         final float scale = Math.max( minScale , Math.min( maxScale , scaleDelta * matrix.scale ) );
 
-        return getZoomInstance( matrix , surface , page , point , padding , scale );
+        return getZoomInstance( matrix , surface , point , padding , scale );
     }
 
     private static int getNumberOfZoomLevel( final float minScale , final float maxScale ) {
@@ -68,7 +70,7 @@ public class CoreImageCleanupValue {
     }
 
     private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final SizeInfo page , final PointF point , final SizeFInfo padding , final float scale ) {
+            final PointF point , final SizeFInfo padding , final float scale ) {
         final CoreImageCleanupValue ret = new CoreImageCleanupValue();
 
         ret.copy( matrix );
@@ -78,7 +80,9 @@ public class CoreImageCleanupValue {
         ret.dstX = ret.dstScale / matrix.scale * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2;
         ret.dstY = ret.dstScale / matrix.scale * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2;
 
-        return ret.adjust( surface , page );
+        ret.start = SystemClock.elapsedRealtime();
+
+        return ret;
     }
 
     float srcScale;
@@ -89,15 +93,6 @@ public class CoreImageCleanupValue {
     float dstY;
 
     long start;
-
-    private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
-        dstX = Math.min( Math.max( dstX , Math.min( surface.width - page.width * dstScale , 0 ) ) , 0 );
-        dstY = Math.min( Math.max( dstY , Math.min( surface.height - page.height * dstScale , 0 ) ) , 0 );
-
-        start = SystemClock.elapsedRealtime();
-
-        return this;
-    }
 
     private void copy( final CoreImageMatrix matrix ) {
         srcScale = matrix.scale;

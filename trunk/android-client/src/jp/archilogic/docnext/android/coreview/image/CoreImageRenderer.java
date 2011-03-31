@@ -408,7 +408,7 @@ public class CoreImageRenderer implements Renderer {
         _engine.setOnScaleChangeListener( l );
     }
 
-    public void setPage(int page) {
+    public void setPage( final int page ) {
         _engine.setPage( page );
     }
 

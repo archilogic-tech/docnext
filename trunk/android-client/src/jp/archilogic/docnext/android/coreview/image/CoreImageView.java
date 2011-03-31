@@ -40,7 +40,7 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
         setRenderer( _renderer = new CoreImageRenderer( context ) );
         _renderer.setDirection( CoreImageDirection.R2L );
 
-        if ( Build.VERSION.SDK_INT < 8 ) {
+        if ( Build.VERSION.SDK_INT < 8 || true ) {
             _renderer.setOnScaleChangeListener( _scaleChangeListener );
 
             _zoomButtonsController = new ZoomButtonsController( this );
@@ -91,8 +91,6 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
-        System.err.println( "onZoomGesture: " + scaleDelta + ", " + center.x + ", " + center.y );
-
         _renderer.zoom( scaleDelta , center );
     }
 
@@ -104,9 +102,9 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
     public void setIds( final long[] ids ) {
         _renderer.setId( ids[ 0 ] );
     }
-    
+
     @Override
     public void setPage( final int page ) {
-    	_renderer.setPage( page );
+        _renderer.setPage( page );
     }
 }
