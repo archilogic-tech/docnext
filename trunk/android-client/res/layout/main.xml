@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:orientation="vertical">
-    <Button android:id="@+id/button" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="0" />
+    <Button android:id="@+id/button0" android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:text="image" />
+    <Button android:id="@+id/button1" android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:text="text" />
 </LinearLayout>

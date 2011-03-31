@@ -7,6 +7,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public abstract class NetworkTask< Progress , Result > extends AsyncTask< Void , Progress , Result > {
     private final Context _context;
@@ -30,6 +31,8 @@ public abstract class NetworkTask< Progress , Result > extends AsyncTask< Void ,
         try {
             return background();
         } catch ( final IOException e ) {
+            Log.d( "docnext" , "NetworkError: " + e.getMessage() );
+
             _networkError = true;
             return null;
         }

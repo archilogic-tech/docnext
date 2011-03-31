@@ -14,6 +14,13 @@ public class CoreTextView extends SurfaceView implements CoreView {
 
     public CoreTextView( final Context context ) {
         super( context );
+
+        final BitmapDrawable backgroundDrawable = ( BitmapDrawable ) getResources().getDrawable( R.drawable.background );
+        final Bitmap background = backgroundDrawable.getBitmap();
+
+        getHolder().addCallback( _callback = new CoreTextCallback( background ) );
+
+        setConfig( new CoreTextConfig() );
     }
 
     @Override
@@ -23,16 +30,6 @@ public class CoreTextView extends SurfaceView implements CoreView {
     @Override
     public void onDragGesture( final PointF delta ) {
         _callback.drag( delta );
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        final BitmapDrawable backgroundDrawable = ( BitmapDrawable ) getResources().getDrawable( R.drawable.background );
-        final Bitmap background = backgroundDrawable.getBitmap();
-
-        getHolder().addCallback( _callback = new CoreTextCallback( background ) );
     }
 
     @Override
@@ -65,7 +62,7 @@ public class CoreTextView extends SurfaceView implements CoreView {
     public void setIds( final long[] ids ) {
         _callback.setId( ids[ 0 ] );
     }
-    
+
     @Override
     public void setPage( final int page ) {
     }
