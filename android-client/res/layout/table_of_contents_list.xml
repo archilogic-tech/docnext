@@ -7,7 +7,6 @@
     <ListView android:id="@+id/table_of_contents_listview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:stackFromBottom="true"
         android:layout_weight="2"
     />
 </LinearLayout>
