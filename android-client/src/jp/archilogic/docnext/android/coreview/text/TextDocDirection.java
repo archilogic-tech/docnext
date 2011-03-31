@@ -138,9 +138,9 @@ public enum TextDocDirection {
     float translate( final float offset , final PointF delta ) {
         switch ( this ) {
         case HORIZONTAL:
-            return offset + delta.y;
+            return offset - delta.y;
         case VERTICAL:
-            return offset + delta.x;
+            return offset - delta.x;
         default:
             throw new RuntimeException();
         }

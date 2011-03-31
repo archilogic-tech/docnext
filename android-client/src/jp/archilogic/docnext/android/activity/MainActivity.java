@@ -73,30 +73,16 @@ public class MainActivity extends Activity {
 
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
-        findViewById( R.id.button ).setOnClickListener( new OnClickListener() {
+        findViewById( R.id.button0 ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
-                final long id = 2;
-
-                final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
-
-                if ( doc != null ) {
-                    if ( Kernel.getLocalProvider().isCompleted( doc.id )
-                            || Kernel.getAppStateManager().getDownloadTarget() == id
-                            && Kernel.getLocalProvider().isImageExists( doc.id , 1 ) ) {
-                        startCoreView( doc );
-                    } else {
-                        Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
-                    }
-                } else {
-                    if ( Kernel.getAppStateManager().getDownloadTarget() == -1 ) {
-                        Kernel.getAppStateManager().setDownloadTarget( id );
-
-                        startService( new Intent( _self , DownloadService.class ) );
-                    } else {
-                        Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
-                    }
-                }
+                requestDocument( 2 );
+            }
+        } );
+        findViewById( R.id.button1 ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                requestDocument( 3 );
             }
         } );
     }
@@ -106,6 +92,28 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
         unregisterReceiver( _remoteProviderReceiver );
+    }
+
+    private void requestDocument( final long id ) {
+        final DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
+
+        if ( doc != null ) {
+            if ( Kernel.getLocalProvider().isCompleted( doc.id )
+                    || Kernel.getAppStateManager().getDownloadTarget() == id
+                    && Kernel.getLocalProvider().isImageExists( doc.id , 1 ) ) {
+                startCoreView( doc );
+            } else {
+                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
+            }
+        } else {
+            if ( Kernel.getAppStateManager().getDownloadTarget() == -1 ) {
+                Kernel.getAppStateManager().setDownloadTarget( id );
+
+                startService( new Intent( _self , DownloadService.class ) );
+            } else {
+                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
+            }
+        }
     }
 
     private void startCoreView( final DocInfo doc ) {

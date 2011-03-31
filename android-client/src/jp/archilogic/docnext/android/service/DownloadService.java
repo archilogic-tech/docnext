@@ -154,13 +154,13 @@ public class DownloadService extends Service {
 
     private void ensureTableOfContentsInfo() {
         if ( Kernel.getLocalProvider().getTableOfContentsInfo( _id ) == null ) {
-            Kernel.getRemoteProvider().getTableOfContentsInfo( getApplicationContext() , 
-            		new DownloadReceiver() , _id ).execute();
+            Kernel.getRemoteProvider().getTableOfContentsInfo( getApplicationContext() , new DownloadReceiver() , _id )
+                    .execute();
         } else {
-            //checkTableOfContentsInfo();
+            // checkTableOfContentsInfo();
         }
     }
-    
+
     private void ensureText( final int page ) {
         if ( page < _doc.pages ) {
             Kernel.getRemoteProvider().getText( getApplicationContext() , new DownloadReceiver() {

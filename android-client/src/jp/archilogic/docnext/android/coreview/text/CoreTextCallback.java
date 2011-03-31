@@ -33,9 +33,10 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     private boolean _invalidateCache = false;
     private boolean _willCleanUp = false;
     private boolean _willCancelCleanUp = false;
+    private boolean _initialized = false;
 
     private final Bitmap _background;
-    private long _id;
+    private long _id = -1;
     private List< TextInfo > _sources;
     private CoreTextConfig _config;
 
@@ -253,6 +254,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
 
         _offset = 0;
 
+        _initialized = true;
         _invalidate = true;
         _invalidateCache = true;
     }
@@ -261,7 +263,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     public void surfaceChanged( final SurfaceHolder holder , final int format , final int width , final int height ) {
         _surfaceSize = new SizeInfo( width , height );
 
-        if ( _sources != null ) {
+        if ( !_initialized ) {
             setId( _id );
         }
     }
@@ -276,7 +278,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
                 final Paint p = buildPaint();
 
                 while ( !_shouldStop ) {
-                    if ( _invalidate && _surfaceSize != null ) {
+                    if ( _invalidate && _initialized ) {
                         _invalidate = false;
 
                         if ( _invalidateCache ) {
