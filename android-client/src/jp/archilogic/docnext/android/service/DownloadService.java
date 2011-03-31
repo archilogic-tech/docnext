@@ -62,7 +62,7 @@ public class DownloadService extends Service {
             ensureImageInfo();
             break;
         case TEXT:
-            ensureText( 0 );
+            ensureFont();
             break;
         default:
             throw new RuntimeException();
@@ -79,6 +79,21 @@ public class DownloadService extends Service {
             } , _id ).execute();
         } else {
             checkDockInfo();
+        }
+    }
+
+    private void ensureFont() {
+        final String path = Kernel.getLocalProvider().getFontPath( "default" );
+
+        if ( path == null ) {
+            Kernel.getRemoteProvider().getFont( getApplicationContext() , new DownloadReceiver() {
+                @Override
+                public void receive( final Void result ) {
+                    ensureText( 0 );
+                }
+            } , "default" ).execute();
+        } else {
+            ensureText( 0 );
         }
     }
 
@@ -204,6 +219,7 @@ public class DownloadService extends Service {
                 putExtra( EXTRA_ITEM_PER_PAGE , 1 ) );
 
         ensureDocInfo();
-        ensureTableOfContentsInfo();
+        // TODO
+        // ensureTableOfContentsInfo();
     }
 }

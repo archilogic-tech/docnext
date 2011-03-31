@@ -8,7 +8,7 @@ public class RemotePathManager {
     }
 
     public String getFontPath( final String name ) {
-        return Config.ENDPOINT + "font/" + name;
+        return Config.ENDPOINT + "viewer/getFont?name=" + name;
     }
 
     public String getImageInfoPath( final long id , final int shortSide ) {
@@ -20,7 +20,7 @@ public class RemotePathManager {
         return String.format( "%sviewer/smartGetPage?id=%d&page=%d&level=%d&px=%d&py=%d&shortSide=%d" ,
                 Config.ENDPOINT , id , page , level , px , py , shortSide );
     }
-    
+
     public String getTableOfContentsPath( final long id ) {
         return Config.ENDPOINT + "viewer/getTOC?id=" + id;
     }
