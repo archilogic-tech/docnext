@@ -20,7 +20,7 @@ public class CoreImageEngine {
         void onScaleChange( boolean isMin , boolean isMax );
     }
 
-    private static final long CLEANUP_DURATION = 500L;
+    private static final long CLEANUP_DURATION = 200L;
 
     long id;
     int page = 0;
@@ -99,11 +99,13 @@ public class CoreImageEngine {
     }
 
     void drag( final PointF delta ) {
-        if ( surfaceSize.width >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
+        final float EPS = 0.1f;
+
+        if ( surfaceSize.width + EPS >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
             delta.x = 0;
         }
 
-        if ( surfaceSize.height >= pageSize.height * matrix.scale && !direction.canMoveVertical() ) {
+        if ( surfaceSize.height + EPS >= pageSize.height * matrix.scale && !direction.canMoveVertical() ) {
             delta.y = 0;
         }
 
