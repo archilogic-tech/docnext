@@ -315,6 +315,8 @@ public class CoreImageRenderer implements Renderer {
 
     @Override
     public void onSurfaceCreated( final GL10 gl , final EGLConfig config ) {
+        System.err.println( "*** onSurfaceCreated" );
+
         _background = prepareTexture( gl , R.drawable.background );
         _border = prepareTexture( gl , R.drawable.border );
         _blank = prepareTexture( gl , R.drawable.blank );
@@ -408,7 +410,7 @@ public class CoreImageRenderer implements Renderer {
         _engine.setOnScaleChangeListener( l );
     }
 
-    public void setPage( final int page ) {
+    void setPage( final int page ) {
         _engine.setPage( page );
     }
 

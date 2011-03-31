@@ -138,6 +138,14 @@ public class CoreTextView extends FrameLayout implements CoreView {
     }
 
     @Override
+    public void onPause() {
+    }
+
+    @Override
+    public void onResume() {
+    }
+
+    @Override
     public void onTapGesture( final PointF point ) {
         _menuView.setVisibility( _menuView.getVisibility() == GONE ? VISIBLE : GONE );
     }

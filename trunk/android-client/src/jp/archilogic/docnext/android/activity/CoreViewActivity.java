@@ -146,7 +146,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public void changeCoreViewType( final DocumentType type ) {
         // Not implemented
     }
-    
+
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
         for ( final DocumentType o : types ) {
             if ( o == type ) {
@@ -157,11 +157,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         return false;
     }
 
-    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+    @Override
+    public void onActivityResult( final int requestCode , final int resultCode , final Intent data ) {
         switch ( requestCode ) {
         case REQUEST_PAGE:
             if ( resultCode == Activity.RESULT_OK ) {
-                int page = data.getExtras().getInt( EXTRA_PAGE );
+                final int page = data.getExtras().getInt( EXTRA_PAGE );
                 _view.setPage( page );
             }
             break;
@@ -216,16 +217,30 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         switch ( item.getItemId() ) {
         case R.id.table_of_contents_item:
             intent = new Intent( this , TableOfContentsActivity.class );
-            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS ) );
+            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
             startActivityForResult( intent , REQUEST_PAGE );
             return true;
         case R.id.thumnail_item:
             intent = new Intent( this , ThumnailActivity.class );
-            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS ) );
-            startActivityForResult( intent, REQUEST_PAGE );
+            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
+            startActivityForResult( intent , REQUEST_PAGE );
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        _view.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        _view.onResume();
     }
 
     @Override
