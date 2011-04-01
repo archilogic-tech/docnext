@@ -4,20 +4,24 @@
     <LinearLayout android:id="@+id/menuView" android:layout_width="fill_parent" android:layout_height="fill_parent"
         android:orientation="vertical" android:visibility="gone">
         <View android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1" />
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:background="#8888"
-            android:padding="10dp">
-            <Button android:id="@+id/toggleJustifyButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Justify" />
-            <Button android:id="@+id/changeLineBreakRuleButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Line Break" />
-            <Button android:id="@+id/biggerCharButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Bigger" />
-            <Button android:id="@+id/smallerCharButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Smaller" />
-            <Button android:id="@+id/reverseColorButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Reverse Color" />
-            <Button android:id="@+id/changeDirectionButton" android:layout_width="0dp" android:layout_height="fill_parent"
-                android:layout_weight="1" android:text="Direction" />
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:background="#8888" android:padding="10dp">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/toggleJustifyButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Justify" />
+                <Button android:id="@+id/changeLineBreakRuleButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Line Break" />
+                <Button android:id="@+id/biggerCharButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Bigger" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/smallerCharButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Smaller" />
+                <Button android:id="@+id/reverseColorButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Reverse Color" />
+                <Button android:id="@+id/changeDirectionButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Direction" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </merge>
