@@ -9,6 +9,7 @@ import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
 import jp.archilogic.docnext.android.thumnail.ThumnailActivity;
+import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,9 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
@@ -39,6 +43,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     private ViewGroup _rootViewGroup;
     private CoreView _view;
+    private View _menuView;
+
+    private long[] _ids;
 
     private GestureDetector _gestureDetector;
     private ScaleGestureDetectorWrapper _scaleGestureDetector;
@@ -98,6 +105,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             _view.onGestureEnd();
             _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
 
+            AnimationUtils2.toggle( _self , _menuView );
+
             return true;
         }
     };
@@ -136,6 +145,43 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
+    private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
+        final LinearLayout ret = new LinearLayout( _self );
+        ret.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
+                FrameLayout.LayoutParams.WRAP_CONTENT ) );
+        ret.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
+        ret.setBackgroundColor( 0x80000000 );
+        ret.setVisibility( View.GONE );
+
+        for ( final DocumentType type : types ) {
+            final Button button = new Button( _self );
+
+            button.setText( type.toString() );
+            button.setOnClickListener( new OnClickListener() {
+                @Override
+                public void onClick( final View v ) {
+                    _rootViewGroup.removeView( ( View ) _view );
+
+                    _view = type.buildView( _self );
+
+                    _rootViewGroup.addView( ( View ) _view );
+
+                    _view.setIds( _ids );
+
+                    _menuView.setVisibility( View.GONE );
+
+                    // TODO hack :( Change to use content holder for CoreView
+                    _rootViewGroup.removeView( _menuView );
+                    _rootViewGroup.addView( _menuView );
+                }
+            } );
+
+            ret.addView( button );
+        }
+
+        return ret;
+    }
+
     public IntentFilter buildRemoteProviderReceiverFilter() {
         final IntentFilter filter = new IntentFilter();
 
@@ -157,6 +203,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
 
         return false;
+    }
+
+    private int dp( final float value ) {
+        final float density = getResources().getDisplayMetrics().density;
+
+        return Math.round( value * density );
     }
 
     @Override
@@ -182,22 +234,25 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         setContentView( _rootViewGroup );
 
-        final long[] ids = getIntent().getLongArrayExtra( EXTRA_IDS );
-        if ( ids == null || ids.length == 0 ) {
+        _ids = getIntent().getLongArrayExtra( EXTRA_IDS );
+        if ( _ids == null || _ids.length == 0 ) {
             throw new RuntimeException();
         }
 
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
-        _view = validateCoreViewType( ids ).buildView( this );
+        _view = validateCoreViewType( _ids ).buildView( this );
 
         _rootViewGroup.addView( ( View ) _view );
 
-        _view.setIds( ids );
+        _view.setIds( _ids );
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
+
+        _rootViewGroup.addView( _menuView =
+                buildCoreViewSwitchMenu( new DocumentType[] { DocumentType.IMAGE , DocumentType.TEXT } ) );
     }
 
     @Override
@@ -229,10 +284,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             startActivityForResult( intent , REQUEST_PAGE );
             return true;
         case R.id.bookmark_item:
-            intent = new Intent( this, BookmarkActivity.class );
-            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS) );
-            intent.putExtra( EXTRA_CURRENT_PAGE, _view.getCurrentPage() );
-            startActivityForResult( intent, REQUEST_PAGE );
+            intent = new Intent( this , BookmarkActivity.class );
+            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
+            intent.putExtra( EXTRA_CURRENT_PAGE , _view.getCurrentPage() );
+            startActivityForResult( intent , REQUEST_PAGE );
             return true;
         }
         return false;

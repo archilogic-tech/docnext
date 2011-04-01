@@ -53,52 +53,60 @@ public class DownloadService extends Service {
         return ret;
     }
 
-    private void checkDockInfo() {
-        _doc = Kernel.getLocalProvider().getDocInfo( _id );
+    private void checkDockInfo( final int index ) {
+        if ( index < _doc.types.length ) {
+            switch ( _doc.types[ index ] ) {
+            case IMAGE:
+                ensureImageInfo( index );
+                break;
+            case TEXT:
+                ensureFont( index );
+                break;
+            default:
+                throw new RuntimeException();
+            }
+        } else {
+            Kernel.getLocalProvider().setCompleted( _id );
+            Kernel.getAppStateManager().setDownloadTarget( -1 );
 
-        // TODO
-        switch ( _doc.types[ 0 ] ) {
-        case IMAGE:
-            ensureImageInfo();
-            break;
-        case TEXT:
-            ensureFont();
-            break;
-        default:
-            throw new RuntimeException();
+            stopSelf();
         }
     }
 
     private void ensureDocInfo() {
-        if ( Kernel.getLocalProvider().getDocInfo( _id ) == null ) {
+        _doc = Kernel.getLocalProvider().getDocInfo( _id );
+
+        if ( _doc == null ) {
             Kernel.getRemoteProvider().getDocInfo( getApplicationContext() , new DownloadReceiver() {
                 @Override
                 public void receive( final Void result ) {
-                    checkDockInfo();
+                    _doc = Kernel.getLocalProvider().getDocInfo( _id );
+
+                    checkDockInfo( 0 );
                 }
             } , _id ).execute();
         } else {
-            checkDockInfo();
+            checkDockInfo( 0 );
         }
     }
 
-    private void ensureFont() {
+    private void ensureFont( final int index ) {
         final String path = Kernel.getLocalProvider().getFontPath( "default" );
 
         if ( path == null ) {
             Kernel.getRemoteProvider().getFont( getApplicationContext() , new DownloadReceiver() {
                 @Override
                 public void receive( final Void result ) {
-                    ensureText( 0 );
+                    ensureText( index , 0 );
                 }
             } , "default" ).execute();
         } else {
-            ensureText( 0 );
+            ensureText( index , 0 );
         }
     }
 
-    private void ensureImage( final ImageInfo image , final int page , final int level , final int px , final int py ,
-            final int current , final int imagePerPage ) {
+    private void ensureImage( final int index , final ImageInfo image , final int page , final int level ,
+            final int px , final int py , final int current , final int imagePerPage ) {
         final int TEXTURE_SIZE = 512;
 
         if ( page < _doc.pages ) {
@@ -116,7 +124,8 @@ public class DownloadService extends Service {
                                             putExtra( EXTRA_TOTAL , _doc.pages * imagePerPage ). //
                                             putExtra( EXTRA_ITEM_PER_PAGE , imagePerPage ) );
 
-                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
+                                    ensureImage( index , image , page , level , px , py + 1 , current + 1 ,
+                                            imagePerPage );
                                 }
                             } , _id , page , level , px , py , getShortSide() ).execute();
                         } else {
@@ -129,28 +138,26 @@ public class DownloadService extends Service {
                                             putExtra( EXTRA_TOTAL , _doc.pages * imagePerPage ). //
                                             putExtra( EXTRA_ITEM_PER_PAGE , imagePerPage ) );
 
-                                    ensureImage( image , page , level , px , py + 1 , current + 1 , imagePerPage );
+                                    ensureImage( index , image , page , level , px , py + 1 , current + 1 ,
+                                            imagePerPage );
                                 }
                             } );
                         }
                     } else {
-                        ensureImage( image , page , level , px + 1 , 0 , current , imagePerPage );
+                        ensureImage( index , image , page , level , px + 1 , 0 , current , imagePerPage );
                     }
                 } else {
-                    ensureImage( image , page , level + 1 , 0 , 0 , current , imagePerPage );
+                    ensureImage( index , image , page , level + 1 , 0 , 0 , current , imagePerPage );
                 }
             } else {
-                ensureImage( image , page + 1 , 0 , 0 , 0 , current , imagePerPage );
+                ensureImage( index , image , page + 1 , 0 , 0 , 0 , current , imagePerPage );
             }
         } else {
-            Kernel.getLocalProvider().setCompleted( _id );
-            Kernel.getAppStateManager().setDownloadTarget( -1 );
-
-            stopSelf();
+            checkDockInfo( index + 1 );
         }
     }
 
-    private void ensureImageInfo() {
+    private void ensureImageInfo( final int index ) {
         final ImageInfo image = Kernel.getLocalProvider().getImageInfo( _id );
 
         if ( image == null ) {
@@ -159,11 +166,11 @@ public class DownloadService extends Service {
                 public void receive( final Void result ) {
                     final ImageInfo _image = Kernel.getLocalProvider().getImageInfo( _id );
 
-                    ensureImage( _image , 0 , 0 , 0 , 0 , 0 , calcImagesPerPage( _image ) );
+                    ensureImage( index , _image , 0 , 0 , 0 , 0 , 0 , calcImagesPerPage( _image ) );
                 }
             } , _id , getShortSide() ).execute();
         } else {
-            ensureImage( image , 0 , 0 , 0 , 0 , 0 , calcImagesPerPage( image ) );
+            ensureImage( index , image , 0 , 0 , 0 , 0 , 0 , calcImagesPerPage( image ) );
         }
     }
 
@@ -176,7 +183,7 @@ public class DownloadService extends Service {
         }
     }
 
-    private void ensureText( final int page ) {
+    private void ensureText( final int index , final int page ) {
         if ( page < _doc.pages ) {
             Kernel.getRemoteProvider().getText( getApplicationContext() , new DownloadReceiver() {
                 @Override
@@ -186,14 +193,11 @@ public class DownloadService extends Service {
                             putExtra( EXTRA_TOTAL , _doc.pages ). //
                             putExtra( EXTRA_ITEM_PER_PAGE , 1 ) );
 
-                    ensureText( page + 1 );
+                    ensureText( index , page + 1 );
                 }
             } , _id , page ).execute();
         } else {
-            Kernel.getLocalProvider().setCompleted( _id );
-            Kernel.getAppStateManager().setDownloadTarget( -1 );
-
-            stopSelf();
+            checkDockInfo( index + 1 );
         }
     }
 

@@ -4,6 +4,7 @@ import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.text.CoreTextConfig.LineBreakingRule;
+import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
@@ -119,15 +120,14 @@ public class CoreTextView extends FrameLayout implements CoreView {
     }
 
     @Override
-    public void onDoubleTapGesture( final PointF point ) {
+    public int getCurrentPage() {
+        return 0;
     }
 
     @Override
-    public int getCurrentPage() {
-        // TODO Auto-generated method stub
-        return 0;
+    public void onDoubleTapGesture( final PointF point ) {
     }
-    
+
     @Override
     public void onDragGesture( final PointF delta ) {
         _callback.drag( delta );
@@ -153,7 +153,7 @@ public class CoreTextView extends FrameLayout implements CoreView {
 
     @Override
     public void onTapGesture( final PointF point ) {
-        _menuView.setVisibility( _menuView.getVisibility() == GONE ? VISIBLE : GONE );
+        AnimationUtils2.toggle( getContext() , _menuView );
     }
 
     @Override
@@ -176,5 +176,4 @@ public class CoreTextView extends FrameLayout implements CoreView {
     @Override
     public void setPage( final int page ) {
     }
-
 }

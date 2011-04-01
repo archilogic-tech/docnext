@@ -5,7 +5,7 @@
         android:orientation="vertical" android:visibility="gone">
         <View android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1" />
         <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical"
-            android:background="#8888" android:padding="10dp">
+            android:background="#8000" android:padding="10dp">
             <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
                 <Button android:id="@+id/toggleJustifyButton" android:layout_width="0dp" android:layout_height="fill_parent"
                     android:layout_weight="1" android:text="Justify" />
