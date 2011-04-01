@@ -56,16 +56,6 @@ public class CoreImageEngine {
         direction.updateOffset( this , true );
     }
 
-    void changeToPage( final int page ) {
-        if ( page >= 0 && page + 1 < pages ) {
-            _loader.load( page );
-        }
-
-        this.page = page;
-
-        direction.updateOffset( this , true );
-    }
-
     private void changeToPrevPage() {
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
@@ -112,7 +102,7 @@ public class CoreImageEngine {
         matrix.tx -= delta.x;
         matrix.ty -= delta.y;
     }
-    
+
     int getCurrentPage() {
         return page;
     }
@@ -144,10 +134,6 @@ public class CoreImageEngine {
 
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {
         _scaleChangeLisetener = l;
-    }
-
-    void setPage( final int page2 ) {
-        changeToPage( page2 );
     }
 
     void setPageLoader( final PageLoader loader ) {

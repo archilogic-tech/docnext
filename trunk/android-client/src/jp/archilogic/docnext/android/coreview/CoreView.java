@@ -4,7 +4,7 @@ import android.graphics.PointF;
 
 public interface CoreView {
     int getCurrentPage();
-    
+
     void onDoubleTapGesture( PointF point );
 
     /**
@@ -30,6 +30,4 @@ public interface CoreView {
     void setDelegate( CoreViewDelegate delegate );
 
     void setIds( long[] ids );
-
-    void setPage( int page );
 }
