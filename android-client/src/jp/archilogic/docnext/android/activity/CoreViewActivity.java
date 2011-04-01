@@ -294,7 +294,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         case R.id.bookmark_item:
             intent = new Intent( this , BookmarkActivity.class );
             intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
-            intent.putExtra( EXTRA_CURRENT_PAGE , _view.getCurrentPage() );
+            // intent.putExtra( EXTRA_CURRENT_PAGE , _view.getCurrentPage() );
             startActivityForResult( intent , REQUEST_PAGE );
             return true;
         }

@@ -3,8 +3,6 @@ package jp.archilogic.docnext.android.coreview;
 import android.graphics.PointF;
 
 public interface CoreView {
-    int getCurrentPage();
-
     void onDoubleTapGesture( PointF point );
 
     /**
