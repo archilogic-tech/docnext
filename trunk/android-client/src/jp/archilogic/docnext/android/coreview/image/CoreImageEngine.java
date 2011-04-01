@@ -181,7 +181,9 @@ public class CoreImageEngine {
                 matrix.ty =
                         _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY ) * _interpolator.getInterpolation( elapsed );
 
-                matrix.adjust( surfaceSize , pageSize );
+                if ( _cleanup.shouldAdjust ) {
+                    matrix.adjust( surfaceSize , pageSize );
+                }
 
                 if ( willFinish ) {
                     _cleanup = null;
