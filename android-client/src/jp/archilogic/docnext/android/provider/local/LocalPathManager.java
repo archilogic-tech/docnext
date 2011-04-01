@@ -1,6 +1,7 @@
 package jp.archilogic.docnext.android.provider.local;
 
 import java.io.File;
+import java.io.IOException;
 
 public class LocalPathManager {
     private final String ROOT = "/sdcard/docnext/";
@@ -10,6 +11,18 @@ public class LocalPathManager {
 
         if ( !dir.exists() ) {
             dir.mkdirs();
+        }
+    }
+    
+    public void ensureBookmark( final long id ) {
+        final File file = new File ( getBookmarkPath( id ) );
+    
+        if ( !file.exists() ) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -33,6 +46,10 @@ public class LocalPathManager {
         ensure( getTextDir( id ) );
     }
 
+    public String getBookmarkPath( long id ) {
+        return getDocInfoDir() + id + ".bookmark.json";
+    }
+    
     public String getCompletedInfoPath() {
         return ROOT + "completed.json";
     }
@@ -84,4 +101,5 @@ public class LocalPathManager {
     public String getTextPath( final long id , final int page ) {
         return getTextDir( id ) + page + ".json";
     }
+
 }

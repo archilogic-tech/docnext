@@ -2,6 +2,7 @@ package jp.archilogic.docnext.android.activity;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.bookmark.BookmarkActivity;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.info.DocInfo;
@@ -30,6 +31,7 @@ import android.widget.FrameLayout;
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
     public static final String EXTRA_PAGE = "page";
+    public static final String EXTRA_CURRENT_PAGE = "current_page";
 
     private static final int REQUEST_PAGE = 1;
 
@@ -224,6 +226,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             intent = new Intent( this , ThumnailActivity.class );
             intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
             startActivityForResult( intent , REQUEST_PAGE );
+            return true;
+        case R.id.bookmark_item:
+            intent = new Intent( this, BookmarkActivity.class );
+            intent.putExtra( EXTRA_IDS, getIntent().getLongArrayExtra( EXTRA_IDS) );
+            intent.putExtra( EXTRA_CURRENT_PAGE, _view.getCurrentPage() );
+            startActivityForResult( intent, REQUEST_PAGE );
             return true;
         }
         return false;

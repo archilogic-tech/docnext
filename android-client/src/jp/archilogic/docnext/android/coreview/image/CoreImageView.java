@@ -15,6 +15,10 @@ public class CoreImageView extends GLSurfaceView implements CoreView {
 
     private ZoomButtonsController _zoomButtonsController = null;
 
+    public int getCurrentPage() {
+        return _renderer.getCurrentPage();
+    }
+    
     private final OnZoomListener _zoomButtonsControllerZoom = new OnZoomListener() {
         @Override
         public void onVisibilityChanged( final boolean visible ) {

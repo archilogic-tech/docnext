@@ -112,6 +112,10 @@ public class CoreImageEngine {
         matrix.tx -= delta.x;
         matrix.ty -= delta.y;
     }
+    
+    int getCurrentPage() {
+        return page;
+    }
 
     float getHorizontalPadding() {
         return Math.max( surfaceSize.width - pageSize.width * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;

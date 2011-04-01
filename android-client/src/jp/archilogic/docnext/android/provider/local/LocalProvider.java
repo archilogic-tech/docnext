@@ -14,6 +14,11 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
+    List< Integer > getBookmarkInfo( long id );
+
+    /**
+     * @return null if not exists
+     */
     DocInfo getDocInfo( long id );
 
     /**
@@ -47,6 +52,9 @@ public interface LocalProvider {
 
     boolean isImageExists( long id , int page );
 
+    void setBookmarkInfo( long id, List< Integer > bookmarks );
+    
     void setCompleted( long id );
+
 
 }

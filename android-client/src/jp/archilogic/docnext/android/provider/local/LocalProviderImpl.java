@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,12 +16,26 @@ import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.info.TextInfo;
 import net.arnx.jsonic.JSON;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.collect.Lists;
 
 public class LocalProviderImpl implements LocalProvider {
     private final LocalPathManager _pathManager = new LocalPathManager();
+
+    @Override
+    public List< Integer > getBookmarkInfo( final long id ) {
+        Integer[] bookmarks = getJsonInfo( _pathManager.getBookmarkPath( id ), Integer[].class );
+        if ( bookmarks == null ) {
+            try {
+                FileUtils.writeStringToFile( new File( _pathManager.getBookmarkPath( id ) ), "[]" );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
+        return bookmarks == null ? null : Arrays.asList( bookmarks );
+    }
 
     @Override
     public DocInfo getDocInfo( final long id ) {
@@ -73,7 +88,8 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public List<TOCElement> getTableOfContentsInfo( final long id ) {
-        return Arrays.asList( getJsonInfo( _pathManager.getTableOfContentsInfoPath( id ) , TOCElement[].class ) );
+        TOCElement[] tocs =  getJsonInfo( _pathManager.getTableOfContentsInfoPath( id ) , TOCElement[].class );
+        return tocs == null ? null : Arrays.asList(tocs);
     }
 
     @Override
@@ -102,6 +118,14 @@ public class LocalProviderImpl implements LocalProvider {
         }
     }
 
+    @Override
+    public void setBookmarkInfo( long id, List<Integer> bookmarks ) {
+        if ( bookmarks == null ) {
+            bookmarks = new ArrayList< Integer >( 0 );
+        }
+        setJsonInfo( _pathManager.getBookmarkPath( id ) , bookmarks );
+    }
+    
     @Override
     public void setCompleted( final long id ) {
         final Long[] completed = getJsonInfo( _pathManager.getCompletedInfoPath() , Long[].class );

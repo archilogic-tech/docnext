@@ -267,6 +267,10 @@ public class CoreImageRenderer implements Renderer {
         return texture[ 0 ];
     }
 
+    int getCurrentPage() {
+        return _engine.getCurrentPage();
+    }
+    
     CoreImageDirection getDirection() {
         return _engine.direction;
     }

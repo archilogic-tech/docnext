@@ -123,6 +123,12 @@ public class CoreTextView extends FrameLayout implements CoreView {
     }
 
     @Override
+    public int getCurrentPage() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    
+    @Override
     public void onDragGesture( final PointF delta ) {
         _callback.drag( delta );
     }
@@ -170,4 +176,5 @@ public class CoreTextView extends FrameLayout implements CoreView {
     @Override
     public void setPage( final int page ) {
     }
+
 }
