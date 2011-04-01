@@ -47,8 +47,9 @@ public class CoreImageCleanupValue {
             }
 
             ret.start = SystemClock.elapsedRealtime();
+            ret.shouldAdjust = false;
 
-            return ret;
+            return ret.adjust( surface , page );
         } else {
             return null;
         }
@@ -81,6 +82,7 @@ public class CoreImageCleanupValue {
         ret.dstY = ret.dstScale / matrix.scale * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2;
 
         ret.start = SystemClock.elapsedRealtime();
+        ret.shouldAdjust = true;
 
         return ret;
     }
@@ -92,7 +94,15 @@ public class CoreImageCleanupValue {
     float dstX;
     float dstY;
 
+    boolean shouldAdjust;
     long start;
+
+    private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
+        dstX = Math.min( Math.max( dstX , Math.min( surface.width - page.width * dstScale , 0 ) ) , 0 );
+        dstY = Math.min( Math.max( dstY , Math.min( surface.height - page.height * dstScale , 0 ) ) , 0 );
+
+        return this;
+    }
 
     private void copy( final CoreImageMatrix matrix ) {
         srcScale = matrix.scale;
