@@ -82,13 +82,13 @@ public class MainActivity extends Activity {
         findViewById( R.id.button0 ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
-                requestDocument( 2 );
+                requestDocument( 8 );
             }
         } );
         findViewById( R.id.button1 ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
-                requestDocument( 3 );
+                requestDocument( 8 );
             }
         } );
         findViewById( R.id.reset ).setOnClickListener( new OnClickListener() {

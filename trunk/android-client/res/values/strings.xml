@@ -9,5 +9,6 @@
     
     <string name="table_of_contents">Table Of Contents</string>
     <string name="thumnail">Thumnail</string>
+    <string name="bookmark">Bookmark</string>
     <string name="help">Help</string>
 </resources>

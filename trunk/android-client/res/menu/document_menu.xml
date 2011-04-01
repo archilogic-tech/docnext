@@ -6,4 +6,7 @@
     <item android:id="@+id/thumnail_item"
           android:icon="@drawable/ic_thumnail"
           android:title="@string/thumnail" />
+    <item android:id="@+id/bookmark_item"
+          android:icon="@drawable/ic_bookmark"
+          android:title="@string/bookmark" />
 </menu>
