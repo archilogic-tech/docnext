@@ -300,6 +300,13 @@ public class CoreImageRenderer implements Renderer {
         drawBackground( gl );
         drawImage( gl , matrix , padding );
 
+        final int BORDER_WIDTH = 1;
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , _border.texture );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( 0 , _engine.surfaceSize.height / 2 , 0 , _engine.surfaceSize.width ,
+                BORDER_WIDTH );
+        ( ( GL11Ext ) gl ).glDrawTexfOES( _engine.surfaceSize.width / 2 , 0 , 0 , BORDER_WIDTH ,
+                _engine.surfaceSize.height );
+
         _fpsCounter++;
         if ( _fpsCounter == 300 ) {
             _fpsCounter = 0;
