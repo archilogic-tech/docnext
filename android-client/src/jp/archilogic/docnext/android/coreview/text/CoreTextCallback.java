@@ -249,7 +249,7 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
             _sources.add( Kernel.getLocalProvider().getText( id , page ) );
         }
 
-        _index = 0;
+        // _index = 0;
 
         _caches = new Bitmap[ doc.pages ];
 
@@ -258,6 +258,10 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         _initialized = true;
         _invalidate = true;
         _invalidateCache = true;
+    }
+
+    void setPage( final int page ) {
+        _index = page;
     }
 
     @Override

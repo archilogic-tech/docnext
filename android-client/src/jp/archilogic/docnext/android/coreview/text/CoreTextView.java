@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.coreview.text;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
+import jp.archilogic.docnext.android.coreview.PageSettable;
 import jp.archilogic.docnext.android.coreview.text.CoreTextConfig.LineBreakingRule;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Context;
@@ -14,7 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class CoreTextView extends FrameLayout implements CoreView {
+public class CoreTextView extends FrameLayout implements CoreView , PageSettable {
     private SurfaceView _surfaceView;
     private View _menuView;
     private View _toggleJustifyButton;
@@ -175,5 +176,6 @@ public class CoreTextView extends FrameLayout implements CoreView {
 
     @Override
     public void setPage( final int page ) {
+        _callback.setPage( page );
     }
 }

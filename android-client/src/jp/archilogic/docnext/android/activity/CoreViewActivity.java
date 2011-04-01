@@ -5,6 +5,7 @@ import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.bookmark.BookmarkActivity;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
+import jp.archilogic.docnext.android.coreview.PageSettable;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
@@ -161,19 +162,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             button.setOnClickListener( new OnClickListener() {
                 @Override
                 public void onClick( final View v ) {
-                    _rootViewGroup.removeView( ( View ) _view );
-
-                    _view = type.buildView( _self );
-
-                    _rootViewGroup.addView( ( View ) _view );
-
-                    _view.setIds( _ids );
-
-                    _menuView.setVisibility( View.GONE );
-
-                    // TODO hack :( Change to use content holder for CoreView
-                    _rootViewGroup.removeView( _menuView );
-                    _rootViewGroup.addView( _menuView );
+                    changeCoreViewType( type , new Intent() );
                 }
             } );
 
@@ -192,8 +181,25 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     @Override
-    public void changeCoreViewType( final DocumentType type ) {
-        // Not implemented
+    public void changeCoreViewType( final DocumentType type , final Intent extra ) {
+        _rootViewGroup.removeView( ( View ) _view );
+
+        _view = type.buildView( _self );
+
+        _rootViewGroup.addView( ( View ) _view );
+
+        _view.setIds( _ids );
+        _view.setDelegate( _self );
+
+        if ( _view instanceof PageSettable && extra.hasExtra( EXTRA_PAGE ) ) {
+            ( ( PageSettable ) _view ).setPage( extra.getIntExtra( EXTRA_PAGE , -1 ) );
+        }
+
+        _menuView.setVisibility( View.GONE );
+
+        // TODO hack :( Change to use content holder for CoreView
+        _rootViewGroup.removeView( _menuView );
+        _rootViewGroup.addView( _menuView );
     }
 
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
@@ -217,8 +223,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         switch ( requestCode ) {
         case REQUEST_PAGE:
             if ( resultCode == Activity.RESULT_OK ) {
-                final int page = data.getExtras().getInt( EXTRA_PAGE );
-                _view.setPage( page );
+                // final int page = data.getExtras().getInt( EXTRA_PAGE );
+                // _view.setPage( page );
             }
 
             break;
@@ -231,7 +237,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         requestWindowFeature( Window.FEATURE_PROGRESS );
 
-        _rootViewGroup = new FrameLayout( this );
+        _rootViewGroup = new FrameLayout( _self );
 
         setContentView( _rootViewGroup );
 
@@ -242,11 +248,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
-        _view = validateCoreViewType( _ids ).buildView( this );
+        _view = validateCoreViewType( _ids ).buildView( _self );
 
         _rootViewGroup.addView( ( View ) _view );
 
         _view.setIds( _ids );
+        _view.setDelegate( _self );
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );

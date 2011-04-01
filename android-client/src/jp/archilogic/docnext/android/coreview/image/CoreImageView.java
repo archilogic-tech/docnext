@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.coreview.image;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
+import jp.archilogic.docnext.android.coreview.PageSettable;
 import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChangeListener;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Context;
@@ -15,7 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ZoomButtonsController;
 import android.widget.ZoomButtonsController.OnZoomListener;
 
-public class CoreImageView extends FrameLayout implements CoreView {
+public class CoreImageView extends FrameLayout implements CoreView , PageSettable {
     private GLSurfaceView _glSurfaceView;
     private View _menuView;
     private View _l2rButton;

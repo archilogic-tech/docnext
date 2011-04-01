@@ -136,6 +136,10 @@ public class CoreImageRenderer implements Renderer {
     }
 
     private void buildAndBindPage( final GL10 gl , final int page ) {
+        if ( page < 0 || page >= _engine.pages ) {
+            return;
+        }
+
         final PageTextureInfo[][] texture = _pages[ page ].textures[ 0 ];
         for ( int py = 0 ; py < texture.length ; py++ ) {
             for ( int px = 0 ; px < texture[ py ].length ; px++ ) {
@@ -270,7 +274,7 @@ public class CoreImageRenderer implements Renderer {
     int getCurrentPage() {
         return _engine.getCurrentPage();
     }
-    
+
     CoreImageDirection getDirection() {
         return _engine.direction;
     }
@@ -342,11 +346,12 @@ public class CoreImageRenderer implements Renderer {
         }
 
         _engine.pageSize = new SizeInfo( image.width , image.height );
-        _engine.page = 0;
+        // _engine.page = 0;
         _engine.pages = doc.pages;
 
-        buildAndBindPage( gl , 0 );
-        buildAndBindPage( gl , 1 );
+        buildAndBindPage( gl , _engine.page - 1 );
+        buildAndBindPage( gl , _engine.page );
+        buildAndBindPage( gl , _engine.page + 1 );
     }
 
     private PageInfo preparePageTextureHolder( final GL10 gl , final ImageInfo image ) {
@@ -422,7 +427,7 @@ public class CoreImageRenderer implements Renderer {
     }
 
     void setPage( final int page ) {
-        _engine.setPage( page );
+        _engine.page = page;
     }
 
     private void unbindPageImage( final GL10 gl , final PageImageCache cache ) {
