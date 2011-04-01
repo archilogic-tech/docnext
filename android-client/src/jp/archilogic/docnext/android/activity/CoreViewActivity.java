@@ -151,6 +151,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
                 FrameLayout.LayoutParams.WRAP_CONTENT ) );
         ret.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
         ret.setBackgroundColor( 0x80000000 );
+        ret.setClickable( true );
         ret.setVisibility( View.GONE );
 
         for ( final DocumentType type : types ) {

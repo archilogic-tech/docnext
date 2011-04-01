@@ -85,12 +85,6 @@ public class MainActivity extends Activity {
                 requestDocument( 2 );
             }
         } );
-        findViewById( R.id.button1 ).setOnClickListener( new OnClickListener() {
-            @Override
-            public void onClick( final View v ) {
-                requestDocument( 3 );
-            }
-        } );
         findViewById( R.id.reset ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
