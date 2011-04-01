@@ -167,6 +167,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
                 final int page = data.getExtras().getInt( EXTRA_PAGE );
                 _view.setPage( page );
             }
+
             break;
         }
     }
@@ -261,6 +262,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             _view.onGestureEnd();
             break;
         }
+
+        // translate to _view location
+        final View v = getWindow().findViewById( Window.ID_ANDROID_CONTENT );
+
+        event.offsetLocation( -v.getLeft() , -v.getTop() );
 
         _scaleGestureDetector.onTouchEvent( event );
         _gestureDetector.onTouchEvent( event );
