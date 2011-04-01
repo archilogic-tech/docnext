@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.opengl.GLSurfaceView android:id="@+id/glSurfaceView" android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    <LinearLayout android:id="@+id/menuView" android:layout_width="fill_parent" android:layout_height="fill_parent"
+        android:orientation="vertical" android:visibility="gone">
+        <View android:layout_width="fill_parent" android:layout_height="0dp" android:layout_weight="1" />
+        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:background="#8000" android:padding="10dp">
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/l2rButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Left to Right" />
+                <Button android:id="@+id/r2lButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Right to Left" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/t2bButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Top to Bottom" />
+                <Button android:id="@+id/b2tButton" android:layout_width="0dp" android:layout_height="fill_parent"
+                    android:layout_weight="1" android:text="Bottom to Top" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</merge>
