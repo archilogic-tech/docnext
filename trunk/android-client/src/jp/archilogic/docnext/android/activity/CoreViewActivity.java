@@ -1,15 +1,12 @@
 package jp.archilogic.docnext.android.activity;
 
 import jp.archilogic.docnext.android.Kernel;
-import jp.archilogic.docnext.android.R;
-import jp.archilogic.docnext.android.bookmark.BookmarkActivity;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.PageSettable;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
-import jp.archilogic.docnext.android.thumnail.ThumnailActivity;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -21,9 +18,6 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,9 +30,6 @@ import android.widget.LinearLayout;
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
     public static final String EXTRA_PAGE = "page";
-    public static final String EXTRA_CURRENT_PAGE = "current_page";
-
-    private static final int REQUEST_PAGE = 1;
 
     private final CoreViewActivity _self = this;
 
@@ -219,19 +210,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     @Override
-    public void onActivityResult( final int requestCode , final int resultCode , final Intent data ) {
-        switch ( requestCode ) {
-        case REQUEST_PAGE:
-            if ( resultCode == Activity.RESULT_OK ) {
-                // final int page = data.getExtras().getInt( EXTRA_PAGE );
-                // _view.setPage( page );
-            }
-
-            break;
-        }
-    }
-
-    @Override
     public void onCreate( final Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
@@ -260,14 +238,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
 
         _rootViewGroup.addView( _menuView =
-                buildCoreViewSwitchMenu( new DocumentType[] { DocumentType.IMAGE , DocumentType.TEXT } ) );
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu( final Menu menu ) {
-        final MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.document_menu , menu );
-        return true;
+                buildCoreViewSwitchMenu( new DocumentType[] { 
+                        DocumentType.IMAGE , DocumentType.TEXT, DocumentType.BOOKMARK ,
+                        DocumentType.THUMNAIL , DocumentType.TOC } ) );
     }
 
     @Override
@@ -275,30 +248,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         super.onDestroy();
 
         unregisterReceiver( _remoteProviderReceiver );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( final MenuItem item ) {
-        Intent intent = null;
-        switch ( item.getItemId() ) {
-        case R.id.table_of_contents_item:
-            intent = new Intent( this , TableOfContentsActivity.class );
-            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
-            startActivityForResult( intent , REQUEST_PAGE );
-            return true;
-        case R.id.thumnail_item:
-            intent = new Intent( this , ThumnailActivity.class );
-            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
-            startActivityForResult( intent , REQUEST_PAGE );
-            return true;
-        case R.id.bookmark_item:
-            intent = new Intent( this , BookmarkActivity.class );
-            intent.putExtra( EXTRA_IDS , getIntent().getLongArrayExtra( EXTRA_IDS ) );
-            // intent.putExtra( EXTRA_CURRENT_PAGE , _view.getCurrentPage() );
-            startActivityForResult( intent , REQUEST_PAGE );
-            return true;
-        }
-        return false;
     }
 
     @Override
