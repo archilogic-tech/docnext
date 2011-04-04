@@ -1,6 +1,10 @@
 package jp.archilogic.docnext.android.activity;
 
+import java.io.InputStream;
+import java.lang.reflect.Field;
+
 import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.PageSettable;
@@ -13,6 +17,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -25,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
@@ -137,6 +144,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
+    private Bitmap LoadBitmap( int id ) {
+        final InputStream in = _self.getResources().openRawResource( id );
+        final Bitmap bitmap = BitmapFactory.decodeStream( in );
+        return bitmap; 
+    }
     private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
         final LinearLayout ret = new LinearLayout( _self );
         ret.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
@@ -147,17 +159,33 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         ret.setVisibility( View.GONE );
 
         for ( final DocumentType type : types ) {
-            final Button button = new Button( _self );
+            View menuItem;
 
-            button.setText( type.toString() );
-            button.setOnClickListener( new OnClickListener() {
+            try {
+                Field idField = R.drawable.class.getDeclaredField( "ic_" + type.toString().toLowerCase() );
+                int id = idField.getInt( new R.drawable() );
+
+                menuItem = new ImageView ( _self );
+                ( ( ImageView )menuItem ).setImageBitmap( LoadBitmap( id ) );
+                menuItem.setLayoutParams( new FrameLayout.LayoutParams( dp( 50 ) , dp( 50 ) ) );
+                menuItem.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
+                
+            } catch (NoSuchFieldException e) {
+                final Button button = new Button( _self );
+                button.setText( type.toString() );
+                
+                menuItem = button;
+                
+            } catch (Exception e) {
+                menuItem = null;
+            }
+            menuItem.setOnClickListener( new OnClickListener() {
                 @Override
                 public void onClick( final View v ) {
                     changeCoreViewType( type , new Intent() );
                 }
             } );
-
-            ret.addView( button );
+            ret.addView( menuItem );
         }
 
         return ret;
