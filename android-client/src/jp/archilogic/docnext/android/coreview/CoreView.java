@@ -5,10 +5,9 @@ import android.graphics.PointF;
 public interface CoreView {
     void onDoubleTapGesture( PointF point );
 
-    /**
-     * Take account of flick?
-     */
     void onDragGesture( PointF delta );
+
+    void onFlingGesture( PointF velocity );
 
     void onGestureBegin();
 
@@ -21,7 +20,7 @@ public interface CoreView {
     void onTapGesture( PointF point );
 
     /**
-     * Called when pinch or spread
+     * Invoked when pinch or spread
      */
     void onZoomGesture( float scaleDelta , PointF center );
 

@@ -58,7 +58,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         @Override
         public boolean onFling( final MotionEvent e1 , final MotionEvent e2 , final float velocityX ,
                 final float velocityY ) {
-            return false;
+            _view.onFlingGesture( new PointF( velocityX , velocityY ) );
+
+            return true;
         }
 
         @Override
@@ -144,11 +146,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
-    private Bitmap LoadBitmap( int id ) {
-        final InputStream in = _self.getResources().openRawResource( id );
-        final Bitmap bitmap = BitmapFactory.decodeStream( in );
-        return bitmap; 
-    }
     private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
         final LinearLayout ret = new LinearLayout( _self );
         ret.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
@@ -162,21 +159,21 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             View menuItem;
 
             try {
-                Field idField = R.drawable.class.getDeclaredField( "ic_" + type.toString().toLowerCase() );
-                int id = idField.getInt( new R.drawable() );
+                final Field idField = R.drawable.class.getDeclaredField( "ic_" + type.toString().toLowerCase() );
+                final int id = idField.getInt( new R.drawable() );
 
-                menuItem = new ImageView ( _self );
-                ( ( ImageView )menuItem ).setImageBitmap( LoadBitmap( id ) );
+                menuItem = new ImageView( _self );
+                ( ( ImageView ) menuItem ).setImageBitmap( LoadBitmap( id ) );
                 menuItem.setLayoutParams( new FrameLayout.LayoutParams( dp( 50 ) , dp( 50 ) ) );
                 menuItem.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
-                
-            } catch (NoSuchFieldException e) {
+
+            } catch ( final NoSuchFieldException e ) {
                 final Button button = new Button( _self );
                 button.setText( type.toString() );
-                
+
                 menuItem = button;
-                
-            } catch (Exception e) {
+
+            } catch ( final Exception e ) {
                 menuItem = null;
             }
             menuItem.setOnClickListener( new OnClickListener() {
@@ -216,7 +213,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         _menuView.setVisibility( View.GONE );
 
-        // TODO hack :( Change to use content holder for CoreView
+        // TODO hack :( -- Change to use content holder for CoreView
         _rootViewGroup.removeView( _menuView );
         _rootViewGroup.addView( _menuView );
     }
@@ -235,6 +232,12 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         final float density = getResources().getDisplayMetrics().density;
 
         return Math.round( value * density );
+    }
+
+    private Bitmap LoadBitmap( final int id ) {
+        final InputStream in = _self.getResources().openRawResource( id );
+        final Bitmap bitmap = BitmapFactory.decodeStream( in );
+        return bitmap;
     }
 
     @Override
@@ -266,9 +269,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
 
         _rootViewGroup.addView( _menuView =
-                buildCoreViewSwitchMenu( new DocumentType[] { 
-                        DocumentType.IMAGE , DocumentType.TEXT, DocumentType.BOOKMARK ,
-                        DocumentType.THUMNAIL , DocumentType.TOC } ) );
+                buildCoreViewSwitchMenu( new DocumentType[] { DocumentType.IMAGE , DocumentType.TEXT ,
+                        DocumentType.BOOKMARK , DocumentType.THUMNAIL , DocumentType.TOC } ) );
     }
 
     @Override

@@ -2,7 +2,7 @@ package jp.archilogic.docnext.android.coreview.image;
 
 public class PageInfo {
     enum PageTextureStatus {
-        UNBIND , LOAD , BIND;
+        UNBIND , BIND;
     }
 
     int width;

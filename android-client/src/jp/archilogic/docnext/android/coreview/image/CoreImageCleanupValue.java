@@ -23,6 +23,22 @@ public class CoreImageCleanupValue {
         return getZoomInstance( matrix , surface , point , padding , scale );
     }
 
+    static CoreImageCleanupValue getFlingInstance( final CoreImageMatrix matrix , final PointF velocity ) {
+        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
+
+        ret.copy( matrix );
+
+        ret.dstScale = matrix.scale;
+
+        ret.dstX = matrix.tx + velocity.x / 4;
+        ret.dstY = matrix.ty + velocity.y / 4;
+
+        ret.start = SystemClock.elapsedRealtime();
+        ret.shouldAdjust = true;
+
+        return ret;
+    }
+
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
             final SizeInfo page , final float minScale , final float maxScale ) {
         if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 ) || //
@@ -98,8 +114,8 @@ public class CoreImageCleanupValue {
     long start;
 
     private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
-        dstX = Math.min( Math.max( dstX , Math.min( surface.width - page.width * dstScale , 0 ) ) , 0 );
-        dstY = Math.min( Math.max( dstY , Math.min( surface.height - page.height * dstScale , 0 ) ) , 0 );
+        dstX = Math.min( Math.max( dstX , surface.width - page.width * dstScale ) , 0 );
+        dstY = Math.min( Math.max( dstY , surface.height - page.height * dstScale ) , 0 );
 
         return this;
     }

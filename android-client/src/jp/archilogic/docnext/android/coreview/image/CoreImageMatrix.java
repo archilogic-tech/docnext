@@ -10,15 +10,9 @@ public class CoreImageMatrix {
     CoreImageMatrix() {
     }
 
-    CoreImageMatrix( final CoreImageMatrix o ) {
-        scale = o.scale;
-        tx = o.tx;
-        ty = o.ty;
-    }
-
     void adjust( final SizeInfo surface , final SizeInfo page ) {
-        tx = Math.min( Math.max( tx , Math.min( surface.width - page.width * scale , 0 ) ) , 0 );
-        ty = Math.min( Math.max( ty , Math.min( surface.height - page.height * scale , 0 ) ) , 0 );
+        tx = Math.min( Math.max( tx , surface.width - page.width * scale ) , 0 );
+        ty = Math.min( Math.max( ty , surface.height - page.height * scale ) , 0 );
     }
 
     float length( final float length ) {

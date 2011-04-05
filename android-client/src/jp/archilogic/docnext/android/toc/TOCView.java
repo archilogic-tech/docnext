@@ -22,99 +22,104 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 public class TOCView extends FrameLayout implements CoreView {
+    private final ArrayAdapter< String > tocArrayAdapter;
 
-    public TOCView(Context context) {
+    private ArrayList< Integer > pageList;
+    private final OnItemClickListener mTcoClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick( final AdapterView< ? > av , final View v , final int arg2 , final long arg3 ) {
+            final Intent intent = new Intent();
+            intent.putExtra( CoreViewActivity.EXTRA_PAGE , pageList.get( arg2 ) );
+            delegate.changeCoreViewType( DocumentType.IMAGE , intent );
+        }
+    };
+
+    private CoreViewDelegate delegate;
+
+    public TOCView( final Context context ) {
         super( context );
 
         LayoutInflater.from( context ).inflate( R.layout.toc , this , true );
-        tocArrayAdapter = new ArrayAdapter<String>( getContext(), R.layout.toc_title );
-        ListView tocListView = (ListView) findViewById( R.id.table_of_contents_listview );
+        tocArrayAdapter = new ArrayAdapter< String >( getContext() , R.layout.toc_title );
+        final ListView tocListView = ( ListView ) findViewById( R.id.table_of_contents_listview );
         tocListView.setAdapter( tocArrayAdapter );
         tocListView.setOnItemClickListener( mTcoClickListener );
 
-        findViewById( R.id.table_of_contents_listview ).setVisibility(
-                View.VISIBLE );
+        findViewById( R.id.table_of_contents_listview ).setVisibility( View.VISIBLE );
 
     }
 
-    private ArrayAdapter<String> tocArrayAdapter;
-    private ArrayList<Integer> pageList;
-
-    private OnItemClickListener mTcoClickListener = new OnItemClickListener() {
-        public void onItemClick( AdapterView<?> av, View v, int arg2, long arg3 ) {
-            Intent intent = new Intent();
-            intent.putExtra( CoreViewActivity.EXTRA_PAGE, pageList.get( arg2 ) );
-            delegate.changeCoreViewType( DocumentType.IMAGE, intent );
-        }
-    };
-    private CoreViewDelegate delegate;
-
     @Override
-    public void onDoubleTapGesture( PointF point ) {
+    public void onDoubleTapGesture( final PointF point ) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void onDragGesture( PointF delta ) {
+    public void onDragGesture( final PointF delta ) {
         // TODO Auto-generated method stub
-        
+
+    }
+
+    @Override
+    public void onFlingGesture( final PointF velocity ) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void onGestureBegin() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void onGestureEnd() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void onPause() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void onTapGesture( PointF point ) {
+    public void onTapGesture( final PointF point ) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void onZoomGesture( float scaleDelta, PointF center ) {
+    public void onZoomGesture( final float scaleDelta , final PointF center ) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void setDelegate( CoreViewDelegate argumentDelegate ) {
+    public void setDelegate( final CoreViewDelegate argumentDelegate ) {
         delegate = argumentDelegate;
     }
 
     @Override
-    public void setIds( long[] ids ) {
-        pageList = new ArrayList<Integer>();
-        List<TOCElement> toc = Kernel.getLocalProvider().getTableOfContentsInfo( ids[0] );
+    public void setIds( final long[] ids ) {
+        pageList = new ArrayList< Integer >();
+        final List< TOCElement > toc = Kernel.getLocalProvider().getTableOfContentsInfo( ids[ 0 ] );
 
         if ( toc == null ) {
             return;
         }
-            
-        for (TOCElement element : toc) {
+
+        for ( final TOCElement element : toc ) {
             pageList.add( element.page );
             tocArrayAdapter.add( element.text );
         }
-        
     }
 }

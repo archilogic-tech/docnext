@@ -13,14 +13,14 @@ public class LocalPathManager {
             dir.mkdirs();
         }
     }
-    
+
     public void ensureBookmark( final long id ) {
-        final File file = new File ( getBookmarkPath( id ) );
-    
+        final File file = new File( getBookmarkPath( id ) );
+
         if ( !file.exists() ) {
             try {
                 file.createNewFile();
-            } catch (IOException e) {
+            } catch ( final IOException e ) {
                 e.printStackTrace();
             }
         }
@@ -46,10 +46,10 @@ public class LocalPathManager {
         ensure( getTextDir( id ) );
     }
 
-    public String getBookmarkPath( long id ) {
+    public String getBookmarkPath( final long id ) {
         return getDocInfoDir() + id + ".bookmark.json";
     }
-    
+
     public String getCompletedInfoPath() {
         return ROOT + "completed.json";
     }
@@ -90,12 +90,12 @@ public class LocalPathManager {
         return String.format( "%s%d_%d_%d_%d.jpg" , getImageDir( id ) , page , level , px , py );
     }
 
-    private String getTextDir( final long id ) {
-        return ROOT + "text/" + id + "/";
+    public String getTableOfContentsInfoPath( final long id ) {
+        return getDocInfoDir() + id + ".toc.json";
     }
 
-    public String getTableOfContentsInfoPath( long id ) {
-        return getDocInfoDir() + id + ".toc.json";
+    private String getTextDir( final long id ) {
+        return ROOT + "text/" + id + "/";
     }
 
     public String getTextPath( final long id , final int page ) {
