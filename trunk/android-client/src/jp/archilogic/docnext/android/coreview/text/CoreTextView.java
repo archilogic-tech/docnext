@@ -135,6 +135,10 @@ public class CoreTextView extends FrameLayout implements CoreView , PageSettable
     }
 
     @Override
+    public void onFlingGesture( final PointF velocity ) {
+    }
+
+    @Override
     public void onGestureBegin() {
         _callback.beginInteraction();
     }

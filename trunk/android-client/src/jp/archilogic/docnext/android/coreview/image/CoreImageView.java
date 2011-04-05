@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
+import android.os.Debug;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -132,6 +133,11 @@ public class CoreImageView extends FrameLayout implements CoreView , PageSettabl
     }
 
     @Override
+    public void onFlingGesture( final PointF velocity ) {
+        _renderer.fling( velocity );
+    }
+
+    @Override
     public void onGestureBegin() {
         _renderer.beginInteraction();
 
@@ -148,10 +154,14 @@ public class CoreImageView extends FrameLayout implements CoreView , PageSettabl
     @Override
     public void onPause() {
         _glSurfaceView.onPause();
+
+        Debug.stopMethodTracing();
     }
 
     @Override
     public void onResume() {
+        Debug.startMethodTracing();
+
         _glSurfaceView.onResume();
     }
 

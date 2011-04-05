@@ -20,7 +20,7 @@ public class CoreImageEngine {
         void onScaleChange( boolean isMin , boolean isMax );
     }
 
-    private static final long CLEANUP_DURATION = 200L;
+    private static final long CLEANUP_DURATION = 500L;
 
     long id;
     int page = 0;
@@ -103,8 +103,10 @@ public class CoreImageEngine {
         matrix.ty -= delta.y;
     }
 
-    int getCurrentPage() {
-        return page;
+    void fling( final PointF velocity ) {
+        if ( !shouldChangePage() && Math.hypot( velocity.x , velocity.y ) > 1000 ) {
+            _cleanup = CoreImageCleanupValue.getFlingInstance( matrix , velocity );
+        }
     }
 
     float getHorizontalPadding() {
@@ -138,6 +140,13 @@ public class CoreImageEngine {
 
     void setPageLoader( final PageLoader loader ) {
         _loader = loader;
+    }
+
+    private boolean shouldChangePage() {
+        return direction.shouldChangeToNext( this )
+                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) )
+                || direction.shouldChangeToPrev( this )
+                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) );
     }
 
     /**
