@@ -424,6 +424,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     int _currentPage = 0;
     
     public void setBookmarkIcon() {
+        if ( !( _view instanceof PageSettable ) ) {
+            return;
+        }
         int currentPage = ( ( PageSettable ) _view).getCurrentPage();
         if ( _currentPage != currentPage && _menuView.getVisibility() == View.VISIBLE ) {
             _currentPage = currentPage;
