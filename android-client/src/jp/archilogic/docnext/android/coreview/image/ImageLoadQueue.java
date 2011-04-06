@@ -28,7 +28,6 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
 
     @Override
     public boolean add( final Runnable e ) {
-        System.err.println( "Not Implemented" );
         throw new RuntimeException( "Not Implemented" );
     }
 

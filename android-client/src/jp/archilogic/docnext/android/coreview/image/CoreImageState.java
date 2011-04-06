@@ -48,8 +48,6 @@ public class CoreImageState {
     private OnPageChangeListener _pageChangeListener = null;
 
     private void changeToNextPage() {
-        System.err.println( "*** changeToNext ***" );
-
         if ( _pageChangeListener != null ) {
             _pageChangeListener.onPageChange( page + 1 );
         }
@@ -68,8 +66,6 @@ public class CoreImageState {
     }
 
     private void changeToPrevPage() {
-        System.err.println( "*** changeToPrev ***" );
-
         if ( _pageChangeListener != null ) {
             _pageChangeListener.onPageChange( page - 1 );
         }
@@ -183,10 +179,6 @@ public class CoreImageState {
                 }
 
                 _cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
-
-                if ( _cleanup != null ) {
-                    System.err.println( "*** " + _cleanup.dstX + ", " + _cleanup.dstY );
-                }
             }
 
             if ( _cleanup != null ) {

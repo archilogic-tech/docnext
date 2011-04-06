@@ -10,7 +10,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
-import android.os.Debug;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -155,12 +154,12 @@ public class CoreImageView extends FrameLayout implements CoreView , PageSettabl
     public void onPause() {
         _glSurfaceView.onPause();
 
-        Debug.stopMethodTracing();
+        // Debug.stopMethodTracing();
     }
 
     @Override
     public void onResume() {
-        Debug.startMethodTracing();
+        // Debug.startMethodTracing();
 
         _glSurfaceView.onResume();
     }
