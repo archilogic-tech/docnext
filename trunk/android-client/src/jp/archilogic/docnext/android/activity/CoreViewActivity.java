@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.TreeSet;
 
 import jp.archilogic.docnext.android.Kernel;
@@ -24,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -154,8 +156,21 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
+    private Handler handler = new Handler();
+    
+    UpdateTimerTask _updateTimerTask = new UpdateTimerTask();
+
+    class UpdateTimerTask extends TimerTask {
+        public void run() {
+            setBookmarkIcon();
+            handler.postDelayed( this , 500 );
+        }
+    }
 
     private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
+        handler.removeCallbacks( _updateTimerTask );
+        handler.postDelayed( _updateTimerTask, 100 );
+
         final GridView gridView = new GridView( _self );
         gridView.setLayoutParams(  new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.FILL_PARENT ,
@@ -175,24 +190,25 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             layout.setOrientation( LinearLayout.VERTICAL );
 
             try {
-                int id;
+                int drawableId;
                 if ( type == DocumentType.BOOKMARK ) {
                     List< Integer > list = Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] );
                     TreeSet< Integer > set = new TreeSet< Integer >( list );
                     int currentPage = ( ( PageSettable ) _view).getCurrentPage();
                     if ( set.contains( currentPage ) ) {
-                        id = R.drawable.button_bookmark_on;
+                        drawableId = R.drawable.button_bookmark_on;
                     } else {
-                        id = R.drawable.button_bookmark; 
+                        drawableId = R.drawable.button_bookmark; 
                     }
                 } else {
                     Field idField = 
                         R.drawable.class.getDeclaredField( "button_" + type.toString().toLowerCase() );
-                    id = idField.getInt( new R.drawable() );
+                    drawableId = idField.getInt( new R.drawable() );
                 }
 
                 ImageView imageView = new ImageView( _self );
-                ( ( ImageView )imageView ).setImageBitmap( LoadBitmap( id ) );
+                ( ( ImageView )imageView ).setImageResource( drawableId );
+
                 imageView.setLayoutParams( new LinearLayout.LayoutParams( dp( 75 ) , dp( 75 ) ) );
                 imageView.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
                 layout.addView( imageView );
@@ -385,11 +401,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     @Override
     public boolean onTouchEvent( final MotionEvent event ) {
-        if ( _menuView.getVisibility() == View.VISIBLE ) {
-            AnimationUtils2.toggle( _self , _menuView );
-        }
-
-
         switch ( event.getAction() ) {
         case MotionEvent.ACTION_DOWN:
             _view.onGestureBegin();
@@ -408,6 +419,23 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _gestureDetector.onTouchEvent( event );
 
         return true;
+    }
+
+    int _currentPage = 0;
+    
+    public void setBookmarkIcon() {
+        int currentPage = ( ( PageSettable ) _view).getCurrentPage();
+        if ( _currentPage != currentPage && _menuView.getVisibility() == View.VISIBLE ) {
+            _currentPage = currentPage;
+            
+            List< Integer > list = Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] );
+            TreeSet< Integer > set = new TreeSet< Integer >( list );
+            if ( set.contains( currentPage ) ) {
+                ( ( ImageView ) _bookmarkView).setImageBitmap( LoadBitmap( R.drawable.button_bookmark_on ) );
+            } else {
+                ( ( ImageView ) _bookmarkView).setImageBitmap( LoadBitmap( R.drawable.button_bookmark ) );
+            }
+        }
     }
 
     private void switchBookmarkIcon() {
