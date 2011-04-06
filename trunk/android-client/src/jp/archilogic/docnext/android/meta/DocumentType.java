@@ -1,6 +1,5 @@
 package jp.archilogic.docnext.android.meta;
 
-import jp.archilogic.docnext.android.bookmark.BookmarkView;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
@@ -9,7 +8,7 @@ import jp.archilogic.docnext.android.toc.TOCView;
 import android.content.Context;
 
 public enum DocumentType {
-    IMAGE , TEXT , BOOKMARK , THUMNAIL , TOC;
+    IMAGE , TEXT , HOME , TOC , BOOKMARK , THUMNAIL , SETTING , COMMENT , SEARCH;
 
     public CoreView buildView( final Context context ) {
         switch ( this ) {
@@ -17,8 +16,6 @@ public enum DocumentType {
             return new CoreImageView( context );
         case TEXT:
             return new CoreTextView( context );
-        case BOOKMARK:
-            return new BookmarkView( context );
         case THUMNAIL:
             return new ThumnailView( context );
         case TOC:

@@ -8,7 +8,15 @@
     <string name="cannot_download_in_parallel">Can\'t download in parallel</string>
     
     <string name="table_of_contents">Table Of Contents</string>
-    <string name="thumnail">Thumnail</string>
-    <string name="bookmark">Bookmark</string>
+    
+    <string name="home">home</string>
+    <string name="text">text view</string>
+    <string name="toc">index</string>
+    <string name="thumnail">thumnail</string>
+    <string name="bookmark">bookmark</string>
+    <string name="setting">setting</string>
+    <string name="comment">comment</string>
+    <string name="search">saarch</string>
+
     <string name="help">Help</string>
 </resources>
