@@ -24,19 +24,8 @@ public class CoreImageCleanupValue {
     }
 
     static CoreImageCleanupValue getFlingInstance( final CoreImageMatrix matrix , final PointF velocity ) {
-        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
-
-        ret.copy( matrix );
-
-        ret.dstScale = matrix.scale;
-
-        ret.dstX = matrix.tx + velocity.x / 4;
-        ret.dstY = matrix.ty + velocity.y / 4;
-
-        ret.start = SystemClock.elapsedRealtime();
-        ret.shouldAdjust = true;
-
-        return ret;
+        return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx + velocity.x / 4 , matrix.ty + velocity.y
+                / 4 , true );
     }
 
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
@@ -44,28 +33,17 @@ public class CoreImageCleanupValue {
         if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 ) || //
                 matrix.ty < Math.min( surface.height - page.height * matrix.scale , 0 ) || //
                 matrix.tx > 0 || matrix.ty > 0 || matrix.scale < minScale || matrix.scale > maxScale ) {
-            final CoreImageCleanupValue ret = new CoreImageCleanupValue();
-
-            ret.copy( matrix );
-
             if ( matrix.scale < minScale ) {
-                ret.dstScale = minScale;
-                ret.dstX = 0;
-                ret.dstY = 0;
+                return new CoreImageCleanupValue( matrix , minScale , 0 , 0 , false ).adjust( surface , page );
             } else if ( matrix.scale > maxScale ) {
-                ret.dstScale = maxScale;
-                ret.dstX = ( maxScale * matrix.tx - ( maxScale - matrix.scale ) * surface.width / 2 ) / matrix.scale;
-                ret.dstY = ( maxScale * matrix.ty - ( maxScale - matrix.scale ) * surface.height / 2 ) / matrix.scale;
+                return new CoreImageCleanupValue( matrix , maxScale ,
+                        ( maxScale * matrix.tx - ( maxScale - matrix.scale ) * surface.width / 2 ) / matrix.scale ,
+                        ( maxScale * matrix.ty - ( maxScale - matrix.scale ) * surface.height / 2 ) / matrix.scale ,
+                        false ).adjust( surface , page );
             } else {
-                ret.dstScale = matrix.scale;
-                ret.dstX = matrix.tx;
-                ret.dstY = matrix.ty;
+                return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx , matrix.ty , false ).adjust(
+                        surface , page );
             }
-
-            ret.start = SystemClock.elapsedRealtime();
-            ret.shouldAdjust = false;
-
-            return ret.adjust( surface , page );
         } else {
             return null;
         }
@@ -88,19 +66,9 @@ public class CoreImageCleanupValue {
 
     private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
             final PointF point , final SizeFInfo padding , final float scale ) {
-        final CoreImageCleanupValue ret = new CoreImageCleanupValue();
-
-        ret.copy( matrix );
-
-        ret.dstScale = scale;
-
-        ret.dstX = ret.dstScale / matrix.scale * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2;
-        ret.dstY = ret.dstScale / matrix.scale * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2;
-
-        ret.start = SystemClock.elapsedRealtime();
-        ret.shouldAdjust = true;
-
-        return ret;
+        return new CoreImageCleanupValue( matrix , scale , scale / matrix.scale
+                * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2 , scale / matrix.scale
+                * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2 , true );
     }
 
     float srcScale;
@@ -113,9 +81,25 @@ public class CoreImageCleanupValue {
     boolean shouldAdjust;
     long start;
 
+    private CoreImageCleanupValue( final CoreImageMatrix matrix , final float dstScale , final float dstX ,
+            final float dstY , final boolean shouldAdjust ) {
+        copy( matrix );
+
+        this.dstScale = dstScale;
+        this.dstX = dstX;
+        this.dstY = dstY;
+
+        start = SystemClock.elapsedRealtime();
+        this.shouldAdjust = shouldAdjust;
+    }
+
     private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
+        System.err.println( "*** not adjusted: " + dstX + ", " + dstY );
+
         dstX = Math.min( Math.max( dstX , surface.width - page.width * dstScale ) , 0 );
         dstY = Math.min( Math.max( dstY , surface.height - page.height * dstScale ) , 0 );
+
+        System.err.println( "*** adjusted: " + dstX + ", " + dstY );
 
         return this;
     }

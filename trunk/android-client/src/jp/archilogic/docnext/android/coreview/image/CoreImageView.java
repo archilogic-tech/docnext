@@ -4,7 +4,7 @@ import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.PageSettable;
-import jp.archilogic.docnext.android.coreview.image.CoreImageEngine.OnScaleChangeListener;
+import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChangeListener;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Context;
 import android.graphics.PointF;
