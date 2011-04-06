@@ -94,12 +94,8 @@ public class CoreImageCleanupValue {
     }
 
     private CoreImageCleanupValue adjust( final SizeInfo surface , final SizeInfo page ) {
-        System.err.println( "*** not adjusted: " + dstX + ", " + dstY );
-
         dstX = Math.min( Math.max( dstX , surface.width - page.width * dstScale ) , 0 );
         dstY = Math.min( Math.max( dstY , surface.height - page.height * dstScale ) , 0 );
-
-        System.err.println( "*** adjusted: " + dstX + ", " + dstY );
 
         return this;
     }

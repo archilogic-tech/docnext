@@ -8,9 +8,14 @@ import jp.archilogic.docnext.android.coreview.image.PageInfo.PageTextureStatus;
 import jp.archilogic.docnext.android.info.SizeFInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.content.Context;
+import android.os.SystemClock;
 
 public class CoreImageRenderEngine {
     private static final int TEXTURE_SIZE = 512;
+
+    static {
+        System.loadLibrary( "docnext" );
+    }
 
     private TextureInfo _background;
     private TextureInfo _blank;
@@ -19,6 +24,10 @@ public class CoreImageRenderEngine {
     // to avoid GC
     private final CoreImageMatrix _immutableMatrix = new CoreImageMatrix();
     private final SizeFInfo _immutablePadding = new SizeFInfo( 0 , 0 );
+
+    int _fpsCounter = 0;
+    long _fpsTime;
+    long _frameSum;
 
     void bindPageImage( final GL10 gl , final LoadBitmapTask task ) {
         final PageTextureInfo texture = _pages[ task.page ].textures[ task.level ][ task.py ][ task.px ];
@@ -37,9 +46,11 @@ public class CoreImageRenderEngine {
 
         if ( isVisible ) {
             if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
-                drawSingleImage( gl , textures[ py ][ px ].id , x , y , w , h );
+                // drawSingleImage( gl , textures[ py ][ px ].id , x , y , w , h );
+                drawSingleImageJNI( textures[ py ][ px ].id , x , y , w , h );
             } else if ( level == 0 ) {
-                drawSingleImage( gl , _blank.id , x , y , w , h );
+                // drawSingleImage( gl , _blank.id , x , y , w , h );
+                drawSingleImageJNI( _blank.id , x , y , w , h );
             }
         }
     }
@@ -97,11 +108,13 @@ public class CoreImageRenderEngine {
         }
     }
 
-    private void drawSingleImage( final GL10 gl , final int texture , final float x , final float y , final float w ,
+    private void drawSingleImage( final GL10 gl , final int id , final float x , final float y , final float w ,
             final float h ) {
-        gl.glBindTexture( GL10.GL_TEXTURE_2D , texture );
+        gl.glBindTexture( GL10.GL_TEXTURE_2D , id );
         ( ( GL11Ext ) gl ).glDrawTexfOES( x , y , 0 , w , h );
     }
+
+    native private void drawSingleImageJNI( int id , float x , float y , float w , float h );
 
     /**
      * @return [level][npx,npy]
@@ -139,7 +152,21 @@ public class CoreImageRenderEngine {
         _immutablePadding.height = state.getVerticalPadding();
 
         drawBackground( gl );
+
+        final long t = SystemClock.elapsedRealtime();
+
         drawImage( gl , _immutableMatrix , _immutablePadding , state );
+
+        _fpsCounter++;
+        _frameSum += SystemClock.elapsedRealtime() - t;
+        if ( _fpsCounter == 120 ) {
+            System.err.println( "drawImage FPS: " + 120.0 * 1000 / ( SystemClock.elapsedRealtime() - _fpsTime )
+                    + ", avg: " + _frameSum / 120.0 );
+
+            _fpsTime = SystemClock.elapsedRealtime();
+            _fpsCounter = 0;
+            _frameSum = 0;
+        }
     }
 
     void unbindPageImage( final GL10 gl , final LoadBitmapTask task ) {

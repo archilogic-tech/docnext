@@ -111,8 +111,6 @@ public class CoreImageRenderer implements Renderer {
     }
 
     void beginInteraction() {
-        System.err.println( "*** beginInteraction ***" );
-
         _state.isInteracting = true;
     }
 
@@ -125,14 +123,10 @@ public class CoreImageRenderer implements Renderer {
     }
 
     void endInteraction() {
-        System.err.println( "*** endInteraction ***" );
-
         _state.isInteracting = false;
     }
 
     void fling( final PointF velocity ) {
-        System.err.println( "*** fling ***" );
-
         _state.fling( velocity );
     }
 
