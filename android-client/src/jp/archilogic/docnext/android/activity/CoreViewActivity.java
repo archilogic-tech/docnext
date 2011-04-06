@@ -2,6 +2,9 @@ package jp.archilogic.docnext.android.activity;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
@@ -24,15 +27,19 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
     public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
@@ -43,6 +50,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     private ViewGroup _rootViewGroup;
     private CoreView _view;
     private View _menuView;
+    private View _bookmarkView;
 
     private long[] _ids;
 
@@ -146,46 +154,125 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
+
     private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
-        final LinearLayout ret = new LinearLayout( _self );
-        ret.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
+        final GridView gridView = new GridView( _self );
+        gridView.setLayoutParams(  new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.FILL_PARENT ,
                 FrameLayout.LayoutParams.WRAP_CONTENT ) );
-        ret.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
-        ret.setBackgroundColor( 0x80000000 );
-        ret.setClickable( true );
-        ret.setVisibility( View.GONE );
+        gridView.setBackgroundColor( 0x80000000 );
+        gridView.setClickable( true );
+        final int NUM_COLUMNS = 5;
+        gridView.setNumColumns( NUM_COLUMNS );
+        gridView.setVisibility( View.GONE );
+        final ArrayList< View > menuItems = new ArrayList< View >();
 
         for ( final DocumentType type : types ) {
-            View menuItem;
+            LinearLayout layout = new LinearLayout( _self );
+            layout.setLayoutParams( new GridView.LayoutParams( 
+                    GridView.LayoutParams.WRAP_CONTENT ,
+                    GridView.LayoutParams.WRAP_CONTENT ) );
+            layout.setOrientation( LinearLayout.VERTICAL );
 
             try {
-                final Field idField = R.drawable.class.getDeclaredField( "ic_" + type.toString().toLowerCase() );
-                final int id = idField.getInt( new R.drawable() );
+                int id;
+                if ( type == DocumentType.BOOKMARK ) {
+                    List< Integer > list = Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] );
+                    TreeSet< Integer > set = new TreeSet< Integer >( list );
+                    int currentPage = ( ( PageSettable ) _view).getCurrentPage();
+                    if ( set.contains( currentPage ) ) {
+                        id = R.drawable.button_bookmark_on;
+                    } else {
+                        id = R.drawable.button_bookmark; 
+                    }
+                } else {
+                    Field idField = 
+                        R.drawable.class.getDeclaredField( "button_" + type.toString().toLowerCase() );
+                    id = idField.getInt( new R.drawable() );
+                }
 
-                menuItem = new ImageView( _self );
-                ( ( ImageView ) menuItem ).setImageBitmap( LoadBitmap( id ) );
-                menuItem.setLayoutParams( new FrameLayout.LayoutParams( dp( 50 ) , dp( 50 ) ) );
-                menuItem.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
+                ImageView imageView = new ImageView( _self );
+                ( ( ImageView )imageView ).setImageBitmap( LoadBitmap( id ) );
+                imageView.setLayoutParams( new LinearLayout.LayoutParams( dp( 75 ) , dp( 75 ) ) );
+                imageView.setPadding( dp( 10 ) , dp( 10 ) , dp( 10 ) , dp( 10 ) );
+                layout.addView( imageView );
 
-            } catch ( final NoSuchFieldException e ) {
+                TextView textView = new TextView( _self );
+                try {
+                    Field field = R.string.class.getDeclaredField( type.toString().toLowerCase() );
+                    textView.setText( field.getInt( new R.string() ) );
+                } catch (NoSuchFieldException e) {
+                    textView.setText( type.toString().toLowerCase() );
+                } catch (Exception e) { }
+                textView.setGravity( Gravity.CENTER );
+                layout.addView( textView );
+
+            } catch (NoSuchFieldException e) {
                 final Button button = new Button( _self );
                 button.setText( type.toString() );
+                layout.addView( button );
+            } catch (Exception e) { }
 
-                menuItem = button;
-
-            } catch ( final Exception e ) {
-                menuItem = null;
+            if ( type == DocumentType.BOOKMARK ) {
+                _bookmarkView = layout.getChildAt( 0 );
+                layout.setOnClickListener( new OnClickListener() {
+                    @Override
+                    public void onClick( final View v ) {
+                        switchBookmarkIcon();
+                    }
+                } );
+            } else {
+                layout.setOnClickListener( new OnClickListener() {
+                    @Override
+                    public void onClick( final View v ) {
+                        changeCoreViewType( type , new Intent() );
+                    }
+                } );
             }
-            menuItem.setOnClickListener( new OnClickListener() {
-                @Override
-                public void onClick( final View v ) {
-                    changeCoreViewType( type , new Intent() );
+
+            if ( type != Kernel.getLocalProvider().getDocInfo( _ids[ 0 ] ).types[ 0 ]) {
+                if ( type == DocumentType.SEARCH ) {
+                    for ( int i = 0; i < ( NUM_COLUMNS - menuItems.size() % NUM_COLUMNS ); i++ ) {
+                        LinearLayout padding = new LinearLayout( _self );
+                        menuItems.add( padding );
+                    }
+                    layout.setGravity( Gravity.LEFT );
                 }
-            } );
-            ret.addView( menuItem );
+                if ( type == DocumentType.HOME ) {
+                    menuItems.add( 0, layout );
+                } else {
+                    menuItems.add( layout );
+                }
+            }
         }
 
-        return ret;
+        gridView.setAdapter( new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return menuItems.size();
+            }
+
+            @Override
+            public Object getItem( int position ) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public long getItemId( int position ) {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public View getView( int position, View convertView,
+                    ViewGroup parent ) {
+                return menuItems.get( position );
+            }
+
+        });
+
+        return gridView;
     }
 
     public IntentFilter buildRemoteProviderReceiverFilter() {
@@ -269,8 +356,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
 
         _rootViewGroup.addView( _menuView =
-                buildCoreViewSwitchMenu( new DocumentType[] { DocumentType.IMAGE , DocumentType.TEXT ,
-                        DocumentType.BOOKMARK , DocumentType.THUMNAIL , DocumentType.TOC } ) );
+            buildCoreViewSwitchMenu( new DocumentType[] { 
+                    DocumentType.IMAGE , DocumentType.TEXT, DocumentType.TOC , 
+                    DocumentType.BOOKMARK , DocumentType.THUMNAIL , DocumentType.HOME , 
+                    DocumentType.SETTING , DocumentType.COMMENT , DocumentType.SEARCH } ) );
     }
 
     @Override
@@ -296,6 +385,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     @Override
     public boolean onTouchEvent( final MotionEvent event ) {
+        if ( _menuView.getVisibility() == View.VISIBLE ) {
+            AnimationUtils2.toggle( _self , _menuView );
+        }
+
+
         switch ( event.getAction() ) {
         case MotionEvent.ACTION_DOWN:
             _view.onGestureBegin();
@@ -314,6 +408,20 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _gestureDetector.onTouchEvent( event );
 
         return true;
+    }
+
+    private void switchBookmarkIcon() {
+        List< Integer > list = Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] );
+        TreeSet< Integer > set = new TreeSet< Integer >( list );
+        int currentPage = ( ( PageSettable ) _view).getCurrentPage();
+        if ( set.contains( currentPage ) ) {
+            set.remove( currentPage  );
+            ( ( ImageView ) _bookmarkView).setImageBitmap( LoadBitmap( R.drawable.button_bookmark ) );
+        } else {
+            set.add( currentPage );
+            ( ( ImageView ) _bookmarkView).setImageBitmap( LoadBitmap( R.drawable.button_bookmark_on ) );
+        }
+        Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] , new ArrayList< Integer >( set ) );
     }
 
     private DocumentType validateCoreViewType( final long[] ids ) {

@@ -88,7 +88,12 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public List<TOCElement> getTableOfContentsInfo( final long id ) {
-        TOCElement[] tocs =  getJsonInfo( _pathManager.getTableOfContentsInfoPath( id ) , TOCElement[].class );
+        TOCElement[] tocs;
+        try {
+            tocs =  getJsonInfo( _pathManager.getTableOfContentsInfoPath( id ) , TOCElement[].class );
+        } catch ( Exception  e ) {
+            tocs = new TOCElement[]{};
+        }
         return tocs == null ? null : Arrays.asList(tocs);
     }
 
