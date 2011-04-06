@@ -12,7 +12,11 @@ import android.view.animation.Interpolator;
 /**
  * Handle non-OpenGL parameters
  */
-public class CoreImageEngine {
+public class CoreImageState {
+    interface OnPageChangeListener {
+        void onPageChange( int page );
+    }
+
     interface OnScaleChangeListener {
         /**
          * This is invoked by future value (ie. not current value)
@@ -41,8 +45,15 @@ public class CoreImageEngine {
     private CoreImageCleanupValue _cleanup = null;
     private boolean _preventCheckChangePage = false;
     private OnScaleChangeListener _scaleChangeLisetener = null;
+    private OnPageChangeListener _pageChangeListener = null;
 
     private void changeToNextPage() {
+        System.err.println( "*** changeToNext ***" );
+
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page + 1 );
+        }
+
         if ( page - 1 >= 0 ) {
             _loader.unload( page - 1 );
         }
@@ -57,6 +68,12 @@ public class CoreImageEngine {
     }
 
     private void changeToPrevPage() {
+        System.err.println( "*** changeToPrev ***" );
+
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page - 1 );
+        }
+
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
         }
@@ -134,6 +151,10 @@ public class CoreImageEngine {
         }
     }
 
+    void setOnPageChangeListener( final OnPageChangeListener l ) {
+        _pageChangeListener = l;
+    }
+
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {
         _scaleChangeLisetener = l;
     }
@@ -162,6 +183,10 @@ public class CoreImageEngine {
                 }
 
                 _cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
+
+                if ( _cleanup != null ) {
+                    System.err.println( "*** " + _cleanup.dstX + ", " + _cleanup.dstY );
+                }
             }
 
             if ( _cleanup != null ) {

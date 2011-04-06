@@ -22,7 +22,7 @@ public enum CoreImageDirection {
         return !canMoveHorizontal();
     }
 
-    boolean shouldChangeToNext( final CoreImageEngine engine ) {
+    boolean shouldChangeToNext( final CoreImageState engine ) {
         switch ( this ) {
         case L2R:
             return engine.matrix.tx < engine.surfaceSize.width - engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD
@@ -39,7 +39,7 @@ public enum CoreImageDirection {
         }
     }
 
-    boolean shouldChangeToPrev( final CoreImageEngine engine ) {
+    boolean shouldChangeToPrev( final CoreImageState engine ) {
         switch ( this ) {
         case L2R:
             return engine.matrix.tx > engine.surfaceSize.width / PAGE_CHANGE_THREASHOLD;
@@ -84,7 +84,7 @@ public enum CoreImageDirection {
         }
     }
 
-    void updateOffset( final CoreImageEngine engine , final boolean isNext ) {
+    void updateOffset( final CoreImageState engine , final boolean isNext ) {
         final int sign = ( this == L2R || this == T2B ) ^ isNext ? -1 : 1;
 
         switch ( this ) {

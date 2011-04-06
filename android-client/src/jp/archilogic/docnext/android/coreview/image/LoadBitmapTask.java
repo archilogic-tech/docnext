@@ -35,13 +35,13 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
     TaskStatus status;
     Bitmap bitmap;
 
-    private final CoreImageEngine _engine;
+    private final CoreImageState _engine;
     private final Map< Integer , List< LoadBitmapTask > > _tasks;
     private final Queue< LoadBitmapTask > _queue;
 
     private boolean _cancelled = false;
 
-    LoadBitmapTask( final CoreImageEngine engine , final int page , final int level , final int px , final int py ,
+    LoadBitmapTask( final CoreImageState engine , final int page , final int level , final int px , final int py ,
             final Map< Integer , List< LoadBitmapTask > > tasks , final Queue< LoadBitmapTask > queue ) {
         _engine = engine;
         this.page = page;
