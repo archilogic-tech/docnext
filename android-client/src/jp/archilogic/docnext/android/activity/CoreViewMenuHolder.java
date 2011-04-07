@@ -12,7 +12,6 @@ import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,17 +22,15 @@ import com.google.common.collect.Sets;
 public class CoreViewMenuHolder {
     private final CoreViewActivity _activity;
 
-    private final ViewGroup _rootViewGroup;
     private final CoreView _view;
     private final View _menuView;
     private View _bookmarkMenuItem;
 
     private final long[] _ids;
 
-    CoreViewMenuHolder( final CoreViewActivity activity , final ViewGroup rootViewGroup , final CoreView view ,
-            final long[] ids , final DocumentType type ) {
+    CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
+            final DocumentType type ) {
         _activity = activity;
-        _rootViewGroup = rootViewGroup;
         _view = view;
         _ids = ids;
 
