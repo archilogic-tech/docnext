@@ -13,7 +13,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 
 interface Cancellable {
     void cancel();
@@ -71,7 +73,10 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
                     new BufferedInputStream( FileUtils.openInputStream( new File( Kernel.getLocalProvider()
                             .getImagePath( _engine.id , page , level , px , py ) ) ) , 8 * 1024 );
 
-            bitmap = BitmapFactory.decodeStream( in );
+            final Options o = new Options();
+            o.inPreferredConfig = Config.RGB_565;
+
+            bitmap = BitmapFactory.decodeStream( in , null , o );
 
             return this;
         } catch ( final IOException e ) {

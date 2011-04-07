@@ -24,8 +24,6 @@ public class CoreImageState {
         void onScaleChange( boolean isMin , boolean isMax );
     }
 
-    private static final long CLEANUP_DURATION = 500L;
-
     long id;
     int page = 0;
     int pages;
@@ -139,6 +137,10 @@ public class CoreImageState {
         onScaleChange( matrix.scale );
     }
 
+    boolean isCleanup() {
+        return _cleanup != null;
+    }
+
     private void onScaleChange( final float scale ) {
         final float EPS = ( float ) 1e-5;
 
@@ -182,7 +184,7 @@ public class CoreImageState {
             }
 
             if ( _cleanup != null ) {
-                float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / CLEANUP_DURATION;
+                float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / _cleanup.duration;
                 boolean willFinish = false;
 
                 if ( elapsed > 1f ) {
