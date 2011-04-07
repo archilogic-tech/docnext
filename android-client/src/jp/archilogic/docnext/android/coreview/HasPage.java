@@ -1,7 +1,7 @@
 package jp.archilogic.docnext.android.coreview;
 
-public interface PageSettable {
-    int getCurrentPage();
+public interface HasPage {
+    int getPage();
 
     void setPage( int page );
 }
