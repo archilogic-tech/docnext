@@ -1,0 +1,105 @@
+package jp.archilogic.docnext.android.type;
+
+import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.meta.DocumentType;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public enum FragmentType {
+    HOME , IMAGE , TEXT , TOC , BOOKMARK , THUMNAIL , SETTING , COMMENT , SEARCH;
+
+    public View buildSwithButton( final Context context ) {
+        final LinearLayout root = new LinearLayout( context );
+        root.setLayoutParams( new LinearLayout.LayoutParams( 0 , LinearLayout.LayoutParams.WRAP_CONTENT , 1 ) );
+        root.setOrientation( LinearLayout.VERTICAL );
+
+        final ImageView image = new ImageView( context );
+        image.setId( R.id.bookmark );
+        image.setImageResource( getImageResouce() );
+        root.addView( image );
+
+        final TextView text = new TextView( context );
+        text.setGravity( Gravity.CENTER_HORIZONTAL );
+        text.setText( getTextResource() );
+        text.setTextColor( Color.WHITE );
+        root.addView( text );
+
+        return root;
+    }
+
+    public DocumentType getDocumentType() {
+        switch ( this ) {
+        case IMAGE:
+            return DocumentType.IMAGE;
+        case TEXT:
+            return DocumentType.TEXT;
+        case TOC:
+            return DocumentType.TOC;
+        case THUMNAIL:
+            return DocumentType.THUMNAIL;
+        case HOME:
+        case BOOKMARK:
+        case SETTING:
+        case COMMENT:
+        case SEARCH:
+            return null;
+        default:
+            throw new RuntimeException();
+        }
+    }
+
+    private int getImageResouce() {
+        switch ( this ) {
+        case HOME:
+            return R.drawable.button_home;
+        case IMAGE:
+            return R.drawable.button_image;
+        case TEXT:
+            return R.drawable.button_text;
+        case TOC:
+            return R.drawable.button_toc;
+        case BOOKMARK:
+            return R.drawable.button_bookmark_off;
+        case THUMNAIL:
+            return R.drawable.button_thumnail;
+        case SETTING:
+            return R.drawable.button_setting;
+        case COMMENT:
+            return R.drawable.button_comment;
+        case SEARCH:
+            return R.drawable.button_search;
+        default:
+            throw new RuntimeException();
+        }
+    }
+
+    private int getTextResource() {
+        switch ( this ) {
+        case HOME:
+            return R.string.home;
+        case IMAGE:
+            return R.string.image;
+        case TEXT:
+            return R.string.text;
+        case TOC:
+            return R.string.toc;
+        case BOOKMARK:
+            return R.string.bookmark;
+        case THUMNAIL:
+            return R.string.thumbnail;
+        case SETTING:
+            return R.string.setting;
+        case COMMENT:
+            return R.string.comment;
+        case SEARCH:
+            return R.string.search;
+        default:
+            throw new RuntimeException();
+        }
+    }
+}

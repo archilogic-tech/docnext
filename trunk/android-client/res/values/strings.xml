@@ -9,14 +9,15 @@
     
     <string name="table_of_contents">Table Of Contents</string>
     
-    <string name="home">home</string>
-    <string name="text">text view</string>
-    <string name="toc">index</string>
-    <string name="thumnail">thumnail</string>
-    <string name="bookmark">bookmark</string>
-    <string name="setting">setting</string>
-    <string name="comment">comment</string>
-    <string name="search">saarch</string>
+    <string name="home">Home</string>
+    <string name="image">Image</string>
+    <string name="text">Text</string>
+    <string name="toc">Index</string>
+    <string name="thumbnail">Thumb</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="setting">Setting</string>
+    <string name="comment">Comment</string>
+    <string name="search">Search</string>
 
     <string name="help">Help</string>
 </resources>
