@@ -42,6 +42,11 @@ public interface LocalProvider {
 	List <TOCElement> getTableOfContentsInfo(long _id);
 	
     /**
+     * @return null if not exists
+     */
+    String getThumnailPath( long id , int page );
+
+    /**
      * more partial? (for large text)
      * 
      * @return null if not exists
