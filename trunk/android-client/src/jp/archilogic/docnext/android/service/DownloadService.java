@@ -174,15 +174,6 @@ public class DownloadService extends Service {
         }
     }
 
-    private void ensureTableOfContentsInfo() {
-        if ( Kernel.getLocalProvider().getTableOfContentsInfo( _id ) == null ) {
-            Kernel.getRemoteProvider().getTableOfContentsInfo( getApplicationContext() , new DownloadReceiver() , _id )
-                    .execute();
-        } else {
-            // checkTableOfContentsInfo();
-        }
-    }
-
     private void ensureText( final int index , final int page ) {
         if ( page < _doc.pages ) {
             Kernel.getRemoteProvider().getText( getApplicationContext() , new DownloadReceiver() {
@@ -223,7 +214,5 @@ public class DownloadService extends Service {
                 putExtra( EXTRA_ITEM_PER_PAGE , 1 ) );
 
         ensureDocInfo();
-        // TODO
-        // ensureTableOfContentsInfo();
     }
 }
