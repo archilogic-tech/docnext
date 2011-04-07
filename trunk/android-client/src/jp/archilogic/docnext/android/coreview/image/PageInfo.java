@@ -1,7 +1,5 @@
 package jp.archilogic.docnext.android.coreview.image;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import jp.archilogic.docnext.android.info.SizeInfo;
 
 public class PageInfo {
@@ -16,7 +14,7 @@ public class PageInfo {
     PageTextureInfo[][][] textures;
     PageTextureStatus[][][] statuses;
 
-    PageInfo( final GL10 gl , final int nLevel , final SizeInfo page ) {
+    PageInfo( final int nLevel , final SizeInfo page ) {
         textures = new PageTextureInfo[ nLevel ][][];
         statuses = new PageTextureStatus[ nLevel ][][];
         for ( int level = 0 ; level < nLevel ; level++ ) {
@@ -32,7 +30,7 @@ public class PageInfo {
                     final int y = py * TEXTURE_SIZE;
 
                     textures[ level ][ py ][ px ] =
-                            PageTextureInfo.getInstance( gl , Math.min( page.width * factor - x , TEXTURE_SIZE ) ,
+                            PageTextureInfo.getInstance( Math.min( page.width * factor - x , TEXTURE_SIZE ) ,
                                     Math.min( page.height * factor - y , TEXTURE_SIZE ) , x , y );
                     statuses[ level ][ py ][ px ] = PageTextureStatus.UNBIND;
                 }
