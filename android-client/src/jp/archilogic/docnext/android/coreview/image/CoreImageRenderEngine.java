@@ -12,10 +12,6 @@ import android.os.SystemClock;
 public class CoreImageRenderEngine {
     private static final int TEXTURE_SIZE = 512;
 
-    static {
-        System.loadLibrary( "docnext" );
-    }
-
     private TextureInfo _background;
     private TextureInfo _blank;
     private PageInfo[] _pages;
@@ -28,8 +24,35 @@ public class CoreImageRenderEngine {
     long _fpsTime;
     long _frameSum;
 
-    @Deprecated
-    private void _drawImage( final CoreImageMatrix matrix , final SizeFInfo padding , final CoreImageState state ) {
+    void bindPageImage( final LoadBitmapTask task ) {
+        final PageTextureInfo texture = _pages[ task.page ].textures[ task.level ][ task.py ][ task.px ];
+
+        texture.bindTexture( task.bitmap );
+
+        task.bitmap.recycle();
+
+        _pages[ task.page ].statuses[ task.level ][ task.py ][ task.px ] = PageTextureStatus.BIND;
+    }
+
+    private void checkAndDrawSingleImage( final int level , final PageTextureInfo[][] textures ,
+            final PageTextureStatus[][] statuses , final int py , final int px , final float x , final float y ,
+            final float w , final float h , final SizeInfo surface ) {
+        final boolean isVisible = x + w >= 0 && x < surface.width && y + h >= 0 && y < surface.height;
+
+        if ( isVisible ) {
+            if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
+                drawSingleImage( textures[ py ][ px ].id , x , y , w , h );
+            } else if ( level == 0 ) {
+                drawSingleImage( _blank.id , x , y , w , h );
+            }
+        }
+    }
+
+    private void drawBackground() {
+        drawSingleImage( _background.id , 0 , 0 , _background.width , _background.height );
+    }
+
+    private void drawImage( final CoreImageMatrix matrix , final SizeFInfo padding , final CoreImageState state ) {
         final int xSign = state.direction.toXSign();
         final int ySign = state.direction.toYSign();
 
@@ -76,91 +99,10 @@ public class CoreImageRenderEngine {
         }
     }
 
-    void bindPageImage( final LoadBitmapTask task ) {
-        final PageTextureInfo texture = _pages[ task.page ].textures[ task.level ][ task.py ][ task.px ];
-
-        texture.bindTexture( task.bitmap );
-
-        task.bitmap.recycle();
-
-        _pages[ task.page ].statuses[ task.level ][ task.py ][ task.px ] = PageTextureStatus.BIND;
-    }
-
-    @Deprecated
-    private void checkAndDrawSingleImage( final int level , final PageTextureInfo[][] textures ,
-            final PageTextureStatus[][] statuses , final int py , final int px , final float x , final float y ,
-            final float w , final float h , final SizeInfo surface ) {
-        final boolean isVisible = x + w >= 0 && x < surface.width && y + h >= 0 && y < surface.height;
-
-        if ( isVisible ) {
-            if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
-                // drawSingleImage( gl , textures[ py ][ px ].id , x , y , w , h );
-                drawSingleImageJNI( textures[ py ][ px ].id , x , y , w , h );
-            } else if ( level == 0 ) {
-                // drawSingleImage( gl , _blank.id , x , y , w , h );
-                drawSingleImageJNI( _blank.id , x , y , w , h );
-            }
-        }
-    }
-
-    private void drawBackground() {
-        drawSingleImageJNI( _background.id , 0 , 0 , _background.width , _background.height );
-    }
-
-    private void drawImage( final CoreImageMatrix matrix , final SizeFInfo padding , final CoreImageState state ) {
-        final int[][][][] textures = new int[ state.nLevel ][ 3 ][][];
-        final boolean[][][][] isBind = new boolean[ state.nLevel ][ 3 ][][];
-        final float[] lastTextureHeight = new float[ state.nLevel ];
-
-        for ( int level = 0 ; level < state.nLevel ; level++ ) {
-            if ( level > 0 && matrix.scale < Math.pow( 2 , level - 1 ) ) {
-                continue;
-            }
-
-            for ( int delta = -1 ; delta <= 1 ; delta++ ) {
-                final int page = state.page + delta;
-
-                if ( page < 0 || page >= _pages.length ) {
-                    continue;
-                }
-
-                final PageTextureInfo[][] texs = _pages[ page ].textures[ level ];
-                final PageTextureStatus[][] statuses = _pages[ page ].statuses[ level ];
-
-                textures[ level ][ delta + 1 ] = new int[ texs.length ][];
-                isBind[ level ][ delta + 1 ] = new boolean[ statuses.length ][];
-                lastTextureHeight[ level ] = texs[ texs.length - 1 ][ 0 ].height;
-
-                for ( int py = 0 ; py < texs.length ; py++ ) {
-                    textures[ level ][ delta + 1 ][ py ] = new int[ texs[ py ].length ];
-                    isBind[ level ][ delta + 1 ][ py ] = new boolean[ statuses[ py ].length ];
-
-                    for ( int px = 0 ; px < texs[ py ].length ; px++ ) {
-                        textures[ level ][ delta + 1 ][ py ][ px ] = texs[ py ][ px ].id;
-                        isBind[ level ][ delta + 1 ][ py ][ px ] = statuses[ py ][ px ] == PageTextureStatus.BIND;
-                    }
-                }
-            }
-        }
-
-        drawImageJNI( matrix.scale , matrix.tx , matrix.ty , padding.width , padding.height , textures , isBind ,
-                state.direction.toXSign() , state.direction.toYSign() , state.surfaceSize.width ,
-                state.surfaceSize.height , state.pageSize.width , state.pageSize.height , state.page , _pages.length ,
-                lastTextureHeight , _blank.id );
-    }
-
-    native private void drawImageJNI( float scale , float tx , float ty , float hPadding , float vPadding ,
-            int[][][][] textures , boolean[][][][] isBind , int xSign , int ySign , int surfaceWidth ,
-            int surfaceHeight , int pageWidth , int pageHeight , int page , int pages , float[] lastTextureHeight ,
-            int blankId );
-
-    @Deprecated
     private void drawSingleImage( final int id , final float x , final float y , final float w , final float h ) {
         GLES10.glBindTexture( GLES10.GL_TEXTURE_2D , id );
         GLES11Ext.glDrawTexfOES( x , y , 0 , w , h );
     }
-
-    native private void drawSingleImageJNI( int id , float x , float y , float w , float h );
 
     /**
      * @return [level][npx,npy]
