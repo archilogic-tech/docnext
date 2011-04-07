@@ -161,7 +161,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         // TODO hack :( -- Change to use content holder for CoreView
         _rootViewGroup.removeView( _menu.getMenu() );
-        _menu = new CoreViewMenuHolder( _self , _rootViewGroup , _view , _ids , type );
+        _menu = new CoreViewMenuHolder( _self , _view , _ids , type );
         _rootViewGroup.addView( _menu.getMenu() );
     }
 
@@ -201,7 +201,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _view.setIds( _ids );
         _view.setDelegate( _self );
 
-        _menu = new CoreViewMenuHolder( _self , _rootViewGroup , _view , _ids , type );
+        _menu = new CoreViewMenuHolder( _self , _view , _ids , type );
         _rootViewGroup.addView( _menu.getMenu() );
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
