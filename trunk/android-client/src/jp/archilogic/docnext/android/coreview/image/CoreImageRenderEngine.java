@@ -57,7 +57,7 @@ public class CoreImageRenderEngine {
         final int ySign = state.direction.toYSign();
 
         for ( int level = 0 ; level < state.nLevel ; level++ ) {
-            if ( level > 0 && matrix.scale < Math.pow( 2 , level - 1 ) ) {
+            if ( level > 0 && ( matrix.scale < Math.pow( 2 , level - 1 ) || state.isCleanup() ) ) {
                 continue;
             }
 
