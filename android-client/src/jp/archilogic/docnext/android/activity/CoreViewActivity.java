@@ -168,7 +168,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     private View buildCoreViewSwitchMenu( final DocumentType[] types ) {
-        handler.removeCallbacks( _updateTimerTask );
         handler.postDelayed( _updateTimerTask, 100 );
 
         final GridView gridView = new GridView( _self );
@@ -301,10 +300,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     @Override
     public void changeCoreViewType( final DocumentType type , final Intent extra ) {
-        _rootViewGroup.removeView( ( View ) _view );
 
         _view = type.buildView( _self );
-
+        if ( _view == null ) {
+            return;
+        }
+ 
+        _rootViewGroup.removeView( ( View ) _view );
         _rootViewGroup.addView( ( View ) _view );
 
         _view.setIds( _ids );
