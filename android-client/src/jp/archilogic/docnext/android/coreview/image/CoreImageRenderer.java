@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnPageChangeListener;
@@ -19,6 +18,8 @@ import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.content.Context;
 import android.graphics.PointF;
+import android.opengl.GLES10;
+import android.opengl.GLES11;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.SystemClock;
 
@@ -143,15 +144,15 @@ public class CoreImageRenderer implements Renderer {
         final long t = SystemClock.elapsedRealtime();
 
         while ( !_bindQueue.isEmpty() ) {
-            _renderEngine.bindPageImage( gl , _bindQueue.poll() );
+            _renderEngine.bindPageImage( _bindQueue.poll() );
         }
 
         while ( !_unbindQueue.isEmpty() ) {
-            _renderEngine.unbindPageImage( gl , _unbindQueue.poll() );
+            _renderEngine.unbindPageImage( _unbindQueue.poll() );
         }
 
         _state.update();
-        _renderEngine.render( gl , _state );
+        _renderEngine.render( _state );
 
         _fpsCounter++;
         _frameSum += SystemClock.elapsedRealtime() - t;
@@ -167,28 +168,30 @@ public class CoreImageRenderer implements Renderer {
 
     @Override
     public void onSurfaceChanged( final GL10 gl , final int width , final int height ) {
-        gl.glEnable( GL10.GL_TEXTURE_2D );
-        gl.glEnable( GL10.GL_BLEND );
-        gl.glBlendFunc( GL10.GL_SRC_ALPHA , GL10.GL_ONE_MINUS_SRC_ALPHA );
+        GLES10.glEnable( GLES10.GL_TEXTURE_2D );
+        GLES10.glEnable( GLES10.GL_BLEND );
+        GLES10.glBlendFunc( GLES10.GL_SRC_ALPHA , GLES10.GL_ONE_MINUS_SRC_ALPHA );
 
         _state.surfaceSize = new SizeInfo( width , height );
         _state.initScale();
 
-        _renderEngine.prepare( gl , _context , _state.pages , _state.nLevel , _state.pageSize , _state.surfaceSize );
+        _renderEngine.prepare( _context , _state.pages , _state.nLevel , _state.pageSize , _state.surfaceSize );
 
         _loader.load( _state.page - 1 );
         _loader.load( _state.page );
         _loader.load( _state.page + 1 );
 
         final int[] caps =
-                { GL11.GL_ALPHA_TEST , GL11.GL_BLEND , GL11.GL_CLIP_PLANE0 , GL11.GL_CLIP_PLANE1 , GL11.GL_CLIP_PLANE2 ,
-                        GL11.GL_CLIP_PLANE3 , GL11.GL_CLIP_PLANE4 , GL11.GL_CLIP_PLANE5 , GL11.GL_COLOR_LOGIC_OP ,
-                        GL11.GL_COLOR_MATERIAL , GL11.GL_CULL_FACE , GL11.GL_DEPTH_TEST , GL11.GL_DITHER , GL11.GL_FOG ,
-                        GL11.GL_LIGHT0 , GL11.GL_LIGHT1 , GL11.GL_LIGHT2 , GL11.GL_LIGHT3 , GL11.GL_LIGHT4 ,
-                        GL11.GL_LIGHT5 , GL11.GL_LIGHT6 , GL11.GL_LIGHT7 , GL11.GL_LIGHTING , GL11.GL_LINE_SMOOTH ,
-                        GL11.GL_MULTISAMPLE , GL11.GL_NORMALIZE , GL11.GL_POINT_SMOOTH , GL11.GL_POLYGON_OFFSET_FILL ,
-                        GL11.GL_RESCALE_NORMAL , GL11.GL_SAMPLE_ALPHA_TO_COVERAGE , GL11.GL_SAMPLE_ALPHA_TO_ONE ,
-                        GL11.GL_SAMPLE_COVERAGE , GL11.GL_SCISSOR_TEST , GL11.GL_STENCIL_TEST , GL11.GL_TEXTURE_2D };
+                { GLES11.GL_ALPHA_TEST , GLES11.GL_BLEND , GLES11.GL_CLIP_PLANE0 , GLES11.GL_CLIP_PLANE1 ,
+                        GLES11.GL_CLIP_PLANE2 , GLES11.GL_CLIP_PLANE3 , GLES11.GL_CLIP_PLANE4 , GLES11.GL_CLIP_PLANE5 ,
+                        GLES11.GL_COLOR_LOGIC_OP , GLES11.GL_COLOR_MATERIAL , GLES11.GL_CULL_FACE ,
+                        GLES11.GL_DEPTH_TEST , GLES11.GL_DITHER , GLES11.GL_FOG , GLES11.GL_LIGHT0 , GLES11.GL_LIGHT1 ,
+                        GLES11.GL_LIGHT2 , GLES11.GL_LIGHT3 , GLES11.GL_LIGHT4 , GLES11.GL_LIGHT5 , GLES11.GL_LIGHT6 ,
+                        GLES11.GL_LIGHT7 , GLES11.GL_LIGHTING , GLES11.GL_LINE_SMOOTH , GLES11.GL_MULTISAMPLE ,
+                        GLES11.GL_NORMALIZE , GLES11.GL_POINT_SMOOTH , GLES11.GL_POLYGON_OFFSET_FILL ,
+                        GLES11.GL_RESCALE_NORMAL , GLES11.GL_SAMPLE_ALPHA_TO_COVERAGE , GLES11.GL_SAMPLE_ALPHA_TO_ONE ,
+                        GLES11.GL_SAMPLE_COVERAGE , GLES11.GL_SCISSOR_TEST , GLES11.GL_STENCIL_TEST ,
+                        GLES11.GL_TEXTURE_2D };
         final String[] names =
                 { "GL11.GL_ALPHA_TEST" , "GL11.GL_BLEND" , "GL11.GL_CLIP_PLANE0" , "GL11.GL_CLIP_PLANE1" ,
                         "GL11.GL_CLIP_PLANE2" , "GL11.GL_CLIP_PLANE3" , "GL11.GL_CLIP_PLANE4" , "GL11.GL_CLIP_PLANE5" ,
@@ -202,7 +205,7 @@ public class CoreImageRenderer implements Renderer {
                         "GL11.GL_TEXTURE_2D" };
 
         for ( int index = 0 ; index < caps.length ; index++ ) {
-            System.err.println( names[ index ] + ": " + ( ( GL11 ) gl ).glIsEnabled( caps[ index ] ) );
+            System.err.println( names[ index ] + ": " + GLES11.glIsEnabled( caps[ index ] ) );
         }
     }
 
