@@ -103,6 +103,11 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
+    public String getThumnailPath( final long id , final int page ) {
+        return null; // unimplemented.
+    }
+
+    @Override
     public boolean isCompleted( final long id ) {
         // Use database?
         final Long[] completed = getJsonInfo( _pathManager.getCompletedInfoPath() , Long[].class );
