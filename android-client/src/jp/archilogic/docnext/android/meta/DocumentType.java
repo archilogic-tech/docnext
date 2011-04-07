@@ -21,7 +21,7 @@ public enum DocumentType {
         case TOC:
             return new TOCView( context );
         default:
-            throw new RuntimeException();
+            return null;
         }
     }
 }
