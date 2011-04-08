@@ -22,7 +22,6 @@ public enum FragmentType {
         final ImageView image = new ImageView( context );
         image.setId( R.id.bookmark );
         image.setImageResource( getImageResouce() );
-        image.setLayoutParams( new LinearLayout.LayoutParams( 48 , 48 ) );
         root.addView( image );
 
         final TextView text = new TextView( context );
