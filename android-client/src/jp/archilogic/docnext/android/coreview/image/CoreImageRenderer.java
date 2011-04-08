@@ -12,6 +12,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnPageChangeListener;
+import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnPageChangedListener;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChangeListener;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
@@ -105,14 +106,21 @@ public class CoreImageRenderer implements Renderer {
         @Override
         public void onPageChange( final int page ) {
             _imageLoadQueue.setPage( page );
-            _context.sendBroadcast( new Intent( BROADCAST_PAGE_CHANGED ) );
         }
     };
 
+    private final OnPageChangedListener _pageChangedListener = new OnPageChangedListener() {
+        @Override
+        public void onPageChanged( final int page ) {
+            _context.sendBroadcast( new Intent( BROADCAST_PAGE_CHANGED ) );
+        }
+    };
+    
     public CoreImageRenderer( final Context context ) {
         _context = context;
         _state.setPageLoader( _loader );
         _state.setOnPageChangeListener( _pageChangeListener );
+        _state.setOnPageChangedListener( _pageChangedListener );
     }
 
     void beginInteraction() {
