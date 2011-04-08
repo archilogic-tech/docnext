@@ -108,6 +108,20 @@ public class ViewerController {
             throw new RuntimeException( e );
         }
     }
+    
+    @RequestMapping( "/viewer/getThumbnail" )
+    public void getThumbnail( @RequestParam( "id" ) final long id , @RequestParam( "page") final int page , 
+            final HttpServletResponse res )  {
+        try {
+            final InputStream in =
+                FileUtils.openInputStream( new File( repositoryManager.getThumbnailPath( id , page )));
+            
+            IOUtils.copy( in , res.getOutputStream() );
+            IOUtils.closeQuietly( in );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
 
     @RequestMapping( "/viewer/getTOC" )
     @ResponseBody
