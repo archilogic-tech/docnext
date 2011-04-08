@@ -6,10 +6,15 @@ import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.HasPage;
+import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.type.FragmentType;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
@@ -25,8 +30,19 @@ public class CoreViewMenuHolder {
     private final CoreView _view;
     private final View _menuView;
     private View _bookmarkMenuItem;
+    
+    private final String TAG = "CoreViewMenuHolder";
 
     private final long[] _ids;
+
+    private final BroadcastReceiver _pageChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive( final Context context , final Intent intent ) {
+            Log.d( TAG , "onReceive" );
+            bindBookmarkMenuItemIcon();
+        }
+    };
+    
 
     CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
             final DocumentType type ) {
@@ -35,6 +51,8 @@ public class CoreViewMenuHolder {
         _ids = ids;
 
         _menuView = buildMenu( type );
+
+        activity.registerReceiver( _pageChangeReceiver , new IntentFilter( CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
     }
 
     private void bindBookmarkMenuItemIcon() {
@@ -51,7 +69,7 @@ public class CoreViewMenuHolder {
         image.setImageResource( bookmark.contains( page ) ? R.drawable.button_bookmark_on
                 : R.drawable.button_bookmark_off );
     }
-
+    
     private View buildMenu( final DocumentType type ) {
         final LinearLayout root = new LinearLayout( _activity );
 

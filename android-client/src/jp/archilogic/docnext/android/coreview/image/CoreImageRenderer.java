@@ -17,6 +17,7 @@ import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.opengl.GLES10;
 import android.opengl.GLES11;
@@ -50,6 +51,8 @@ public class CoreImageRenderer implements Renderer {
     int _fpsCounter = 0;
     long _fpsTime;
     long _frameSum;
+    
+    public static final String BROADCAST_PAGE_CHANGED = CoreImageState.class.getName() + ".page.changed";
 
     private final PageLoader _loader = new PageLoader() {
         @Override
@@ -102,6 +105,7 @@ public class CoreImageRenderer implements Renderer {
         @Override
         public void onPageChange( final int page ) {
             _imageLoadQueue.setPage( page );
+            _context.sendBroadcast( new Intent( BROADCAST_PAGE_CHANGED ) );
         }
     };
 
