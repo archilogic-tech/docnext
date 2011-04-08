@@ -116,10 +116,7 @@ public class ThumbnailCreator {
             createTextureImage( outDir + "texture" , imagePath , page );
         }
 
-        final int[] size = getImageSize( imagePath );
-        ImageInfo info = new ImageInfo( size[ 0 ] , size[ 1 ] );
         createThumbnailImage( outDir , imagePath , page );
-        //    convertForThumbnail( outDir , imagePath , ( int )info.unitWidth , ( int )info.unitHeight , page );
 
         progressManager.setCreatedThumbnail( id , page + 1 );
 
