@@ -46,10 +46,6 @@ public class CoreImageState {
     private OnPageChangeListener _pageChangeListener = null;
 
     private void changeToNextPage() {
-        if ( _pageChangeListener != null ) {
-            _pageChangeListener.onPageChange( page + 1 );
-        }
-
         if ( page - 1 >= 0 ) {
             _loader.unload( page - 1 );
         }
@@ -60,14 +56,15 @@ public class CoreImageState {
 
         page++;
 
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page );
+        }
+
+
         direction.updateOffset( this , true );
     }
 
     private void changeToPrevPage() {
-        if ( _pageChangeListener != null ) {
-            _pageChangeListener.onPageChange( page - 1 );
-        }
-
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
         }
@@ -77,6 +74,11 @@ public class CoreImageState {
         }
 
         page--;
+
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page );
+        }
+
 
         direction.updateOffset( this , false );
     }
