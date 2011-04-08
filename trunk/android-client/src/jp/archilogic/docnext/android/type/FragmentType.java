@@ -17,10 +17,12 @@ public enum FragmentType {
         final LinearLayout root = new LinearLayout( context );
         root.setLayoutParams( new LinearLayout.LayoutParams( 0 , LinearLayout.LayoutParams.WRAP_CONTENT , 1 ) );
         root.setOrientation( LinearLayout.VERTICAL );
+        root.setGravity( Gravity.CENTER_HORIZONTAL );
 
         final ImageView image = new ImageView( context );
         image.setId( R.id.bookmark );
         image.setImageResource( getImageResouce() );
+        image.setLayoutParams( new LinearLayout.LayoutParams( 48 , 48 ) );
         root.addView( image );
 
         final TextView text = new TextView( context );
