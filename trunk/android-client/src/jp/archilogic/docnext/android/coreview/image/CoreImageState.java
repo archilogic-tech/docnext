@@ -16,6 +16,9 @@ public class CoreImageState {
     interface OnPageChangeListener {
         void onPageChange( int page );
     }
+    interface OnPageChangedListener {
+        void onPageChanged( int page );
+    }
 
     interface OnScaleChangeListener {
         /**
@@ -44,8 +47,13 @@ public class CoreImageState {
     private boolean _preventCheckChangePage = false;
     private OnScaleChangeListener _scaleChangeLisetener = null;
     private OnPageChangeListener _pageChangeListener = null;
+    private OnPageChangedListener _pageChangedListener;
 
     private void changeToNextPage() {
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page + 1 );
+        }
+
         if ( page - 1 >= 0 ) {
             _loader.unload( page - 1 );
         }
@@ -56,15 +64,18 @@ public class CoreImageState {
 
         page++;
 
-        if ( _pageChangeListener != null ) {
-            _pageChangeListener.onPageChange( page );
+        if ( _pageChangedListener != null ) {
+            _pageChangedListener.onPageChanged( page );
         }
-
 
         direction.updateOffset( this , true );
     }
 
     private void changeToPrevPage() {
+        if ( _pageChangeListener != null ) {
+            _pageChangeListener.onPageChange( page - 1);
+        }
+        
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
         }
@@ -75,10 +86,9 @@ public class CoreImageState {
 
         page--;
 
-        if ( _pageChangeListener != null ) {
-            _pageChangeListener.onPageChange( page );
+        if ( _pageChangedListener != null ) {
+            _pageChangedListener.onPageChanged( page );
         }
-
 
         direction.updateOffset( this , false );
     }
@@ -153,6 +163,10 @@ public class CoreImageState {
 
     void setOnPageChangeListener( final OnPageChangeListener l ) {
         _pageChangeListener = l;
+    }
+
+    void setOnPageChangedListener( final OnPageChangedListener l ) {
+        _pageChangedListener = l;
     }
 
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {
