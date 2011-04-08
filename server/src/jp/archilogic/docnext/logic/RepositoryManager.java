@@ -31,4 +31,8 @@ public class RepositoryManager {
     public String getTextPath( final long id , final int page ) {
         return String.format( "%s/pack/%d/texts/%d.json" , prop.repository , id , page );
     }
+
+    public String getThumbnailPath( long id , int page ) {
+        return String.format( "%s/thumb/%d/thumbnail%d.jpg" , prop.repository , id , page );
+    }
 }

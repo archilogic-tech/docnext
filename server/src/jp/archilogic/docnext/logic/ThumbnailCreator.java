@@ -62,6 +62,16 @@ public class ThumbnailCreator {
         return new ImageInfo( 1.0 * sampleWidth / SAMPLE_RESOLUTION , 1.0 * sampleHeight / SAMPLE_RESOLUTION );
     }
 
+    private void convertForThumnail( final String ppmPath , final String pngPath , int imageWidth , int imageHeight ) {
+        if ( imageWidth < imageHeight ) {
+            ProcUtil.doProc( String.format( "%s %s -format png -resize x%d %s" ,
+                   prop.convert , ppmPath , TEXTURE_SIZE / 2 , pngPath ) );
+        } else {
+            ProcUtil.doProc( String.format( "%s %s -format png -resize %d %s" ,
+                    prop.convert , ppmPath , TEXTURE_SIZE / 2 , pngPath ) );
+        }
+    }
+    
     private void convertAndResize( final String ppmPath , final String pngPath , final int width , final int height ,
             final double imageWidth , final double imageHeight , final boolean forTexture ) {
         final int borderWidth = ( int ) Math.round( ( width - imageWidth ) / 2.0 );
@@ -106,7 +116,10 @@ public class ThumbnailCreator {
             createTextureImage( outDir + "texture" , imagePath , page );
         }
 
-        // createThumbnail( outDir , pdfPath , prefix , info , page );
+        final int[] size = getImageSize( imagePath );
+        ImageInfo info = new ImageInfo( size[ 0 ] , size[ 1 ] );
+        createThumbnailImage( outDir , imagePath , page );
+        //    convertForThumbnail( outDir , imagePath , ( int )info.unitWidth , ( int )info.unitHeight , page );
 
         progressManager.setCreatedThumbnail( id , page + 1 );
 
@@ -216,6 +229,12 @@ public class ThumbnailCreator {
         }
     }
 
+    private void createThumbnailImage( final String outPath , final String imagePath , final int page ) {
+        final int[] size = getImageSize( imagePath );
+        convertForThumnail( imagePath , String.format( "%s/thumbnail%d.jpg" , outPath , page ) , size[ 0 ] , size[ 1 ] );
+    }
+
+    //private void createThum
     private void createThumbnail( final String outDir , final String pdfPath , final String prefix ,
             final ImageInfo info , final int page ) {
         final double resolution = THUMBNAIL_SIZE / Math.max( info.unitWidth , info.unitHeight );
