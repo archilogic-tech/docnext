@@ -1,5 +1,6 @@
 package jp.archilogic.docnext.android.activity;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import jp.archilogic.docnext.android.Kernel;
@@ -62,6 +63,10 @@ public class CoreViewMenuHolder {
 
         final int page = ( ( HasPage ) _view ).getPage();
 
+        if ( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) == null ) {
+            Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] , Lists.newArrayList( new ArrayList< Integer >() ) );
+        }
+        
         final Set< Integer > bookmark = Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
 
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
