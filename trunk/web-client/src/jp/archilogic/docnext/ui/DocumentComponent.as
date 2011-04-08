@@ -781,18 +781,22 @@ package jp.archilogic.docnext.ui {
             var page : int = _pageHeadHelpers[ _currentDocPos ].headToPage( _currentHead );
 
             for ( var index : int = 0 ; index < _infos[ _currentDocPos ].pages ; index++ ) {
-                if ( index < page - 2 || index > page + 3 ) {
+                if ( index < page - 2 || index > page + 7 ) {
                     delete _pages[ _currentDocPos ][ index ];
                     _pages[ _currentDocPos ][ index ] = null;
                 }
             }
-			/* Alert.show(" " + _infos[ _currentDocPos ].pages);  */
+
             loadPage( page + 2 );
             loadPage( page + 3 );
+            loadPage( page + 4 );
+            loadPage( page + 5 );
+            loadPage( page + 6 );
+            loadPage( page + 7 );
             loadPage( page - 1 );
             loadPage( page - 2 );
         }
-		
+
         private function loadPage( index : int , next : Function = null ) : void {
             if ( index >= 0 && index < _infos[ _currentDocPos ].pages && !_pages[ _currentDocPos ][ index ] ) {
                 _loadingCount++;
