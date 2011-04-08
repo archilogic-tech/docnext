@@ -134,7 +134,15 @@ package jp.archilogic.docnext.ui {
                             loadPage(loadIndex + 2 );
                             loadPage(loadIndex + 3 );
                             loadPage(loadIndex - 1 );
-                            loadPage(loadIndex - 2 ); 
+                            loadPage(loadIndex - 2 );
+                            loadPage(loadIndex + 4 );
+                            loadPage(loadIndex + 5 );
+                            loadPage(loadIndex - 3 );
+                            loadPage(loadIndex - 4 );
+                            loadPage(loadIndex + 6 );
+                            loadPage(loadIndex + 7 );
+                            loadPage(loadIndex - 5 );
+                            loadPage(loadIndex - 6 );
                         } );
                     } , true); 
                 }
@@ -789,12 +797,16 @@ package jp.archilogic.docnext.ui {
 
             loadPage( page + 2 );
             loadPage( page + 3 );
-            loadPage( page + 4 );
-            loadPage( page + 5 );
-            loadPage( page + 6 );
-            loadPage( page + 7 );
             loadPage( page - 1 );
             loadPage( page - 2 );
+            loadPage( page + 4 );
+            loadPage( page + 5 );
+            loadPage( page - 3 );
+            loadPage( page - 4 );
+            loadPage( page + 6 );
+            loadPage( page + 7 );
+            loadPage( page - 5 );
+            loadPage( page - 6 );
         }
 
         private function loadPage( index : int , next : Function = null ) : void {
