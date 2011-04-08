@@ -91,7 +91,7 @@ public class TOCView extends FrameLayout implements CoreView {
 
         @Override
         public void receive( final Void result ) {
-            List< TOCElement > tocList = Kernel.getLocalProvider().getTableOfContentsInfo( id );
+            tocList = Kernel.getLocalProvider().getTableOfContentsInfo( id );
             
             for ( TOCElement element : tocList ) {
                 tocArrayAdapter.add( element.text );
