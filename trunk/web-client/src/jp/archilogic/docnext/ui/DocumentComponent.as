@@ -22,11 +22,11 @@ package jp.archilogic.docnext.ui {
     
     import mx.collections.ArrayCollection;
     import mx.containers.Canvas;
+    import mx.controls.Alert;
+    import mx.controls.ProgressBar;
     import mx.core.IIMESupport;
     import mx.core.UIComponent;
     import mx.events.FlexEvent;
-    
-    import mx.controls.Alert;
 
     public class DocumentComponent extends Canvas {
         public function DocumentComponent() {
@@ -194,6 +194,7 @@ package jp.archilogic.docnext.ui {
         private var _isAnimating : Boolean;
         private var _mouseEventHelper : DocumentMouseEventHelper;
         private var _contextMenuHelper : ContextMenuHelper;
+        private var progress : ProgressBar;
 
         public function set changeMenuVisiblityHandler( value : Function ) : * {
             _mouseEventHelper.changeMenuVisiblityFunc = value;
@@ -632,6 +633,14 @@ package jp.archilogic.docnext.ui {
 
             /* resizeHelper = new ResizeHelper( this , resizeHandler ); */
             new ResizeHelper( this , resizeHandler );
+            
+            progress = new ProgressBar();
+            progress.indeterminate = true;
+            
+            _ui.wrapper.addChild( progress );
+            
+            progress.x = ( _ui.width - progress.width ) / 2;
+            progress.y = ( _ui.height - progress.height ) / 2;
         }
         private function set currentHead( value : int ) : * {
             _currentHead = value;
