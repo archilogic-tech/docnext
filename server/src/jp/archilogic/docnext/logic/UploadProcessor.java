@@ -73,7 +73,8 @@ public class UploadProcessor {
         private void parseText( final String cleanedPath ) {
             int page = 0;
             for ( final PageTextInfo pageTextInfo : pdfTextParser.parse( cleanedPath ) ) {
-                packManager.writeText( doc.id , page , String.format( "<t>%s</t>" , pageTextInfo.text ) );
+                packManager.writeText( doc.id , page ,
+                        String.format( "<t>%s</t>" , pageTextInfo.text ) );
                 packManager.writeImageText( doc.id , page , pageTextInfo.text );
                 packManager.writeRegions( doc.id , page , pageTextInfo.regions );
 
@@ -102,7 +103,8 @@ public class UploadProcessor {
 
             int page = 0;
             for ( final String path : paths ) {
-                final BufferedImage image = ImageIO.read( file.getInputStream( file.getEntry( path ) ) );
+                final BufferedImage image =
+                        ImageIO.read( file.getInputStream( file.getEntry( path ) ) );
 
                 if ( width == -1 && height == -1 ) {
                     width = image.getWidth();
@@ -117,10 +119,11 @@ public class UploadProcessor {
                 final String tmpPath = prop.tmp + "/tmp.png";
 
                 final OutputStream out = new FileOutputStream( tmpPath );
-                ImageIO.write( image , "jpg" , out );
+                ImageIO.write( image , "png" , out );
                 IOUtils.closeQuietly( out );
 
-                thumbnailCreator.createFromImage( prop.repository + "/thumb/" + doc.id + "/" , tmpPath , page , doc.id );
+                thumbnailCreator.createFromImage( prop.repository + "/thumb/" + doc.id + "/" ,
+                        tmpPath , page , doc.id );
 
                 page++;
             }
@@ -128,7 +131,9 @@ public class UploadProcessor {
             doc.setPages( page );
             doc.setWidth( width );
             doc.setHeight( height );
-            doc.setMaxLevel( ( int ) Math.floor( Math.log( 1.0 * width / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) ) );
+            doc.setMaxLevel( ( int ) Math.floor( Math.log( 1.0 * width
+                    / ThumbnailCreator.TEXTURE_SIZE )
+                    / Math.log( 2 ) ) );
 
             return true;
         }
@@ -151,15 +156,17 @@ public class UploadProcessor {
 
             parseAnnotation( tempPdfPath );
 
-            final String cleanedPath = FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
-                    "cleaned" + doc.id + ".pdf";
+            final String cleanedPath =
+                    FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
+                            "cleaned" + doc.id + ".pdf";
             pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
             progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
             progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
 
-            final CreateResult res = thumbnailCreator.createFromPDF( prop.repository + "/thumb/" + doc.id + "/" , //
-                    cleanedPath , ppmPath + doc.id , doc.id );
+            final CreateResult res =
+                    thumbnailCreator.createFromPDF( prop.repository + "/thumb/" + doc.id + "/" , //
+                            cleanedPath , ppmPath + doc.id , doc.id );
 
             packManager.copyThumbnails( doc.id );
             packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
@@ -179,7 +186,8 @@ public class UploadProcessor {
             try {
                 progressManager.setStep( doc.id , Step.INITIALIZING );
 
-                FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/" + doc.id ) );
+                FileUtils.copyFile( new File( tempPath ) , new File( prop.repository + "/raw/"
+                        + doc.id ) );
 
                 if ( doc.getFileName().endsWith( ".zip" ) ) {
                     if ( !procArchive() ) {
@@ -206,7 +214,8 @@ public class UploadProcessor {
                     return tempPath;
                 } else {
                     final String tempDir = FilenameUtils.getFullPathNoEndSeparator( tempPath );
-                    final String tempPdfPath = tempDir + File.separator + "temp" + documentId + ".pdf";
+                    final String tempPdfPath =
+                            tempDir + File.separator + "temp" + documentId + ".pdf";
                     converter.convert( new File( tempPath ) , new File( tempPdfPath ) );
                     return tempPdfPath;
                 }
