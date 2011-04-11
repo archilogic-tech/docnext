@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.activity;
+package jp.archilogic.docnext.android.widget;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -7,17 +7,11 @@ import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.HasPage;
-import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.type.FragmentType;
-import jp.archilogic.docnext.android.util.AnimationUtils2;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,73 +19,61 @@ import android.widget.LinearLayout;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class CoreViewMenuHolder {
-    private final CoreViewActivity _activity;
+public class CoreViewMenu extends LinearLayout {
+    public interface CoreViewMenuDelegate {
+        void changeCoreViewType( DocumentType type , Intent intent );
 
-    private final CoreView _view;
-    private final View _menuView;
-    private View _bookmarkMenuItem;
+        void finish();
 
-    private final String TAG = "CoreViewMenuHolder";
-
-    private final long[] _ids;
-
-    private final BroadcastReceiver _pageChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive( final Context context , final Intent intent ) {
-            Log.d( TAG , "onReceive" );
-            bindBookmarkMenuItemIcon();
-        }
-    };
-
-    CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
-            final DocumentType type ) {
-        _activity = activity;
-        _view = view;
-        _ids = ids;
-
-        _menuView = buildMenu( type );
-
-        activity.registerReceiver( _pageChangeReceiver , new IntentFilter(
-                CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
+        CoreView getCoreView();
     }
 
+    private final long _id;
+    private final CoreViewMenuDelegate _delegate;
+
+    private View _bookmarkMenuItem;
+
+    public CoreViewMenu( final Context context , final DocumentType type , final long id ,
+            final CoreViewMenuDelegate delegate ) {
+        super( context );
+
+        _id = id;
+        _delegate = delegate;
+
+        initialize( type );
+    }
+
+    // private void CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
+    // final DocumentType type ) {
+    // _activity = activity;
+    // _view = view;
+    // _ids = ids;
+
+    // _menuView = buildMenu( type );
+
+    // activity.registerReceiver( _pageChangeReceiver , new IntentFilter(
+    // CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
+    // }
+
     private void bindBookmarkMenuItemIcon() {
-        if ( !( _view instanceof HasPage ) ) {
+        if ( !( _delegate.getCoreView() instanceof HasPage ) ) {
             return;
         }
 
-        final int page = ( ( HasPage ) _view ).getPage();
+        final int page = ( ( HasPage ) _delegate.getCoreView() ).getPage();
 
-        if ( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) == null ) {
-            Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] ,
+        if ( Kernel.getLocalProvider().getBookmarkInfo( _id ) == null ) {
+            Kernel.getLocalProvider().setBookmarkInfo( _id ,
                     Lists.newArrayList( new ArrayList< Integer >() ) );
         }
 
         final Set< Integer > bookmark =
-                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
+                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _id ) );
 
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
 
         image.setImageResource( bookmark.contains( page ) ? R.drawable.button_bookmark_on
                 : R.drawable.button_bookmark_off );
-    }
-
-    private View buildMenu( final DocumentType type ) {
-        final LinearLayout root = new LinearLayout( _activity );
-
-        root.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
-                FrameLayout.LayoutParams.WRAP_CONTENT ) );
-        root.setOrientation( LinearLayout.VERTICAL );
-        root.setBackgroundColor( 0x80000000 );
-        root.setPadding( dp( 5 ) , dp( 10 ) , dp( 5 ) , dp( 10 ) );
-        root.setVisibility( View.GONE );
-
-        buildPrimaryMenu( type , root );
-        root.addView( buildSpacer( 0 , dp( 10 ) , 0 ) );
-        buildSecondaryMenu( type , root );
-
-        return root;
     }
 
     private OnClickListener buildMenuClickListener( final FragmentType type ) {
@@ -101,7 +83,7 @@ public class CoreViewMenuHolder {
             return new OnClickListener() {
                 @Override
                 public void onClick( final View v ) {
-                    _activity.changeCoreViewType( doc , new Intent() );
+                    _delegate.changeCoreViewType( doc , new Intent() );
                 }
             };
         } else {
@@ -110,7 +92,7 @@ public class CoreViewMenuHolder {
                 return new OnClickListener() {
                     @Override
                     public void onClick( final View v ) {
-                        _activity.finish();
+                        _delegate.finish();
                     }
                 };
             case BOOKMARK:
@@ -126,7 +108,7 @@ public class CoreViewMenuHolder {
     }
 
     private View buildMenuItem( final FragmentType type ) {
-        final View view = type.buildSwithButton( _activity );
+        final View view = type.buildSwithButton( getContext() );
 
         if ( type == FragmentType.BOOKMARK ) {
             _bookmarkMenuItem = view;
@@ -143,23 +125,23 @@ public class CoreViewMenuHolder {
         return view;
     }
 
-    private void buildPrimaryMenu( final DocumentType type , final LinearLayout root ) {
+    private void buildPrimaryMenu( final DocumentType type ) {
         final FragmentType[] primary = type.getPrimarySwitchFragment();
 
-        final LinearLayout holder = new LinearLayout( _activity );
+        final LinearLayout holder = new LinearLayout( getContext() );
 
         for ( final FragmentType fragment : primary ) {
             holder.addView( buildMenuItem( fragment ) );
         }
 
-        root.addView( holder );
+        addView( holder );
     }
 
-    private void buildSecondaryMenu( final DocumentType type , final LinearLayout root ) {
+    private void buildSecondaryMenu( final DocumentType type ) {
         final FragmentType[] secondary = type.getSecondarySwitchFragment();
         final FragmentType[] subSecondary = type.getSubSecondarySwitchFragment();
 
-        final LinearLayout holder = new LinearLayout( _activity );
+        final LinearLayout holder = new LinearLayout( getContext() );
 
         for ( final FragmentType fragment : secondary ) {
             holder.addView( buildMenuItem( fragment ) );
@@ -174,11 +156,11 @@ public class CoreViewMenuHolder {
             holder.addView( buildMenuItem( fragment ) );
         }
 
-        root.addView( holder );
+        addView( holder );
     }
 
     private View buildSpacer( final int width , final int height , final float weight ) {
-        final View view = new View( _activity );
+        final View view = new View( getContext() );
 
         view.setLayoutParams( new LinearLayout.LayoutParams( width , height , weight ) );
 
@@ -186,24 +168,37 @@ public class CoreViewMenuHolder {
     }
 
     private int dp( final float value ) {
-        final float density = _activity.getResources().getDisplayMetrics().density;
+        final float density = getResources().getDisplayMetrics().density;
 
         return Math.round( value * density );
     }
 
-    View getMenu() {
-        return _menuView;
+    private void initialize( final DocumentType type ) {
+        setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.FILL_PARENT ,
+                FrameLayout.LayoutParams.WRAP_CONTENT ) );
+        setOrientation( LinearLayout.VERTICAL );
+        setBackgroundColor( 0x80000000 );
+        setPadding( dp( 5 ) , dp( 10 ) , dp( 5 ) , dp( 10 ) );
+        setVisibility( View.GONE );
+
+        buildPrimaryMenu( type );
+        addView( buildSpacer( 0 , dp( 10 ) , 0 ) );
+        buildSecondaryMenu( type );
+    }
+
+    public void onPageChanged() {
+        bindBookmarkMenuItemIcon();
     }
 
     private void toggleBookmark() {
-        if ( !( _view instanceof HasPage ) ) {
+        if ( !( _delegate.getCoreView() instanceof HasPage ) ) {
             return;
         }
 
         final Set< Integer > bookmark =
-                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
+                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _id ) );
 
-        final int page = ( ( HasPage ) _view ).getPage();
+        final int page = ( ( HasPage ) _delegate.getCoreView() ).getPage();
 
         if ( bookmark.contains( page ) ) {
             bookmark.remove( page );
@@ -211,12 +206,8 @@ public class CoreViewMenuHolder {
             bookmark.add( page );
         }
 
-        Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] , Lists.newArrayList( bookmark ) );
+        Kernel.getLocalProvider().setBookmarkInfo( _id , Lists.newArrayList( bookmark ) );
 
         bindBookmarkMenuItemIcon();
-    }
-
-    void toggleMenu() {
-        AnimationUtils2.toggle( _activity , _menuView );
     }
 }
