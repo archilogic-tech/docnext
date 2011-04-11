@@ -7,6 +7,9 @@ import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
+import jp.archilogic.docnext.android.util.AnimationUtils2;
+import jp.archilogic.docnext.android.widget.CoreViewMenu;
+import jp.archilogic.docnext.android.widget.CoreViewMenu.CoreViewMenuDelegate;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,7 +27,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
-public class CoreViewActivity extends Activity implements CoreViewDelegate {
+public class CoreViewActivity extends Activity implements CoreViewDelegate , CoreViewMenuDelegate {
     public static final String EXTRA_IDS =
             "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
     public static final String EXTRA_PAGE = "page";
@@ -33,8 +36,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
     private ViewGroup _rootViewGroup;
     private CoreView _view;
-
-    private CoreViewMenuHolder _menu;
+    private CoreViewMenu _menu;
 
     private long[] _ids;
 
@@ -135,6 +137,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
                 } else {
                     setProgressBarVisibility( false );
                 }
+            } else if ( intent.getAction().equals( HasPage.BROADCAST_PAGE_CHANGED ) ) {
+                _menu.onPageChanged();
             }
         }
     };
@@ -143,6 +147,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         final IntentFilter filter = new IntentFilter();
 
         filter.addAction( DownloadService.BROADCAST_DOWNLOAD_PROGRESS );
+        filter.addAction( HasPage.BROADCAST_PAGE_CHANGED );
 
         return filter;
     }
@@ -163,9 +168,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
 
         // TODO hack :( -- Change to use content holder for CoreView
-        _rootViewGroup.removeView( _menu.getMenu() );
-        _menu = new CoreViewMenuHolder( _self , _view , _ids , type );
-        _rootViewGroup.addView( _menu.getMenu() );
+        _rootViewGroup.removeView( _menu );
+        _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
+        _rootViewGroup.addView( _menu );
     }
 
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
@@ -176,6 +181,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
 
         return false;
+    }
+
+    @Override
+    public CoreView getCoreView() {
+        return _view;
     }
 
     @Override
@@ -204,8 +214,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _view.setIds( _ids );
         _view.setDelegate( _self );
 
-        _menu = new CoreViewMenuHolder( _self , _view , _ids , type );
-        _rootViewGroup.addView( _menu.getMenu() );
+        _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
+        _rootViewGroup.addView( _menu );
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
@@ -268,9 +278,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     private void toggleMenu() {
-        final boolean willVisible = _menu.getMenu().getVisibility() == View.GONE;
+        final boolean willVisible = _menu.getVisibility() == View.GONE;
 
-        _menu.toggleMenu();
+        AnimationUtils2.toggle( _self , _menu );
 
         _view.onMenuVisibilityChange( willVisible );
     }

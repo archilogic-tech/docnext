@@ -11,6 +11,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnPageChangeListener;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnPageChangedListener;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChangeListener;
@@ -52,9 +53,6 @@ public class CoreImageRenderer implements Renderer {
     int _fpsCounter = 0;
     long _fpsTime;
     long _frameSum;
-
-    public static final String BROADCAST_PAGE_CHANGED = CoreImageState.class.getName()
-            + ".page.changed";
 
     private final PageLoader _loader = new PageLoader() {
         @Override
@@ -117,7 +115,7 @@ public class CoreImageRenderer implements Renderer {
     private final OnPageChangedListener _pageChangedListener = new OnPageChangedListener() {
         @Override
         public void onPageChanged( final int page ) {
-            _context.sendBroadcast( new Intent( BROADCAST_PAGE_CHANGED ) );
+            _context.sendBroadcast( new Intent( HasPage.BROADCAST_PAGE_CHANGED ) );
         }
     };
 
