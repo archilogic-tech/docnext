@@ -43,8 +43,9 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
 
     private boolean _cancelled = false;
 
-    LoadBitmapTask( final CoreImageState engine , final int page , final int level , final int px , final int py ,
-            final Map< Integer , List< LoadBitmapTask > > tasks , final Queue< LoadBitmapTask > queue ) {
+    LoadBitmapTask( final CoreImageState engine , final int page , final int level , final int px ,
+            final int py , final Map< Integer , List< LoadBitmapTask > > tasks ,
+            final Queue< LoadBitmapTask > queue ) {
         _engine = engine;
         this.page = page;
         this.level = level;
@@ -70,8 +71,10 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
         BufferedInputStream in = null;
         try {
             in =
-                    new BufferedInputStream( FileUtils.openInputStream( new File( Kernel.getLocalProvider()
-                            .getImagePath( _engine.id , page , level , px , py ) ) ) , 8 * 1024 );
+                    new BufferedInputStream(
+                            FileUtils.openInputStream( new File( Kernel.getLocalProvider()
+                                    .getImagePath( _engine.id , page , level , px , py ) ) ) ,
+                            8 * 1024 );
 
             final Options o = new Options();
             o.inPreferredConfig = Config.RGB_565;

@@ -92,13 +92,15 @@ public class CoreImageRenderer implements Renderer {
                 _tasks.remove( page );
             }
 
-            // unbind all
-            final int[][] dimen = _renderEngine.getTextureDimension( page );
-            for ( int level = 0 ; level < _state.nLevel ; level++ ) {
-                for ( int py = 0 ; py < dimen[ level ][ 1 ] ; py++ ) {
-                    for ( int px = 0 ; px < dimen[ level ][ 0 ] ; px++ ) {
-                        _unbindQueue.add( new LoadBitmapTask( null , page , level , px , py , null ,
-                                null ) );
+            synchronized ( _unbindQueue ) {
+                // unbind all
+                final int[][] dimen = _renderEngine.getTextureDimension( page );
+                for ( int level = 0 ; level < _state.nLevel ; level++ ) {
+                    for ( int py = 0 ; py < dimen[ level ][ 1 ] ; py++ ) {
+                        for ( int px = 0 ; px < dimen[ level ][ 0 ] ; px++ ) {
+                            _unbindQueue.add( new LoadBitmapTask( null , page , level , px , py ,
+                                    null , null ) );
+                        }
                     }
                 }
             }
@@ -162,8 +164,10 @@ public class CoreImageRenderer implements Renderer {
             _renderEngine.bindPageImage( _bindQueue.poll() );
         }
 
-        while ( !_unbindQueue.isEmpty() ) {
-            _renderEngine.unbindPageImage( _unbindQueue.poll() );
+        synchronized ( _unbindQueue ) {
+            while ( !_unbindQueue.isEmpty() ) {
+                _renderEngine.unbindPageImage( _unbindQueue.poll() );
+            }
         }
 
         _state.update();
