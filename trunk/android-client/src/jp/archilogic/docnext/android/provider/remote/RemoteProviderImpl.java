@@ -59,4 +59,12 @@ public class RemoteProviderImpl implements RemoteProvider {
         return new DownloadTask( context , receiver , _remotePathManager.getTextPath( id , page ) ,
                 _localPathManager.getTextPath( id , page ) );
     }
+
+    @Override
+    public DownloadTask getThumnail( final Context context , final Receiver< Void > receiver , final long id , final int  page ) {
+        _localPathManager.ensureImageDir( id );
+
+       return new DownloadTask( context , receiver , _remotePathManager.getThumnailPath( id , page ) ,
+                _localPathManager.getThumnailPath( id , page ));
+    }
 }

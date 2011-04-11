@@ -58,6 +58,7 @@ public class DownloadService extends Service {
             switch ( _doc.types[ index ] ) {
             case IMAGE:
                 ensureImageInfo( index );
+                ensureThumbnail( _id , 0 );
                 break;
             case TEXT:
                 ensureFont( index );
@@ -189,6 +190,24 @@ public class DownloadService extends Service {
             } , _id , page ).execute();
         } else {
             checkDockInfo( index + 1 );
+        }
+    }
+
+    private void ensureThumbnail( final long id , final int page ) {
+        DocInfo doc = Kernel.getLocalProvider().getDocInfo( _id );
+
+        if ( page < doc.pages ) {
+            if ( Kernel.getLocalProvider().getThumnailPath( _id , page ) != null ) {
+                ensureThumbnail( id , page + 1 );
+            } else {
+                Kernel.getRemoteProvider()
+                        .getThumnail( getApplicationContext() , new DownloadReceiver() {
+                            @Override
+                            public void receive( final Void result ) {
+                                ensureThumbnail( id , page + 1 );
+                            }
+                        } , id , page ).execute();
+            }
         }
     }
 

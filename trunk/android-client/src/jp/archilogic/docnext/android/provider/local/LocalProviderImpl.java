@@ -104,7 +104,12 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public String getThumnailPath( final long id , final int page ) {
-        return null; // unimplemented.
+        String path = _pathManager.getThumnailPath( id , page );
+        
+        if ( ( new File( path ) ).exists() ) {
+            return path;
+        }
+        return null;
     }
 
     @Override
