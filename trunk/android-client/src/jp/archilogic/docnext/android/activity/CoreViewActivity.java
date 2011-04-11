@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,11 +57,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         @Override
         public void onLongPress( final MotionEvent e ) {
-            final boolean willVisible = _menu.getMenu().getVisibility() == View.GONE;
-
-            _menu.toggleMenu();
-
-            _view.onMenuVisibilityChange( willVisible );
+            toggleMenu();
         }
 
         @Override
@@ -216,6 +213,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
     }
 
     @Override
+    public boolean onCreateOptionsMenu( final Menu menu ) {
+        return true;
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
@@ -227,6 +229,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         super.onPause();
 
         _view.onPause();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu( final Menu menu ) {
+        toggleMenu();
+
+        return true;
     }
 
     @Override
@@ -256,6 +265,14 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         _gestureDetector.onTouchEvent( event );
 
         return true;
+    }
+
+    private void toggleMenu() {
+        final boolean willVisible = _menu.getMenu().getVisibility() == View.GONE;
+
+        _menu.toggleMenu();
+
+        _view.onMenuVisibilityChange( willVisible );
     }
 
     private DocumentType validateCoreViewType( final long[] ids ) {
