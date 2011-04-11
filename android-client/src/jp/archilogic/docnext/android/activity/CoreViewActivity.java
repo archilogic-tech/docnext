@@ -24,7 +24,8 @@ import android.view.Window;
 import android.widget.FrameLayout;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate {
-    public static final String EXTRA_IDS = "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
+    public static final String EXTRA_IDS =
+            "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
     public static final String EXTRA_PAGE = "page";
 
     private final CoreViewActivity _self = this;
@@ -46,8 +47,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
 
         @Override
-        public boolean onFling( final MotionEvent e1 , final MotionEvent e2 , final float velocityX ,
-                final float velocityY ) {
+        public boolean onFling( final MotionEvent e1 , final MotionEvent e2 ,
+                final float velocityX , final float velocityY ) {
             _view.onFlingGesture( new PointF( velocityX , velocityY ) );
 
             return true;
@@ -58,8 +59,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
 
         @Override
-        public boolean onScroll( final MotionEvent e1 , final MotionEvent e2 , final float distanceX ,
-                final float distanceY ) {
+        public boolean onScroll( final MotionEvent e1 , final MotionEvent e2 ,
+                final float distanceX , final float distanceY ) {
             _view.onDragGesture( new PointF( distanceX , distanceY ) );
 
             return true;
@@ -102,23 +103,25 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
         }
     };
 
-    private final OnScaleGestureWrapperListener _scaleGestureListener = new OnScaleGestureWrapperListener() {
-        @Override
-        public boolean onScale( final ScaleGestureDetectorWrapper detector ) {
-            _view.onZoomGesture( detector.getScaleFactor() , new PointF( detector.getFocusX() , detector.getFocusY() ) );
+    private final OnScaleGestureWrapperListener _scaleGestureListener =
+            new OnScaleGestureWrapperListener() {
+                @Override
+                public boolean onScale( final ScaleGestureDetectorWrapper detector ) {
+                    _view.onZoomGesture( detector.getScaleFactor() ,
+                            new PointF( detector.getFocusX() , detector.getFocusY() ) );
 
-            return true;
-        }
+                    return true;
+                }
 
-        @Override
-        public boolean onScaleBegin( final ScaleGestureDetectorWrapper detector ) {
-            return true;
-        }
+                @Override
+                public boolean onScaleBegin( final ScaleGestureDetectorWrapper detector ) {
+                    return true;
+                }
 
-        @Override
-        public void onScaleEnd( final ScaleGestureDetectorWrapper detector ) {
-        }
-    };
+                @Override
+                public void onScaleEnd( final ScaleGestureDetectorWrapper detector ) {
+                }
+            };
 
     private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
         @Override

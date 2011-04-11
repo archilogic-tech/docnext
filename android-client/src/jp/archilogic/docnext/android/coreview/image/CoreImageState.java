@@ -13,11 +13,12 @@ import android.view.animation.Interpolator;
  * Handle non-OpenGL parameters
  */
 public class CoreImageState {
-    interface OnPageChangeListener {
-        void onPageChange( int page );
-    }
     interface OnPageChangedListener {
         void onPageChanged( int page );
+    }
+
+    interface OnPageChangeListener {
+        void onPageChange( int page );
     }
 
     interface OnScaleChangeListener {
@@ -73,9 +74,9 @@ public class CoreImageState {
 
     private void changeToPrevPage() {
         if ( _pageChangeListener != null ) {
-            _pageChangeListener.onPageChange( page - 1);
+            _pageChangeListener.onPageChange( page - 1 );
         }
-        
+
         if ( page + 1 < pages ) {
             _loader.unload( page + 1 );
         }
@@ -105,8 +106,9 @@ public class CoreImageState {
 
     void doubleTap( final PointF point ) {
         _cleanup =
-                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , _minScale , _maxScale , point ,
-                        new SizeFInfo( getHorizontalPadding() , getVerticalPadding() ) );
+                CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , _minScale ,
+                        _maxScale , point , new SizeFInfo( getHorizontalPadding() ,
+                                getVerticalPadding() ) );
 
         onScaleChange( _cleanup.dstScale );
     }
@@ -114,11 +116,13 @@ public class CoreImageState {
     void drag( final PointF delta ) {
         final float EPS = 0.1f;
 
-        if ( surfaceSize.width + EPS >= pageSize.width * matrix.scale && !direction.canMoveHorizontal() ) {
+        if ( surfaceSize.width + EPS >= pageSize.width * matrix.scale
+                && !direction.canMoveHorizontal() ) {
             delta.x = 0;
         }
 
-        if ( surfaceSize.height + EPS >= pageSize.height * matrix.scale && !direction.canMoveVertical() ) {
+        if ( surfaceSize.height + EPS >= pageSize.height * matrix.scale
+                && !direction.canMoveVertical() ) {
             delta.y = 0;
         }
 
@@ -133,15 +137,19 @@ public class CoreImageState {
     }
 
     float getHorizontalPadding() {
-        return Math.max( surfaceSize.width - pageSize.width * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
+        return Math.max( surfaceSize.width - pageSize.width * Math.max( matrix.scale , _minScale ) ,
+                0 ) / 2f;
     }
 
     float getVerticalPadding() {
-        return Math.max( surfaceSize.height - pageSize.height * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
+        return Math.max(
+                surfaceSize.height - pageSize.height * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
     }
 
     void initScale() {
-        matrix.scale = Math.min( 1f * surfaceSize.width / pageSize.width , 1f * surfaceSize.height / pageSize.height );
+        matrix.scale =
+                Math.min( 1f * surfaceSize.width / pageSize.width , 1f * surfaceSize.height
+                        / pageSize.height );
 
         _minScale = matrix.scale;
         _maxScale = ( float ) Math.pow( 2 , nLevel - 1 );
@@ -157,16 +165,17 @@ public class CoreImageState {
         final float EPS = ( float ) 1e-5;
 
         if ( _scaleChangeLisetener != null ) {
-            _scaleChangeLisetener.onScaleChange( scale <= _minScale + EPS , scale >= _maxScale - EPS );
+            _scaleChangeLisetener.onScaleChange( scale <= _minScale + EPS , scale >= _maxScale
+                    - EPS );
         }
-    }
-
-    void setOnPageChangeListener( final OnPageChangeListener l ) {
-        _pageChangeListener = l;
     }
 
     void setOnPageChangedListener( final OnPageChangedListener l ) {
         _pageChangedListener = l;
+    }
+
+    void setOnPageChangeListener( final OnPageChangeListener l ) {
+        _pageChangeListener = l;
     }
 
     void setOnScaleChangeListener( final OnScaleChangeListener l ) {
@@ -196,11 +205,14 @@ public class CoreImageState {
                     checkChangePage();
                 }
 
-                _cleanup = CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale , _maxScale );
+                _cleanup =
+                        CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize ,
+                                _minScale , _maxScale );
             }
 
             if ( _cleanup != null ) {
-                float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / _cleanup.duration;
+                float elapsed =
+                        1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / _cleanup.duration;
                 boolean willFinish = false;
 
                 if ( elapsed > 1f ) {
@@ -211,9 +223,11 @@ public class CoreImageState {
                 matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
                         _interpolator.getInterpolation( elapsed );
                 matrix.tx =
-                        _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX ) * _interpolator.getInterpolation( elapsed );
+                        _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX )
+                                * _interpolator.getInterpolation( elapsed );
                 matrix.ty =
-                        _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY ) * _interpolator.getInterpolation( elapsed );
+                        _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY )
+                                * _interpolator.getInterpolation( elapsed );
 
                 if ( _cleanup.shouldAdjust ) {
                     matrix.adjust( surfaceSize , pageSize );
@@ -247,9 +261,9 @@ public class CoreImageState {
 
     void zoomByLevel( final int delta ) {
         _cleanup =
-                CoreImageCleanupValue.getLevelZoomInstance( matrix , surfaceSize , _minScale , _maxScale , new PointF(
-                        surfaceSize.width / 2 , surfaceSize.height / 2 ) , new SizeFInfo( getHorizontalPadding() ,
-                        getVerticalPadding() ) , delta );
+                CoreImageCleanupValue.getLevelZoomInstance( matrix , surfaceSize , _minScale ,
+                        _maxScale , new PointF( surfaceSize.width / 2 , surfaceSize.height / 2 ) ,
+                        new SizeFInfo( getHorizontalPadding() , getVerticalPadding() ) , delta );
 
         onScaleChange( _cleanup.dstScale );
     }

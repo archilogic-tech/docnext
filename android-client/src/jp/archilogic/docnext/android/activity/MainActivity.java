@@ -31,7 +31,8 @@ public class MainActivity extends Activity {
             if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
                 final int current = intent.getIntExtra( DownloadService.EXTRA_CURRENT , -1 );
                 final int total = intent.getIntExtra( DownloadService.EXTRA_TOTAL , -1 );
-                final int imagePerPage = intent.getIntExtra( DownloadService.EXTRA_ITEM_PER_PAGE , -1 );
+                final int imagePerPage =
+                        intent.getIntExtra( DownloadService.EXTRA_ITEM_PER_PAGE , -1 );
 
                 if ( current < total ) {
                     setProgress( Window.PROGRESS_END * current / total );
@@ -44,11 +45,13 @@ public class MainActivity extends Activity {
                     setProgressBarVisibility( false );
                 }
             } else if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_FAILED ) ) {
-                final TaskErrorType error = ( TaskErrorType ) intent.getSerializableExtra( DownloadService.EXTRA_ERROR );
+                final TaskErrorType error =
+                        ( TaskErrorType ) intent.getSerializableExtra( DownloadService.EXTRA_ERROR );
 
                 switch ( error ) {
                 case NETWORK_UNAVAILABLE:
-                    Toast.makeText( _self , R.string.network_unavailable , Toast.LENGTH_LONG ).show();
+                    Toast.makeText( _self , R.string.network_unavailable , Toast.LENGTH_LONG )
+                            .show();
                     break;
                 case NETWORK_ERROR:
                     Toast.makeText( _self , R.string.network_error , Toast.LENGTH_LONG ).show();
@@ -85,6 +88,18 @@ public class MainActivity extends Activity {
                 requestDocument( 2 );
             }
         } );
+        findViewById( R.id.button1 ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                requestDocument( 10 );
+            }
+        } );
+        findViewById( R.id.button2 ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                requestDocument( 12 );
+            }
+        } );
         findViewById( R.id.reset ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
@@ -113,7 +128,8 @@ public class MainActivity extends Activity {
                     && Kernel.getLocalProvider().isImageExists( doc.id , 1 ) ) {
                 startCoreView( doc );
             } else {
-                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
+                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG )
+                        .show();
             }
         } else {
             if ( Kernel.getAppStateManager().getDownloadTarget() == -1 ) {
@@ -121,13 +137,14 @@ public class MainActivity extends Activity {
 
                 startService( new Intent( _self , DownloadService.class ) );
             } else {
-                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG ).show();
+                Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG )
+                        .show();
             }
         }
     }
 
     private void startCoreView( final DocInfo doc ) {
-        startActivity( new Intent( _self , CoreViewActivity.class ).putExtra( CoreViewActivity.EXTRA_IDS ,
-                new long[] { doc.id } ) );
+        startActivity( new Intent( _self , CoreViewActivity.class ).putExtra(
+                CoreViewActivity.EXTRA_IDS , new long[] { doc.id } ) );
     }
 }
