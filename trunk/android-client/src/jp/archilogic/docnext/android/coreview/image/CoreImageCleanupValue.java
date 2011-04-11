@@ -6,17 +6,19 @@ import android.graphics.PointF;
 import android.os.SystemClock;
 
 public class CoreImageCleanupValue {
-    private static final long DURATION_SHORT = 200L;
+    private static final long DURATION_SHORT = 400L;
     private static final long DURATION_LONG = 500L;
 
-    static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final float minScale , final float maxScale , final PointF point , final SizeFInfo padding ) {
+    static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix ,
+            final SizeInfo surface , final float minScale , final float maxScale ,
+            final PointF point , final SizeFInfo padding ) {
         float scale;
 
         if ( matrix.scale < maxScale ) {
             // 1.01 for rounding
             final float delta =
-                    ( float ) Math.pow( maxScale / minScale , 1.01 / getNumberOfZoomLevel( minScale , maxScale ) );
+                    ( float ) Math.pow( maxScale / minScale ,
+                            1.01 / getNumberOfZoomLevel( minScale , maxScale ) );
 
             scale = Math.min( maxScale , delta * matrix.scale );
         } else {
@@ -26,38 +28,44 @@ public class CoreImageCleanupValue {
         return getZoomInstance( matrix , surface , point , padding , scale );
     }
 
-    static CoreImageCleanupValue getFlingInstance( final CoreImageMatrix matrix , final PointF velocity ) {
-        return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx + velocity.x / 4 , matrix.ty + velocity.y
-                / 4 , true , DURATION_LONG );
+    static CoreImageCleanupValue getFlingInstance( final CoreImageMatrix matrix ,
+            final PointF velocity ) {
+        return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx + velocity.x / 3 ,
+                matrix.ty + velocity.y / 3 , true , DURATION_LONG );
     }
 
-    static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final SizeInfo page , final float minScale , final float maxScale ) {
-        if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 ) || //
-                matrix.ty < Math.min( surface.height - page.height * matrix.scale , 0 ) || //
-                matrix.tx > 0 || matrix.ty > 0 || matrix.scale < minScale || matrix.scale > maxScale ) {
+    static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix ,
+            final SizeInfo surface , final SizeInfo page , final float minScale ,
+            final float maxScale ) {
+        if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 )
+                || matrix.ty < Math.min( surface.height - page.height * matrix.scale , 0 )
+                || matrix.tx > 0 || matrix.ty > 0 || matrix.scale < minScale
+                || matrix.scale > maxScale ) {
             if ( matrix.scale < minScale ) {
-                return new CoreImageCleanupValue( matrix , minScale , 0 , 0 , false , DURATION_SHORT ).adjust( surface ,
-                        page );
+                return new CoreImageCleanupValue( matrix , minScale , 0 , 0 , false ,
+                        DURATION_SHORT ).adjust( surface , page );
             } else if ( matrix.scale > maxScale ) {
                 return new CoreImageCleanupValue( matrix , maxScale ,
-                        ( maxScale * matrix.tx - ( maxScale - matrix.scale ) * surface.width / 2 ) / matrix.scale ,
-                        ( maxScale * matrix.ty - ( maxScale - matrix.scale ) * surface.height / 2 ) / matrix.scale ,
-                        false , DURATION_SHORT ).adjust( surface , page );
+                        ( maxScale * matrix.tx - ( maxScale - matrix.scale ) * surface.width / 2 )
+                                / matrix.scale ,
+                        ( maxScale * matrix.ty - ( maxScale - matrix.scale ) * surface.height / 2 )
+                                / matrix.scale , false , DURATION_SHORT ).adjust( surface , page );
             } else {
-                return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx , matrix.ty , false ,
-                        DURATION_SHORT ).adjust( surface , page );
+                return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx , matrix.ty ,
+                        false , DURATION_SHORT ).adjust( surface , page );
             }
         } else {
             return null;
         }
     }
 
-    static CoreImageCleanupValue getLevelZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final float minScale , final float maxScale , final PointF point , final SizeFInfo padding , final int delta ) {
+    static CoreImageCleanupValue getLevelZoomInstance( final CoreImageMatrix matrix ,
+            final SizeInfo surface , final float minScale , final float maxScale ,
+            final PointF point , final SizeFInfo padding , final int delta ) {
         // 1.01 for rounding
         final float scaleDelta =
-                ( float ) Math.pow( maxScale / minScale , 1.01 / getNumberOfZoomLevel( minScale , maxScale ) * delta );
+                ( float ) Math.pow( maxScale / minScale ,
+                        1.01 / getNumberOfZoomLevel( minScale , maxScale ) * delta );
 
         final float scale = Math.max( minScale , Math.min( maxScale , scaleDelta * matrix.scale ) );
 
@@ -68,11 +76,13 @@ public class CoreImageCleanupValue {
         return ( int ) Math.floor( Math.log( maxScale / minScale ) / Math.log( 2 ) );
     }
 
-    private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix , final SizeInfo surface ,
-            final PointF point , final SizeFInfo padding , final float scale ) {
+    private static CoreImageCleanupValue getZoomInstance( final CoreImageMatrix matrix ,
+            final SizeInfo surface , final PointF point , final SizeFInfo padding ,
+            final float scale ) {
         return new CoreImageCleanupValue( matrix , scale , scale / matrix.scale
-                * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2 , scale / matrix.scale
-                * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2 , true , DURATION_SHORT );
+                * ( matrix.tx - ( point.x - padding.width ) ) + surface.width / 2 , scale
+                / matrix.scale * ( matrix.ty - ( point.y - padding.height ) ) + surface.height / 2 ,
+                true , DURATION_SHORT );
     }
 
     float srcScale;
@@ -86,8 +96,8 @@ public class CoreImageCleanupValue {
     long start;
     long duration;
 
-    private CoreImageCleanupValue( final CoreImageMatrix matrix , final float dstScale , final float dstX ,
-            final float dstY , final boolean shouldAdjust , final long duration ) {
+    private CoreImageCleanupValue( final CoreImageMatrix matrix , final float dstScale ,
+            final float dstX , final float dstY , final boolean shouldAdjust , final long duration ) {
         copy( matrix );
 
         this.dstScale = dstScale;

@@ -81,7 +81,8 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
         @Override
         public void onClick( final View v ) {
             _config.direction =
-                    TextDocDirection.values()[ ( _config.direction.ordinal() + 1 ) % TextDocDirection.values().length ];
+                    TextDocDirection.values()[ ( _config.direction.ordinal() + 1 )
+                            % TextDocDirection.values().length ];
 
             _callback.setConfig( _config );
         }
@@ -94,7 +95,8 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
         assignWidget();
 
-        final BitmapDrawable backgroundDrawable = ( BitmapDrawable ) getResources().getDrawable( R.drawable.background );
+        final BitmapDrawable backgroundDrawable =
+                ( BitmapDrawable ) getResources().getDrawable( R.drawable.background );
         final Bitmap background = backgroundDrawable.getBitmap();
 
         _surfaceView.getHolder().addCallback( _callback = new CoreTextCallback( background ) );
@@ -149,6 +151,15 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
     }
 
     @Override
+    public void onMenuVisibilityChange( final boolean isMenuVisible ) {
+        final boolean willVisible = _menuView.getVisibility() == GONE;
+
+        if ( isMenuVisible == willVisible ) {
+            AnimationUtils2.toggle( getContext() , _menuView );
+        }
+    }
+
+    @Override
     public void onPause() {
     }
 
@@ -158,7 +169,6 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void onTapGesture( final PointF point ) {
-        AnimationUtils2.toggle( getContext() , _menuView );
     }
 
     @Override

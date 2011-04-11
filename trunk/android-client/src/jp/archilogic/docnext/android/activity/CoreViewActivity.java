@@ -56,6 +56,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
 
         @Override
         public void onLongPress( final MotionEvent e ) {
+            final boolean willVisible = _menu.getMenu().getVisibility() == View.GONE;
+
+            _menu.toggleMenu();
+
+            _view.onMenuVisibilityChange( willVisible );
         }
 
         @Override
@@ -96,8 +101,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate {
             // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
             _view.onGestureEnd();
             _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
-
-            _menu.toggleMenu();
 
             return true;
         }
