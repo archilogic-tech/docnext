@@ -38,15 +38,13 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 public class ThumnailView extends FrameLayout implements CoreView {
-    private long id = 0;
-
     public class ThumnailImageAdapter extends BaseAdapter {
         private int count = 0;
-        private LocalProvider provider = Kernel.getLocalProvider();
-        private LocalPathManager pathManager = new LocalPathManager();
+        private final LocalProvider provider = Kernel.getLocalProvider();
+        private final LocalPathManager pathManager = new LocalPathManager();
         private final String TAG = "Thumnail";
 
-        public ThumnailImageAdapter(final long aId) {
+        public ThumnailImageAdapter( final long aId ) {
             id = aId;
 
             final DocInfo doc = provider.getDocInfo( id );
@@ -54,33 +52,33 @@ public class ThumnailView extends FrameLayout implements CoreView {
         }
 
         private Bitmap getBitmap( final int page ) {
-            String thumnailPath = pathManager.getThumnailPath( id , page );
-            File thumnailFile = new File( thumnailPath );
+            final String thumnailPath = pathManager.getThumnailPath( id , page );
+            final File thumnailFile = new File( thumnailPath );
             if ( thumnailFile.exists() ) {
-                Bitmap thumnailBitmap = BitmapFactory.decodeFile( thumnailPath );
+                final Bitmap thumnailBitmap = BitmapFactory.decodeFile( thumnailPath );
                 return thumnailBitmap;
             }
 
-            ImageInfo imageInfo = provider.getImageInfo( id );
-            int height = imageInfo.height;
-            int width = imageInfo.width;
-            Bitmap bigBitmap = Bitmap.createBitmap( width , height , Bitmap.Config.RGB_565 );
-            Canvas canvas = new Canvas( bigBitmap );
+            final ImageInfo imageInfo = provider.getImageInfo( id );
+            final int height = imageInfo.height;
+            final int width = imageInfo.width;
+            final Bitmap bigBitmap = Bitmap.createBitmap( width , height , Bitmap.Config.RGB_565 );
+            final Canvas canvas = new Canvas( bigBitmap );
 
             // unsure whether getImagePath is correct method for thumnail.
             InputStream in = null;
             try {
-                for ( int x = 0; x < Math.ceil( width / 512. ); x++ ) {
-                    for ( int y = 0; y < Math.ceil( height / 512. ); y++ ) {
+                for ( int x = 0 ; x < Math.ceil( width / 512. ) ; x++ ) {
+                    for ( int y = 0 ; y < Math.ceil( height / 512. ) ; y++ ) {
                         final int level = 0;
                         Log.d( TAG , String.format( "id:%d, page:%d x:%d y:%d" , id , page , x , y ) );
-                        String path = provider.getImagePath( id , page , level , x , y );
+                        final String path = provider.getImagePath( id , page , level , x , y );
                         Log.d( "thumnail" , "path: " + path );
                         if ( path == null ) {
                             break;
                         }
                         in = new FileInputStream( path );
-                        Bitmap bitmap = BitmapFactory.decodeStream( in );
+                        final Bitmap bitmap = BitmapFactory.decodeStream( in );
                         canvas.drawBitmap( bitmap , 512 * x , 512 * y , null );
                     }
                 }
@@ -90,32 +88,14 @@ public class ThumnailView extends FrameLayout implements CoreView {
                 IOUtils.closeQuietly( in );
             }
 
-            Bitmap resizedBitmap = getResizedBitmap( bigBitmap , 176 , 256 );
+            final Bitmap resizedBitmap = getResizedBitmap( bigBitmap , 176 , 256 );
             try {
-                File file = new File( thumnailPath );
-                FileOutputStream out = new FileOutputStream( file );
+                final File file = new File( thumnailPath );
+                final FileOutputStream out = new FileOutputStream( file );
                 resizedBitmap.compress( Bitmap.CompressFormat.JPEG , 90 , out );
-            } catch ( Exception exception ) {
+            } catch ( final Exception exception ) {
                 Log.e( TAG , exception.getMessage() );
             }
-            return resizedBitmap;
-        }
-
-        public Bitmap getResizedBitmap( Bitmap bitmap , int newWidth , int newHeight ) {
-
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-
-            float scaleWidth = ( (float) newWidth ) / width;
-            float scaleHeight = ( (float) newHeight ) / height;
-
-            Matrix matrix = new Matrix();
-
-            matrix.postScale( scaleWidth , scaleHeight );
-
-            Bitmap resizedBitmap = Bitmap.createBitmap( bitmap , 0 , 0 , width , height , matrix ,
-                    false );
-
             return resizedBitmap;
         }
 
@@ -134,6 +114,25 @@ public class ThumnailView extends FrameLayout implements CoreView {
             return 0;
         }
 
+        public Bitmap getResizedBitmap( final Bitmap bitmap , final int newWidth ,
+                final int newHeight ) {
+
+            final int width = bitmap.getWidth();
+            final int height = bitmap.getHeight();
+
+            final float scaleWidth = ( float ) newWidth / width;
+            final float scaleHeight = ( float ) newHeight / height;
+
+            final Matrix matrix = new Matrix();
+
+            matrix.postScale( scaleWidth , scaleHeight );
+
+            final Bitmap resizedBitmap =
+                    Bitmap.createBitmap( bitmap , 0 , 0 , width , height , matrix , false );
+
+            return resizedBitmap;
+        }
+
         @Override
         public View getView( final int position , final View convertView , final ViewGroup parent ) {
             ImageView imageView;
@@ -144,7 +143,7 @@ public class ThumnailView extends FrameLayout implements CoreView {
                 // ) , dp( 90 ) ) );
                 imageView.setScaleType( ImageView.ScaleType.FIT_CENTER );
             } else {
-                imageView = (ImageView) convertView;
+                imageView = ( ImageView ) convertView;
             }
 
             imageView.setImageBitmap( getBitmap( position ) );
@@ -156,10 +155,12 @@ public class ThumnailView extends FrameLayout implements CoreView {
         }
     }
 
-    private final GridView gridView = (GridView) findViewById( R.id.thumnail );
+    private long id = 0;
+
+    private final GridView gridView = ( GridView ) findViewById( R.id.thumnail );
     private CoreViewDelegate delegate;
 
-    public ThumnailView(final Context context) {
+    public ThumnailView( final Context context ) {
         super( context );
 
         LayoutInflater.from( context ).inflate( R.layout.thumnail , this , true );
@@ -186,6 +187,10 @@ public class ThumnailView extends FrameLayout implements CoreView {
     }
 
     @Override
+    public void onMenuVisibilityChange( final boolean isMenuVisible ) {
+    }
+
+    @Override
     public void onPause() {
     }
 
@@ -207,7 +212,7 @@ public class ThumnailView extends FrameLayout implements CoreView {
     }
 
     private void setGridView() {
-        final GridView gridview = (GridView) findViewById( R.id.thumnail );
+        final GridView gridview = ( GridView ) findViewById( R.id.thumnail );
         gridview.setAdapter( new ThumnailImageAdapter( id ) );
 
         gridView.setOnItemClickListener( new OnItemClickListener() {
@@ -220,7 +225,7 @@ public class ThumnailView extends FrameLayout implements CoreView {
             }
         } );
     }
-    
+
     @Override
     public void setIds( final long[] ids ) {
         setGridView();

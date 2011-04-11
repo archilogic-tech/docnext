@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.android.coreview.image;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer.PageLoader;
 import jp.archilogic.docnext.android.info.SizeFInfo;
@@ -49,8 +51,11 @@ public class CoreImageState {
     private OnScaleChangeListener _scaleChangeLisetener = null;
     private OnPageChangeListener _pageChangeListener = null;
     private OnPageChangedListener _pageChangedListener;
+    private final ReentrantLock _lock = new ReentrantLock();
 
     private void changeToNextPage() {
+        System.err.println( "*** changeToNextPage" );
+
         if ( _pageChangeListener != null ) {
             _pageChangeListener.onPageChange( page + 1 );
         }
@@ -95,11 +100,9 @@ public class CoreImageState {
     }
 
     private void checkChangePage() {
-        if ( direction.shouldChangeToNext( this ) && page + 1 < pages
-                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) ) ) {
+        if ( direction.shouldChangeToNext( this ) && hasNextPage() ) {
             changeToNextPage();
-        } else if ( direction.shouldChangeToPrev( this ) && page - 1 >= 0
-                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) ) ) {
+        } else if ( direction.shouldChangeToPrev( this ) && hasPrevPage() ) {
             changeToPrevPage();
         }
     }
@@ -146,6 +149,16 @@ public class CoreImageState {
                 surfaceSize.height - pageSize.height * Math.max( matrix.scale , _minScale ) , 0 ) / 2f;
     }
 
+    private boolean hasNextPage() {
+        return page + 1 < pages
+                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) );
+    }
+
+    private boolean hasPrevPage() {
+        return page - 1 >= 0
+                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) );
+    }
+
     void initScale() {
         matrix.scale =
                 Math.min( 1f * surfaceSize.width / pageSize.width , 1f * surfaceSize.height
@@ -187,76 +200,132 @@ public class CoreImageState {
     }
 
     private boolean shouldChangePage() {
-        return direction.shouldChangeToNext( this )
-                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) )
-                || direction.shouldChangeToPrev( this )
-                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) );
+        return direction.shouldChangeToNext( this ) && hasNextPage()
+                || direction.shouldChangeToPrev( this ) && hasPrevPage();
+    }
+
+    void tap( final PointF point ) {
+        System.err.println( "*** tap" );
+
+        final int THREASHOLD = 4;
+
+        int dx = 0;
+        int dy = 0;
+
+        if ( point.x < surfaceSize.width / THREASHOLD ) {
+            dx = -1;
+        }
+
+        if ( point.x > surfaceSize.width - surfaceSize.width / THREASHOLD ) {
+            dx = 1;
+        }
+
+        if ( point.y < surfaceSize.height / THREASHOLD ) {
+            dy = -1;
+        }
+
+        if ( point.y > surfaceSize.height - surfaceSize.height / THREASHOLD ) {
+            dy = 1;
+        }
+
+        final int delta = dx * direction.toXSign() + dy * direction.toYSign();
+
+        System.err.println( "*** " + delta + ", " + dx + ", " + dy );
+
+        if ( delta > 0 && hasNextPage() ) {
+            _lock.lock();
+            try {
+                changeToNextPage();
+                _preventCheckChangePage = true;
+            } finally {
+                _lock.unlock();
+            }
+        } else if ( delta < 0 && hasPrevPage() ) {
+            _lock.lock();
+            try {
+                changeToPrevPage();
+                _preventCheckChangePage = true;
+            } finally {
+                _lock.unlock();
+            }
+        }
     }
 
     /**
      * Check cleanup, Check change page, etc...
      */
     void update() {
-        if ( !isInteracting ) {
-            if ( _cleanup == null ) {
-                if ( _preventCheckChangePage ) {
-                    _preventCheckChangePage = false;
-                } else {
-                    checkChangePage();
+        _lock.lock();
+        try {
+            if ( !isInteracting ) {
+                if ( _cleanup == null ) {
+                    if ( _preventCheckChangePage ) {
+                        _preventCheckChangePage = false;
+                    } else {
+                        checkChangePage();
+                    }
+
+                    _cleanup =
+                            CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize ,
+                                    _minScale , _maxScale );
                 }
 
-                _cleanup =
-                        CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize ,
-                                _minScale , _maxScale );
+                if ( _cleanup != null ) {
+                    float elapsed =
+                            1f * ( SystemClock.elapsedRealtime() - _cleanup.start )
+                                    / _cleanup.duration;
+                    boolean willFinish = false;
+
+                    if ( elapsed > 1f ) {
+                        elapsed = 1f;
+                        willFinish = true;
+                    }
+
+                    matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
+                            _interpolator.getInterpolation( elapsed );
+                    matrix.tx =
+                            _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX )
+                                    * _interpolator.getInterpolation( elapsed );
+                    matrix.ty =
+                            _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY )
+                                    * _interpolator.getInterpolation( elapsed );
+
+                    if ( _cleanup.shouldAdjust ) {
+                        matrix.adjust( surfaceSize , pageSize );
+                    }
+
+                    if ( willFinish ) {
+                        _cleanup = null;
+                    }
+                }
+            } else {
+                _cleanup = null;
             }
-
-            if ( _cleanup != null ) {
-                float elapsed =
-                        1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / _cleanup.duration;
-                boolean willFinish = false;
-
-                if ( elapsed > 1f ) {
-                    elapsed = 1f;
-                    willFinish = true;
-                }
-
-                matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
-                        _interpolator.getInterpolation( elapsed );
-                matrix.tx =
-                        _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX )
-                                * _interpolator.getInterpolation( elapsed );
-                matrix.ty =
-                        _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY )
-                                * _interpolator.getInterpolation( elapsed );
-
-                if ( _cleanup.shouldAdjust ) {
-                    matrix.adjust( surfaceSize , pageSize );
-                }
-
-                if ( willFinish ) {
-                    _cleanup = null;
-                }
-            }
-        } else {
-            _cleanup = null;
+        } finally {
+            _lock.unlock();
         }
     }
 
     void zoom( float scaleDelta , final PointF center ) {
-        if ( matrix.scale < _minScale || matrix.scale > _maxScale ) {
-            scaleDelta = ( float ) Math.pow( scaleDelta , 0.2 );
+        _lock.lock();
+        try {
+            if ( matrix.scale < _minScale || matrix.scale > _maxScale ) {
+                scaleDelta = ( float ) Math.pow( scaleDelta , 0.2 );
+            }
+
+            matrix.scale *= scaleDelta;
+
+            final float hPad = getHorizontalPadding();
+            final float vPad = getVerticalPadding();
+            matrix.tx = scaleDelta * ( matrix.tx - ( center.x - hPad ) ) + center.x - hPad;
+            matrix.ty = scaleDelta * ( matrix.ty - ( center.y - vPad ) ) + center.y - vPad;
+
+            _preventCheckChangePage = true;
+
+            onScaleChange( matrix.scale );
+        } finally {
+            _lock.unlock();
         }
-
-        matrix.scale *= scaleDelta;
-
-        final float hPad = getHorizontalPadding();
-        final float vPad = getVerticalPadding();
-        matrix.tx = scaleDelta * ( matrix.tx - ( center.x - hPad ) ) + center.x - hPad;
-        matrix.ty = scaleDelta * ( matrix.ty - ( center.y - vPad ) ) + center.y - vPad;
-
-        _preventCheckChangePage = true;
-
-        onScaleChange( matrix.scale );
     }
 
     void zoomByLevel( final int delta ) {

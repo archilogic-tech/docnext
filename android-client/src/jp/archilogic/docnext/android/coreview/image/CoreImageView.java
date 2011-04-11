@@ -154,6 +154,15 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
     }
 
     @Override
+    public void onMenuVisibilityChange( final boolean isMenuVisible ) {
+        final boolean willVisible = _menuView.getVisibility() == GONE;
+
+        if ( isMenuVisible == willVisible ) {
+            AnimationUtils2.toggle( getContext() , _menuView );
+        }
+    }
+
+    @Override
     public void onPause() {
         _glSurfaceView.onPause();
 
@@ -173,7 +182,7 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void onTapGesture( final PointF point ) {
-        AnimationUtils2.toggle( getContext() , _menuView );
+        _renderer.tap( point );
     }
 
     @Override

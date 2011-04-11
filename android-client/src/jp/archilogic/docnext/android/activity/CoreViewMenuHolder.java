@@ -31,7 +31,7 @@ public class CoreViewMenuHolder {
     private final CoreView _view;
     private final View _menuView;
     private View _bookmarkMenuItem;
-    
+
     private final String TAG = "CoreViewMenuHolder";
 
     private final long[] _ids;
@@ -43,7 +43,6 @@ public class CoreViewMenuHolder {
             bindBookmarkMenuItemIcon();
         }
     };
-    
 
     CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
             final DocumentType type ) {
@@ -53,7 +52,8 @@ public class CoreViewMenuHolder {
 
         _menuView = buildMenu( type );
 
-        activity.registerReceiver( _pageChangeReceiver , new IntentFilter( CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
+        activity.registerReceiver( _pageChangeReceiver , new IntentFilter(
+                CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
     }
 
     private void bindBookmarkMenuItemIcon() {
@@ -64,17 +64,19 @@ public class CoreViewMenuHolder {
         final int page = ( ( HasPage ) _view ).getPage();
 
         if ( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) == null ) {
-            Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] , Lists.newArrayList( new ArrayList< Integer >() ) );
+            Kernel.getLocalProvider().setBookmarkInfo( _ids[ 0 ] ,
+                    Lists.newArrayList( new ArrayList< Integer >() ) );
         }
-        
-        final Set< Integer > bookmark = Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
+
+        final Set< Integer > bookmark =
+                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
 
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
 
         image.setImageResource( bookmark.contains( page ) ? R.drawable.button_bookmark_on
                 : R.drawable.button_bookmark_off );
     }
-    
+
     private View buildMenu( final DocumentType type ) {
         final LinearLayout root = new LinearLayout( _activity );
 
@@ -198,7 +200,8 @@ public class CoreViewMenuHolder {
             return;
         }
 
-        final Set< Integer > bookmark = Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
+        final Set< Integer > bookmark =
+                Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _ids[ 0 ] ) );
 
         final int page = ( ( HasPage ) _view ).getPage();
 
@@ -216,5 +219,4 @@ public class CoreViewMenuHolder {
     void toggleMenu() {
         AnimationUtils2.toggle( _activity , _menuView );
     }
-
 }

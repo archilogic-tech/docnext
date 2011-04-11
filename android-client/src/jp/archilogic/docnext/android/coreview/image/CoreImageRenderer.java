@@ -45,15 +45,16 @@ public class CoreImageRenderer implements Renderer {
     private final Queue< LoadBitmapTask > _bindQueue = Lists.newLinkedList();
     private final Queue< LoadBitmapTask > _unbindQueue = Lists.newLinkedList();
     private final ImageLoadQueue _imageLoadQueue = new ImageLoadQueue();
-    private final ExecutorService _executor = new ThreadPoolExecutor( 1 , 1 , 0L , TimeUnit.MILLISECONDS ,
-            _imageLoadQueue );
+    private final ExecutorService _executor = new ThreadPoolExecutor( 1 , 1 , 0L ,
+            TimeUnit.MILLISECONDS , _imageLoadQueue );
     private final Map< Integer , List< LoadBitmapTask > > _tasks = Maps.newHashMap();
 
     int _fpsCounter = 0;
     long _fpsTime;
     long _frameSum;
-    
-    public static final String BROADCAST_PAGE_CHANGED = CoreImageState.class.getName() + ".page.changed";
+
+    public static final String BROADCAST_PAGE_CHANGED = CoreImageState.class.getName()
+            + ".page.changed";
 
     private final PageLoader _loader = new PageLoader() {
         @Override
@@ -71,7 +72,8 @@ public class CoreImageRenderer implements Renderer {
                 for ( int py = 0 ; py < dimen[ level ][ 1 ] ; py++ ) {
                     for ( int px = 0 ; px < dimen[ level ][ 0 ] ; px++ ) {
                         final LoadBitmapTask task =
-                                new LoadBitmapTask( _state , page , level , px , py , _tasks , _bindQueue );
+                                new LoadBitmapTask( _state , page , level , px , py , _tasks ,
+                                        _bindQueue );
 
                         _tasks.get( page ).add( task );
                         _executor.execute( task );
@@ -95,7 +97,8 @@ public class CoreImageRenderer implements Renderer {
             for ( int level = 0 ; level < _state.nLevel ; level++ ) {
                 for ( int py = 0 ; py < dimen[ level ][ 1 ] ; py++ ) {
                     for ( int px = 0 ; px < dimen[ level ][ 0 ] ; px++ ) {
-                        _unbindQueue.add( new LoadBitmapTask( null , page , level , px , py , null , null ) );
+                        _unbindQueue.add( new LoadBitmapTask( null , page , level , px , py , null ,
+                                null ) );
                     }
                 }
             }
@@ -115,7 +118,7 @@ public class CoreImageRenderer implements Renderer {
             _context.sendBroadcast( new Intent( BROADCAST_PAGE_CHANGED ) );
         }
     };
-    
+
     public CoreImageRenderer( final Context context ) {
         _context = context;
         _state.setPageLoader( _loader );
@@ -169,8 +172,8 @@ public class CoreImageRenderer implements Renderer {
         _fpsCounter++;
         _frameSum += SystemClock.elapsedRealtime() - t;
         if ( _fpsCounter == 120 ) {
-            System.err.println( "FPS: " + 120.0 * 1000 / ( SystemClock.elapsedRealtime() - _fpsTime ) + ", avg: "
-                    + _frameSum / 120.0 );
+            System.err.println( "FPS: " + 120.0 * 1000
+                    / ( SystemClock.elapsedRealtime() - _fpsTime ) + ", avg: " + _frameSum / 120.0 );
 
             _fpsTime = SystemClock.elapsedRealtime();
             _fpsCounter = 0;
@@ -187,34 +190,39 @@ public class CoreImageRenderer implements Renderer {
         _state.surfaceSize = new SizeInfo( width , height );
         _state.initScale();
 
-        _renderEngine.prepare( _context , _state.pages , _state.nLevel , _state.pageSize , _state.surfaceSize );
+        _renderEngine.prepare( _context , _state.pages , _state.nLevel , _state.pageSize ,
+                _state.surfaceSize );
 
         _loader.load( _state.page - 1 );
         _loader.load( _state.page );
         _loader.load( _state.page + 1 );
 
         final int[] caps =
-                { GLES11.GL_ALPHA_TEST , GLES11.GL_BLEND , GLES11.GL_CLIP_PLANE0 , GLES11.GL_CLIP_PLANE1 ,
-                        GLES11.GL_CLIP_PLANE2 , GLES11.GL_CLIP_PLANE3 , GLES11.GL_CLIP_PLANE4 , GLES11.GL_CLIP_PLANE5 ,
-                        GLES11.GL_COLOR_LOGIC_OP , GLES11.GL_COLOR_MATERIAL , GLES11.GL_CULL_FACE ,
-                        GLES11.GL_DEPTH_TEST , GLES11.GL_DITHER , GLES11.GL_FOG , GLES11.GL_LIGHT0 , GLES11.GL_LIGHT1 ,
-                        GLES11.GL_LIGHT2 , GLES11.GL_LIGHT3 , GLES11.GL_LIGHT4 , GLES11.GL_LIGHT5 , GLES11.GL_LIGHT6 ,
-                        GLES11.GL_LIGHT7 , GLES11.GL_LIGHTING , GLES11.GL_LINE_SMOOTH , GLES11.GL_MULTISAMPLE ,
-                        GLES11.GL_NORMALIZE , GLES11.GL_POINT_SMOOTH , GLES11.GL_POLYGON_OFFSET_FILL ,
-                        GLES11.GL_RESCALE_NORMAL , GLES11.GL_SAMPLE_ALPHA_TO_COVERAGE , GLES11.GL_SAMPLE_ALPHA_TO_ONE ,
-                        GLES11.GL_SAMPLE_COVERAGE , GLES11.GL_SCISSOR_TEST , GLES11.GL_STENCIL_TEST ,
-                        GLES11.GL_TEXTURE_2D };
+                { GLES11.GL_ALPHA_TEST , GLES11.GL_BLEND , GLES11.GL_CLIP_PLANE0 ,
+                        GLES11.GL_CLIP_PLANE1 , GLES11.GL_CLIP_PLANE2 , GLES11.GL_CLIP_PLANE3 ,
+                        GLES11.GL_CLIP_PLANE4 , GLES11.GL_CLIP_PLANE5 , GLES11.GL_COLOR_LOGIC_OP ,
+                        GLES11.GL_COLOR_MATERIAL , GLES11.GL_CULL_FACE , GLES11.GL_DEPTH_TEST ,
+                        GLES11.GL_DITHER , GLES11.GL_FOG , GLES11.GL_LIGHT0 , GLES11.GL_LIGHT1 ,
+                        GLES11.GL_LIGHT2 , GLES11.GL_LIGHT3 , GLES11.GL_LIGHT4 , GLES11.GL_LIGHT5 ,
+                        GLES11.GL_LIGHT6 , GLES11.GL_LIGHT7 , GLES11.GL_LIGHTING ,
+                        GLES11.GL_LINE_SMOOTH , GLES11.GL_MULTISAMPLE , GLES11.GL_NORMALIZE ,
+                        GLES11.GL_POINT_SMOOTH , GLES11.GL_POLYGON_OFFSET_FILL ,
+                        GLES11.GL_RESCALE_NORMAL , GLES11.GL_SAMPLE_ALPHA_TO_COVERAGE ,
+                        GLES11.GL_SAMPLE_ALPHA_TO_ONE , GLES11.GL_SAMPLE_COVERAGE ,
+                        GLES11.GL_SCISSOR_TEST , GLES11.GL_STENCIL_TEST , GLES11.GL_TEXTURE_2D };
         final String[] names =
-                { "GL11.GL_ALPHA_TEST" , "GL11.GL_BLEND" , "GL11.GL_CLIP_PLANE0" , "GL11.GL_CLIP_PLANE1" ,
-                        "GL11.GL_CLIP_PLANE2" , "GL11.GL_CLIP_PLANE3" , "GL11.GL_CLIP_PLANE4" , "GL11.GL_CLIP_PLANE5" ,
-                        "GL11.GL_COLOR_LOGIC_OP" , "GL11.GL_COLOR_MATERIAL" , "GL11.GL_CULL_FACE" ,
-                        "GL11.GL_DEPTH_TEST" , "GL11.GL_DITHER" , "GL11.GL_FOG" , "GL11.GL_LIGHT0" , "GL11.GL_LIGHT1" ,
-                        "GL11.GL_LIGHT2" , "GL11.GL_LIGHT3" , "GL11.GL_LIGHT4" , "GL11.GL_LIGHT5" , "GL11.GL_LIGHT6" ,
-                        "GL11.GL_LIGHT7" , "GL11.GL_LIGHTING" , "GL11.GL_LINE_SMOOTH" , "GL11.GL_MULTISAMPLE" ,
-                        "GL11.GL_NORMALIZE" , "GL11.GL_POINT_SMOOTH" , "GL11.GL_POLYGON_OFFSET_FILL" ,
-                        "GL11.GL_RESCALE_NORMAL" , "GL11.GL_SAMPLE_ALPHA_TO_COVERAGE" , "GL11.GL_SAMPLE_ALPHA_TO_ONE" ,
-                        "GL11.GL_SAMPLE_COVERAGE" , "GL11.GL_SCISSOR_TEST" , "GL11.GL_STENCIL_TEST" ,
-                        "GL11.GL_TEXTURE_2D" };
+                { "GL11.GL_ALPHA_TEST" , "GL11.GL_BLEND" , "GL11.GL_CLIP_PLANE0" ,
+                        "GL11.GL_CLIP_PLANE1" , "GL11.GL_CLIP_PLANE2" , "GL11.GL_CLIP_PLANE3" ,
+                        "GL11.GL_CLIP_PLANE4" , "GL11.GL_CLIP_PLANE5" , "GL11.GL_COLOR_LOGIC_OP" ,
+                        "GL11.GL_COLOR_MATERIAL" , "GL11.GL_CULL_FACE" , "GL11.GL_DEPTH_TEST" ,
+                        "GL11.GL_DITHER" , "GL11.GL_FOG" , "GL11.GL_LIGHT0" , "GL11.GL_LIGHT1" ,
+                        "GL11.GL_LIGHT2" , "GL11.GL_LIGHT3" , "GL11.GL_LIGHT4" , "GL11.GL_LIGHT5" ,
+                        "GL11.GL_LIGHT6" , "GL11.GL_LIGHT7" , "GL11.GL_LIGHTING" ,
+                        "GL11.GL_LINE_SMOOTH" , "GL11.GL_MULTISAMPLE" , "GL11.GL_NORMALIZE" ,
+                        "GL11.GL_POINT_SMOOTH" , "GL11.GL_POLYGON_OFFSET_FILL" ,
+                        "GL11.GL_RESCALE_NORMAL" , "GL11.GL_SAMPLE_ALPHA_TO_COVERAGE" ,
+                        "GL11.GL_SAMPLE_ALPHA_TO_ONE" , "GL11.GL_SAMPLE_COVERAGE" ,
+                        "GL11.GL_SCISSOR_TEST" , "GL11.GL_STENCIL_TEST" , "GL11.GL_TEXTURE_2D" };
 
         for ( int index = 0 ; index < caps.length ; index++ ) {
             System.err.println( names[ index ] + ": " + GLES11.glIsEnabled( caps[ index ] ) );
@@ -245,6 +253,10 @@ public class CoreImageRenderer implements Renderer {
 
     void setPage( final int page ) {
         _state.page = page;
+    }
+
+    void tap( final PointF point ) {
+        _state.tap( point );
     }
 
     void zoom( final float scaleDelta , final PointF center ) {

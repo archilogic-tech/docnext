@@ -13,6 +13,8 @@ public interface CoreView {
 
     void onGestureEnd();
 
+    void onMenuVisibilityChange( boolean isMenuVisible );
+
     void onPause();
 
     void onResume();
