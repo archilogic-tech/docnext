@@ -3,7 +3,7 @@ package jp.archilogic.docnext.android.meta;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
-import jp.archilogic.docnext.android.thumnail.ThumnailView;
+import jp.archilogic.docnext.android.thumnail.GalleryView;
 import jp.archilogic.docnext.android.toc.TOCView;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
@@ -20,7 +20,8 @@ public enum DocumentType {
         case TOC:
             return new TOCView( context );
         case THUMNAIL:
-            return new ThumnailView( context );
+            //return new ThumnailView( context );
+            return new GalleryView( context );
         default:
             throw new RuntimeException();
         }
