@@ -2,6 +2,7 @@ package jp.archilogic.docnext.android.provider.local;
 
 import java.util.List;
 
+import jp.archilogic.docnext.android.info.BookmarkInfo;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TOCElement;
@@ -14,7 +15,7 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
-    List< Integer > getBookmarkInfo( long id );
+    List< BookmarkInfo > getBookmarkInfo( long id );
 
     /**
      * @return null if not exists
@@ -57,7 +58,7 @@ public interface LocalProvider {
 
     boolean isImageExists( long id , int page );
 
-    void setBookmarkInfo( long id, List< Integer > bookmarks );
+    void setBookmarkInfo( long id, List< BookmarkInfo > bookmarks );
     
     void setCompleted( long id );
 

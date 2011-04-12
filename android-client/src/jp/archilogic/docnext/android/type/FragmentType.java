@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public enum FragmentType {
-    HOME , IMAGE , TEXT , TOC , BOOKMARK , THUMNAIL , SETTING , COMMENT , SEARCH;
+    HOME , IMAGE , TEXT , TOC , BOOKMARK , THUMNAIL , SETTING , COMMENT , SEARCH , BOOKMARKLIST;
 
     public View buildSwithButton( final Context context ) {
         final LinearLayout root = new LinearLayout( context );
@@ -44,10 +44,12 @@ public enum FragmentType {
         case THUMNAIL:
             return DocumentType.THUMNAIL;
         case HOME:
-        case BOOKMARK:
+        case BOOKMARKLIST:
+            return DocumentType.BOOKMARK;
         case SETTING:
         case COMMENT:
         case SEARCH:
+        case BOOKMARK:
             return null;
         default:
             throw new RuntimeException();
@@ -65,6 +67,7 @@ public enum FragmentType {
         case TOC:
             return R.drawable.button_toc;
         case BOOKMARK:
+        case BOOKMARKLIST:
             return R.drawable.button_bookmark_off;
         case THUMNAIL:
             return R.drawable.button_thumnail;
@@ -91,6 +94,8 @@ public enum FragmentType {
             return R.string.toc;
         case BOOKMARK:
             return R.string.bookmark;
+        case BOOKMARKLIST:
+            return R.string.bookmark_list;
         case THUMNAIL:
             return R.string.thumbnail;
         case SETTING:

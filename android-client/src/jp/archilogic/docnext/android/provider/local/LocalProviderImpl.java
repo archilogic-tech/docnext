@@ -9,12 +9,15 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
+import jp.archilogic.docnext.android.info.BookmarkInfo;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.info.TextInfo;
 import net.arnx.jsonic.JSON;
+import net.arnx.jsonic.JSONException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,16 +28,46 @@ public class LocalProviderImpl implements LocalProvider {
     private final LocalPathManager _pathManager = new LocalPathManager();
 
     @Override
-    public List< Integer > getBookmarkInfo( final long id ) {
-        Integer[] bookmarks = getJsonInfo( _pathManager.getBookmarkPath( id ), Integer[].class );
-        if ( bookmarks == null ) {
-            try {
-                FileUtils.writeStringToFile( new File( _pathManager.getBookmarkPath( id ) ), "[]" );
-            } catch ( IOException e ) {
-                e.printStackTrace();
+    public List< BookmarkInfo > getBookmarkInfo( final long id ) {
+        BookmarkInfo[] bookmarks = null;
+        try {
+            bookmarks = getJsonInfo( _pathManager.getBookmarkPath( id ) , BookmarkInfo[].class );
+        } catch ( JSONException exception ) {
+            // assume json format is old
+            Integer[] array = getJsonInfo( _pathManager.getBookmarkPath( id ) , Integer[].class );
+            bookmarks = new BookmarkInfo[ array.length ];
+            for ( int i = 0 ; i < bookmarks.length ; i++ ) {
+                bookmarks[ i ] = new BookmarkInfo( array[ i ] );
             }
         }
-        return bookmarks == null ? null : Arrays.asList( bookmarks );
+        if ( bookmarks == null ) {
+            try {
+                FileUtils.writeStringToFile( new File( _pathManager.getBookmarkPath( id ) ) , "[]" );
+            } catch ( IOException e ) {
+            }
+            return null;
+        }
+        List< TOCElement > toc = getTableOfContentsInfo( id );
+        TreeSet< TOCElement > set = new TreeSet< TOCElement >();
+        if ( toc != null ) {
+            set.addAll( toc );
+        }
+        TOCElement[] array = new TOCElement[ set.size() ];
+        set.toArray( array );
+        for ( BookmarkInfo bookmark : bookmarks ) {
+            String text = "NO TITLE";
+            for ( int i = 0 ; i < array.length ; i++ ) {
+                if ( i == array.length - 1 ) {
+                    text = array[ i ].text;
+                }
+                if ( array[ i ].page <= bookmark.page && array[ i + 1 ].page >= bookmark.page ) {
+                    text = array[ i ].text;
+                    break;
+                }
+            }
+            bookmark.text = text;
+        }
+        return Arrays.asList( bookmarks );
     }
 
     @Override
@@ -134,9 +167,9 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
-    public void setBookmarkInfo( long id, List<Integer> bookmarks ) {
+    public void setBookmarkInfo( long id, List< BookmarkInfo > bookmarks ) {
         if ( bookmarks == null ) {
-            bookmarks = new ArrayList< Integer >( 0 );
+            bookmarks = new ArrayList< BookmarkInfo >( 0 );
         }
         setJsonInfo( _pathManager.getBookmarkPath( id ) , bookmarks );
     }

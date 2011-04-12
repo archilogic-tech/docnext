@@ -1,5 +1,6 @@
 package jp.archilogic.docnext.android.meta;
 
+import jp.archilogic.docnext.android.bookmark.BookmarkView;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
@@ -9,7 +10,7 @@ import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
 
 public enum DocumentType {
-    IMAGE , TEXT , TOC , THUMNAIL;
+    IMAGE , TEXT , TOC , THUMNAIL , BOOKMARK;
 
     public CoreView buildView( final Context context ) {
         switch ( this ) {
@@ -20,8 +21,9 @@ public enum DocumentType {
         case TOC:
             return new TOCView( context );
         case THUMNAIL:
-            //return new ThumnailView( context );
             return new GalleryView( context );
+        case BOOKMARK:
+            return new BookmarkView( context );
         default:
             throw new RuntimeException();
         }
@@ -31,7 +33,7 @@ public enum DocumentType {
         switch ( this ) {
         case IMAGE:
             return new FragmentType[] { FragmentType.TEXT , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMNAIL };
+                    FragmentType.THUMNAIL , FragmentType.BOOKMARKLIST };
         case TEXT:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TOC , FragmentType.BOOKMARK ,
                     FragmentType.THUMNAIL };
@@ -41,6 +43,8 @@ public enum DocumentType {
         case THUMNAIL:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT , FragmentType.TOC ,
                     FragmentType.BOOKMARK };
+        case BOOKMARK:
+            return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT };
         default:
             return null;
         }
