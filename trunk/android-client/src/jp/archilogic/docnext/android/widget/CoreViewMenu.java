@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 
 public class CoreViewMenu extends LinearLayout {
     public interface CoreViewMenuDelegate {
-        void changeCoreViewType( DocumentType type , Intent intent );
+        void changeCoreViewType( DocumentType type , Intent extra );
 
         void finish();
 
@@ -42,18 +42,6 @@ public class CoreViewMenu extends LinearLayout {
 
         initialize( type );
     }
-
-    // private void CoreViewMenuHolder( final CoreViewActivity activity , final CoreView view , final long[] ids ,
-    // final DocumentType type ) {
-    // _activity = activity;
-    // _view = view;
-    // _ids = ids;
-
-    // _menuView = buildMenu( type );
-
-    // activity.registerReceiver( _pageChangeReceiver , new IntentFilter(
-    // CoreImageRenderer.BROADCAST_PAGE_CHANGED ) );
-    // }
 
     private void bindBookmarkMenuItemIcon() {
         if ( !( _delegate.getCoreView() instanceof HasPage ) ) {

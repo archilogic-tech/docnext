@@ -15,6 +15,7 @@ import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PointF;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -109,6 +110,18 @@ public class TOCView extends FrameLayout implements CoreView {
 
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
+    }
+
+    @Override
+    public void restoreState( final Bundle state ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void saveState( final Bundle state ) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override

@@ -146,7 +146,7 @@ public class CoreImageRenderer implements Renderer {
         _state.fling( velocity );
     }
 
-    int getCurrentPage() {
+    int getPage() {
         return _state.page;
     }
 

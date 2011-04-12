@@ -48,6 +48,8 @@ public class CoreImageState {
     private final Interpolator _interpolator = new DecelerateInterpolator();
     private CoreImageCleanupValue _cleanup = null;
     private boolean _preventCheckChangePage = false;
+    private boolean _willGoNextPage = false;
+    private boolean _willGoPrevPage = false;
     private OnScaleChangeListener _scaleChangeLisetener = null;
     private OnPageChangeListener _pageChangeListener = null;
     private OnPageChangedListener _pageChangedListener;
@@ -99,12 +101,19 @@ public class CoreImageState {
         direction.updateOffset( this , false );
     }
 
-    private void checkChangePage() {
+    /**
+     * @return isNext
+     */
+    private Boolean checkChangePage() {
         if ( direction.shouldChangeToNext( this ) && hasNextPage() ) {
             changeToNextPage();
+            return true;
         } else if ( direction.shouldChangeToPrev( this ) && hasPrevPage() ) {
             changeToPrevPage();
+            return false;
         }
+
+        return null;
     }
 
     void doubleTap( final PointF point ) {
@@ -205,49 +214,33 @@ public class CoreImageState {
     }
 
     void tap( final PointF point ) {
-        System.err.println( "*** tap" );
-
         final int THREASHOLD = 4;
 
         int dx = 0;
         int dy = 0;
 
-        if ( point.x < surfaceSize.width / THREASHOLD ) {
+        if ( point.x - matrix.tx < surfaceSize.width / THREASHOLD ) {
             dx = -1;
         }
 
-        if ( point.x > surfaceSize.width - surfaceSize.width / THREASHOLD ) {
+        if ( point.x - matrix.tx > pageSize.width * matrix.scale - surfaceSize.width / THREASHOLD ) {
             dx = 1;
         }
 
-        if ( point.y < surfaceSize.height / THREASHOLD ) {
+        if ( point.y - matrix.ty < surfaceSize.height / THREASHOLD ) {
             dy = -1;
         }
 
-        if ( point.y > surfaceSize.height - surfaceSize.height / THREASHOLD ) {
+        if ( point.y - matrix.ty > surfaceSize.height - surfaceSize.height / THREASHOLD ) {
             dy = 1;
         }
 
         final int delta = dx * direction.toXSign() + dy * direction.toYSign();
 
-        System.err.println( "*** " + delta + ", " + dx + ", " + dy );
-
         if ( delta > 0 && hasNextPage() ) {
-            _lock.lock();
-            try {
-                changeToNextPage();
-                _preventCheckChangePage = true;
-            } finally {
-                _lock.unlock();
-            }
+            _willGoNextPage = true;
         } else if ( delta < 0 && hasPrevPage() ) {
-            _lock.lock();
-            try {
-                changeToPrevPage();
-                _preventCheckChangePage = true;
-            } finally {
-                _lock.unlock();
-            }
+            _willGoPrevPage = true;
         }
     }
 
@@ -259,15 +252,31 @@ public class CoreImageState {
         try {
             if ( !isInteracting ) {
                 if ( _cleanup == null ) {
+                    CoreImageCorner corner = null;
+
                     if ( _preventCheckChangePage ) {
                         _preventCheckChangePage = false;
+                    } else if ( _willGoNextPage ) {
+                        _willGoNextPage = false;
+
+                        changeToNextPage();
+                        corner = direction.getCorner( true );
+                    } else if ( _willGoPrevPage ) {
+                        _willGoPrevPage = false;
+
+                        changeToPrevPage();
+                        corner = direction.getCorner( false );
                     } else {
-                        checkChangePage();
+                        final Boolean isNext = checkChangePage();
+
+                        if ( isNext != null ) {
+                            corner = direction.getCorner( isNext );
+                        }
                     }
 
                     _cleanup =
                             CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize ,
-                                    _minScale , _maxScale );
+                                    _minScale , _maxScale , corner );
                 }
 
                 if ( _cleanup != null ) {
