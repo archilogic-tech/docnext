@@ -59,6 +59,7 @@ public class LocalProviderImpl implements LocalProvider {
             for ( int i = 0 ; i < array.length ; i++ ) {
                 if ( i == array.length - 1 ) {
                     text = array[ i ].text;
+                    break;
                 }
                 if ( array[ i ].page <= bookmark.page && array[ i + 1 ].page >= bookmark.page ) {
                     text = array[ i ].text;
