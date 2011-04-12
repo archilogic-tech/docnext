@@ -2,7 +2,7 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>DOCMAN:[%level %date %logger{16} %method] %message%n</Pattern>
+            <Pattern>DOCMAN:%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{24} - %msg%n</Pattern>
         </layout>
         <Target>System.out</Target>
     </appender>
@@ -16,13 +16,23 @@
             </FileNamePattern>
         </rollingPolicy>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>[%date %logger{16} %method %level]%n%message%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{24} - %msg%n</Pattern>
+        </layout>
+    </appender>
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <SMTPHost>localhost</SMTPHost>
+        <to>error</to>
+        <from>from</from>
+        <subject>Error: %logger{20} - %m</subject>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] %logger{24} - %msg%n</Pattern>
         </layout>
     </appender>
 
     <root>
         <level value="INFO" />
-        <appender-ref ref="STDOUT" />
+        <!-- <appender-ref ref="STDOUT" /> -->
         <appender-ref ref="FILE" />
+        <appender-ref ref="EMAIL" />
     </root>
 </configuration>
