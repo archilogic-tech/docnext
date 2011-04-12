@@ -32,6 +32,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
             "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
     public static final String EXTRA_PAGE = "page";
 
+    private static final String STATE_TYPE = "type";
+
     private final CoreViewActivity _self = this;
 
     private ViewGroup _rootViewGroup;
@@ -39,6 +41,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
     private CoreViewMenu _menu;
 
     private long[] _ids;
+    private DocumentType _type;
 
     private GestureDetector _gestureDetector;
     private ScaleGestureDetectorWrapper _scaleGestureDetector;
@@ -154,6 +157,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     @Override
     public void changeCoreViewType( final DocumentType type , final Intent extra ) {
+        _type = type;
+
         _rootViewGroup.removeView( ( View ) _view );
 
         _view = type.buildView( _self );
@@ -205,16 +210,16 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
-        final DocumentType type = validateCoreViewType( _ids );
+        _type = validateCoreViewType( _ids );
 
-        _view = type.buildView( _self );
+        _view = _type.buildView( _self );
 
         _rootViewGroup.addView( ( View ) _view );
 
         _view.setIds( _ids );
         _view.setDelegate( _self );
 
-        _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
+        _menu = new CoreViewMenu( _self , _type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
 
         _gestureDetector = new GestureDetector( _self , _gestureListener );
@@ -249,10 +254,29 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
     }
 
     @Override
+    protected void onRestoreInstanceState( final Bundle savedInstanceState ) {
+        super.onRestoreInstanceState( savedInstanceState );
+
+        changeCoreViewType( ( DocumentType ) savedInstanceState.getSerializable( STATE_TYPE ) ,
+                new Intent() );
+
+        _view.restoreState( savedInstanceState );
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
         _view.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState( final Bundle outState ) {
+        super.onSaveInstanceState( outState );
+
+        outState.putSerializable( STATE_TYPE , _type );
+
+        _view.saveState( outState );
     }
 
     @Override

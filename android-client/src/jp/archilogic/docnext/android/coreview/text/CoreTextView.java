@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -173,6 +174,14 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
+    }
+
+    @Override
+    public void restoreState( final Bundle state ) {
+    }
+
+    @Override
+    public void saveState( final Bundle state ) {
     }
 
     public void setConfig( final CoreTextConfig c ) {

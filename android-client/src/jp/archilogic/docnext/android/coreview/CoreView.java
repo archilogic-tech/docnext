@@ -1,6 +1,7 @@
 package jp.archilogic.docnext.android.coreview;
 
 import android.graphics.PointF;
+import android.os.Bundle;
 
 public interface CoreView {
     void onDoubleTapGesture( PointF point );
@@ -25,6 +26,10 @@ public interface CoreView {
      * Invoked when pinch or spread
      */
     void onZoomGesture( float scaleDelta , PointF center );
+
+    void restoreState( Bundle state );
+
+    void saveState( Bundle state );
 
     void setDelegate( CoreViewDelegate delegate );
 

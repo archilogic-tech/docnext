@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Debug;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.ZoomButtonsController.OnZoomListener;
 
 public class CoreImageView extends FrameLayout implements CoreView , HasPage {
     private static final boolean DEBUG = false;
+
+    private static final String STATE_PAGE = "page";
 
     private GLSurfaceView _glSurfaceView;
     private View _menuView;
@@ -112,7 +115,7 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public int getPage() {
-        return _renderer.getCurrentPage();
+        return _renderer.getPage();
     }
 
     @Override
@@ -188,6 +191,16 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
     @Override
     public void onZoomGesture( final float scaleDelta , final PointF center ) {
         _renderer.zoom( scaleDelta , center );
+    }
+
+    @Override
+    public void restoreState( final Bundle state ) {
+        _renderer.setPage( state.getInt( STATE_PAGE ) );
+    }
+
+    @Override
+    public void saveState( final Bundle state ) {
+        state.putInt( STATE_PAGE , _renderer.getPage() );
     }
 
     @Override

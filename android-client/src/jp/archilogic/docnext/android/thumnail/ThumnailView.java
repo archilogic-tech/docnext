@@ -8,6 +8,7 @@ import jp.archilogic.docnext.android.meta.DocumentType;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PointF;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,11 +21,11 @@ public class ThumnailView extends FrameLayout implements CoreView {
 
     private CoreViewDelegate _delegate;
 
-    private Context _context;
-    
+    private final Context _context;
+
     private GridView _gridView;
 
-    public ThumnailView(final Context context) {
+    public ThumnailView( final Context context ) {
         super( context );
 
         _context = context;
@@ -52,8 +53,8 @@ public class ThumnailView extends FrameLayout implements CoreView {
     }
 
     @Override
-    public void onMenuVisibilityChange( boolean isMenuVisible ) {
-        
+    public void onMenuVisibilityChange( final boolean isMenuVisible ) {
+
     }
 
     @Override
@@ -73,12 +74,24 @@ public class ThumnailView extends FrameLayout implements CoreView {
     }
 
     @Override
+    public void restoreState( final Bundle state ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void saveState( final Bundle state ) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public void setDelegate( final CoreViewDelegate argumentDelegate ) {
         _delegate = argumentDelegate;
     }
 
     private void setGridView() {
-        _gridView = (GridView) findViewById( R.id.thumnail );
+        _gridView = ( GridView ) findViewById( R.id.thumnail );
         _gridView.setAdapter( new ThumbnailImageAdapter( _context , _id ) );
 
         _gridView.setOnItemClickListener( new OnItemClickListener() {
@@ -97,5 +110,4 @@ public class ThumnailView extends FrameLayout implements CoreView {
         _id = ids[ 0 ];
         setGridView();
     }
-
 }

@@ -36,7 +36,7 @@ public class CoreImageCleanupValue {
 
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix ,
             final SizeInfo surface , final SizeInfo page , final float minScale ,
-            final float maxScale ) {
+            final float maxScale , final CoreImageCorner corner ) {
         if ( matrix.tx < Math.min( surface.width - page.width * matrix.scale , 0 )
                 || matrix.ty < Math.min( surface.height - page.height * matrix.scale , 0 )
                 || matrix.tx > 0 || matrix.ty > 0 || matrix.scale < minScale
@@ -51,8 +51,14 @@ public class CoreImageCleanupValue {
                         ( maxScale * matrix.ty - ( maxScale - matrix.scale ) * surface.height / 2 )
                                 / matrix.scale , false , DURATION_SHORT ).adjust( surface , page );
             } else {
-                return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx , matrix.ty ,
-                        false , DURATION_SHORT ).adjust( surface , page );
+                if ( corner != null ) {
+                    return new CoreImageCleanupValue( matrix , matrix.scale , corner.getX(
+                            matrix.scale , surface , page ) , corner.getY( matrix.scale , surface ,
+                            page ) , false , DURATION_SHORT ).adjust( surface , page );
+                } else {
+                    return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx ,
+                            matrix.ty , false , DURATION_SHORT ).adjust( surface , page );
+                }
             }
         } else {
             return null;
