@@ -3,25 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>docnext administrator console</title>
-    <link rel="stylesheet" type="text/css" href="/css/common.css">
-    <!-- zentable -->
-    <link rel="stylesheet" type="text/css" href="/css/zentable.css">
-
-    <link rel="stylesheet" type="text/css" href="/css/main.css" media="screen" />    
+    <link rel="stylesheet" type="text/css" href="css/common.css">
 
     <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.mousewheel.min.js"></script>
-    <script type="text/javascript" src="/js/jquery-ui-1.7.2.custom.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.timers-1.1.2.js"></script>
-    <script type="text/javascript" src="/js/jquery.zentable.js"></script>
-    
-    <script type='text/javascript' src='/dwr/interface/DocumentService.js'></script>
-    <script type='text/javascript' src='/dwr/engine.js'></script>
-    <script type='text/javascript' src='/dwr/util.js'></script>
-    
-    <script type='text/javascript' src='/js/header.js'></script>    
-    <script type='text/javascript' src='/js/cookie.js'></script>
-    <script type="text/javascript" src='/js/edit_divide_page.js'></script>
+
+    <script type="text/javascript" src="dwr/engine.js"></script>
+    <script type="text/javascript" src="dwr/util.js"></script>
+    <script type="text/javascript" src="dwr/interface/DocumentService.js"></script>
+
+    <script type="text/javascript" src="js/header.js"></script>
+    <script type="text/javascript" src="js/cookie.js"></script>
+    <script type="text/javascript" src="js/edit_divide_page.js"></script>
   </head>
   <body>
 
@@ -29,16 +21,19 @@
   <div id="edit_header"></div>
   <div id="content">
   <p>
-    <input type='button' value='Load'>
-    <input type='button' value='Save'>
-    <input type='button' value='Add' onclick='addRow();'>
-    <input type='text' value='0' id='remove_target' style="width:30px;">
-    <input type="button" value="Remove" onclick='removeRow();'>
+    <input type="button" value="+" onclick="addRow(); save();">
+    <label for="page">page number:</label>
+    <input type="text" value="0" id="page" style="width:30px;">
+    <label for="page">division number:</label>
+    <input type="text" value="0" id="division" style="width:30px;"><br /><br />
+    <input type="button" value="Remove checked row" onclick="removeRow(); save();">
   </p>
 
-  <table id="zentable" class="table" style='width:300px;'>
+  <h3>Divide Page Table</h3>
+  <table id="dividePage" style="border: 1px solid;">
+  <tr><th></th><th>page</th><th>number of divisions</th></tr>
   </table>
   </div>
-  </div>  
+  </div>
   </body>
 </html>

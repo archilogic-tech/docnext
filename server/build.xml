@@ -2,9 +2,14 @@
 <project default="production">
     <property name="output" value="build" />
     <property name="classes" value="${output}/WEB-INF/classes" />
+    <property name="original" value="../" />
 
-	<target name="production">
+    <target name="clean">
         <delete dir="${output}" />
+    </target>
+
+    <target name="production">
+        <!-- delete dir="${output}" / -->
 
         <copy todir="${output}">
             <fileset dir="war" />
@@ -23,6 +28,17 @@
             </classpath>
         </javac>
 
-        <jar basedir="${output}" jarfile="${output}/docman_optimage.war" />
+        <copy todir="${output}">
+            <fileset dir="${original}/admin-client/bin-release"/>
+        </copy>
+        <copy todir="${output}">
+            <fileset dir="${original}/web-client/bin-release"/>
+        </copy>
+
+        <jar basedir="${output}" jarfile="${output}/docman_optimage.war" excludes="*.war *.jar"/>
+	<jar basedir="${classes}" jarfile="${output}/docman_dto.jar"
+	     includes="jp/archilogic/docnext/dto/*"
+	 />
     </target>
+
 </project>

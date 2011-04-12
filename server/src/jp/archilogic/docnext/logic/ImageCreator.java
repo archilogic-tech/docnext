@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.logic;
 
+import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
+
 /**
  * pdfファイルからjpgファイル群を生成する処理インタフェース
  * 
@@ -11,7 +13,7 @@ package jp.archilogic.docnext.logic;
  *
  */
 public interface ImageCreator {
-    double create( String outDir , String pdfPath , String prefix , long id );
+	CreateResult create( String outDir , String pdfPath , String prefix , long id );
 
     int getPages( String pdfPath );
 }

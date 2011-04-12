@@ -14,10 +14,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import jp.archilogic.docnext.bean.PropBean;
+import jp.archilogic.docnext.dto.DividePage;
 import jp.archilogic.docnext.dto.Region;
 import jp.archilogic.docnext.dto.TOCElem;
-import jp.archilogic.docnext.dto.DividePage;
+import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
+import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.io.FileUtils;
@@ -35,8 +37,10 @@ public class PackManager {
         public String title;
         public String publisher;
         public double ratio;
-		public String binding;
-		public String flow;
+        public String binding;
+        public String flow;
+        public int nHorizontal;
+        public int nVertical;
     }
 
     @SuppressWarnings( "unused" )
@@ -45,50 +49,50 @@ public class PackManager {
     @Autowired
     private PropBean prop;
 
-    private void copyImageHelper( long documentId , String fileFormat ) {
-        String dir = prop.repository + "/pack/" + documentId + "/images/";
+    private void copyImageHelper( final long documentId , final String fileFormat ) {
+        final String dir = prop.repository + "/pack/" + documentId + "/images/";
 
         try {
             for ( int index = 0 ; ; index++ ) {
-                File file = new File( String.format( fileFormat , prop.repository , documentId , index ) );
+                final File file = new File( String.format( fileFormat , prop.repository , documentId , index ) );
                 if ( !file.exists() ) {
                     break;
                 }
                 FileUtils.copyFileToDirectory( file , new File( dir ) );
             }
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void copyThumbnails( long documentId ) {
+    public void copyThumbnails( final long documentId ) {
         copyImageHelper( documentId , "%s/thumb/%d/thumb-%d.jpg" );
     }
 
-    public void createStruct( long documentId ) {
-        String dir = prop.repository + "/pack/" + documentId + "/";
+    public void createStruct( final long documentId ) {
+        final String dir = prop.repository + "/pack/" + documentId + "/";
 
         new File( dir ).mkdir();
         new File( dir + "images/" ).mkdir();
         new File( dir + "texts/" ).mkdir();
 
-        Info info = new Info();
+        final Info info = new Info();
         info.title = "NO TITLE";
         info.publisher = "NO PUBLISHER";
         writeInfo( documentId , info );
     }
 
-    private void encode( ZipOutputStream zos , File[] files , int prefixLen ) throws Exception {
-        for ( File f : files ) {
+    private void encode( final ZipOutputStream zos , final File[] files , final int prefixLen ) throws Exception {
+        for ( final File f : files ) {
             if ( f.isDirectory() ) {
                 encode( zos , f.listFiles() , prefixLen );
             } else {
                 zos.putNextEntry( new ZipEntry( f.getPath().substring( prefixLen ).replace( '\\' , '/' ) ) );
 
-                InputStream is = new BufferedInputStream( new FileInputStream( f ) );
-                byte[] buf = new byte[ 1024 ];
+                final InputStream is = new BufferedInputStream( new FileInputStream( f ) );
+                final byte[] buf = new byte[ 1024 ];
                 for ( ; ; ) {
-                    int len = is.read( buf );
+                    final int len = is.read( buf );
                     if ( len < 0 ) {
                         break;
                     }
@@ -100,193 +104,220 @@ public class PackManager {
         }
     }
 
-    public String getPackPath( long documentId ) {
+    public String getPackPath( final long documentId ) {
         return String.format( "%s/pack/%d.zip" , prop.repository , documentId );
     }
 
-    public String readAnnotation( long documentId , int page ) {
+    public String readAnnotation( final long documentId , final int page ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/images/%d.anno.json" ,
                     prop.repository , documentId , page ) ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public String readImageText( long documentId , int page ) {
+    public String readBinding( final long documentId ) {
+        return readInfo( documentId ).binding;
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public List< DividePage > readDividePage( final long documentId ) {
+        try {
+            return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
+                    "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ) , DividePage[].class ) );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public String readFlow( final long documentId ) {
+        return readInfo( documentId ).flow;
+    }
+
+    public String readImageText( final long documentId , final int page ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/texts/%d.image.txt" ,
                     prop.repository , documentId , page ) ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    private Info readInfo( long documentId ) {
+    private Info readInfo( final long documentId ) {
         return JSON.decode( readInfoJson( documentId ) , Info.class );
     }
 
-    public String readInfoJson( long docId ) {
+    public String readInfoJson( final long docId ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/info.json" , prop.repository ,
+                    docId ) ), "UTF-8" );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public List < Frame > readFrames( long documentId ) {
+    	return Arrays.asList(JSON.decode( readFrameJson( documentId ), Frame[].class ));
+    }
+    
+    public String readFrameJson( long docId ) {
+        try {
+            return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/frames.json" , prop.repository ,
                     docId ) ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public int readPages( long documentId ) {
+    public int readPages( final long documentId ) {
         return readInfo( documentId ).pages;
     }
 
-    public String readPublisher( long documentId ) {
+    public String readPublisher( final long documentId ) {
         return readInfo( documentId ).publisher;
     }
 
-    public String readBinding( long documentId ) {
-        return readInfo( documentId ).binding;
-    }
-
-    public String readFlow( long documentId ) {
-        return readInfo( documentId ).flow;
-    }
-    
-    public byte[] readRegions( long docId , int page ) {
+    public byte[] readRegions( final long docId , final int page ) {
         try {
             return FileUtils.readFileToByteArray( new File( String.format( "%s/pack/%d/texts/%d.regions" ,
                     prop.repository , docId , page ) ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
     @SuppressWarnings( "unchecked" )
-    public List< Integer > readSinglePageInfo( long documentId ) {
+    public List< Integer > readSinglePageInfo( final long documentId ) {
         try {
             return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
                     "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ) , Integer[].class ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    public List< DividePage > readDividePage( long documentId ) {
-        try {
-            return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
-                    "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ) , DividePage[].class ) );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    public String readText( long documentId , int page ) {
+    public String readText( final long documentId , final int page ) {
         try {
             return FileUtils.readFileToString( new File( String.format( "%s/pack/%d/texts/%d" , prop.repository ,
                     documentId , page ) ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public String readTitle( long documentId ) {
+    public String readTitle( final long documentId ) {
         return readInfo( documentId ).title;
     }
 
     @SuppressWarnings( "unchecked" )
-    public List< TOCElem > readTOC( long documentId ) {
+    public List< TOCElem > readTOC( final long documentId ) {
         try {
             return Arrays.asList( JSON.decode( FileUtils.readFileToString( new File( String.format(
                     "%s/pack/%d/toc.json" , prop.repository , documentId ) ) ) , TOCElem[].class ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void repack( long documentId ) {
+    public void repack( final long documentId ) {
         try {
-            String packed = prop.repository + "/pack/" + documentId + ".zip";
-            String dir = prop.repository + "/pack/" + documentId + "/";
+            final String packed = prop.repository + "/pack/" + documentId + ".zip";
+            final String dir = prop.repository + "/pack/" + documentId + "/";
 
-            ZipOutputStream zos = new ZipOutputStream( new FileOutputStream( packed ) );
+            final ZipOutputStream zos = new ZipOutputStream( new FileOutputStream( packed ) );
             encode( zos , new File[] { new File( dir ) } , dir.length() );
             zos.close();
-        } catch ( FileNotFoundException e ) {
+        } catch ( final FileNotFoundException e ) {
             throw new RuntimeException( e );
-        } catch ( Exception e ) {
+        } catch ( final Exception e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeAnnotations( long documentId , int page , List< PageAnnotationInfo > infos ) {
+    public void writeAnnotations( final long documentId , final int page , final List< PageAnnotationInfo > infos ) {
         try {
             FileUtils
                     .writeStringToFile(
                             new File( String.format( "%s/pack/%d/images/%d.anno.json" , prop.repository , documentId ,
                                     page ) ) , JSON.encode( infos ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeImageText( long documentId , int page , String text ) {
-        try {
-            FileUtils.writeStringToFile(
-                    new File( String.format( "%s/pack/%d/texts/%d.image.txt" , prop.repository , documentId , page ) ) ,
-                    text );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    private void writeInfo( long documentId , Info info ) {
-        try {
-            FileUtils.writeStringToFile(
-                    new File( String.format( "%s/pack/%d/info.json" , prop.repository , documentId ) ) ,
-                    JSON.encode( info ) );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e );
-        }
-    }
-
-    public void writePages( long documentId , int pages ) {
-        Info info = readInfo( documentId );
-        info.pages = pages;
-        writeInfo( documentId , info );
-    }
-
-    public void writePublisher( long documentId , String publisher ) {
-        Info info = readInfo( documentId );
-        info.publisher = publisher;
-        writeInfo( documentId , info );
-    }
-
-    public void writeRatio( long documentId , double ratio ) {
-        Info info = readInfo( documentId );
-        info.ratio = ratio;
-        writeInfo( documentId , info );
-    }
-
-    public void writeBinding( long documentId , String binding) {
-        Info info = readInfo( documentId );
+    public void writeBinding( final long documentId , final String binding ) {
+        final Info info = readInfo( documentId );
         info.binding = binding;
         writeInfo( documentId , info );
     }
 
-    public void writeFlow( long documentId , String flow) {
-        Info info = readInfo( documentId );
+    public void writeDividePage( final long documentId , final List< DividePage > dividePage ) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( dividePage ) );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void writeFlow( final long documentId , final String flow ) {
+        final Info info = readInfo( documentId );
         info.flow = flow;
         writeInfo( documentId , info );
     }
 
-    public void writeRegions( long documentId , int page , List< Region > regions ) {
+    public void writeImageCreateResult( final long documentId , final CreateResult result ) {
+        final Info info = readInfo( documentId );
+        info.ratio = result.ratio;
+        info.nHorizontal = result.nHorizontal;
+        info.nVertical = result.nVertical;
+        writeInfo( documentId , info );
+    }
+
+    public void writeImageText( final long documentId , final int page , final String text ) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/texts/%d.image.txt" , prop.repository , documentId , page ) ) ,
+                    text );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    private void writeInfo( final long documentId , final Info info ) {
+        try {
+            FileUtils.writeStringToFile(
+                    new File( String.format( "%s/pack/%d/info.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( info ) ,
+                    "UTF-8" );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public void writePages( final long documentId , final int pages ) {
+        final Info info = readInfo( documentId );
+        info.pages = pages;
+        writeInfo( documentId , info );
+    }
+
+    public void writePublisher( final long documentId , final String publisher ) {
+        final Info info = readInfo( documentId );
+        info.publisher = publisher;
+        writeInfo( documentId , info );
+    }
+
+    public void writeRegions( final long documentId , final int page , final List< Region > regions ) {
         final int SIZEOF_DOUBLE = 8;
         final int N_REGION_FIELDS = 4;
 
         try {
-            ByteBuffer buffer = ByteBuffer.allocate( regions.size() * N_REGION_FIELDS * SIZEOF_DOUBLE );
+            final ByteBuffer buffer = ByteBuffer.allocate( regions.size() * N_REGION_FIELDS * SIZEOF_DOUBLE );
             buffer.order( ByteOrder.LITTLE_ENDIAN );
-            for ( Region region : regions ) {
+            for ( final Region region : regions ) {
                 buffer.putDouble( region.x );
                 buffer.putDouble( region.y );
                 buffer.putDouble( region.width );
@@ -295,52 +326,52 @@ public class PackManager {
             FileUtils.writeByteArrayToFile(
                     new File( String.format( "%s/pack/%d/texts/%d.regions" , prop.repository , documentId , page ) ) ,
                     buffer.array() );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeSinglePageInfo( long documentId , List< Integer > singlePageInfo ) {
+    public void writeSinglePageInfo( final long documentId , final List< Integer > singlePageInfo ) {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/singlePageInfo.json" , prop.repository , documentId ) ) ,
                     JSON.encode( singlePageInfo ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeDividePage( long documentId , List< DividePage > dividePage) {
+    public void writeFrames( long documentId , List< Frame > frames) {
         try {
             FileUtils.writeStringToFile(
-                    new File( String.format( "%s/pack/%d/dividePage.json" , prop.repository , documentId ) ) ,
-                    JSON.encode( dividePage) );
+                    new File( String.format( "%s/pack/%d/frames.json" , prop.repository , documentId ) ) ,
+                    JSON.encode( frames ) );
         } catch ( IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeText( long documentId , int page , String text ) {
+    public void writeText( final long documentId , final int page , final String text ) {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/texts/%d" , prop.repository , documentId , page ) ) , text );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    public void writeTitle( long documentId , String title ) {
-        Info info = readInfo( documentId );
+    public void writeTitle( final long documentId , final String title ) {
+        final Info info = readInfo( documentId );
         info.title = title;
         writeInfo( documentId , info );
     }
 
-    public void writeTOC( long documentId , List< TOCElem > toc ) {
+    public void writeTOC( final long documentId , final List< TOCElem > toc ) {
         try {
             FileUtils.writeStringToFile(
                     new File( String.format( "%s/pack/%d/toc.json" , prop.repository , documentId ) ) ,
                     JSON.encode( toc ) );
-        } catch ( IOException e ) {
+        } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }

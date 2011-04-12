@@ -1,0 +1,11 @@
+bin
+bin-*
+build
+target
+# xcode
+.settings
+*\.mode1v3
+*\.pbxuser
+
+*~
+.svn

@@ -10,6 +10,7 @@ import jp.archilogic.docnext.dao.DocumentDao;
 import jp.archilogic.docnext.dto.DocumentResDto;
 import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.dto.DividePage;
+import jp.archilogic.docnext.dto.Frame;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
@@ -48,6 +49,10 @@ public class DocumentService {
 
     public String getAnnotation( long id , int page ) {
         return packManager.readAnnotation( id , page );
+    }
+
+    public List< Frame > getFrames( long id ) {
+        return packManager.readFrames( id );
     }
 
     public String getImageText( long id , int page ) {
@@ -144,5 +149,9 @@ public class DocumentService {
     
     public void setDividePage( long id , List< DividePage > dividePage) {
         packManager.writeDividePage( id , dividePage );
+    }
+
+    public void setFrames( long id , List< Frame > frames ) {
+        packManager.writeFrames( id , frames );
     }
 }

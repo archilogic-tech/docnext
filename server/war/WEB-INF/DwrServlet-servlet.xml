@@ -34,6 +34,7 @@
 		<dwr:convert type="object" class="jp.archilogic.docnext.dto.DocumentResDto" />
 		<dwr:convert type="object" class="jp.archilogic.docnext.dto.TOCElem" />
 		<dwr:convert type="object" class="jp.archilogic.docnext.dto.DividePage" />
+		<dwr:convert type="object" class="jp.archilogic.docnext.dto.Frame" />
 		<dwr:convert type="collection" class="java.util.Map" />
 	</dwr:configuration>
 
@@ -49,6 +50,7 @@
 			<dwr:include method="setBinding" />
 			<dwr:include method="getFlow" />
 			<dwr:include method="setFlow" />
+			<dwr:include method="getInfo" />
 			<dwr:include method="getText" />
 			<dwr:include method="setText" />
 			<dwr:include method="getTOC" />
@@ -57,6 +59,8 @@
 			<dwr:include method="setSinglePageInfo" />
 			<dwr:include method="getDividePage" />
 			<dwr:include method="setDividePage" />
+			<dwr:include method="getFrames" />
+			<dwr:include method="setFrames" />
 		</dwr:remote>
 	</bean>
 

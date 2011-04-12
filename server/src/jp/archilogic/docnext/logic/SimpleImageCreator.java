@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 
+import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
 import jp.archilogic.docnext.util.ProcUtil;
 
 import magick.MagickException;
@@ -16,6 +17,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimpleImageCreator extends ThumbnailCreator implements ImageCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger( SimpleImageCreator.class );
+
+    private static class ImageInfo {
+        double unitWidth;
+        double unitHeight;
+        private int pages;
+
+        ImageInfo( double unitWidth , double unitHeight, int pages ) {
+            this.unitWidth = unitWidth;
+            this.unitHeight = unitHeight;
+            this.pages = pages;
+        }
+        
+        public double getUnitWidth() {
+            return unitWidth;
+        }
+
+        public double getUnitHeight() {
+            return unitHeight;
+        }
+
+        public int getPages() {
+            return pages;
+        }
+    }
 
     static {
         System.setProperty( "jmagick.systemclassloader" , "no" );
@@ -64,7 +89,7 @@ public class SimpleImageCreator extends ThumbnailCreator implements ImageCreator
     /**
      * @return width / height ratio
      */
-    public double create( String outDir , String pdfPath , String prefix , long id) {
+    public CreateResult create( String outDir , String pdfPath , String prefix , long id) {
         LOGGER.info( "Begin create image" );
         long t = System.currentTimeMillis();
 
@@ -75,7 +100,7 @@ public class SimpleImageCreator extends ThumbnailCreator implements ImageCreator
 
         LOGGER.info( "End create image. Tooks " + ( System.currentTimeMillis() - t ) + "(ms)" );
 
-        return info.getUnitWidth() / info.getUnitHeight();
+        return new CreateResult( info.getUnitWidth() / info.getUnitHeight() , TEXTURE_N_HORIZONATL , TEXTURE_N_VERTICAL );
     }
 
     protected void createAllPages( String outDir, String prefix, ImageInfo info , long id ) {
@@ -84,13 +109,22 @@ public class SimpleImageCreator extends ThumbnailCreator implements ImageCreator
                 LOGGER.info( "Proc page: " + page );
                 MagickImage mi = new MagickImage(new magick.ImageInfo( getPpmPath(prefix, page)));
 
-                createMultiLevelImage( outDir + "iPad" , mi , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
-                        IPAD_DEVICE_HEIGHT );
-                createMultiLevelImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
-                        IPHONE_DEVICE_HEIGHT );
-                createWebImage( outDir , mi , page );
-                createThumbnailImage( outDir , mi , page );
+                if ( prop.forIOS ) {
+                    createMultiLevelImage( outDir + "iPad" , mi , page , IPAD_MAX_LEVEL , IPAD_DEVICE_WIDTH ,
+                            IPAD_DEVICE_HEIGHT );
+                    createMultiLevelImage( outDir + "iPhone" , mi , page , IPHONE_MAX_LEVEL , IPHONE_DEVICE_WIDTH ,
+                            IPHONE_DEVICE_HEIGHT );
+                }
+                
 
+                if ( prop.forWeb ) {
+                    createWebImage( outDir , mi , page );
+                }
+                if ( prop.forTexture ) {
+
+                }
+
+                createThumbnailImage( outDir , mi , page );
                 progressManager.setCreatedThumbnail( id , page + 1 );
             }
         } catch (MagickException e) {
