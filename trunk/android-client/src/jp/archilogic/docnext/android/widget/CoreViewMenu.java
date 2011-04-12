@@ -7,6 +7,7 @@ import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.HasPage;
+import jp.archilogic.docnext.android.info.BookmarkInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
@@ -52,10 +53,10 @@ public class CoreViewMenu extends LinearLayout {
 
         if ( Kernel.getLocalProvider().getBookmarkInfo( _id ) == null ) {
             Kernel.getLocalProvider().setBookmarkInfo( _id ,
-                    Lists.newArrayList( new ArrayList< Integer >() ) );
+                    Lists.newArrayList( new ArrayList< BookmarkInfo >() ) );
         }
 
-        final Set< Integer > bookmark =
+        final Set< BookmarkInfo > bookmark =
                 Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _id ) );
 
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
@@ -183,15 +184,15 @@ public class CoreViewMenu extends LinearLayout {
             return;
         }
 
-        final Set< Integer > bookmark =
+        final Set< BookmarkInfo > bookmark =
                 Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _id ) );
 
         final int page = ( ( HasPage ) _delegate.getCoreView() ).getPage();
 
-        if ( bookmark.contains( page ) ) {
-            bookmark.remove( page );
+        if ( bookmark.contains( new BookmarkInfo( page ) ) ) {
+            bookmark.remove( new BookmarkInfo( page ) );
         } else {
-            bookmark.add( page );
+            bookmark.add( new BookmarkInfo( page ) );
         }
 
         Kernel.getLocalProvider().setBookmarkInfo( _id , Lists.newArrayList( bookmark ) );

@@ -9,6 +9,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 public class DownloadService extends Service {
     private class DownloadReceiver implements Receiver< Void > {
@@ -58,7 +59,8 @@ public class DownloadService extends Service {
             switch ( _doc.types[ index ] ) {
             case IMAGE:
                 ensureImageInfo( index );
-                ensureThumbnail( _id , 0 );
+                downloadThumbnail( _id , 0 );
+                downloadTOC( _id );
                 break;
             case TEXT:
                 ensureFont( index );
@@ -193,18 +195,27 @@ public class DownloadService extends Service {
         }
     }
 
-    private void ensureThumbnail( final long id , final int page ) {
+    private void downloadTOC( final long id ) {
+        Kernel.getRemoteProvider().getTableOfContentsInfo( getApplicationContext() , new DownloadReceiver() {
+            @Override
+            public void receive( final Void result ) {
+                Log.d( "DownloadService" , "downloaded TOC");
+            }
+        }, id ).execute();
+    }
+    
+    private void downloadThumbnail( final long id , final int page ) {
         DocInfo doc = Kernel.getLocalProvider().getDocInfo( _id );
 
         if ( page < doc.pages ) {
             if ( Kernel.getLocalProvider().getThumnailPath( _id , page ) != null ) {
-                ensureThumbnail( id , page + 1 );
+                downloadThumbnail( id , page + 1 );
             } else {
                 Kernel.getRemoteProvider()
                         .getThumnail( getApplicationContext() , new DownloadReceiver() {
                             @Override
                             public void receive( final Void result ) {
-                                ensureThumbnail( id , page + 1 );
+                                downloadThumbnail( id , page + 1 );
                             }
                         } , id , page ).execute();
             }
