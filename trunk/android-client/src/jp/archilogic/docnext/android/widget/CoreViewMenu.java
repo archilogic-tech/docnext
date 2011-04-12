@@ -61,7 +61,7 @@ public class CoreViewMenu extends LinearLayout {
 
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
 
-        image.setImageResource( bookmark.contains( page ) ? R.drawable.button_bookmark_on
+        image.setImageResource( bookmark.contains( new BookmarkInfo( page ) ) ? R.drawable.button_bookmark_on
                 : R.drawable.button_bookmark_off );
     }
 
