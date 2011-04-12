@@ -18,6 +18,7 @@ package jp.archilogic.docnext.ui
 	import jp.archilogic.docnext.util.DocumentLoadUtil;
 	
 	import mx.containers.Canvas;
+	import mx.controls.Alert;
 	import mx.controls.HScrollBar;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
@@ -80,9 +81,10 @@ package jp.archilogic.docnext.ui
        	public function set documentComponent(d : DocumentComponent ) : void {
 			this._documentComponent = d;
 		}
-		public function get currentIndex() : int {
-			return this._currentIndex;
-		}
+        
+        public function getSelectPage() : int {
+            return _thumbnails[_currentIndex].page;
+        }
         /* public function set ratio(ratio : Number):void { this._ratio=ratio;}
         public function set docId(docId : int):void { this._docId=docId;} */
        /*  public function get ratio() : Number{ return _ratio;}
@@ -174,10 +176,9 @@ package jp.archilogic.docnext.ui
         	/* this._info = _documentComponent.infos; */
         	_ratio = this._documentComponent.ratio;
         	_docId = this._documentComponent.docId;
-        	_currentDocPos = this._documentComponent.currentDocPos;
-        	_currentIndex = _documentComponent.getCurrentHead() * 2 ; 
         	totalPage = _pages.length;
-        	
+        	_currentDocPos = this._documentComponent.currentDocPos;
+        	_currentIndex = totalPage - 1 - _documentComponent.getCurrentHead() * 2 ; 
         	
         	this._ui.hScrollbar.setScrollProperties(1,0,totalPage-1);
         	/* this._background = _documentComponent */
@@ -199,6 +200,8 @@ package jp.archilogic.docnext.ui
         	{
         		var thumb : ThumbnailComponent = new ThumbnailComponent();
         		thumb.source = new Bitmap(bitmapData);
+        		thumb.docId = _docId;
+        		thumb.page = totalPage - i - 1;
         		thumb.width = SHELFED_WIDTH;
         		thumb.height = SHELFED_HEIGHT;
         		thumb.x = this.width - 30;
@@ -529,60 +532,44 @@ package jp.archilogic.docnext.ui
         }
         
         
-        private function loadFocusedImage() : void
-        {
-        	
-        	/* no cache at the moment */
-        	/* if(_documentComponent.hasCache(_currentIndex))
-        	{
-        		_thumbnails[_currentIndex].source = _pages[_currentIndex].source;
-        		_thumbnails[_currentIndex].source.width = FOCUSED_WIDTH;
-        		_thumbnails[_currentIndex].source.height = FOCUSED_HEIGHT;
-        		
-        		this._ui.pageLabel.text += ' has cache';
-        		return;
-        	} */
-        	_ui.pageLabel.text +=  ' load...';
-    	 	_documentComponent.loadForThumb(_currentIndex, function(page : PageComponent):void
-    	 	{
-    	 		if(page.page != _currentIndex) 
-    	 		{
-    	 			/* _ui.pageLabel.text += ' concuurency problem occur'; */
-    	 			return;
-    	 		}
-    	 		_ui.pageLabel.text += ' load complete';
-    	 		_thumbnails[_currentIndex].source = page.source;
-    	 	});
+        private function loadFocusedImage() : void {
+            /* no cache at the moment */
+            /* if(_documentComponent.hasCache(_currentIndex))
+            {
+                _thumbnails[_currentIndex].source = _pages[_currentIndex].source;
+                _thumbnails[_currentIndex].source.width = FOCUSED_WIDTH;
+                _thumbnails[_currentIndex].source.height = FOCUSED_HEIGHT;
+
+                this._ui.pageLabel.text += ' has cache';
+                return;
+            } */
+            _ui.pageLabel.text +=  ' load...';
+
+            var index : int  = _thumbnails.length - 1 - _currentIndex
+
+            _documentComponent.loadForThumb(index, function(page : PageComponent) : void {
+                if(page.page != index) {
+                    _ui.pageLabel.text += ' concuurency problem occur'; 
+                    return;
+                }
+                _ui.pageLabel.text += ' load complete';
+                _thumbnails[_currentIndex].source = page.source;
+            });
         }
-        private function loadThumbs(start : int , end : int, next : Function = null) : void 
-        {
-        	// skip index at the mement
-        	for(var i : int = start ; i < end ; i++)
-        	{
-        		if(_thumbnails[i] != null && _thumbnails[i].hasThumbSource() ) 
-        		{
-        			 _thumbnails[i].visible = true;
-        			 _thumbnails[i].resetThumbSource();
-        			continue;
-        		}
-        		/*  var thumb : ThumbnailComponent = new ThumbnailComponent();  */
-        		/* _thumbnails[i] = new ThumbnailComponent(); */
-        		DocumentLoadUtil.loadThumb(_docId,i,0.3,this._thumbnails,function(thumb : ThumbnailComponent):void
-        		{
-        			/* Alert.show('load complete ' ); */
-        			/* _thumbnails[i].y = thisHeight;
-        			_thumbnails[i].height = SHELFED_HEIGHT;
-        			_thumbnails[i].width = SHELFED_WIDTH; */
-        			/* this.ui.wrapper.addChild(bitmap); */
-        			if(next !=null) next(thumb);
-        		});
-        		//this._ui.wrapper.addChild(thumb);
-        	}
+
+        private function loadThumbs(start : int , end : int, next : Function = null) : void {
+            // skip index at the mement
+            for(var i : int = start; i < end; i++) {
+                if(_thumbnails[i] != null && _thumbnails[i].hasThumbSource() ) {
+                    _thumbnails[i].visible = true;
+                    _thumbnails[i].resetThumbSource();
+                    continue;
+                }
+                DocumentLoadUtil.loadThumb(_thumbnails[_thumbnails.length - 1 - i], next);
+            }
         }
-       /*  private function loadPage(index : int , next : Function
-         */
-	}
-	
+
+    }
 }
 /* import flash.display.Bitmap;
 import flash.display.BitmapData;

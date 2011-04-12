@@ -42,18 +42,10 @@ package jp.archilogic.docnext.util {
                 page.loadData( result );
             } );
         }
-		public static function loadThumb(	docId :Number, index : int , ratio : Number,
-											thumbs : Vector.<ThumbnailComponent>, 
-											loadCompleteHandler : Function = null) : void
-		{
-			DocumentService.getThumb(docId, index, function(result : ByteArray ) : void
-			{
-				var thumb : ThumbnailComponent = thumbs[index] as ThumbnailComponent;
-				thumb.docId = docId;
-				thumb.page = index;
-				thumb.ratio = ratio;
-				thumb.addEventListener(Event.COMPLETE, function() : void
-				{
+
+		public static function loadThumb(thumb : ThumbnailComponent, loadCompleteHandler : Function = null) : void {
+			DocumentService.getThumb(thumb.docId, thumb.page, function(result : ByteArray ) : void {
+				thumb.addEventListener(Event.COMPLETE, function() : void {
 					thumb.removeEventListener(Event.COMPLETE, arguments.callee );
 					
 					if(loadCompleteHandler != null)	loadCompleteHandler(thumb);

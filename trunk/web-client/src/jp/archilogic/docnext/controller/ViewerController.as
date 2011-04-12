@@ -55,7 +55,7 @@ package jp.archilogic.docnext.controller {
 		 		view.thumbDockComponent.visible = false;
 		 		/* view.documentComponent.alpha = 1; */
 		 		view.documentComponent.visible = true;
-		 		view.documentComponent.setCurrentHead( view.thumbDockComponent.currentIndex);
+		 		view.documentComponent.setCurrentHead( view.thumbDockComponent.getSelectPage() );
 		 	}
 		}
 		/* private function changeDocumentVisiblityHandler ( value : Boolean , alpha : int = 0 ) : void 
