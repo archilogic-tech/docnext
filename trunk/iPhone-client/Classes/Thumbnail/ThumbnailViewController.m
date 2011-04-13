@@ -33,7 +33,7 @@
 
 - (IBAction)pageSliderChanged:(id)sender {
     int cover = floor( self.pageSlider.value + 0.5 );
-
+    
     if ( cover != self.flowCoverView.offset ) {
         self.flowCoverView.offset = cover;
         [self.flowCoverView draw];
@@ -54,11 +54,11 @@
 }
 
 - (UIImage *)flowCover:(FlowCoverView *)view cover:(int)cover {
-    return [UIImage imageWithContentsOfFile:[FileUtil getFullPath:[NSString stringWithFormat:@"%d/images/thumb-%d.jpg" , documentId , cover]]];
+    return [UIImage imageWithContentsOfFile:[FileUtil getFullPath:[NSString stringWithFormat:@"%d/images/thumb-%d.jpg" , documentId , [FileUtil pages:documentId] - 1 - cover]]];
 }
 
 - (void)flowCover:(FlowCoverView *)view didSelect:(int)cover {
-    [parent showImage:documentId page:cover];
+    [parent showImage:documentId page:[FileUtil pages:documentId] - cover - 1];
 }
 
 - (void)flowCover:(FlowCoverView *)view changeCurrent:(int)cover {
@@ -70,7 +70,7 @@
 
 - (void)setLabels:(int)index {
     self.titleLabel.text = [FileUtil toc:documentId page:index].text;
-    self.pageLabel.text = [NSString stringWithFormat:@"%d / %d" , index + 1 , [FileUtil pages:documentId]];
+    self.pageLabel.text = [NSString stringWithFormat:@"%d / %d" , [FileUtil pages:documentId] - index , [FileUtil pages:documentId]];
 }
 
 - (void)timerTicked:(NSTimer *)_timer {
@@ -90,14 +90,14 @@
     
     self.flowCoverView.delegate = self;
     
-    self.flowCoverView.offset = page;
+    self.flowCoverView.offset = [FileUtil pages:documentId] - page - 1;
     [self.flowCoverView draw];
     
     self.pageSlider.minimumValue = 0.0;
     self.pageSlider.maximumValue = [FileUtil pages:documentId] - 1.0;
-    self.pageSlider.value = page;
-
-    [self setLabels:page];
+    self.pageSlider.value = [FileUtil pages:documentId] - page;
+    
+    [self setLabels:[FileUtil pages:documentId] - page - 1];
 }
 
 - (void)dealloc {
