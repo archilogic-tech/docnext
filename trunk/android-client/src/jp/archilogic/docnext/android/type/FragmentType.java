@@ -67,8 +67,9 @@ public enum FragmentType {
         case TOC:
             return R.drawable.button_toc;
         case BOOKMARK:
-        case BOOKMARKLIST:
             return R.drawable.button_bookmark_off;
+        case BOOKMARKLIST:
+            return R.drawable.button_bookmarklist;
         case THUMNAIL:
             return R.drawable.button_thumnail;
         case SETTING:
