@@ -1062,7 +1062,7 @@
 				INFOPLIST_FILE = "MapDoc-Info.plist";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = docnext;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -1080,7 +1080,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = MapDoc;
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "armv6 armv7";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};
