@@ -93,7 +93,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         }
 
         _offset =
-                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) , _surfaceSize , _config , true );
+                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) ,
+                        _surfaceSize , _config , true );
 
         _index++;
     }
@@ -111,15 +112,16 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         _index--;
 
         _offset =
-                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) , _surfaceSize , _config , false );
+                _config.direction.updateOffset( _offset , nullSafeCacheSize( _index ) ,
+                        _surfaceSize , _config , false );
     }
 
     private void checkChangePage() {
-        if ( _config.direction.shouldChangeToNext( _offset , nullSafeCacheSize( _index ) , _surfaceSize )
-                && _index + 1 < _sources.size() ) {
+        if ( _config.direction.shouldChangeToNext( _offset , nullSafeCacheSize( _index ) ,
+                _surfaceSize ) && _index + 1 < _sources.size() ) {
             changeToNextPage();
-        } else if ( _config.direction.shouldChangeToPrev( _offset , nullSafeCacheSize( _index ) , _surfaceSize )
-                && _index - 1 >= 0 ) {
+        } else if ( _config.direction.shouldChangeToPrev( _offset , nullSafeCacheSize( _index ) ,
+                _surfaceSize ) && _index - 1 >= 0 ) {
             changeToPrevPage();
         }
     }
@@ -134,12 +136,14 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
         drawBackground( c , p );
 
         c.save();
-        c.translate( _offset * _config.direction.toXFactor() , _offset * _config.direction.toYFactor() );
+        c.translate( _offset * _config.direction.toXFactor() ,
+                _offset * _config.direction.toYFactor() );
 
         for ( int delta = -1 ; delta <= 1 ; delta++ ) {
             if ( _index + delta >= 0 && _index + delta < _caches.length ) {
                 final RectF rect =
-                        _config.direction.toDrawRect( _caches , _surfaceSize , _index , delta , _config.pageSpace );
+                        _config.direction.toDrawRect( _caches , _surfaceSize , _index , delta ,
+                                _config.pageSpace );
 
                 if ( _caches[ _index + delta ] != null ) {
                     c.drawBitmap( _caches[ _index + delta ] , null , rect , p );
@@ -156,7 +160,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     private void drawBackground( final Canvas c , final Paint p ) {
         for ( int y = 0 ; y * _background.getHeight() < _surfaceSize.height ; y++ ) {
             for ( int x = 0 ; x * _background.getWidth() < _surfaceSize.width ; x++ ) {
-                c.drawBitmap( _background , x * _background.getWidth() , y * _background.getHeight() , p );
+                c.drawBitmap( _background , x * _background.getWidth() ,
+                        y * _background.getHeight() , p );
             }
         }
     }
@@ -190,14 +195,14 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     private SizeInfo nullSafeCacheSize( final int index ) {
-        return _caches[ index ] != null ? new SizeInfo( _caches[ index ].getWidth() , _caches[ index ].getHeight() )
-                : null;
+        return _caches[ index ] != null ? new SizeInfo( _caches[ index ].getWidth() ,
+                _caches[ index ].getHeight() ) : null;
     }
 
     private void runCleanUp( final SurfaceHolder holder , final Paint p ) {
         final TextCleanUpState state =
-                TextCleanUpState.getInstance( _config.direction , _offset , _surfaceSize , nullSafeCacheSize( _index ) ,
-                        _index , _caches.length );
+                TextCleanUpState.getInstance( _config.direction , _offset , _surfaceSize ,
+                        nullSafeCacheSize( _index ) , _index , _caches.length );
 
         if ( state.needCleanUp ) {
             final long t = SystemClock.elapsedRealtime();
@@ -205,11 +210,15 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
             final Interpolator i = new AccelerateDecelerateInterpolator();
 
             while ( !_willCancelCleanUp ) {
-                final float diff = Math.min( 1f * ( SystemClock.elapsedRealtime() - t ) / DURATION_CLEAN_UP , 1f );
+                final float diff =
+                        Math.min( 1f * ( SystemClock.elapsedRealtime() - t ) / DURATION_CLEAN_UP ,
+                                1f );
 
                 final Canvas c_ = holder.lockCanvas();
 
-                _offset = state.srcOffset + ( state.dstOffset - state.srcOffset ) * i.getInterpolation( diff );
+                _offset =
+                        state.srcOffset + ( state.dstOffset - state.srcOffset )
+                                * i.getInterpolation( diff );
 
                 draw( c_ , p );
 
@@ -265,7 +274,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceChanged( final SurfaceHolder holder , final int format , final int width , final int height ) {
+    public void surfaceChanged( final SurfaceHolder holder , final int format , final int width ,
+            final int height ) {
         _surfaceSize = new SizeInfo( width , height );
 
         if ( !_initialized ) {
@@ -292,7 +302,8 @@ public class CoreTextCallback implements SurfaceHolder.Callback {
                             for ( int delta = -1 ; delta <= 1 ; delta++ ) {
                                 if ( _index + delta >= 0 && _index + delta < _caches.length ) {
                                     _caches[ _index + delta ] = null;
-                                    _caches[ _index + delta ] = buildCache( p , _sources.get( _index + delta ) );
+                                    _caches[ _index + delta ] =
+                                            buildCache( p , _sources.get( _index + delta ) );
                                 }
                             }
 

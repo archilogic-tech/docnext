@@ -6,8 +6,8 @@ import android.graphics.PointF;
 import android.os.SystemClock;
 
 public class CoreImageCleanupValue {
-    private static final long DURATION_SHORT = 400L;
-    private static final long DURATION_LONG = 500L;
+    private static final long DURATION_SHORT = 200L;
+    private static final long DURATION_LONG = 1000L;
 
     static CoreImageCleanupValue getDoubleTapInstance( final CoreImageMatrix matrix ,
             final SizeInfo surface , final float minScale , final float maxScale ,
@@ -30,8 +30,8 @@ public class CoreImageCleanupValue {
 
     static CoreImageCleanupValue getFlingInstance( final CoreImageMatrix matrix ,
             final PointF velocity ) {
-        return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx + velocity.x / 3 ,
-                matrix.ty + velocity.y / 3 , true , DURATION_LONG );
+        return new CoreImageCleanupValue( matrix , matrix.scale , matrix.tx + velocity.x / 2 ,
+                matrix.ty + velocity.y / 2 , true , DURATION_LONG );
     }
 
     static CoreImageCleanupValue getInstance( final CoreImageMatrix matrix ,
