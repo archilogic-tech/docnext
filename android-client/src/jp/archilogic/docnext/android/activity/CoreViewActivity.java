@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -255,6 +256,19 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         super.onDestroy();
 
         unregisterReceiver( _remoteProviderReceiver );
+    }
+
+    @Override
+    public boolean onKeyDown( final int keyCode , final KeyEvent event ) {
+        if ( keyCode == KeyEvent.KEYCODE_BACK ) {
+            if ( _menu.getVisibility() != View.GONE ) {
+                toggleMenu();
+
+                return true;
+            }
+        }
+
+        return super.onKeyDown( keyCode , event );
     }
 
     @Override

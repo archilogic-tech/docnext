@@ -100,6 +100,12 @@ public class MainActivity extends Activity {
                 requestDocument( 12 );
             }
         } );
+        findViewById( R.id.button3 ).setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( final View v ) {
+                requestDocument( 15 );
+            }
+        } );
         findViewById( R.id.reset ).setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( final View v ) {
