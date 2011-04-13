@@ -16,11 +16,13 @@ public class ScaleGestureDetectorWrapper {
     private Method _getFocusXMethod;
     private Method _getFocusYMethod;
     private Method _getScaleFactorMethod;
+    private Method _isInProgressMethod;
     private Method _onTouchEventMethod;
 
     private final InvocationHandler _delegateListenerHandler = new InvocationHandler() {
         @Override
-        public Object invoke( final Object proxy , final Method method , final Object[] args ) throws Throwable {
+        public Object invoke( final Object proxy , final Method method , final Object[] args )
+                throws Throwable {
             final String name = method.getName();
 
             if ( name.equals( "onScale" ) ) {
@@ -37,7 +39,8 @@ public class ScaleGestureDetectorWrapper {
         }
     };
 
-    public ScaleGestureDetectorWrapper( final Context context , final OnScaleGestureWrapperListener listener ) {
+    public ScaleGestureDetectorWrapper( final Context context ,
+            final OnScaleGestureWrapperListener listener ) {
         try {
             if ( Build.VERSION.SDK_INT >= 8 ) {
                 _listener = listener;
@@ -45,17 +48,19 @@ public class ScaleGestureDetectorWrapper {
                 final Class< ? > listenerClass =
                         Class.forName( "android.view.ScaleGestureDetector$OnScaleGestureListener" );
                 final Object listenerProxy =
-                        Proxy.newProxyInstance( getClass().getClassLoader() , new Class[] { listenerClass } ,
-                                _delegateListenerHandler );
+                        Proxy.newProxyInstance( getClass().getClassLoader() ,
+                                new Class[] { listenerClass } , _delegateListenerHandler );
 
-                final Class< ? > instanceClass = Class.forName( "android.view.ScaleGestureDetector" );
+                final Class< ? > instanceClass =
+                        Class.forName( "android.view.ScaleGestureDetector" );
 
                 _delegateInstance =
-                        instanceClass.getConstructor( Context.class , listenerClass ).newInstance( context ,
-                                listenerProxy );
+                        instanceClass.getConstructor( Context.class , listenerClass ).newInstance(
+                                context , listenerProxy );
                 _getFocusXMethod = instanceClass.getMethod( "getFocusX" );
                 _getFocusYMethod = instanceClass.getMethod( "getFocusY" );
                 _getScaleFactorMethod = instanceClass.getMethod( "getScaleFactor" );
+                _isInProgressMethod = instanceClass.getMethod( "isInProgress" );
                 _onTouchEventMethod = instanceClass.getMethod( "onTouchEvent" , MotionEvent.class );
             }
         } catch ( final ClassNotFoundException e ) {
@@ -110,6 +115,20 @@ public class ScaleGestureDetectorWrapper {
             }
         } else {
             return 0f;
+        }
+    }
+
+    public boolean isInProgress() {
+        if ( _delegateInstance != null ) {
+            try {
+                return ( Boolean ) _isInProgressMethod.invoke( _delegateInstance );
+            } catch ( final IllegalAccessException e ) {
+                throw new RuntimeException( e );
+            } catch ( final InvocationTargetException e ) {
+                throw new RuntimeException( e );
+            }
+        } else {
+            return false;
         }
     }
 

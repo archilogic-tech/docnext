@@ -15,6 +15,11 @@ public class CoreImageMatrix {
         ty = Math.min( Math.max( ty , surface.height - page.height * scale ) , 0 );
     }
 
+    boolean isInPage( final SizeInfo surface , final SizeInfo page ) {
+        return tx <= 0 && tx >= surface.width - page.width * scale && ty <= 0
+                && ty >= surface.height - page.height * scale;
+    }
+
     float length( final float length ) {
         return length * scale;
     }

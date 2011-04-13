@@ -116,6 +116,41 @@ public class CoreImageState {
         return null;
     }
 
+    private void checkCleanup() {
+        CoreImageCorner corner = null;
+
+        if ( _preventCheckChangePage ) {
+            _preventCheckChangePage = false;
+        } else if ( _willGoNextPage ) {
+            _willGoNextPage = false;
+
+            System.err.println( "willGoNext" );
+
+            changeToNextPage();
+            corner = direction.getCorner( true );
+        } else if ( _willGoPrevPage ) {
+            _willGoPrevPage = false;
+
+            changeToPrevPage();
+            corner = direction.getCorner( false );
+        } else {
+            final float tx = matrix.tx;
+            final float scale = matrix.scale;
+
+            final Boolean isNext = checkChangePage();
+
+            if ( isNext != null ) {
+                System.err.println( "*** " + tx + ", " + scale );
+
+                corner = direction.getCorner( isNext );
+            }
+        }
+
+        _cleanup =
+                CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize , _minScale ,
+                        _maxScale , corner );
+    }
+
     void doubleTap( final PointF point ) {
         _cleanup =
                 CoreImageCleanupValue.getDoubleTapInstance( matrix , surfaceSize , _minScale ,
@@ -143,7 +178,8 @@ public class CoreImageState {
     }
 
     void fling( final PointF velocity ) {
-        if ( !shouldChangePage() && Math.hypot( velocity.x , velocity.y ) > 1000 ) {
+        if ( matrix.isInPage( surfaceSize , pageSize )
+                && Math.hypot( velocity.x , velocity.y ) > 1000 ) {
             _cleanup = CoreImageCleanupValue.getFlingInstance( matrix , velocity );
         }
     }
@@ -192,6 +228,33 @@ public class CoreImageState {
         }
     }
 
+    private void runCleanup() {
+        float elapsed = 1f * ( SystemClock.elapsedRealtime() - _cleanup.start ) / _cleanup.duration;
+        boolean willFinish = false;
+
+        if ( elapsed > 1f ) {
+            elapsed = 1f;
+            willFinish = true;
+        }
+
+        matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
+                _interpolator.getInterpolation( elapsed );
+        matrix.tx =
+                _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX )
+                        * _interpolator.getInterpolation( elapsed );
+        matrix.ty =
+                _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY )
+                        * _interpolator.getInterpolation( elapsed );
+
+        if ( _cleanup.shouldAdjust ) {
+            matrix.adjust( surfaceSize , pageSize );
+        }
+
+        if ( willFinish ) {
+            _cleanup = null;
+        }
+    }
+
     void setOnPageChangedListener( final OnPageChangedListener l ) {
         _pageChangedListener = l;
     }
@@ -208,32 +271,16 @@ public class CoreImageState {
         _loader = loader;
     }
 
-    private boolean shouldChangePage() {
-        return direction.shouldChangeToNext( this ) && hasNextPage()
-                || direction.shouldChangeToPrev( this ) && hasPrevPage();
-    }
-
     void tap( final PointF point ) {
         final int THREASHOLD = 4;
 
-        int dx = 0;
-        int dy = 0;
+        final float x = point.x - matrix.tx;
+        final float y = point.y - matrix.ty;
+        final int w = surfaceSize.width / THREASHOLD;
+        final int h = surfaceSize.height / THREASHOLD;
 
-        if ( point.x - matrix.tx < surfaceSize.width / THREASHOLD ) {
-            dx = -1;
-        }
-
-        if ( point.x - matrix.tx > pageSize.width * matrix.scale - surfaceSize.width / THREASHOLD ) {
-            dx = 1;
-        }
-
-        if ( point.y - matrix.ty < surfaceSize.height / THREASHOLD ) {
-            dy = -1;
-        }
-
-        if ( point.y - matrix.ty > surfaceSize.height - surfaceSize.height / THREASHOLD ) {
-            dy = 1;
-        }
+        final int dx = x < w ? -1 : x > pageSize.width * matrix.scale - w ? 1 : 0;
+        final int dy = y < h ? -1 : y > pageSize.height * matrix.scale - h ? 1 : 0;
 
         final int delta = dx * direction.toXSign() + dy * direction.toYSign();
 
@@ -252,60 +299,11 @@ public class CoreImageState {
         try {
             if ( !isInteracting ) {
                 if ( _cleanup == null ) {
-                    CoreImageCorner corner = null;
-
-                    if ( _preventCheckChangePage ) {
-                        _preventCheckChangePage = false;
-                    } else if ( _willGoNextPage ) {
-                        _willGoNextPage = false;
-
-                        changeToNextPage();
-                        corner = direction.getCorner( true );
-                    } else if ( _willGoPrevPage ) {
-                        _willGoPrevPage = false;
-
-                        changeToPrevPage();
-                        corner = direction.getCorner( false );
-                    } else {
-                        final Boolean isNext = checkChangePage();
-
-                        if ( isNext != null ) {
-                            corner = direction.getCorner( isNext );
-                        }
-                    }
-
-                    _cleanup =
-                            CoreImageCleanupValue.getInstance( matrix , surfaceSize , pageSize ,
-                                    _minScale , _maxScale , corner );
+                    checkCleanup();
                 }
 
                 if ( _cleanup != null ) {
-                    float elapsed =
-                            1f * ( SystemClock.elapsedRealtime() - _cleanup.start )
-                                    / _cleanup.duration;
-                    boolean willFinish = false;
-
-                    if ( elapsed > 1f ) {
-                        elapsed = 1f;
-                        willFinish = true;
-                    }
-
-                    matrix.scale = _cleanup.srcScale + ( _cleanup.dstScale - _cleanup.srcScale ) * //
-                            _interpolator.getInterpolation( elapsed );
-                    matrix.tx =
-                            _cleanup.srcX + ( _cleanup.dstX - _cleanup.srcX )
-                                    * _interpolator.getInterpolation( elapsed );
-                    matrix.ty =
-                            _cleanup.srcY + ( _cleanup.dstY - _cleanup.srcY )
-                                    * _interpolator.getInterpolation( elapsed );
-
-                    if ( _cleanup.shouldAdjust ) {
-                        matrix.adjust( surfaceSize , pageSize );
-                    }
-
-                    if ( willFinish ) {
-                        _cleanup = null;
-                    }
+                    runCleanup();
                 }
             } else {
                 _cleanup = null;

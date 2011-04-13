@@ -45,6 +45,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     private GestureDetector _gestureDetector;
     private ScaleGestureDetectorWrapper _scaleGestureDetector;
+    private boolean _isJustAfterScale = false;
 
     private final OnGestureListener _gestureListener = new OnGestureListener() {
         @Override
@@ -55,7 +56,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         @Override
         public boolean onFling( final MotionEvent e1 , final MotionEvent e2 ,
                 final float velocityX , final float velocityY ) {
-            _view.onFlingGesture( new PointF( velocityX , velocityY ) );
+            if ( _isJustAfterScale ) {
+                _isJustAfterScale = false;
+            } else {
+                _view.onFlingGesture( new PointF( velocityX , velocityY ) );
+            }
 
             return true;
         }
@@ -68,7 +73,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         @Override
         public boolean onScroll( final MotionEvent e1 , final MotionEvent e2 ,
                 final float distanceX , final float distanceY ) {
-            _view.onDragGesture( new PointF( distanceX , distanceY ) );
+            if ( _isJustAfterScale ) {
+                _isJustAfterScale = false;
+            } else {
+                _view.onDragGesture( new PointF( distanceX , distanceY ) );
+            }
 
             return true;
         }
@@ -86,9 +95,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
     private final OnDoubleTapListener _doubleTapListener = new OnDoubleTapListener() {
         @Override
         public boolean onDoubleTap( final MotionEvent e ) {
-            // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
-            _view.onGestureEnd();
-            _view.onDoubleTapGesture( new PointF( e.getX() , e.getY() ) );
+            if ( _isJustAfterScale ) {
+                _isJustAfterScale = false;
+            } else {
+                // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
+                _view.onGestureEnd();
+                _view.onDoubleTapGesture( new PointF( e.getX() , e.getY() ) );
+            }
 
             return true;
         }
@@ -100,9 +113,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         @Override
         public boolean onSingleTapConfirmed( final MotionEvent e ) {
-            // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
-            _view.onGestureEnd();
-            _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
+            if ( _isJustAfterScale ) {
+                _isJustAfterScale = false;
+            } else {
+                // hack for this method called before ACTION_UP (actually invoked by ACTION_DOWN)
+                _view.onGestureEnd();
+                _view.onTapGesture( new PointF( e.getX() , e.getY() ) );
+            }
 
             return true;
         }
@@ -125,6 +142,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
                 @Override
                 public void onScaleEnd( final ScaleGestureDetectorWrapper detector ) {
+                    _isJustAfterScale = true;
                 }
             };
 
@@ -295,10 +313,27 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         event.offsetLocation( -v.getLeft() , -v.getTop() );
 
-        _scaleGestureDetector.onTouchEvent( event );
-        _gestureDetector.onTouchEvent( event );
+        if ( _scaleGestureDetector.isInProgress() ) {
+            _scaleGestureDetector.onTouchEvent( event );
+        } else {
+            _scaleGestureDetector.onTouchEvent( event );
+            _gestureDetector.onTouchEvent( event );
+        }
+
+        // _scaleGestureDetector.onTouchEvent( event );
+
+        // if ( !_scaleGestureDetector.isInProgress() ) {
+        // _gestureDetector.onTouchEvent( event );
+        // }
 
         return true;
+
+        // return _scaleGestureDetector.onTouchEvent( event ) || _gestureDetector.onTouchEvent( event );
+
+        // _scaleGestureDetector.onTouchEvent( event );
+        // _gestureDetector.onTouchEvent( event );
+
+        // return true;
     }
 
     private void toggleMenu() {

@@ -102,7 +102,7 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
         _surfaceView.getHolder().addCallback( _callback = new CoreTextCallback( background ) );
 
-        setConfig( _config = new CoreTextConfig() );
+        _callback.setConfig( _config = new CoreTextConfig() );
 
         _toggleJustifyButton.setOnClickListener( _toggleJustifyButtonClick );
         _changeLineBreakRuleButton.setOnClickListener( _changeLineBreakRuleButtonClick );
@@ -182,10 +182,6 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void saveState( final Bundle state ) {
-    }
-
-    public void setConfig( final CoreTextConfig c ) {
-        _callback.setConfig( c );
     }
 
     @Override
