@@ -14,7 +14,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -28,23 +27,65 @@ public class BookmarkView extends NavigationView implements HasPage {
     private ListView _listView;
     private ArrayAdapter< BookmarkInfo > _adapter;
 
-    private Button _button;
+    private LinearLayout _addButton;
 
     public BookmarkView( final Context context ) {
         super( context );
         
-        setOrientation( VERTICAL );
         Log.d( TAG , "BookmarkView" );
     }
     
-    private int dp( final float value ) {
-        final float density = getResources().getDisplayMetrics().density;
+    private ArrayAdapter< BookmarkInfo > buildAdapter() {
+        return new ArrayAdapter< BookmarkInfo >( getContext(), R.layout.navigation_textview ) {
+            public View getView( final int position , View convertView , final ViewGroup parent ) {
+                return buildRow( getItem( position ) );
+            }
+        };
+    }
 
-        return Math.round( value * density );
+    private View buildAddButton() {
+        LinearLayout layout = new LinearLayout( getContext() );
+        layout.setGravity( Gravity.CENTER );
+
+        layout.setOnClickListener( buildAddButtonClickListener() );
+        
+        ImageView image = new ImageView( getContext() );
+        image.setImageResource( R.drawable.button_add );
+        image.setLayoutParams( new LinearLayout.LayoutParams(
+                dp( 30 ) , dp( 30 ) ) );
+        layout.addView( image );
+        
+        TextView textView = new TextView( getContext() );
+        textView.setText( "add a bookmark" );
+        textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
+        layout.addView( textView );
+
+        _addButton = layout;
+        setButtonAvailability();
+        return layout;
     }
     
+    private OnClickListener buildAddButtonClickListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                BookmarkInfo bookmark = new BookmarkInfo( _page );
+                List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
+                if ( !bookmarks.contains( bookmark ) ) { 
+                    bookmarks.add( bookmark );
+                    Kernel.getLocalProvider().setBookmarkInfo( _id , bookmarks );
+                    bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
+                    _adapter.clear();
+                    for ( BookmarkInfo element : bookmarks ) {
+                        _adapter.add( element );
+                    }
+                }
+                setButtonAvailability();
+            }
+        };
+    }
     
-    private View getRow( final BookmarkInfo bookmark ) {
+    private View buildRow( final BookmarkInfo bookmark ) {
         LinearLayout layout = new LinearLayout( getContext() );
         layout.setOrientation( LinearLayout.HORIZONTAL );
         
@@ -67,14 +108,14 @@ public class BookmarkView extends NavigationView implements HasPage {
         textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
         page.setLayoutParams( new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT , 1 ) );
-//        page.setPadding( 0 , 0 , dp( 50 ) , 0 );
+        page.setPadding( 0 , 0 , dp( 50 ) , 0 );
         page.setGravity( Gravity.RIGHT );
         page.setOnClickListener( clickListener );
         layout.addView( page );
         
         ImageView deleteButton = new ImageView( getContext() );
         deleteButton.setLayoutParams( new LinearLayout.LayoutParams(
-                dp( 30 ) , dp( 30 ) ));
+                dp( 30 ) , dp( 30 ) ) );
         deleteButton.setImageResource( R.drawable.button_delete );
         deleteButton.setScaleType( ScaleType.FIT_CENTER );
         deleteButton.setOnClickListener( new OnClickListener() {
@@ -93,45 +134,17 @@ public class BookmarkView extends NavigationView implements HasPage {
         return layout;
     }
 
-    private ArrayAdapter< BookmarkInfo > getAdapter() {
-        return new ArrayAdapter< BookmarkInfo >( getContext(), R.layout.navigation_textview ) {
-            public View getView( final int position , View convertView , final ViewGroup parent ) {
-                return getRow( getItem( position ) );
-            }
-        };
+    private int dp( final float value ) {
+        final float density = getResources().getDisplayMetrics().density;
+
+        return Math.round( value * density );
     }
  
     public void init() {
-        initAddButton();
+        addView( buildAddButton() );
         initListView();
     }
 
-    private void initAddButton() {
-        _button = new Button( getContext() );
-        
-        _button.setText( "add bookmark" );
-        if ( Kernel.getLocalProvider().getBookmarkInfo( _id ).contains( new BookmarkInfo( _page ) ) ) {
-            _button.setEnabled( false );
-        }
-        _button.setOnClickListener( new OnClickListener(){
-            @Override
-            public void onClick( View v ) {
-                BookmarkInfo bookmark = new BookmarkInfo( _page );
-                List< BookmarkInfo > bookmarks =Kernel.getLocalProvider().getBookmarkInfo( _id );
-                if ( !bookmarks.contains( bookmark ) ) { 
-                    bookmarks.add( bookmark );
-                    Kernel.getLocalProvider().setBookmarkInfo( _id , bookmarks );
-                    bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
-                    _adapter.clear();
-                    for ( BookmarkInfo element : bookmarks ) {
-                        _adapter.add( element );
-                    }
-                }
-                setButtonAvailability();
-            }});
-        addView( _button );
-    }
-    
     private void initListView() {
         List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
         if ( bookmarks == null ) {
@@ -141,7 +154,7 @@ public class BookmarkView extends NavigationView implements HasPage {
         }
 
         _listView = new ListView( getContext() );
-        _adapter = getAdapter(); 
+        _adapter = buildAdapter(); 
         for ( BookmarkInfo bookmark : bookmarks ) {
             _adapter.add( bookmark );
         }
@@ -150,11 +163,11 @@ public class BookmarkView extends NavigationView implements HasPage {
     }
     
     private void setButtonAvailability() {
-        _button.setEnabled( true );
+        _addButton.setEnabled( true );
         List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
         for ( BookmarkInfo bookmark : bookmarks ) {
             if ( _page == bookmark.page ) {
-                _button.setEnabled( false );
+                _addButton.setEnabled( false );
             }
         }
     }
