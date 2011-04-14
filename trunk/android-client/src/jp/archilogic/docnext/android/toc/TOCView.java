@@ -4,15 +4,12 @@ import java.util.List;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
-import jp.archilogic.docnext.android.activity.CoreViewActivity;
 import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.info.TOCElement;
-import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.Receiver;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -44,13 +41,8 @@ public class TOCView extends NavigationView {
         @Override
         public void onItemClick( final AdapterView< ? > av , final View v , final int arg2 ,
                 final long arg3 ) {
-            final Intent intent = new Intent();
-            int page = Kernel.getLocalProvider().getTableOfContentsInfo(_id ).get( arg2 ).page; 
-            if ( !Kernel.getLocalProvider().isAllImageExists( _id , page ) ) {
-                return;
-            }
-            intent.putExtra( CoreViewActivity.EXTRA_PAGE , page );
-            _delegate.changeCoreViewType( DocumentType.IMAGE , intent );
+            int page = Kernel.getLocalProvider().getTableOfContentsInfo(_id ).get( arg2 ).page;
+            goTo( page );
         }
     };
 

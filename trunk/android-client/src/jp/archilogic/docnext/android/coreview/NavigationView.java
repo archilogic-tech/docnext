@@ -1,15 +1,20 @@
 package jp.archilogic.docnext.android.coreview;
 
+import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.activity.CoreViewActivity;
+import jp.archilogic.docnext.android.meta.DocumentType;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 
-public abstract class NavigationView extends LinearLayout implements CoreView {
+public abstract class NavigationView extends LinearLayout implements CoreView , HasPage {
 
     protected CoreViewDelegate _delegate;
     protected long _id;
+    protected int _page;
 
     public NavigationView( Context context ) {
         super( context );
@@ -28,12 +33,17 @@ public abstract class NavigationView extends LinearLayout implements CoreView {
     }
 
     @Override
+    public int getPage() {
+        return _page;
+    }
+    
+    public abstract void init();
+
+    @Override
     public void onDoubleTapGesture( PointF point ) {
         // TODO Auto-generated method stub
         
     }
-
-    public abstract void init();
 
     @Override
     public void onDragGesture( PointF delta ) {
@@ -76,6 +86,15 @@ public abstract class NavigationView extends LinearLayout implements CoreView {
         // TODO Auto-generated method stub
         
     }
+    
+    protected void goTo( int page ) {
+        if ( !Kernel.getLocalProvider().isAllImageExists( _id , page ) ) {
+            return;
+        }
+        final Intent intent = new Intent();
+        intent.putExtra( CoreViewActivity.EXTRA_PAGE , page );
+        _delegate.changeCoreViewType( DocumentType.IMAGE , intent );
+    }
 
     @Override
     public void onTapGesture( PointF point ) {
@@ -109,5 +128,10 @@ public abstract class NavigationView extends LinearLayout implements CoreView {
     @Override
     public void setIds( long[] ids ) {
         _id = ids[ 0 ];
+    }
+    
+    @Override
+    public void setPage( int page ) {
+        _page = page;
     }
 }
