@@ -33,7 +33,7 @@ public abstract class NavigationView extends LinearLayout implements CoreView {
         
     }
 
-    protected abstract void init();
+    public abstract void init();
 
     @Override
     public void onDragGesture( PointF delta ) {
@@ -104,7 +104,6 @@ public abstract class NavigationView extends LinearLayout implements CoreView {
     @Override
     public void setDelegate( CoreViewDelegate delegate ) {
         _delegate = delegate;
-        init();
     }
     
     @Override

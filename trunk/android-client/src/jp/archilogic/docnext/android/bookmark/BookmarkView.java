@@ -98,7 +98,7 @@ public class BookmarkView extends NavigationView implements HasPage {
         return _page;
     }
     
-    protected void init() {
+    public void init() {
         initAddButton();
         initListView();
     }
