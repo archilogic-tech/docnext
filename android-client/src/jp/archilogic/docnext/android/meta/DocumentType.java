@@ -4,7 +4,7 @@ import jp.archilogic.docnext.android.bookmark.BookmarkView;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
-import jp.archilogic.docnext.android.thumnail.GalleryView;
+import jp.archilogic.docnext.android.thumnail.ThumbnailView;
 import jp.archilogic.docnext.android.toc.TOCView;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
@@ -21,7 +21,7 @@ public enum DocumentType {
         case TOC:
             return new TOCView( context );
         case THUMNAIL:
-            return new GalleryView( context );
+            return new ThumbnailView( context );
         case BOOKMARK:
             return new BookmarkView( context );
         default:
@@ -33,7 +33,7 @@ public enum DocumentType {
         switch ( this ) {
         case IMAGE:
             return new FragmentType[] { FragmentType.TEXT , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMNAIL , FragmentType.BOOKMARKLIST };
+                    FragmentType.THUMNAIL };
         case TEXT:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TOC , FragmentType.BOOKMARK ,
                     FragmentType.THUMNAIL };
@@ -51,7 +51,7 @@ public enum DocumentType {
     }
 
     public FragmentType[] getSecondarySwitchFragment() {
-        return new FragmentType[] { FragmentType.HOME , FragmentType.SETTING , FragmentType.COMMENT };
+        return new FragmentType[] { FragmentType.HOME , FragmentType.SETTING , FragmentType.BOOKMARKLIST };
     }
 
     public FragmentType[] getSubSecondarySwitchFragment() {

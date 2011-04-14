@@ -5,8 +5,7 @@ import java.util.List;
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.activity.CoreViewActivity;
-import jp.archilogic.docnext.android.coreview.CoreView;
-import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
+import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.task.DownloadTask;
@@ -14,18 +13,20 @@ import jp.archilogic.docnext.android.task.Receiver;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PointF;
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class TOCView extends FrameLayout implements CoreView {
+public class TOCView extends NavigationView {
     private class DownloadReceiver implements Receiver< Void > {
         @Override
         public void error( final TaskErrorType error ) {
@@ -35,119 +36,84 @@ public class TOCView extends FrameLayout implements CoreView {
 
         @Override
         public void receive( final Void result ) {
-            tocList = Kernel.getLocalProvider().getTableOfContentsInfo( id );
-
-            for ( final TOCElement element : tocList ) {
-                tocArrayAdapter.add( element.text );
-            }
+            initListView();
         }
     }
 
-    private final ArrayAdapter< String > tocArrayAdapter;
-
-    private List< TOCElement > tocList;
-    private final OnItemClickListener mTcoClickListener = new OnItemClickListener() {
+    private final OnItemClickListener _itemClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick( final AdapterView< ? > av , final View v , final int arg2 ,
                 final long arg3 ) {
             final Intent intent = new Intent();
-            intent.putExtra( CoreViewActivity.EXTRA_PAGE , tocList.get( arg2 ).page );
-            delegate.changeCoreViewType( DocumentType.IMAGE , intent );
+            int page = Kernel.getLocalProvider().getTableOfContentsInfo(_id ).get( arg2 ).page; 
+            if ( !Kernel.getLocalProvider().isAllImageExists( _id , page ) ) {
+                return;
+            }
+            intent.putExtra( CoreViewActivity.EXTRA_PAGE , page );
+            _delegate.changeCoreViewType( DocumentType.IMAGE , intent );
         }
     };
-    private CoreViewDelegate delegate;
-    private long id;
-
-    private final Context _context;
 
     public TOCView( final Context context ) {
         super( context );
-
-        _context = context;
-        LayoutInflater.from( context ).inflate( R.layout.toc , this , true );
-
-        final ListView tocListView = ( ListView ) findViewById( R.id.table_of_contents_listview );
-        tocArrayAdapter = new ArrayAdapter< String >( getContext() , R.layout.toc_title );
-        tocListView.setAdapter( tocArrayAdapter );
-        tocListView.setOnItemClickListener( mTcoClickListener );
     }
 
-    @Override
-    public void onDoubleTapGesture( final PointF point ) {
-    }
-
-    @Override
-    public void onDragGesture( final PointF delta ) {
-    }
-
-    @Override
-    public void onFlingGesture( final PointF velocity ) {
-    }
-
-    @Override
-    public void onGestureBegin() {
-    }
-
-    @Override
-    public void onGestureEnd() {
-    }
-
-    @Override
-    public void onMenuVisibilityChange( final boolean isMenuVisible ) {
-    }
-
-    @Override
-    public void onPause() {
-    }
-
-    @Override
-    public void onResume() {
-    }
-
-    @Override
-    public void onTapGesture( final PointF point ) {
-    }
-
-    @Override
-    public void onZoomGesture( final float scaleDelta , final PointF center ) {
-    }
-
-    @Override
-    public void restoreState( final Bundle state ) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void saveState( final Bundle state ) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setDelegate( final CoreViewDelegate argumentDelegate ) {
-        delegate = argumentDelegate;
-    }
-
-    @Override
-    public void setIds( final long[] ids ) {
-        id = ids[ 0 ];
-        setTOC();
-    }
-
-    private void setTOC() {
-        tocList = Kernel.getLocalProvider().getTableOfContentsInfo( id );
-
-        if ( tocList == null ) {
+    private void ensureTOC() {
+        if ( Kernel.getLocalProvider().getTableOfContentsInfo( _id ) == null ) {
             final Receiver< Void > receiver = new DownloadReceiver();
             final DownloadTask task =
                     Kernel.getRemoteProvider().getTableOfContentsInfo(
-                            _context.getApplicationContext() , receiver , id );
+                            getContext().getApplicationContext() , receiver , _id );
             task.execute();
-        } else {
-            for ( final TOCElement element : tocList ) {
-                tocArrayAdapter.add( element.text );
-            }
         }
+    }
+    
+    protected void init() {
+        ensureTOC();
+        initListView();
+    }
+
+    public void initListView() {
+        List< TOCElement >toc = Kernel.getLocalProvider().getTableOfContentsInfo( _id );
+        
+        if ( toc == null ) {
+            return;
+        }
+        
+        ListView listView = new ListView( getContext() );
+        ArrayAdapter < TOCElement > adapter  = new ArrayAdapter< TOCElement >( getContext() , R.layout.navigation_textview ) {
+          @Override
+          public View getView(int position , View convertView ,  ViewGroup parent ) {
+              LinearLayout layout;
+              layout = new LinearLayout( getContext() );
+              
+              layout.setOrientation( LinearLayout.HORIZONTAL );
+
+              TextView textView = new TextView( getContext() );
+              textView.setText( getItem( position ).text );
+              textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
+              textView.setLayoutParams( new LinearLayout.LayoutParams( 
+                      LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT ) );
+              layout.addView( textView );
+              
+              TextView page = new TextView( getContext() );
+              page.setText( String.valueOf( getItem( position ).page ) );
+              textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
+              page.setLayoutParams( new LinearLayout.LayoutParams( 
+                      LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT , 1 ) );
+              page.setPadding( 100 , 0 , 50 , 0 );
+              page.setGravity( Gravity.RIGHT );
+              layout.addView( page );
+              Log.d( "hoge" , "height: " + layout.getHeight() + " width:" + layout.getWidth() );
+              
+              return layout;
+          }
+        };
+        for ( TOCElement element : toc ) {
+            adapter.add( element );
+        }
+        listView.setAdapter( adapter );
+        listView.setOnItemClickListener( _itemClickListener );
+        addView( listView );
     }
 }

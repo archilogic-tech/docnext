@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
+import jp.archilogic.docnext.android.activity.CoreViewActivity;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.info.BookmarkInfo;
@@ -72,7 +73,11 @@ public class CoreViewMenu extends LinearLayout {
             return new OnClickListener() {
                 @Override
                 public void onClick( final View v ) {
-                    _delegate.changeCoreViewType( doc , new Intent() );
+                    Intent intent = new Intent();
+                    if ( _delegate.getCoreView() instanceof HasPage ) {
+                        intent.putExtra( CoreViewActivity.EXTRA_PAGE , ( ( HasPage ) _delegate.getCoreView() ).getPage() );
+                    }
+                    _delegate.changeCoreViewType( doc , intent );
                 }
             };
         } else {
