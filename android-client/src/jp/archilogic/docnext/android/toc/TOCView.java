@@ -68,7 +68,7 @@ public class TOCView extends NavigationView {
         }
     }
     
-    protected void init() {
+    public void init() {
         ensureTOC();
         initListView();
     }

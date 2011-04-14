@@ -21,7 +21,7 @@ public class ThumbnailView extends NavigationView {
         super( context );
     }
     
-    protected void init() {
+    public void init() {
         initCoverFlow();
     }
 

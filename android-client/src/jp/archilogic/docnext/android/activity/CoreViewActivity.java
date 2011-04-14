@@ -228,6 +228,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         if ( _view instanceof HasPage && extra.hasExtra( EXTRA_PAGE ) ) {
             ( ( HasPage ) _view ).setPage( extra.getIntExtra( EXTRA_PAGE , -1 ) );
         }
+        
+        if ( _view instanceof NavigationView ) {
+            ( ( NavigationView ) _view ).init(); 
+        }
 
         // TODO hack :( -- Change to use content holder for CoreView
         _menuStack.push( _menu );
