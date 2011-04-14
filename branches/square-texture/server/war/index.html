@@ -5,12 +5,12 @@
     <title>DocNext administrator console</title>
     <link rel="stylesheet" type="text/css" href="css/common.css">
     
-    <script type='text/javascript' src='dwr/engine.js'></script>
-    <script type='text/javascript' src='dwr/interface/DocumentService.js'></script>
-    <script type='text/javascript' src='dwr/util.js'></script>
-    <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
-    <script type='text/javascript' src='js/header.js'></script>
-    <script type='text/javascript' src='js/cookie.js'></script>
+    <script type="text/javascript" src="dwr/engine.js"></script>
+    <script type="text/javascript" src="dwr/interface/DocumentService.js"></script>
+    <script type="text/javascript" src="dwr/util.js"></script>
+
+    <script type="text/javascript" src="js/jquery-1.4.4.js"></script>
+    <script type="text/javascript" src="js/cookie.js"></script>
     <script type="text/javascript">
       window.onload = function() {
         getDataFromServer();
@@ -22,10 +22,10 @@
 	  }
 
       function moveToEdit(id) {
-        var str = 'document_id';
+        var str = "document_id";
         createCookie(str, id.toString(10), 1);      
  
-        window.location.href = "edit_info.html";
+        window.location.href = "edit.html";
       }
       	
       function getDataFromServerCallBack(dataFromServer) {
@@ -33,7 +33,8 @@
 	      var id = dataFromServer[i].id;
 	      var name = dataFromServer[i].name;
 	      
-	      $("#divTxt").append("<input type='button' value='" + name + id + "'" + " onclick='moveToEdit(" + id + ")'" + ">");
+	      var divContent = "<input type='button' value='" + name + id + "'" + " onclick='moveToEdit(" + id + ")'" + ">";
+	      $("#divTxt").append(divContent);
 	    }
 	  }
     </script>
