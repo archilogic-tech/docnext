@@ -8,9 +8,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.info.BookmarkInfo;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
@@ -26,6 +28,7 @@ import com.google.common.collect.Lists;
 
 public class LocalProviderImpl implements LocalProvider {
     private final LocalPathManager _pathManager = new LocalPathManager();
+    private final int TEXTURE_SIZE = 512;
 
     @Override
     public List< BookmarkInfo > getBookmarkInfo( final long id ) {
@@ -61,14 +64,14 @@ public class LocalProviderImpl implements LocalProvider {
                     text = array[ i ].text;
                     break;
                 }
-                if ( array[ i ].page <= bookmark.page && array[ i + 1 ].page >= bookmark.page ) {
+                if ( array[ i ].page <= bookmark.page && array[ i + 1 ].page > bookmark.page ) {
                     text = array[ i ].text;
                     break;
                 }
             }
             bookmark.text = text;
         }
-        return Arrays.asList( bookmarks );
+        return new LinkedList< BookmarkInfo >( Arrays.asList( bookmarks ) );
     }
 
     @Override
@@ -165,6 +168,23 @@ public class LocalProviderImpl implements LocalProvider {
         } else {
             return isCompleted( id );
         }
+    }
+    
+    public boolean isAllImageExists( final long id , final int page ) {
+        final ImageInfo image = Kernel.getLocalProvider().getImageInfo( id );
+
+        final int nx = image.width / TEXTURE_SIZE;
+        final int ny = image.height / TEXTURE_SIZE;
+
+        for ( int py = 0 ; py < ny ; py++ ) {
+            for ( int px = 0 ; px < nx ; px++ ) {
+                String path = Kernel.getLocalProvider().getImagePath( id , page , 0 , px , py );
+                if ( path == null ) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

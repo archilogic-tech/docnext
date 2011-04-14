@@ -7,6 +7,8 @@
     
     <string name="cannot_download_in_parallel">Can\'t download in parallel</string>
     
+    <string name="empty_bookmark">There is no bookmark</string>
+    
     <string name="table_of_contents">Table Of Contents</string>
     
     <string name="home">Home</string>

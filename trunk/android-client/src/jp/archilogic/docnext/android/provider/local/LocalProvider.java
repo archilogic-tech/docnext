@@ -57,6 +57,8 @@ public interface LocalProvider {
     boolean isCompleted( long id );
 
     boolean isImageExists( long id , int page );
+    
+    boolean isAllImageExists( long id , int page );
 
     void setBookmarkInfo( long id, List< BookmarkInfo > bookmarks );
     
