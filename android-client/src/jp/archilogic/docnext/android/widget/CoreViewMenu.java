@@ -13,6 +13,7 @@ import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ public class CoreViewMenu extends LinearLayout {
         CoreView getCoreView();
     }
 
+    private final String TAG = CoreViewMenu.class.getName();
     private final long _id;
     private final CoreViewMenuDelegate _delegate;
 
@@ -46,6 +48,7 @@ public class CoreViewMenu extends LinearLayout {
     }
 
     private void bindBookmarkMenuItemIcon() {
+        Log.d( TAG , "bindBookmarkMenuItemIcon" );
         if ( !( _delegate.getCoreView() instanceof HasPage ) ) {
             return;
         }
@@ -60,6 +63,9 @@ public class CoreViewMenu extends LinearLayout {
         final Set< BookmarkInfo > bookmark =
                 Sets.newTreeSet( Kernel.getLocalProvider().getBookmarkInfo( _id ) );
 
+        if ( _bookmarkMenuItem == null ) {
+            return;
+        }
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
 
         image.setImageResource( bookmark.contains( new BookmarkInfo( page ) ) ? R.drawable.button_bookmark_on

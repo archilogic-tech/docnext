@@ -215,7 +215,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
     public void changeCoreViewType( final DocumentType type , final Intent extra ) {
         _type = type;
 
-        _viewStack.push( _view );
+        // im anxious about memory usage
+        //_viewStack.push( _view );
         _rootViewGroup.removeView( ( View ) _view );
 
         _view = type.buildView( _self );
