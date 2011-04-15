@@ -39,15 +39,15 @@ public class CoreImageRenderer implements Renderer {
         void unload( int page );
     }
 
-    private final Context _context;
-    private final CoreImageState _state = new CoreImageState();
-    private final CoreImageRenderEngine _renderEngine = new CoreImageRenderEngine();
+    private Context _context;
+    private CoreImageState _state = new CoreImageState();
+    private CoreImageRenderEngine _renderEngine = new CoreImageRenderEngine();
 
     private final Queue< LoadBitmapTask > _bindQueue = Lists.newLinkedList();
     private final Queue< LoadBitmapTask > _unbindQueue = Lists.newLinkedList();
     private final ImageLoadQueue _imageLoadQueue = new ImageLoadQueue();
-    private final ExecutorService _executor = new ThreadPoolExecutor( 1 , 1 , 0L ,
-            TimeUnit.MILLISECONDS , _imageLoadQueue );
+    private ExecutorService _executor = new ThreadPoolExecutor( 1 , 1 , 0L , TimeUnit.MILLISECONDS ,
+            _imageLoadQueue );
     private final Map< Integer , List< LoadBitmapTask > > _tasks = Maps.newHashMap();
 
     int _fpsCounter = 0;
@@ -130,6 +130,20 @@ public class CoreImageRenderer implements Renderer {
         _state.isInteracting = true;
     }
 
+    void cleanup() {
+        _renderEngine.cleanup();
+        _executor.shutdownNow();
+
+        _context = null;
+        _state = null;
+        _renderEngine = null;
+        _bindQueue.clear();
+        _unbindQueue.clear();
+        _imageLoadQueue.clear();
+        _executor = null;
+        _tasks.clear();
+    }
+
     void doubleTap( final PointF point ) {
         _state.doubleTap( point );
     }
@@ -146,12 +160,12 @@ public class CoreImageRenderer implements Renderer {
         _state.fling( velocity );
     }
 
-    int getPage() {
-        return _state.page;
-    }
-
     CoreImageDirection getDirection() {
         return _state.direction;
+    }
+
+    int getPage() {
+        return _state.page;
     }
 
     @Override
@@ -174,12 +188,15 @@ public class CoreImageRenderer implements Renderer {
         _fpsCounter++;
         _frameSum += SystemClock.elapsedRealtime() - t;
         if ( _fpsCounter == 120 ) {
-            System.err.println( "FPS: " + 120.0 * 1000
-                    / ( SystemClock.elapsedRealtime() - _fpsTime ) + ", avg: " + _frameSum / 120.0 );
+            // System.err.println( "FPS: " + 120.0 * 1000
+            // / ( SystemClock.elapsedRealtime() - _fpsTime ) + ", avg: " + _frameSum / 120.0 );
 
             _fpsTime = SystemClock.elapsedRealtime();
             _fpsCounter = 0;
             _frameSum = 0;
+
+            System.err.println( "Mem: " + Runtime.getRuntime().freeMemory() + ", "
+                    + Runtime.getRuntime().maxMemory() );
         }
     }
 

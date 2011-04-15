@@ -20,7 +20,8 @@ import com.google.common.collect.Maps;
  */
 public class ImageLoadQueue implements BlockingQueue< Runnable > {
     // <Level, Map<Page, ... > >
-    private final SortedMap< Integer , SortedMap< Integer , Queue< LoadBitmapTask > > > _queue = Maps.newTreeMap();
+    private final SortedMap< Integer , SortedMap< Integer , Queue< LoadBitmapTask > > > _queue =
+            Maps.newTreeMap();
     private final ReentrantLock _lock = new ReentrantLock( true );
     private final Condition _notEmpty = _lock.newCondition();
 
@@ -38,7 +39,7 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
 
     @Override
     public void clear() {
-        throw new RuntimeException( "Not Implemented" );
+        _queue.clear();
     }
 
     @Override
@@ -67,8 +68,10 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
         try {
             int n = 0;
 
-            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask > > > map : _queue.entrySet() ) {
-                for ( final Entry< Integer , Queue< LoadBitmapTask > > entry : map.getValue().entrySet() ) {
+            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask > > > map : _queue
+                    .entrySet() ) {
+                for ( final Entry< Integer , Queue< LoadBitmapTask > > entry : map.getValue()
+                        .entrySet() ) {
                     final Queue< LoadBitmapTask > queue = entry.getValue();
 
                     c.addAll( queue );
@@ -116,7 +119,8 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
                 SortedMap< Integer , Queue< LoadBitmapTask > > levelMap = _queue.get( task.level );
 
                 if ( levelMap == null ) {
-                    _queue.put( task.level , levelMap = Maps.< Integer , Queue< LoadBitmapTask >> newTreeMap() );
+                    _queue.put( task.level ,
+                            levelMap = Maps.< Integer , Queue< LoadBitmapTask >> newTreeMap() );
                 }
 
                 Queue< LoadBitmapTask > pageQueue = levelMap.get( task.page );
@@ -140,7 +144,8 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
     }
 
     @Override
-    public boolean offer( final Runnable e , final long timeout , final TimeUnit unit ) throws InterruptedException {
+    public boolean offer( final Runnable e , final long timeout , final TimeUnit unit )
+            throws InterruptedException {
         throw new RuntimeException( "Not Implemented" );
     }
 
@@ -162,7 +167,8 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
     }
 
     @Override
-    public LoadBitmapTask poll( final long timeout , final TimeUnit unit ) throws InterruptedException {
+    public LoadBitmapTask poll( final long timeout , final TimeUnit unit )
+            throws InterruptedException {
         long nanos = unit.toNanos( timeout );
 
         final ReentrantLock lock = _lock;
@@ -198,8 +204,8 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
 
         for ( int delta = 0 ; ; delta++ ) {
             if ( _page + delta > levelMap.lastKey() && _page - delta < levelMap.firstKey() ) {
-                throw new RuntimeException( "page: " + _page + ", firstKey: " + levelMap.firstKey() + ", lastKey: "
-                        + levelMap.lastKey() );
+                throw new RuntimeException( "page: " + _page + ", firstKey: " + levelMap.firstKey()
+                        + ", lastKey: " + levelMap.lastKey() );
             }
 
             for ( final int sign : new int[] { 1 , -1 } ) {
@@ -301,8 +307,10 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
         try {
             int n = 0;
 
-            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask >> > levelMap : _queue.entrySet() ) {
-                for ( final Entry< Integer , Queue< LoadBitmapTask > > pageQueue : levelMap.getValue().entrySet() ) {
+            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask >> > levelMap : _queue
+                    .entrySet() ) {
+                for ( final Entry< Integer , Queue< LoadBitmapTask > > pageQueue : levelMap
+                        .getValue().entrySet() ) {
                     n += pageQueue.getValue().size();
                 }
             }
@@ -346,8 +354,10 @@ public class ImageLoadQueue implements BlockingQueue< Runnable > {
             final Object[] ret = new Object[ size() ];
 
             int n = 0;
-            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask >> > levelMap : _queue.entrySet() ) {
-                for ( final Entry< Integer , Queue< LoadBitmapTask > > pageQueue : levelMap.getValue().entrySet() ) {
+            for ( final Entry< Integer , SortedMap< Integer , Queue< LoadBitmapTask >> > levelMap : _queue
+                    .entrySet() ) {
+                for ( final Entry< Integer , Queue< LoadBitmapTask > > pageQueue : levelMap
+                        .getValue().entrySet() ) {
                     for ( final LoadBitmapTask task : pageQueue.getValue() ) {
                         ret[ n++ ] = task;
                     }

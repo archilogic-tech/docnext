@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.coreview.image;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -68,24 +69,25 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
     }
 
     LoadBitmapTask load() {
-        BufferedInputStream in = null;
+        InputStream is = null;
+        BufferedInputStream bis = null;
         try {
-            in =
-                    new BufferedInputStream(
+            bis =
+                    new BufferedInputStream( is =
                             FileUtils.openInputStream( new File( Kernel.getLocalProvider()
-                                    .getImagePath( _engine.id , page , level , px , py ) ) ) ,
-                            8 * 1024 );
+                                    .getImagePath( _engine.id , page , level , px , py ) ) ) );
 
             final Options o = new Options();
             o.inPreferredConfig = Config.RGB_565;
 
-            bitmap = BitmapFactory.decodeStream( in , null , o );
+            bitmap = BitmapFactory.decodeStream( bis , null , o );
 
             return this;
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         } finally {
-            IOUtils.closeQuietly( in );
+            IOUtils.closeQuietly( bis );
+            IOUtils.closeQuietly( is );
         }
     }
 
