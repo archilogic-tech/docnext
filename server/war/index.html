@@ -10,33 +10,9 @@
     <script type="text/javascript" src="dwr/util.js"></script>
 
     <script type="text/javascript" src="js/jquery-1.4.4.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/cookie.js"></script>
     <script type="text/javascript">
-      window.onload = function() {
-        getDataFromServer();
-      }
-	  function getDataFromServer() {
-	    DocumentService.findAll( {
-	      callback: getDataFromServerCallBack
-	    });
-	  }
-
-      function moveToEdit(id) {
-        var str = "document_id";
-        createCookie(str, id.toString(10), 1);      
- 
-        window.location.href = "edit.html";
-      }
-      	
-      function getDataFromServerCallBack(dataFromServer) {
-	    for (var i = 0; i < dataFromServer.length; i++) {
-	      var id = dataFromServer[i].id;
-	      var name = dataFromServer[i].name;
-	      
-	      var divContent = "<input type='button' value='" + name + id + "'" + " onclick='moveToEdit(" + id + ")'" + ">";
-	      $("#divTxt").append(divContent);
-	    }
-	  }
     </script>
   </head>
   <body>
@@ -46,7 +22,8 @@
 
   <div id="content">
   <p>
-    <a href="upload.html">Upload</a>
+    <a class="navi" href="upload.html">Upload</a>
+    <a class="navi" href="multiple_documents.html">Multiple Documents</a>
   </p>
 
   <form action="#" method="get" id="form1">

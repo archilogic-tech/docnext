@@ -15,6 +15,7 @@ import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.NotFoundException;
 import jp.archilogic.docnext.logic.PackManager;
 import jp.archilogic.docnext.logic.RepositoryManager;
+import net.arnx.jsonic.JSON;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,13 @@ public class DocumentService {
     private PackManager packManager;
     @Autowired
     private RepositoryManager repositoryManager;
+
+    public Long createDocument( String json ) {
+        Document doc = JSON.decode( json , Document.class );
+        doc.setName( "multiple documents" );
+        doc.processing = false;
+        return documentDao.create( doc );
+    }
 
     public List< DocumentResDto > findAll() {
         return ListConverter.toDtos( documentDao.findAlmostAll() , documentConverter );
@@ -100,7 +108,15 @@ public class DocumentService {
     public List< TOCElem > getTOC( final long id ) {
         return packManager.readTOC( id );
     }
-
+    
+    public void repack( final long id ) {
+        packManager.repack( id );
+    }
+    
+    public void setBinding( final long id , final String binding) {
+        packManager.writeBinding( id , binding);
+    }
+    
     public void setDividePage( final long id , final List< DividePage > dividePage ) {
         packManager.writeDividePage( id , dividePage );
     }
@@ -117,7 +133,7 @@ public class DocumentService {
         packManager.writeText( id , page , text.replaceAll( "\r\n" , "\n" )
                 .replaceAll( "\r" , "\n" ) );
     }
-
+    
     public void setTOC( final long id , final List< TOCElem > toc ) {
         packManager.writeTOC( id , toc );
     }

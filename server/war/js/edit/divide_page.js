@@ -32,4 +32,3 @@ function save() {
 
 	DocumentService.setDividePage(id, dividePageArray, function() {});
 }
-

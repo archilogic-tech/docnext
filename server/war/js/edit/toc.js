@@ -1,7 +1,6 @@
-var id = readCookie('document_id');
-
 $(document).ready(function(){
 	DocumentService.getTOC(id, setTOC);
+	addRow();
 });
 
 function setTOC(tocs) {
@@ -17,7 +16,7 @@ function addRow(part) {
 	var pageColumn = "<td><input type='text' class='page' style='width:80%;' value='" + part.page + "'></td>";
 	var deleteColumn = "<td><input type='button' value='-' onclick='deleteRow(this);'></td>"
 	
-	$("#tableOfContents").append("<tr>" + titleColumn + pageColumn +  deleteColumn + "</tr");
+	$("#tableOfContents").append("<tr>" + titleColumn + pageColumn +  deleteColumn + "</tr>");
 }
 
 function deleteRow(button) {
