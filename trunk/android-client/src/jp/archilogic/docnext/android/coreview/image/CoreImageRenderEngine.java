@@ -51,13 +51,19 @@ public class CoreImageRenderEngine {
     }
 
     void cleanup() {
-        for ( final PageInfo _page : _pages ) {
-            for ( final PageTextureInfo[][] texture : _page.textures ) {
-                for ( final PageTextureInfo[] element : texture ) {
-                    for ( int px = 0 ; px < element.length ; px++ ) {
-                        GLES10.glDeleteTextures( 1 , new int[] { element[ px ].id } , 0 );
+        for ( final PageInfo page : _pages ) {
+            for ( final PageTextureInfo[][] textures : page.textures ) {
+                final int n = textures.length * textures[ 0 ].length;
+                final int[] targets = new int[ n ];
+
+                int index = 0;
+                for ( final PageTextureInfo[] row : textures ) {
+                    for ( final PageTextureInfo elem : row ) {
+                        targets[ index++ ] = elem.id;
                     }
                 }
+
+                GLES10.glDeleteTextures( n , targets , 0 );
             }
         }
     }

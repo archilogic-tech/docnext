@@ -1,6 +1,6 @@
 package jp.archilogic.docnext.android.activity;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.CoreView;
@@ -8,7 +8,6 @@ import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.coreview.NeedCleanup;
-import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.service.DownloadService;
@@ -33,6 +32,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import com.google.common.collect.Lists;
+
 public class CoreViewActivity extends Activity implements CoreViewDelegate , CoreViewMenuDelegate {
     public static final String EXTRA_IDS =
             "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
@@ -44,9 +45,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     private ViewGroup _rootViewGroup;
     private CoreView _view;
-    private final Stack< CoreView > _viewStack = new Stack< CoreView >();
+    // private final Stack< CoreView > _viewStack = new Stack< CoreView >();
     private CoreViewMenu _menu;
-    private final Stack< CoreViewMenu > _menuStack = new Stack< CoreViewMenu >();
+    // private final Stack< CoreViewMenu > _menuStack = new Stack< CoreViewMenu >();
+    private final LinkedList< DocumentType > _stack = Lists.newLinkedList();
 
     private long[] _ids;
     private DocumentType _type;
@@ -174,33 +176,27 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     @Override
     public void back() {
-        if ( _viewStack.isEmpty() ) {
+        if ( _stack.isEmpty() ) {
             return;
         }
 
-        _rootViewGroup.removeView( ( View ) _view );
-        _view = _viewStack.pop();
-        if ( _view instanceof CoreImageView ) {
-            final CoreImageView stackedView = ( CoreImageView ) _view;
-            final int page = stackedView.getPage();
+        changeCoreViewType( _stack.removeLast() , new Intent() );
 
-            _rootViewGroup.removeView( ( View ) _view );
-            _view = DocumentType.IMAGE.buildView( _self );
-
-            _rootViewGroup.addView( ( View ) _view );
-
-            _view.setIds( _ids );
-            _view.setDelegate( _self );
-
-            ( ( HasPage ) _view ).setPage( page );
-        } else {
-            _rootViewGroup.addView( ( View ) _view );
-        }
-
-        // TODO hack :( -- Change to use content holder for CoreView
-        _rootViewGroup.removeView( _menu );
-        _menu = _menuStack.pop();
-        _rootViewGroup.addView( _menu );
+        /*
+         * _rootViewGroup.removeView( ( View ) _view ); _view = _viewStack.pop(); if ( _view instanceof CoreImageView )
+         * { final CoreImageView stackedView = ( CoreImageView ) _view; final int page = stackedView.getPage();
+         * 
+         * _rootViewGroup.removeView( ( View ) _view ); _view = DocumentType.IMAGE.buildView( _self );
+         * 
+         * _rootViewGroup.addView( ( View ) _view );
+         * 
+         * _view.setIds( _ids ); _view.setDelegate( _self );
+         * 
+         * ( ( HasPage ) _view ).setPage( page ); } else { _rootViewGroup.addView( ( View ) _view ); }
+         * 
+         * // TODO hack :( -- Change to use content holder for CoreView _rootViewGroup.removeView( _menu ); _menu =
+         * _menuStack.pop(); _rootViewGroup.addView( _menu );
+         */
     }
 
     private IntentFilter buildRemoteProviderReceiverFilter() {
@@ -217,9 +213,16 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
      */
     @Override
     public void changeCoreViewType( final DocumentType type , final Intent extra ) {
+        _stack.addLast( _type );
+
         _type = type;
 
-        _viewStack.push( _view );
+        // _viewStack.push( _view );
+
+        if ( _view instanceof NeedCleanup ) {
+            ( ( NeedCleanup ) _view ).cleanup();
+        }
+
         _rootViewGroup.removeView( ( View ) _view );
 
         _view = type.buildView( _self );
@@ -238,7 +241,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         }
 
         // TODO hack :( -- Change to use content holder for CoreView
-        _menuStack.push( _menu );
+        // _menuStack.push( _menu );
         _rootViewGroup.removeView( _menu );
         _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
@@ -320,9 +323,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _self = null;
         _rootViewGroup = null;
         _view = null;
-        _viewStack.clear();
+        // _viewStack.clear();
         _menu = null;
-        _menuStack.clear();
+        // _menuStack.clear();
+        _stack.clear();
         _gestureDetector = null;
         _scaleGestureDetector = null;
 
