@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 
 import jp.archilogic.docnext.bean.PropBean;
 import jp.archilogic.docnext.dao.DocumentDao;
-import jp.archilogic.docnext.dto.TOCElem;
 import jp.archilogic.docnext.entity.Document;
 import jp.archilogic.docnext.exception.EncryptedPDFException;
 import jp.archilogic.docnext.exception.MalformedPDFException;
@@ -21,8 +20,7 @@ import jp.archilogic.docnext.logic.PDFAnnotationParser.PageAnnotationInfo;
 import jp.archilogic.docnext.logic.PDFTextParser.PageTextInfo;
 import jp.archilogic.docnext.logic.ProgressManager.ErrorType;
 import jp.archilogic.docnext.logic.ProgressManager.Step;
-import jp.archilogic.docnext.logic.ThumbnailCreator.CreateResult;
-import jp.archilogic.docnext.util.FileUtil;
+import jp.archilogic.docnext.logic.ThumbnailCreator.PDFInfo;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -83,8 +81,6 @@ public class UploadProcessor {
         }
 
         private boolean procArchive() throws Exception {
-            packManager.createStruct( doc.id );
-
             final ZipFile file = new ZipFile( tempPath );
 
             final List< String > paths = Lists.newArrayList();
@@ -116,7 +112,7 @@ public class UploadProcessor {
                     return false;
                 }
 
-                final String tmpPath = prop.tmp + "/tmp.png";
+                final String tmpPath = prop.tmp + "tmp.png";
 
                 final OutputStream out = new FileOutputStream( tmpPath );
                 ImageIO.write( image , "png" , out );
@@ -140,7 +136,6 @@ public class UploadProcessor {
 
         private boolean procDocument() {
             final String tempPdfPath = saveAsPdf( doc.getFileName() , tempPath , doc.id );
-            final String ppmPath = FileUtil.createSameDirPath( tempPath , "ppm" );
 
             try {
                 pdfAnnotationParser.checkCanParse( tempPdfPath );
@@ -157,26 +152,25 @@ public class UploadProcessor {
             parseAnnotation( tempPdfPath );
 
             final String cleanedPath =
-                    FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator + //
-                            "cleaned" + doc.id + ".pdf";
+                    FilenameUtils.getFullPathNoEndSeparator( tempPdfPath ) + File.separator
+                            + "cleaned" + doc.id + ".pdf";
             pdfAnnotationParser.clean( tempPdfPath , cleanedPath );
 
             progressManager.setTotalThumbnail( doc.id , thumbnailCreator.getPages( cleanedPath ) );
             progressManager.setStep( doc.id , Step.CREATING_THUMBNAIL );
 
-            final CreateResult res =
-                    thumbnailCreator.createFromPDF( prop.repository + "/thumb/" + doc.id + "/" , //
-                            cleanedPath , ppmPath + doc.id , doc.id );
+            final PDFInfo res =
+                    thumbnailCreator.createFromPDF( prop.repository + "/thumb/" + doc.id + "/" ,
+                            cleanedPath , doc.id );
 
-            packManager.copyThumbnails( doc.id );
-            packManager.writePages( doc.id , thumbnailCreator.getPages( cleanedPath ) );
-            packManager.writeTOC( doc.id , Lists.newArrayList( new TOCElem( 0 , "Chapter" ) ) );
-            packManager.writeSinglePageInfo( doc.id , Lists.< Integer > newArrayList() );
-            packManager.writeImageCreateResult( doc.id , res );
+            doc.setPages( res.pages );
+            doc.setWidth( res.width );
+            doc.setHeight( res.height );
+            doc.setMaxLevel( ( int ) Math.floor( Math.log( 1.0 * res.width
+                    / ThumbnailCreator.TEXTURE_SIZE )
+                    / Math.log( 2 ) ) );
 
             parseText( cleanedPath );
-
-            packManager.repack( doc.id );
 
             return true;
         }
