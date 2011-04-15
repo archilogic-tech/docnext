@@ -29,11 +29,12 @@ public class TextureInfo {
         }
     }
 
-    static TextureInfo getTiledBitmapInstance( final Resources res , final int resId , final SizeInfo size ) {
+    static TextureInfo getTiledBitmapInstance( final Resources res , final int resId ,
+            final SizeInfo size ) {
         final Bitmap source = BitmapFactory.decodeResource( res , resId );
 
         final int len = getTextureSize( size.width , size.height );
-        final Bitmap bitmap = Bitmap.createBitmap( len , len , Config.ARGB_8888 );
+        final Bitmap bitmap = Bitmap.createBitmap( len , len , Config.RGB_565 );
 
         final Canvas c = new Canvas( bitmap );
         final Paint p = new Paint();
@@ -73,11 +74,15 @@ public class TextureInfo {
     void bindTexture( final Bitmap bitmap ) {
         GLES10.glBindTexture( GLES10.GL_TEXTURE_2D , id );
 
-        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_MIN_FILTER , GLES10.GL_LINEAR );
-        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_MAG_FILTER , GLES10.GL_LINEAR );
+        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_MIN_FILTER ,
+                GLES10.GL_LINEAR );
+        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_MAG_FILTER ,
+                GLES10.GL_LINEAR );
 
-        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_WRAP_S , GLES10.GL_CLAMP_TO_EDGE );
-        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_WRAP_T , GLES10.GL_CLAMP_TO_EDGE );
+        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_WRAP_S ,
+                GLES10.GL_CLAMP_TO_EDGE );
+        GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_WRAP_T ,
+                GLES10.GL_CLAMP_TO_EDGE );
 
         GLUtils.texImage2D( GLES10.GL_TEXTURE_2D , 0 , bitmap , 0 );
 

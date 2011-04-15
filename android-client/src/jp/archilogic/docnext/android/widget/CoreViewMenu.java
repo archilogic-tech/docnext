@@ -68,8 +68,8 @@ public class CoreViewMenu extends LinearLayout {
         }
         final ImageView image = ( ImageView ) _bookmarkMenuItem.findViewById( R.id.bookmark );
 
-        image.setImageResource( bookmark.contains( new BookmarkInfo( page ) ) ? R.drawable.button_bookmark_on
-                : R.drawable.button_bookmark_off );
+        image.setImageResource( bookmark.contains( new BookmarkInfo( page ) )
+                ? R.drawable.button_bookmark_on : R.drawable.button_bookmark_off );
     }
 
     private OnClickListener buildMenuClickListener( final FragmentType type ) {
@@ -79,9 +79,10 @@ public class CoreViewMenu extends LinearLayout {
             return new OnClickListener() {
                 @Override
                 public void onClick( final View v ) {
-                    Intent intent = new Intent();
+                    final Intent intent = new Intent();
                     if ( _delegate.getCoreView() instanceof HasPage ) {
-                        intent.putExtra( CoreViewActivity.EXTRA_PAGE , ( ( HasPage ) _delegate.getCoreView() ).getPage() );
+                        intent.putExtra( CoreViewActivity.EXTRA_PAGE ,
+                                ( ( HasPage ) _delegate.getCoreView() ).getPage() );
                     }
                     _delegate.changeCoreViewType( doc , intent );
                 }

@@ -4,6 +4,7 @@ import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.HasPage;
+import jp.archilogic.docnext.android.coreview.NeedCleanup;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChangeListener;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import android.content.Context;
@@ -18,7 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ZoomButtonsController;
 import android.widget.ZoomButtonsController.OnZoomListener;
 
-public class CoreImageView extends FrameLayout implements CoreView , HasPage {
+public class CoreImageView extends FrameLayout implements CoreView , HasPage , NeedCleanup {
     private static final boolean DEBUG = false;
 
     private static final String STATE_PAGE = "page";
@@ -88,7 +89,11 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
 
         assignWidget();
 
-        _glSurfaceView.setRenderer( _renderer = new CoreImageRenderer( context ) );
+        _glSurfaceView.setDebugFlags( GLSurfaceView.DEBUG_CHECK_GL_ERROR
+                | GLSurfaceView.DEBUG_LOG_GL_CALLS );
+
+        _glSurfaceView.setRenderer( _renderer =
+                new CoreImageRenderer( context.getApplicationContext() ) );
         _renderer.setDirection( CoreImageDirection.R2L );
 
         if ( Build.VERSION.SDK_INT < 8 || true ) {
@@ -111,6 +116,19 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage {
         _r2lButton = findViewById( R.id.r2lButton );
         _t2bButton = findViewById( R.id.t2bButton );
         _b2tButton = findViewById( R.id.b2tButton );
+    }
+
+    @Override
+    public void cleanup() {
+        _glSurfaceView = null;
+        _menuView = null;
+        _l2rButton = null;
+        _r2lButton = null;
+        _t2bButton = null;
+        _b2tButton = null;
+        _renderer.cleanup();
+        _renderer = null;
+        _zoomButtonsController = null;
     }
 
     @Override
