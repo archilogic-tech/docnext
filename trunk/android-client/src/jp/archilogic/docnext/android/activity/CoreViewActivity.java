@@ -386,20 +386,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
             _gestureDetector.onTouchEvent( event );
         }
 
-        // _scaleGestureDetector.onTouchEvent( event );
-
-        // if ( !_scaleGestureDetector.isInProgress() ) {
-        // _gestureDetector.onTouchEvent( event );
-        // }
-
         return true;
-
-        // return _scaleGestureDetector.onTouchEvent( event ) || _gestureDetector.onTouchEvent( event );
-
-        // _scaleGestureDetector.onTouchEvent( event );
-        // _gestureDetector.onTouchEvent( event );
-
-        // return true;
     }
 
     private void toggleMenu() {
