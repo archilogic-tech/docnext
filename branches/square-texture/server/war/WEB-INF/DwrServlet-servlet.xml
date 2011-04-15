@@ -42,8 +42,6 @@
 		<dwr:remote javascript="DocumentService">
 			<dwr:include method="findById" />
 			<dwr:include method="findAll" />
-			<dwr:include method="getTitle" />
-			<dwr:include method="setTitle" />
 			<dwr:include method="getPublisher" />
 			<dwr:include method="setPublisher" />
 			<dwr:include method="getBinding" />
@@ -61,6 +59,8 @@
 			<dwr:include method="setDividePage" />
 			<dwr:include method="getFrames" />
 			<dwr:include method="setFrames" />
+			<dwr:include method="createDocument" />
+			<dwr:include method="getDocument" />
 		</dwr:remote>
 	</bean>
 

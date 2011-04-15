@@ -18,6 +18,7 @@ public class Document {
         public int width;
         public int height;
         public int maxLevel;
+        public Long[] ids; // for multiple documents
     }
 
     @Id
@@ -37,6 +38,10 @@ public class Document {
         return getJson().height;
     }
 
+    public Long[] getIds() {
+        return getJson().ids;
+    }
+    
     private DocumentJson getJson() {
         return json != null ? JSON.decode( json , DocumentJson.class ) : new DocumentJson();
     }
@@ -73,6 +78,12 @@ public class Document {
         setJson( json );
     }
 
+    public void setIds( final Long[] ids ) {
+        final DocumentJson json = getJson();
+        json.ids = ids;
+        setJson( json );
+    }
+
     private void setJson( final DocumentJson instance ) {
         json = JSON.encode( instance );
     }
@@ -82,7 +93,7 @@ public class Document {
         json.maxLevel = maxLevel;
         setJson( json );
     }
-
+    
     public void setName( final String name ) {
         final DocumentJson json = getJson();
         json.name = name;
