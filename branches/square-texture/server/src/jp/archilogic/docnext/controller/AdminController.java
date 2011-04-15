@@ -39,8 +39,8 @@ public class AdminController {
 
     @RequestMapping( "/admin/upload" )
     @ResponseBody
-    public String upload( @RequestParam( "name" ) final String name , @RequestParam( "file" ) final MultipartFile file )
-            throws IOException {
+    public String upload( @RequestParam( "name" ) final String name ,
+            @RequestParam( "file" ) final MultipartFile file ) throws IOException {
         final Document doc = new Document();
         doc.setName( name );
         doc.setFileName( file.getOriginalFilename() );
@@ -52,8 +52,9 @@ public class AdminController {
         doc.processing = true;
         documentDao.create( doc );
 
-        final String path = "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
-        final String uploadPath = prop.tmp + File.separator + doc.id + File.separator + path;
+        final String path =
+                "uploaded" + doc.id + "." + FilenameUtils.getExtension( file.getOriginalFilename() );
+        final String uploadPath = prop.tmp + doc.id + File.separator + path;
         FileUtils.writeByteArrayToFile( new File( uploadPath ) , file.getBytes() );
 
         uploadProcessor.proc( uploadPath , doc );
