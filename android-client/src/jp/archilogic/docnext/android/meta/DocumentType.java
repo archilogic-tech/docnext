@@ -4,13 +4,13 @@ import jp.archilogic.docnext.android.bookmark.BookmarkView;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.coreview.text.CoreTextView;
-import jp.archilogic.docnext.android.thumnail.ThumbnailView;
+import jp.archilogic.docnext.android.thumbnail.ThumbnailView;
 import jp.archilogic.docnext.android.toc.TOCView;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
 
 public enum DocumentType {
-    IMAGE , TEXT , TOC , THUMNAIL , BOOKMARK;
+    IMAGE , TEXT , TOC , THUMBNAIL , BOOKMARK;
 
     public CoreView buildView( final Context context ) {
         switch ( this ) {
@@ -20,7 +20,7 @@ public enum DocumentType {
             return new CoreTextView( context );
         case TOC:
             return new TOCView( context );
-        case THUMNAIL:
+        case THUMBNAIL:
             return new ThumbnailView( context );
         case BOOKMARK:
             return new BookmarkView( context );
@@ -33,14 +33,14 @@ public enum DocumentType {
         switch ( this ) {
         case IMAGE:
             return new FragmentType[] { FragmentType.TEXT , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMNAIL };
+                    FragmentType.THUMBNAIL };
         case TEXT:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMNAIL };
+                    FragmentType.THUMBNAIL };
         case TOC:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT , FragmentType.BOOKMARK ,
-                    FragmentType.THUMNAIL };
-        case THUMNAIL:
+                    FragmentType.THUMBNAIL };
+        case THUMBNAIL:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT , FragmentType.TOC ,
                     FragmentType.BOOKMARK };
         case BOOKMARK:

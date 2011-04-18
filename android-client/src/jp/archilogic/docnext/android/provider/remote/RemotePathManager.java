@@ -29,7 +29,7 @@ public class RemotePathManager {
         return String.format( "%sviewer/getText?id=%d&page=%d" , Config.ENDPOINT , id , page );
     }
     
-    public String getThumnailPath( final long id , final int page ) {
+    public String getThumbnailPath( final long id , final int page ) {
         return Config.ENDPOINT + String.format( "viewer/getThumbnail?id=%d&page=%d" , id , page ); 
     }
 }

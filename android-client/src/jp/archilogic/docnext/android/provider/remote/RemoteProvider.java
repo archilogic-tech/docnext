@@ -22,5 +22,5 @@ public interface RemoteProvider {
 
 	DownloadTask getTableOfContentsInfo( Context context, Receiver< Void > receiver, long id );
 
-    DownloadTask getThumnail( Context context , Receiver< Void > receiver , long id , int page );
+    DownloadTask getThumbnail( Context context , Receiver< Void > receiver , long id , int page );
 }

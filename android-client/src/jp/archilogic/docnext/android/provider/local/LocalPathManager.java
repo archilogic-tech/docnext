@@ -98,7 +98,7 @@ public class LocalPathManager {
         return ROOT + "text/" + id + "/";
     }
     
-    public String getThumnailPath( final long id , final int page ) {
+    public String getThumbnailPath( final long id , final int page ) {
         return getImageDir( id ) + "thumnail" + page + ".jpg";
     }
 
