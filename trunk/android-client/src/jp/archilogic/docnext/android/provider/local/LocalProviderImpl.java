@@ -128,7 +128,7 @@ public class LocalProviderImpl implements LocalProvider {
         try {
             return Integer.valueOf( FileUtils.readFileToString( new File( _pathManager.getLastOpenedPagePath( id ) ) ).trim() );
         } catch ( final Exception e ) {
-            return 0;
+            return -1;
         }
     }
 
