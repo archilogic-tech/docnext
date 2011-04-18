@@ -19,7 +19,7 @@
  * @author Neil Davies
  */
 
-package jp.archilogic.docnext.android.thumnail;
+package jp.archilogic.docnext.android.thumbnail;
 
 import android.content.Context;
 import android.graphics.Camera;

@@ -45,7 +45,7 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
-    String getThumnailPath( long id , int page );
+    String getThumbnailPath( long id , int page );
 
     /**
      * more partial? (for large text)

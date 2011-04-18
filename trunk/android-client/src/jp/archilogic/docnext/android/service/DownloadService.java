@@ -208,11 +208,11 @@ public class DownloadService extends Service {
         DocInfo doc = Kernel.getLocalProvider().getDocInfo( _id );
 
         if ( page < doc.pages ) {
-            if ( Kernel.getLocalProvider().getThumnailPath( _id , page ) != null ) {
+            if ( Kernel.getLocalProvider().getThumbnailPath( _id , page ) != null ) {
                 downloadThumbnail( id , page + 1 );
             } else {
                 Kernel.getRemoteProvider()
-                        .getThumnail( getApplicationContext() , new DownloadReceiver() {
+                        .getThumbnail( getApplicationContext() , new DownloadReceiver() {
                             @Override
                             public void receive( final Void result ) {
                                 downloadThumbnail( id , page + 1 );

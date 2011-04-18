@@ -1,7 +1,7 @@
-package jp.archilogic.docnext.android.thumnail;
+package jp.archilogic.docnext.android.thumbnail;
 
 import jp.archilogic.docnext.android.coreview.NavigationView;
-import jp.archilogic.docnext.android.thumnail.ThumbnailImageAdapter.Direction;
+import jp.archilogic.docnext.android.thumbnail.ThumbnailImageAdapter.Direction;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;

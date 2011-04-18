@@ -1,4 +1,4 @@
-package jp.archilogic.docnext.android.thumnail;
+package jp.archilogic.docnext.android.thumbnail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,7 +88,7 @@ public class ThumbnailImageAdapter extends BaseAdapter {
     }
     
     private Bitmap getBitmap( final int page ) {
-        String thumnailPath = pathManager.getThumnailPath( _id , page );
+        String thumnailPath = pathManager.getThumbnailPath( _id , page );
         if ( ( new File( thumnailPath) ).exists() ) {
             return BitmapFactory.decodeFile( thumnailPath );
         }
