@@ -1,5 +1,7 @@
 package jp.archilogic.docnext.android.activity;
 
+import java.io.File;
+
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
@@ -9,6 +11,7 @@ import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.coreview.NeedCleanup;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
+import jp.archilogic.docnext.android.provider.local.LocalPathManager;
 import jp.archilogic.docnext.android.service.DownloadService;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import jp.archilogic.docnext.android.widget.CoreViewMenu;
@@ -234,10 +237,14 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
                 changeCoreViewType( _type , intent );
             }
         };
-        
-        new AlertDialog.Builder( _self ).setMessage( R.string.confirm_restore ) 
-                .setPositiveButton( R.string.yes , yesClick )
-                .setNegativeButton( R.string.no , null ).show();
+
+        LocalPathManager pathManager =  new LocalPathManager();
+        String path = pathManager.getLastOpenedPagePath( _ids[ 0 ] );
+        if ( ( new File( path ) ).exists() ) {
+            new AlertDialog.Builder( _self ).setMessage( R.string.confirm_restore ) 
+                    .setPositiveButton( R.string.yes , yesClick )
+                    .setNegativeButton( R.string.no , null ).show();
+        }
     }
     
 
@@ -300,6 +307,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         _type = validateCoreViewType( _ids );
         
+        if ( _view == null ) {
+            confirmRestorePage();
+        }
+        
         _view = _type.buildView( _self );
 
         _rootViewGroup.addView( ( View ) _view );
@@ -313,8 +324,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
-
-        confirmRestorePage();
     }
 
     @Override
