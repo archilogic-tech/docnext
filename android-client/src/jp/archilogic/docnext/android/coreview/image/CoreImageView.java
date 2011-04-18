@@ -128,7 +128,6 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         _b2tButton = null;
         _renderer.cleanup();
         _renderer = null;
-        _zoomButtonsController = null;
     }
 
     @Override
@@ -140,9 +139,7 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        if ( _zoomButtonsController != null ) {
-            _zoomButtonsController.setVisible( false );
-        }
+        _zoomButtonsController.setVisible( false );
     }
 
     @Override

@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 public class BookmarkView extends NavigationView implements HasPage {
     private final String TAG = BookmarkView.class.getName();
-    
+
     private ListView _listView;
     private ArrayAdapter< BookmarkInfo > _adapter;
 
@@ -31,31 +31,32 @@ public class BookmarkView extends NavigationView implements HasPage {
 
     public BookmarkView( final Context context ) {
         super( context );
-        
+
         Log.d( TAG , "BookmarkView" );
     }
-    
+
     private ArrayAdapter< BookmarkInfo > buildAdapter() {
-        return new ArrayAdapter< BookmarkInfo >( getContext(), R.layout.navigation_textview ) {
-            public View getView( final int position , View convertView , final ViewGroup parent ) {
+        return new ArrayAdapter< BookmarkInfo >( getContext() , R.layout.navigation_textview ) {
+            @Override
+            public View getView( final int position , final View convertView ,
+                    final ViewGroup parent ) {
                 return buildRow( getItem( position ) );
             }
         };
     }
 
     private View buildAddButton() {
-        LinearLayout layout = new LinearLayout( getContext() );
+        final LinearLayout layout = new LinearLayout( getContext() );
         layout.setGravity( Gravity.CENTER );
 
         layout.setOnClickListener( buildAddButtonClickListener() );
-        
-        ImageView image = new ImageView( getContext() );
+
+        final ImageView image = new ImageView( getContext() );
         image.setImageResource( R.drawable.button_add );
-        image.setLayoutParams( new LinearLayout.LayoutParams(
-                dp( 30 ) , dp( 30 ) ) );
+        image.setLayoutParams( new LinearLayout.LayoutParams( dp( 30 ) , dp( 30 ) ) );
         layout.addView( image );
-        
-        TextView textView = new TextView( getContext() );
+
+        final TextView textView = new TextView( getContext() );
         textView.setText( "add a bookmark" );
         textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
         layout.addView( textView );
@@ -64,19 +65,19 @@ public class BookmarkView extends NavigationView implements HasPage {
         setButtonAvailability();
         return layout;
     }
-    
+
     private OnClickListener buildAddButtonClickListener() {
         return new OnClickListener() {
             @Override
-            public void onClick( View v ) {
-                BookmarkInfo bookmark = new BookmarkInfo( _page );
+            public void onClick( final View v ) {
+                final BookmarkInfo bookmark = new BookmarkInfo( _page );
                 List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
-                if ( !bookmarks.contains( bookmark ) ) { 
+                if ( !bookmarks.contains( bookmark ) ) {
                     bookmarks.add( bookmark );
                     Kernel.getLocalProvider().setBookmarkInfo( _id , bookmarks );
                     bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
                     _adapter.clear();
-                    for ( BookmarkInfo element : bookmarks ) {
+                    for ( final BookmarkInfo element : bookmarks ) {
                         _adapter.add( element );
                     }
                 }
@@ -84,53 +85,55 @@ public class BookmarkView extends NavigationView implements HasPage {
             }
         };
     }
-    
+
     private View buildRow( final BookmarkInfo bookmark ) {
-        LinearLayout layout = new LinearLayout( getContext() );
+        final LinearLayout layout = new LinearLayout( getContext() );
         layout.setOrientation( LinearLayout.HORIZONTAL );
-        
-        OnClickListener clickListener = new OnClickListener() {
+
+        final OnClickListener clickListener = new OnClickListener() {
             @Override
-            public void onClick( View view ) {
+            public void onClick( final View view ) {
                 goTo( bookmark.page );
-            }};
-        LinearLayout.LayoutParams textLayout = new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT ); 
-        
-        TextView textView = new TextView( getContext() );
+            }
+        };
+        final LinearLayout.LayoutParams textLayout =
+                new LinearLayout.LayoutParams( LayoutParams.WRAP_CONTENT ,
+                        LayoutParams.WRAP_CONTENT );
+
+        final TextView textView = new TextView( getContext() );
         textView.setText( bookmark.text );
         textView.setLayoutParams( textLayout );
         textView.setOnClickListener( clickListener );
         layout.addView( textView );
 
-        TextView page = new TextView( getContext() );
+        final TextView page = new TextView( getContext() );
         page.setText( String.valueOf( bookmark.page ) );
         textView.setTextSize( TypedValue.COMPLEX_UNIT_SP , 16 );
-        page.setLayoutParams( new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT , LayoutParams.WRAP_CONTENT , 1 ) );
+        page.setLayoutParams( new LinearLayout.LayoutParams( LayoutParams.WRAP_CONTENT ,
+                LayoutParams.WRAP_CONTENT , 1 ) );
         page.setPadding( 0 , 0 , dp( 50 ) , 0 );
         page.setGravity( Gravity.RIGHT );
         page.setOnClickListener( clickListener );
         layout.addView( page );
-        
-        ImageView deleteButton = new ImageView( getContext() );
-        deleteButton.setLayoutParams( new LinearLayout.LayoutParams(
-                dp( 30 ) , dp( 30 ) ) );
+
+        final ImageView deleteButton = new ImageView( getContext() );
+        deleteButton.setLayoutParams( new LinearLayout.LayoutParams( dp( 30 ) , dp( 30 ) ) );
         deleteButton.setImageResource( R.drawable.button_delete );
         deleteButton.setScaleType( ScaleType.FIT_CENTER );
         deleteButton.setOnClickListener( new OnClickListener() {
             @Override
-            public void onClick( View v ) {
-                List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
+            public void onClick( final View v ) {
+                final List< BookmarkInfo > bookmarks =
+                        Kernel.getLocalProvider().getBookmarkInfo( _id );
                 bookmarks.remove( bookmark );
                 Kernel.getLocalProvider().setBookmarkInfo( _id , bookmarks );
 
                 _adapter.remove( bookmark );
                 setButtonAvailability();
             }
-        });
+        } );
         layout.addView( deleteButton );
-        
+
         return layout;
     }
 
@@ -139,33 +142,34 @@ public class BookmarkView extends NavigationView implements HasPage {
 
         return Math.round( value * density );
     }
- 
+
+    @Override
     public void init() {
         addView( buildAddButton() );
         initListView();
     }
 
     private void initListView() {
-        List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
+        final List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
         if ( bookmarks == null ) {
             Toast.makeText( getContext() , R.string.empty_bookmark , Toast.LENGTH_LONG ).show();
-            _delegate.back();
+            _delegate.goBack();
             return;
         }
 
         _listView = new ListView( getContext() );
-        _adapter = buildAdapter(); 
-        for ( BookmarkInfo bookmark : bookmarks ) {
+        _adapter = buildAdapter();
+        for ( final BookmarkInfo bookmark : bookmarks ) {
             _adapter.add( bookmark );
         }
         _listView.setAdapter( _adapter );
         addView( _listView );
     }
-    
+
     private void setButtonAvailability() {
         _addButton.setEnabled( true );
-        List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
-        for ( BookmarkInfo bookmark : bookmarks ) {
+        final List< BookmarkInfo > bookmarks = Kernel.getLocalProvider().getBookmarkInfo( _id );
+        for ( final BookmarkInfo bookmark : bookmarks ) {
             if ( _page == bookmark.page ) {
                 _addButton.setEnabled( false );
             }

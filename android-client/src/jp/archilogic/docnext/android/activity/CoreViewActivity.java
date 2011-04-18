@@ -1,8 +1,7 @@
 package jp.archilogic.docnext.android.activity;
 
-import java.util.LinkedList;
-
 import jp.archilogic.docnext.android.Kernel;
+import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.HasPage;
@@ -15,8 +14,11 @@ import jp.archilogic.docnext.android.util.AnimationUtils2;
 import jp.archilogic.docnext.android.widget.CoreViewMenu;
 import jp.archilogic.docnext.android.widget.CoreViewMenu.CoreViewMenuDelegate;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PointF;
@@ -32,8 +34,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
-import com.google.common.collect.Lists;
-
 public class CoreViewActivity extends Activity implements CoreViewDelegate , CoreViewMenuDelegate {
     public static final String EXTRA_IDS =
             "jp.archilogic.docnext.android.activity.CoreViewActivity.ids";
@@ -45,10 +45,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     private ViewGroup _rootViewGroup;
     private CoreView _view;
-    // private final Stack< CoreView > _viewStack = new Stack< CoreView >();
     private CoreViewMenu _menu;
-    // private final Stack< CoreViewMenu > _menuStack = new Stack< CoreViewMenu >();
-    private final LinkedList< DocumentType > _stack = Lists.newLinkedList();
+    private DocumentType _rootType;
 
     private long[] _ids;
     private DocumentType _type;
@@ -174,31 +172,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         }
     };
 
-    @Override
-    public void back() {
-        if ( _stack.isEmpty() ) {
-            return;
-        }
-
-        changeCoreViewType( _stack.removeLast() , new Intent() );
-
-        /*
-         * _rootViewGroup.removeView( ( View ) _view ); _view = _viewStack.pop(); if ( _view instanceof CoreImageView )
-         * { final CoreImageView stackedView = ( CoreImageView ) _view; final int page = stackedView.getPage();
-         * 
-         * _rootViewGroup.removeView( ( View ) _view ); _view = DocumentType.IMAGE.buildView( _self );
-         * 
-         * _rootViewGroup.addView( ( View ) _view );
-         * 
-         * _view.setIds( _ids ); _view.setDelegate( _self );
-         * 
-         * ( ( HasPage ) _view ).setPage( page ); } else { _rootViewGroup.addView( ( View ) _view ); }
-         * 
-         * // TODO hack :( -- Change to use content holder for CoreView _rootViewGroup.removeView( _menu ); _menu =
-         * _menuStack.pop(); _rootViewGroup.addView( _menu );
-         */
-    }
-
     private IntentFilter buildRemoteProviderReceiverFilter() {
         final IntentFilter filter = new IntentFilter();
 
@@ -208,16 +181,15 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         return filter;
     }
 
-    /**
-     * TODO this implementation may require big memory
-     */
     @Override
     public void changeCoreViewType( final DocumentType type , final Intent extra ) {
-        _stack.addLast( _type );
+        if ( type.isRoot() ) {
+            _rootType = null;
+        } else if ( _type.isRoot() ) {
+            _rootType = _type;
+        }
 
         _type = type;
-
-        // _viewStack.push( _view );
 
         if ( _view instanceof NeedCleanup ) {
             ( ( NeedCleanup ) _view ).cleanup();
@@ -241,10 +213,22 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         }
 
         // TODO hack :( -- Change to use content holder for CoreView
-        // _menuStack.push( _menu );
         _rootViewGroup.removeView( _menu );
         _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
+    }
+
+    private void confirmFinish() {
+        final OnClickListener yesClick = new OnClickListener() {
+            @Override
+            public void onClick( final DialogInterface dialog , final int which ) {
+                finish();
+            }
+        };
+
+        new AlertDialog.Builder( _self ).setMessage( R.string.confirm_finish )
+                .setPositiveButton( R.string.yes , yesClick )
+                .setNegativeButton( R.string.no , null ).show();
     }
 
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
@@ -257,20 +241,21 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         return false;
     }
 
-    /**
-     * TODO change to use onKeyDown
-     */
-    @Override
-    public boolean dispatchKeyEvent( final KeyEvent event ) {
-        if ( event.getKeyCode() == KeyEvent.KEYCODE_BACK && _view instanceof NavigationView ) {
-            return ( ( ViewGroup ) _view ).dispatchKeyEvent( event );
-        }
-        return super.dispatchKeyEvent( event );
-    }
-
     @Override
     public CoreView getCoreView() {
         return _view;
+    }
+
+    @Override
+    public void goBack() {
+        if ( _rootType == null ) {
+            confirmFinish();
+
+            return;
+        }
+
+        changeCoreViewType( _rootType , new Intent() );
+        _rootType = null;
     }
 
     @Override
@@ -323,10 +308,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _self = null;
         _rootViewGroup = null;
         _view = null;
-        // _viewStack.clear();
         _menu = null;
-        // _menuStack.clear();
-        _stack.clear();
+        _rootType = null;
         _gestureDetector = null;
         _scaleGestureDetector = null;
 
@@ -340,9 +323,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         if ( keyCode == KeyEvent.KEYCODE_BACK ) {
             if ( _menu.getVisibility() != View.GONE ) {
                 toggleMenu();
-
-                return true;
+            } else {
+                goBack();
             }
+
+            return true;
         }
 
         return super.onKeyDown( keyCode , event );
