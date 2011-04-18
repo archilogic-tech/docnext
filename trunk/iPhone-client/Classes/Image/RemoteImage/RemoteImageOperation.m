@@ -9,6 +9,7 @@
 #import "RemoteImageOperation.h"
 #import "Const.h"
 #import "ASIHTTPRequest.h"
+#import "FileUtil.h"
 
 @implementation RemoteImageOperation
 
@@ -41,6 +42,12 @@
 
     [delegate performSelectorOnMainThread:@selector(didFinishFetch:)
                                withObject:[UIImage imageWithData:[request responseData]] waitUntilDone:YES];
+    
+    NSString *type = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
+    NSString *fileName = [NSString stringWithFormat:@"%d/images/%@-%d-%d-%d-%d.jpg", docId, type, page,
+                          level, px, py];
+    
+    [FileUtil write:[request responseData] toFile:fileName];
 }
 
 @end
