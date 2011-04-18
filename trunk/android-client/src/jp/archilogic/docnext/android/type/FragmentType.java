@@ -15,7 +15,8 @@ public enum FragmentType {
 
     public View buildSwithButton( final Context context ) {
         final LinearLayout root = new LinearLayout( context );
-        root.setLayoutParams( new LinearLayout.LayoutParams( 0 , LinearLayout.LayoutParams.WRAP_CONTENT , 1 ) );
+        root.setLayoutParams( new LinearLayout.LayoutParams( 0 ,
+                LinearLayout.LayoutParams.WRAP_CONTENT , 1 ) );
         root.setOrientation( LinearLayout.VERTICAL );
         root.setGravity( Gravity.CENTER_HORIZONTAL );
 
@@ -43,9 +44,9 @@ public enum FragmentType {
             return DocumentType.TOC;
         case THUMBNAIL:
             return DocumentType.THUMBNAIL;
-        case HOME:
         case BOOKMARKLIST:
             return DocumentType.BOOKMARK;
+        case HOME:
         case SETTING:
         case COMMENT:
         case SEARCH:
@@ -95,8 +96,6 @@ public enum FragmentType {
             return R.string.toc;
         case BOOKMARK:
             return R.string.bookmark;
-        case BOOKMARKLIST:
-            return R.string.bookmark_list;
         case THUMBNAIL:
             return R.string.thumbnail;
         case SETTING:
@@ -105,6 +104,8 @@ public enum FragmentType {
             return R.string.comment;
         case SEARCH:
             return R.string.search;
+        case BOOKMARKLIST:
+            return R.string.bookmark_list;
         default:
             throw new RuntimeException();
         }

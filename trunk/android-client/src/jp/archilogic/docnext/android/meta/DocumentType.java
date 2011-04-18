@@ -32,14 +32,14 @@ public enum DocumentType {
     public FragmentType[] getPrimarySwitchFragment() {
         switch ( this ) {
         case IMAGE:
-            return new FragmentType[] { FragmentType.TEXT , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMBNAIL };
+            return new FragmentType[] { FragmentType.TEXT , FragmentType.TOC ,
+                    FragmentType.BOOKMARK , FragmentType.THUMBNAIL };
         case TEXT:
-            return new FragmentType[] { FragmentType.IMAGE , FragmentType.TOC , FragmentType.BOOKMARK ,
-                    FragmentType.THUMBNAIL };
+            return new FragmentType[] { FragmentType.IMAGE , FragmentType.TOC ,
+                    FragmentType.BOOKMARK , FragmentType.THUMBNAIL };
         case TOC:
-            return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT , FragmentType.BOOKMARK ,
-                    FragmentType.THUMBNAIL };
+            return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT ,
+                    FragmentType.BOOKMARK , FragmentType.THUMBNAIL };
         case THUMBNAIL:
             return new FragmentType[] { FragmentType.IMAGE , FragmentType.TEXT , FragmentType.TOC ,
                     FragmentType.BOOKMARK };
@@ -51,10 +51,25 @@ public enum DocumentType {
     }
 
     public FragmentType[] getSecondarySwitchFragment() {
-        return new FragmentType[] { FragmentType.HOME , FragmentType.SETTING , FragmentType.BOOKMARKLIST };
+        return new FragmentType[] { FragmentType.HOME , FragmentType.SETTING ,
+                FragmentType.BOOKMARKLIST };
     }
 
     public FragmentType[] getSubSecondarySwitchFragment() {
         return new FragmentType[] { FragmentType.SEARCH };
+    }
+
+    public boolean isRoot() {
+        switch ( this ) {
+        case IMAGE:
+        case TEXT:
+            return true;
+        case TOC:
+        case THUMBNAIL:
+        case BOOKMARK:
+            return false;
+        default:
+            throw new RuntimeException();
+        }
     }
 }
