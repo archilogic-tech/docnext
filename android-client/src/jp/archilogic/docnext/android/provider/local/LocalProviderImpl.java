@@ -124,6 +124,15 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
+    public int getLastOpenedPage( final long id ) {
+        try {
+            return Integer.valueOf( FileUtils.readFileToString( new File( _pathManager.getLastOpenedPagePath( id ) ) ).trim() );
+        } catch ( final Exception e ) {
+            return 0;
+        }
+    }
+
+    @Override
     public List<TOCElement> getTableOfContentsInfo( final long id ) {
         TOCElement[] tocs;
         try {
@@ -149,6 +158,23 @@ public class LocalProviderImpl implements LocalProvider {
         return null;
     }
 
+    public boolean isAllImageExists( final long id , final int page ) {
+        final ImageInfo image = Kernel.getLocalProvider().getImageInfo( id );
+
+        final int nx = image.width / TEXTURE_SIZE;
+        final int ny = image.height / TEXTURE_SIZE;
+
+        for ( int py = 0 ; py < ny ; py++ ) {
+            for ( int px = 0 ; px < nx ; px++ ) {
+                String path = Kernel.getLocalProvider().getImagePath( id , page , 0 , px , py );
+                if ( path == null ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     @Override
     public boolean isCompleted( final long id ) {
         // Use database?
@@ -170,31 +196,15 @@ public class LocalProviderImpl implements LocalProvider {
         }
     }
     
-    public boolean isAllImageExists( final long id , final int page ) {
-        final ImageInfo image = Kernel.getLocalProvider().getImageInfo( id );
-
-        final int nx = image.width / TEXTURE_SIZE;
-        final int ny = image.height / TEXTURE_SIZE;
-
-        for ( int py = 0 ; py < ny ; py++ ) {
-            for ( int px = 0 ; px < nx ; px++ ) {
-                String path = Kernel.getLocalProvider().getImagePath( id , page , 0 , px , py );
-                if ( path == null ) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     @Override
-    public void setBookmarkInfo( long id, List< BookmarkInfo > bookmarks ) {
+    public void setBookmarkInfo( final long id , final List< BookmarkInfo > bookmarks ) {
         if ( bookmarks == null ) {
-            bookmarks = new ArrayList< BookmarkInfo >( 0 );
+            setJsonInfo( _pathManager.getBookmarkPath( id ) , new ArrayList< BookmarkInfo >( 0 ) );
+        } else {
+            setJsonInfo( _pathManager.getBookmarkPath( id ) , bookmarks );
         }
-        setJsonInfo( _pathManager.getBookmarkPath( id ) , bookmarks );
     }
-    
+
     @Override
     public void setCompleted( final long id ) {
         final Long[] completed = getJsonInfo( _pathManager.getCompletedInfoPath() , Long[].class );
@@ -215,6 +225,17 @@ public class LocalProviderImpl implements LocalProvider {
             throw new RuntimeException( e );
         } finally {
             IOUtils.closeQuietly( out );
+        }
+    }
+
+    @Override
+    public void setLastOpenedPage( final long id , final int page ) {
+        try {
+            _pathManager.ensureRoot();
+
+            FileUtils.writeStringToFile( new File( _pathManager.getLastOpenedPagePath( id ) ) , Integer.toString( page ) );
+        } catch ( final IOException e ) {
+            throw new RuntimeException( e );
         }
     }
 }

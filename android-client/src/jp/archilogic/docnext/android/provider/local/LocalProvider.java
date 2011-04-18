@@ -40,6 +40,11 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
+    int getLastOpenedPage( long id );
+    
+    /**
+     * @return null if not exists
+     */
 	List <TOCElement> getTableOfContentsInfo(long _id);
 	
     /**
@@ -61,6 +66,8 @@ public interface LocalProvider {
     boolean isAllImageExists( long id , int page );
 
     void setBookmarkInfo( long id, List< BookmarkInfo > bookmarks );
+    
+    void setLastOpenedPage( long id , int page );
     
     void setCompleted( long id );
 
