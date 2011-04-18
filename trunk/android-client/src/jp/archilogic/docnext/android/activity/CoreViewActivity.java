@@ -168,7 +168,13 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
                 }
             } else if ( intent.getAction().equals( HasPage.BROADCAST_PAGE_CHANGED ) ) {
                 _menu.onPageChanged();
+                setLastOpendPage();
             }
+        }
+
+        private void setLastOpendPage() {
+            final int page = ( ( HasPage ) _view ).getPage();
+            Kernel.getLocalProvider().setLastOpenedPage( _ids[ 0 ] , page );
         }
     };
 
@@ -217,6 +223,23 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
     }
+    
+    private void confirmRestorePage() {
+        final OnClickListener yesClick = new OnClickListener() {
+            @Override
+            public void onClick( final DialogInterface dialog , final int which ) {
+                int page = Kernel.getLocalProvider().getLastOpenedPage( _ids[ 0 ] );
+                final Intent intent = new Intent();
+                intent.putExtra( CoreViewActivity.EXTRA_PAGE , page );
+                changeCoreViewType( _type , intent );
+            }
+        };
+        
+        new AlertDialog.Builder( _self ).setMessage( R.string.confirm_restore ) 
+                .setPositiveButton( R.string.yes , yesClick )
+                .setNegativeButton( R.string.no , null ).show();
+    }
+    
 
     private void confirmFinish() {
         final OnClickListener yesClick = new OnClickListener() {
@@ -276,7 +299,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         registerReceiver( _remoteProviderReceiver , buildRemoteProviderReceiverFilter() );
 
         _type = validateCoreViewType( _ids );
-
+        
         _view = _type.buildView( _self );
 
         _rootViewGroup.addView( ( View ) _view );
@@ -290,6 +313,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
+
+        confirmRestorePage();
     }
 
     @Override

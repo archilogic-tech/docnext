@@ -14,16 +14,23 @@ public class LocalPathManager {
         }
     }
 
-    public void ensureBookmark( final long id ) {
-        final File file = new File( getBookmarkPath( id ) );
-
+    private void ensureFile( final String path ) {
+        final File file = new File( path );
+        
         if ( !file.exists() ) {
             try {
                 file.createNewFile();
             } catch ( final IOException e ) {
-                e.printStackTrace();
             }
         }
+    }
+    
+    public void ensureBookmark( final long id ) {
+        ensureFile( getBookmarkPath( id ) );
+    }
+    
+    public void ensureLastOpenedPage( final long id ) {
+        ensureFile( getLastOpenedPagePath( id ) );
     }
 
     public void ensureDocInfoDir() {
@@ -78,6 +85,10 @@ public class LocalPathManager {
         return getFontDir() + name;
     }
 
+    public String getLastOpenedPagePath( long id ) {
+        return getDocInfoDir() + id + ".lastOpenedPage.json";
+    }
+
     private String getImageDir( final long id ) {
         return ROOT + "image/" + id + "/";
     }
@@ -93,17 +104,17 @@ public class LocalPathManager {
     public String getTableOfContentsInfoPath( final long id ) {
         return getDocInfoDir() + id + ".toc.json";
     }
-
+    
     private String getTextDir( final long id ) {
         return ROOT + "text/" + id + "/";
-    }
-    
-    public String getThumbnailPath( final long id , final int page ) {
-        return getImageDir( id ) + "thumnail" + page + ".jpg";
     }
 
     public String getTextPath( final long id , final int page ) {
         return getTextDir( id ) + page + ".json";
+    }
+
+    public String getThumbnailPath( final long id , final int page ) {
+        return getImageDir( id ) + "thumnail" + page + ".jpg";
     }
 
 }

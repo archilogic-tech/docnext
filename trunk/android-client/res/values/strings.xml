@@ -10,7 +10,8 @@
     <string name="confirm_finish">ビューアーを終了してもよろしいですか?</string>
     <string name="yes">はい</string>
     <string name="no">いいえ</string>
-    
+
+    <string name="confirm_restore">最後に見ていたページに戻りますか?</string>    
     <string name="empty_bookmark">There is no bookmark</string>
     
     <string name="table_of_contents">Table Of Contents</string>
