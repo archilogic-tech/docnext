@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,24 +35,27 @@ public class ViewerController {
     @Autowired
     private DocumentDao documentDao;
 
+    @Deprecated
     @RequestMapping( "/viewer/download" )
-    public void download( @RequestParam( "documentId" ) final long documentId , final HttpServletResponse res )
-            throws IOException {
-        FileCopyUtils.copy( new FileInputStream( packManager.getPackPath( documentId ) ) , res.getOutputStream() );
+    public void download( @RequestParam( "documentId" ) final long documentId ,
+            final HttpServletResponse res ) throws IOException {
+        FileCopyUtils.copy( new FileInputStream( packManager.getPackPath( documentId ) ) ,
+                res.getOutputStream() );
     }
 
-    @RequestMapping( "/viewer/getDocInfo" )
+    @RequestMapping( "/viewer/getDocInfo/{id}" )
     @ResponseBody
-    public String getDocInfo( @RequestParam( "id" ) final long id ) {
+    public String getDocInfo( @PathVariable final long id ) {
         final Document doc = documentDao.findById( id );
 
         return JSON.encode( new DocInfo( id , doc.getTypes() , doc.getPages() ) );
     }
 
-    @RequestMapping( "/viewer/getFont" )
-    public void getFont( @RequestParam( "name" ) final String name , final HttpServletResponse res ) {
+    @RequestMapping( "/viewer/getFont/{name}" )
+    public void getFont( @PathVariable final String name , final HttpServletResponse res ) {
         try {
-            final InputStream in = FileUtils.openInputStream( new File( repositoryManager.getFontPath( name ) ) );
+            final InputStream in =
+                    FileUtils.openInputStream( new File( repositoryManager.getFontPath( name ) ) );
 
             IOUtils.copy( in , res.getOutputStream() );
 
@@ -61,9 +65,9 @@ public class ViewerController {
         }
     }
 
-    @RequestMapping( "/viewer/getImageInfo" )
+    @RequestMapping( "/viewer/getImageInfo/{id}/{shortSide}" )
     @ResponseBody
-    public String getImageInfo( @RequestParam( "id" ) final long id , @RequestParam( "shortSide" ) final int shortSide ) {
+    public String getImageInfo( @PathVariable final long id , @PathVariable final int shortSide ) {
         final int LIMIT = 3;
 
         final Document doc = documentDao.findById( id );
@@ -78,18 +82,21 @@ public class ViewerController {
     }
 
     private int getMinLevel( final int shortSide ) {
-        return ( int ) Math.ceil( Math.log( 1.0 * shortSide / ThumbnailCreator.TEXTURE_SIZE ) / Math.log( 2 ) );
+        return ( int ) Math.ceil( Math.log( 1.0 * shortSide / ThumbnailCreator.TEXTURE_SIZE )
+                / Math.log( 2 ) );
     }
 
+    @Deprecated
     @RequestMapping( "/viewer/getPage" )
     public void getPage( @RequestParam( "type" ) final String type ,
-            @RequestParam( "documentId" ) final long documentId , @RequestParam( "page" ) final int page ,
-            @RequestParam( "level" ) final int level , @RequestParam( "px" ) final int px ,
-            @RequestParam( "py" ) final int py , final HttpServletResponse res ) {
+            @RequestParam( "documentId" ) final long documentId ,
+            @RequestParam( "page" ) final int page , @RequestParam( "level" ) final int level ,
+            @RequestParam( "px" ) final int px , @RequestParam( "py" ) final int py ,
+            final HttpServletResponse res ) {
         try {
             final InputStream in =
-                    FileUtils.openInputStream( new File( repositoryManager.getImagePath( type , documentId , page ,
-                            level , px , py ) ) );
+                    FileUtils.openInputStream( new File( repositoryManager.getImagePath( type ,
+                            documentId , page , level , px , py ) ) );
 
             IOUtils.copy( in , res.getOutputStream() );
 
@@ -99,40 +106,43 @@ public class ViewerController {
         }
     }
 
-    @RequestMapping( "/viewer/getText" )
+    @RequestMapping( "/viewer/getText/{id}/{page}" )
     @ResponseBody
-    public String getText( @RequestParam( "id" ) final long id , @RequestParam( "page" ) final int page ) {
+    public String getText( @PathVariable final long id , @PathVariable final int page ) {
         try {
-            return FileUtils.readFileToString( new File( repositoryManager.getTextPath( id , page ) ) );
+            return FileUtils
+                    .readFileToString( new File( repositoryManager.getTextPath( id , page ) ) );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
-    
-    @RequestMapping( "/viewer/getThumbnail" )
-    public void getThumbnail( @RequestParam( "id" ) final long id , @RequestParam( "page") final int page , 
-            final HttpServletResponse res )  {
+
+    @RequestMapping( "/viewer/getThumbnail/{id}/{page}" )
+    public void getThumbnail( @PathVariable final long id , @PathVariable final int page ,
+            final HttpServletResponse res ) {
         try {
             final InputStream in =
-                FileUtils.openInputStream( new File( repositoryManager.getThumbnailPath( id , page )));
-            
+                    FileUtils.openInputStream( new File( repositoryManager.getThumbnailPath( id ,
+                            page ) ) );
+
             IOUtils.copy( in , res.getOutputStream() );
+
             IOUtils.closeQuietly( in );
         } catch ( final IOException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    @RequestMapping( "/viewer/getTOC" )
+    @RequestMapping( "/viewer/getTOC/{id}" )
     @ResponseBody
-    public String getTOC( @RequestParam( "id" ) final long id ) throws IOException {
+    public String getTOC( @PathVariable final long id ) {
         return JSON.encode( packManager.readTOC( id ) );
     }
 
-    @RequestMapping( "/viewer/smartGetPage" )
-    public void smartGetPage( @RequestParam( "id" ) final long id , @RequestParam( "page" ) final int page ,
-            @RequestParam( "level" ) final int level , @RequestParam( "px" ) final int px ,
-            @RequestParam( "py" ) final int py , @RequestParam( "shortSide" ) final int shortSide ,
+    @RequestMapping( "/viewer/smartGetPage/{id}/{page}/{level}/{px}/{py}/{shortSide}" )
+    public void smartGetPage( @PathVariable final long id , @PathVariable final int page ,
+            @PathVariable final int level , @PathVariable final int px ,
+            @PathVariable final int py , @PathVariable final int shortSide ,
             final HttpServletResponse res ) {
         try {
             final InputStream in =
