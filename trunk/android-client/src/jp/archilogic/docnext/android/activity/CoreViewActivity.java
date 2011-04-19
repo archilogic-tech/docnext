@@ -78,7 +78,9 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         @Override
         public void onLongPress( final MotionEvent e ) {
-            toggleMenu();
+            if ( !_scaleGestureDetector.isInProgress() ) {
+                toggleMenu();
+            }
         }
 
         @Override
@@ -138,6 +140,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
     private final OnScaleGestureWrapperListener _scaleGestureListener =
             new OnScaleGestureWrapperListener() {
+
                 @Override
                 public boolean onScale( final ScaleGestureDetectorWrapper detector ) {
                     _view.onZoomGesture( detector.getScaleFactor() ,
@@ -180,7 +183,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
             Kernel.getLocalProvider().setLastOpenedPage( _ids[ 0 ] , page );
         }
     };
-
+    
     private IntentFilter buildRemoteProviderReceiverFilter() {
         final IntentFilter filter = new IntentFilter();
 
