@@ -34,8 +34,8 @@ public class DocumentService {
     @Autowired
     private RepositoryManager repositoryManager;
 
-    public Long createDocument( String json ) {
-        Document doc = JSON.decode( json , Document.class );
+    public Long createDocument( final String json ) {
+        final Document doc = JSON.decode( json , Document.class );
         doc.setName( "multiple documents" );
         doc.processing = false;
         return documentDao.create( doc );
@@ -108,15 +108,15 @@ public class DocumentService {
     public List< TOCElem > getTOC( final long id ) {
         return packManager.readTOC( id );
     }
-    
+
     public void repack( final long id ) {
-        packManager.repack( id );
+        // packManager.repack( id );
     }
-    
-    public void setBinding( final long id , final String binding) {
-        packManager.writeBinding( id , binding);
+
+    public void setBinding( final long id , final String binding ) {
+        // packManager.writeBinding( id , binding );
     }
-    
+
     public void setDividePage( final long id , final List< DividePage > dividePage ) {
         packManager.writeDividePage( id , dividePage );
     }
@@ -133,7 +133,7 @@ public class DocumentService {
         packManager.writeText( id , page , text.replaceAll( "\r\n" , "\n" )
                 .replaceAll( "\r" , "\n" ) );
     }
-    
+
     public void setTOC( final long id , final List< TOCElem > toc ) {
         packManager.writeTOC( id , toc );
     }
