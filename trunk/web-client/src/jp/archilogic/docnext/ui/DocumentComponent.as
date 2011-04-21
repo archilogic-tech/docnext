@@ -22,6 +22,7 @@ package jp.archilogic.docnext.ui {
     
     import mx.collections.ArrayCollection;
     import mx.containers.Canvas;
+    import mx.controls.Alert;
     import mx.controls.ProgressBar;
     import mx.controls.ProgressBarLabelPlacement;
     import mx.core.IIMESupport;
@@ -74,6 +75,10 @@ package jp.archilogic.docnext.ui {
 			bitmap.height = this.height;
 			return bitmap;
 		}
+
+        public function get flow() : Boolean {
+            return "right" != _infos[ _currentDocPos ].flow;
+        }
 		
 		/* public function get infos() : Vector.<Object> {
 			return this._infos;
@@ -539,16 +544,14 @@ package jp.archilogic.docnext.ui {
 
             addPage( nextFore , true , function( page : PageComponent ) : void {
                 addPage( nextRear , false , function( page : PageComponent ) : void {
-                    var front : PageComponent = isForward ? nextFore : prevFore;
-                    var back : PageComponent = isForward ? prevRear : nextRear;
-                    var removeOnBegin : PageComponent = isForward ? prevRear : prevFore;
-                    var removeOnEnd : PageComponent = isForward ? prevFore : prevRear;
+                    var front : PageComponent = isForward == flow ? nextFore : prevFore;
+                    var back : PageComponent = isForward == flow ? prevRear : nextRear;
+                    var removeOnBegin : PageComponent = isForward == flow ? prevRear : prevFore;
+                    var removeOnEnd : PageComponent = isForward == flow ? prevFore : prevRear;
 
                     isAnimating = true;
-                    /* if(isForward) 	nextFore.alpha = 0;
-                    	else        	nextRear.alpha = 0; */
-                    if(isForward) 	nextFore.visible = false;
-                    else        	nextRear.visible = false;  
+                    if(isForward == flow) nextFore.visible = false;
+                    else nextRear.visible = false;  
                     startFlip( front , back , isForward , 
                     function() : void 
                     {
@@ -709,7 +712,7 @@ package jp.archilogic.docnext.ui {
         }
 
         private function hasLeft() : Boolean {
-            return hasNext();
+            return flow ? hasNext() : hasPrev();
         }
 
         private function hasNext() : Boolean {
@@ -722,7 +725,7 @@ package jp.archilogic.docnext.ui {
         }
 
         private function hasRight() : Boolean {
-            return hasPrev();
+            return flow ? hasPrev() : hasNext();
         }
 
         private function initLoadComplete( page : PageComponent ) : void {
@@ -861,11 +864,11 @@ package jp.archilogic.docnext.ui {
 			return false;
 		}  */
         private function moveLeft() : void {
-            moveToNextPage();
+            flow ? moveToNextPage() : moveToPrevPage();
         }
 
         private function moveRight() : void {
-            moveToPrevPage();
+            flow ? moveToPrevPage() : moveToNextPage();
         }
 
         private function moveToNextPage() : void {
@@ -927,7 +930,7 @@ package jp.archilogic.docnext.ui {
             var step : int = 0;
             systemManager.addEventListener( Event.ENTER_FRAME , function( e : Event ) : void {
                 if ( step < N_STEP ) {
-                    var sign : int = isForward ? 1 : -1;
+                    var sign : int = isForward == flow ? 1 : -1;
 
                     render.graphics.clear();
                     var t : Number = easeInOutQuart( step / ( N_STEP - 1 ) );

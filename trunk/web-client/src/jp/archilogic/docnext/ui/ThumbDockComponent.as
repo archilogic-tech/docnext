@@ -18,7 +18,6 @@ package jp.archilogic.docnext.ui
 	import jp.archilogic.docnext.util.DocumentLoadUtil;
 	
 	import mx.containers.Canvas;
-	import mx.controls.Alert;
 	import mx.controls.HScrollBar;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
@@ -68,7 +67,8 @@ package jp.archilogic.docnext.ui
        /*  private var _ratio : Number = 0.3;
         private var _docId : int = 2;  */
         private var _ratio : Number ;
-        private var _docId : int ; 
+        private var _docId : int ;
+        private var _flow : Boolean;
         private var _currentDocPos : int;
         private var isCreated : Boolean = false;
         /* private var direction : int = -1; */
@@ -81,7 +81,11 @@ package jp.archilogic.docnext.ui
        	public function set documentComponent(d : DocumentComponent ) : void {
 			this._documentComponent = d;
 		}
-        
+
+        public function set flow(flow : Boolean) : void {
+            _flow = flow;
+        }
+
         public function getSelectPage() : int {
             return _thumbnails[_currentIndex].page;
         }
@@ -178,7 +182,7 @@ package jp.archilogic.docnext.ui
         	_docId = this._documentComponent.docId;
         	totalPage = _pages.length;
         	_currentDocPos = this._documentComponent.currentDocPos;
-        	_currentIndex = totalPage - 1 - _documentComponent.getCurrentHead() * 2 ; 
+        	_currentIndex = _flow ? totalPage - 1 - _documentComponent.getCurrentHead() * 2 : _documentComponent.getCurrentHead() * 2 ; 
         	
         	this._ui.hScrollbar.setScrollProperties(1,0,totalPage-1);
         	/* this._background = _documentComponent */
@@ -193,24 +197,25 @@ package jp.archilogic.docnext.ui
         	loadThumbs(0, totalPage, null );
         	this.isCreated = true;
         }
-        private function initChildren() : void
-        {
-        	var bitmapData : BitmapData = new BitmapData(SHELFED_WIDTH, SHELFED_HEIGHT, false, 0x334433);
-        	for(var i:int = 0; i < totalPage ; i++)
-        	{
-        		var thumb : ThumbnailComponent = new ThumbnailComponent();
-        		thumb.source = new Bitmap(bitmapData);
-        		thumb.docId = _docId;
-        		thumb.page = totalPage - i - 1;
-        		thumb.width = SHELFED_WIDTH;
-        		thumb.height = SHELFED_HEIGHT;
-        		thumb.x = this.width - 30;
-        		thumb.y = (this.height -SHELFED_HEIGHT)  * 0.5; 
-        		thumb.visible = false;
-        		_thumbnails[i] = thumb;
-        		this._ui.wrapper.addChild(thumb); 
-        	}
+
+        private function initChildren() : void {
+            var bitmapData : BitmapData = new BitmapData(SHELFED_WIDTH, SHELFED_HEIGHT, false, 0x334433);
+            for(var i:int = 0; i < totalPage ; i++) {
+                var thumb : ThumbnailComponent = new ThumbnailComponent();
+                var page : int = _flow ? totalPage - i - 1 : i;
+                thumb.source = new Bitmap(bitmapData);
+                thumb.docId = _docId;
+                thumb.page = page;
+                thumb.width = SHELFED_WIDTH;
+                thumb.height = SHELFED_HEIGHT;
+                thumb.x = this.width - 30;
+                thumb.y = (this.height -SHELFED_HEIGHT)  * 0.5; 
+                thumb.visible = false;
+                _thumbnails[i] = thumb;
+                this._ui.wrapper.addChild(thumb); 
+            }
         }
+
         private function calculateTotalThumb() : void
         {
         	/* var padding : Number = 30;
@@ -545,10 +550,10 @@ package jp.archilogic.docnext.ui
             } */
             _ui.pageLabel.text +=  ' load...';
 
-            var index : int  = _thumbnails.length - 1 - _currentIndex
+            var index : int  = _thumbnails.length - 1 - _currentIndex;
 
-            _documentComponent.loadForThumb(index, function(page : PageComponent) : void {
-                if(page.page != index) {
+            _documentComponent.loadForThumb(_thumbnails[_currentIndex].page, function(page : PageComponent) : void {
+                if(page.page != _thumbnails[_currentIndex].page) {
                     _ui.pageLabel.text += ' concuurency problem occur'; 
                     return;
                 }
@@ -565,7 +570,7 @@ package jp.archilogic.docnext.ui
                     _thumbnails[i].resetThumbSource();
                     continue;
                 }
-                DocumentLoadUtil.loadThumb(_thumbnails[_thumbnails.length - 1 - i], next);
+                DocumentLoadUtil.loadThumb(_thumbnails[i], next);
             }
         }
 

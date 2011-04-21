@@ -126,8 +126,8 @@ package jp.archilogic.docnext.helper {
             }
 
             for each ( var page : PageComponent in _currentPagesFunc() ) {
-            	/* if( page == null) page = new PageComponent(page.page); */
-            	/* if( page !=null) */  page.initSelection();
+                if( page == null) page = new PageComponent(page.page);
+                if( page !=null) page.initSelection();
                 page.clearEmphasize();
             }
 

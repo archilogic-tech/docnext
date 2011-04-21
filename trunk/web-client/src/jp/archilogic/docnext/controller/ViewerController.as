@@ -40,6 +40,7 @@ package jp.archilogic.docnext.controller {
 				/* changeDocumentVisiblityHandler(false, 0.3); */
 				/* view.documentComponent.alpha = 0.4; */
 				view.thumbDockComponent.setBackground(view.documentComponent.background);
+                view.thumbDockComponent.flow = view.documentComponent.flow;
 				view.documentComponent.removeEvents();
 				view.documentComponent.visible = false;
 				changeMenuVisiblityHandler(false);
