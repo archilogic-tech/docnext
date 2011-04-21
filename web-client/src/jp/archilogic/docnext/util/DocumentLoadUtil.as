@@ -20,7 +20,7 @@ package jp.archilogic.docnext.util {
                                          contextMenuHelper : ContextMenuHelper , isMenuVisibleFunc : Function ,
                                          changePageHandler : Function , loadCompleteHandler : Function = null ) : void {
             DocumentService.getPage( docId , index , function( result : ByteArray ) : void {
-                var page : PageComponent = new PageComponent( scroller );
+                var page : PageComponent = new PageComponent( index );
                 page.docId = docId;
                 page.page = index;
                 page.ratio = ratio;

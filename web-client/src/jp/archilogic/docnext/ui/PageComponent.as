@@ -14,10 +14,11 @@ package jp.archilogic.docnext.ui {
     import jp.archilogic.docnext.helper.OverlayHelper;
 
     public class PageComponent extends Image {
-        public function PageComponent( scroller : Canvas ) {
+        public function PageComponent( page : int ) {
             super();
 
             _overlayHelper = new OverlayHelper( this );
+            _overlayHelper.page = page;
 
             addEventListener( FlexEvent.CREATION_COMPLETE , function( e : FlexEvent ) : void {
                 removeEventListener( FlexEvent.CREATION_COMPLETE , arguments.callee );
