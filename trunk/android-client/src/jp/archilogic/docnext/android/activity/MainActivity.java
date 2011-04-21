@@ -26,20 +26,23 @@ public class MainActivity extends Activity {
     private final MainActivity _self = this;
 
     private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
+        boolean _doesCoreViewStarted = false;
         @Override
         public void onReceive( final Context context , final Intent intent ) {
             if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
                 final int current = intent.getIntExtra( DownloadService.EXTRA_CURRENT , -1 );
                 final int total = intent.getIntExtra( DownloadService.EXTRA_TOTAL , -1 );
-                final int imagePerPage =
-                        intent.getIntExtra( DownloadService.EXTRA_ITEM_PER_PAGE , -1 );
 
                 if ( current < total ) {
                     setProgress( Window.PROGRESS_END * current / total );
 
-                    if ( current == 2 * imagePerPage ) {
-                        startCoreView( Kernel.getLocalProvider().getDocInfo(
-                                Kernel.getAppStateManager().getDownloadTarget() ) );
+                    if ( !_doesCoreViewStarted ) {
+                        DocInfo doc = Kernel.getLocalProvider().getDocInfo(
+                                Kernel.getAppStateManager().getDownloadTarget() );
+                        if ( doc != null && current == 1 ) {
+                            startCoreView( doc );
+                            _doesCoreViewStarted = true;
+                        }
                     }
                 } else {
                     setProgressBarVisibility( false );
@@ -130,8 +133,7 @@ public class MainActivity extends Activity {
 
         if ( doc != null ) {
             if ( Kernel.getLocalProvider().isCompleted( doc.id )
-                    || Kernel.getAppStateManager().getDownloadTarget() == id
-                    && Kernel.getLocalProvider().isImageExists( doc.id , 1 ) ) {
+                    || Kernel.getAppStateManager().getDownloadTarget() == id ) {
                 startCoreView( doc );
             } else {
                 Toast.makeText( _self , R.string.cannot_download_in_parallel , Toast.LENGTH_LONG )

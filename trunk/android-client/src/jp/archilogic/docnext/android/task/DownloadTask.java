@@ -32,7 +32,13 @@ public class DownloadTask extends NetworkTask< Void , Void > {
 
         IOUtils.closeQuietly( out );
 
+        onDownloaded();
+        
         return null;
+    }
+    
+    public void onDownloaded() {
+        _receiver.downloaded();
     }
 
     @Override

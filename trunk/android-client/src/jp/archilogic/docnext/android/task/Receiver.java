@@ -6,4 +6,6 @@ public interface Receiver< T > {
     void error( TaskErrorType error );
 
     void receive( T result );
+
+    void downloaded();
 }

@@ -196,6 +196,10 @@ public class LocalProviderImpl implements LocalProvider {
         }
     }
     
+    public boolean isImageExists( final long id , final int page , final int level , final int px , final int py ) {
+        return getImagePath( id , page , level , px , py ) != null;
+    }
+    
     @Override
     public void setBookmarkInfo( final long id , final List< BookmarkInfo > bookmarks ) {
         if ( bookmarks == null ) {

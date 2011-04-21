@@ -19,6 +19,10 @@ public class DownloadService extends Service {
                     putExtra( EXTRA_ERROR , error ) );
         }
 
+        public void downloaded() {
+            
+        }
+
         @Override
         public void receive( final Void result ) {
         }
@@ -28,12 +32,18 @@ public class DownloadService extends Service {
 
     public static final String BROADCAST_DOWNLOAD_PROGRESS = PREFIX + ".download.progress";
     public static final String BROADCAST_DOWNLOAD_FAILED = PREFIX + ".download.failed";
+    public static final String BROADCAST_DOWNLOAD_DOWNLOADED = PREFIX + ".download.downloaded";
 
     public static final String EXTRA_CURRENT = PREFIX + ".extra.current";
     public static final String EXTRA_TOTAL = PREFIX + ".extra.total";
     public static final String EXTRA_ITEM_PER_PAGE = PREFIX + ".extra.itemPerPage";
     public static final String EXTRA_ERROR = PREFIX + ".extra.error";
 
+    public static final String EXTRA_PAGE = PREFIX + ".extra.page";
+    public static final String EXTRA_LEVEL = PREFIX + ".extra.level";
+    public static final String EXTRA_PX = PREFIX + ".extra.px";
+    public static final String EXTRA_PY = PREFIX + ".extra.py";
+    
     private long _id;
     private DocInfo _doc;
 
@@ -129,6 +139,15 @@ public class DownloadService extends Service {
 
                                     ensureImage( index , image , page , level , px , py + 1 , current + 1 ,
                                             imagePerPage );
+                                }
+                                
+                                @Override
+                                public void downloaded() {
+                                    getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_DOWNLOADED). //
+                                            putExtra( EXTRA_PAGE , page ).
+                                            putExtra( EXTRA_LEVEL , level ).
+                                            putExtra( EXTRA_PX , px ).
+                                            putExtra( EXTRA_PY , py ) );
                                 }
                             } , _id , page , level , px , py , getShortSide() ).execute();
                         } else {

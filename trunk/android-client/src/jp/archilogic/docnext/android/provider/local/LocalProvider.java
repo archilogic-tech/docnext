@@ -62,6 +62,8 @@ public interface LocalProvider {
     boolean isCompleted( long id );
 
     boolean isImageExists( long id , int page );
+
+    boolean isImageExists( long id , int page , int level , int px , int py );
     
     boolean isAllImageExists( long id , int page );
 

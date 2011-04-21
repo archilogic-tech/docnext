@@ -35,6 +35,10 @@ public class TOCView extends NavigationView {
         public void receive( final Void result ) {
             initListView();
         }
+
+        @Override
+        public void downloaded() {
+        }
     }
 
     private final OnItemClickListener _itemClickListener = new OnItemClickListener() {
