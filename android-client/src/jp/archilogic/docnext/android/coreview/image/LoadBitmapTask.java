@@ -75,7 +75,7 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
             bis =
                     new BufferedInputStream( is =
                             FileUtils.openInputStream( new File( Kernel.getLocalProvider()
-                                    .getImagePath( _engine.id , page , level , px , py ) ) ) );
+                                    .getImagePath( _engine.id , page , level , px , py ) ) ) , 60 * 1024 );
 
             final Options o = new Options();
             o.inPreferredConfig = Config.RGB_565;
@@ -102,7 +102,9 @@ public class LoadBitmapTask implements Runnable , HasPriority , Cancellable {
             return;
         }
 
-        _tasks.get( page ).remove( this );
+        if ( _tasks.get( page ) != null ) {
+            _tasks.get( page ).remove( this );
+        }
 
         status = TaskStatus.IN_BINDING_QUEUE;
 

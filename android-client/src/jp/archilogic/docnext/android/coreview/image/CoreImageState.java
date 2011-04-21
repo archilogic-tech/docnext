@@ -195,8 +195,7 @@ public class CoreImageState {
     }
 
     private boolean hasNextPage() {
-        return page + 1 < pages
-                && ( page + 2 >= pages || Kernel.getLocalProvider().isImageExists( id , page + 2 ) );
+        return page + 1 < pages;
     }
 
     private boolean hasPrevPage() {

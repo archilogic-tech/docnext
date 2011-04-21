@@ -18,12 +18,16 @@ import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChange
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
+import jp.archilogic.docnext.android.service.DownloadService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.opengl.GLES10;
 import android.opengl.GLES11;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.Handler;
 import android.os.SystemClock;
 
 import com.google.common.collect.Lists;
@@ -69,6 +73,10 @@ public class CoreImageRenderer implements Renderer {
             for ( int level = 0 ; level < _state.nLevel ; level++ ) {
                 for ( int py = 0 ; py < dimen[ level ][ 1 ] ; py++ ) {
                     for ( int px = 0 ; px < dimen[ level ][ 0 ] ; px++ ) {
+                        if ( !Kernel.getLocalProvider().isImageExists( _state.id , page , level , px , py ) ) {
+                            continue;
+                        }
+                        
                         final LoadBitmapTask task =
                                 new LoadBitmapTask( _state , page , level , px , py , _tasks ,
                                         _bindQueue );
@@ -84,7 +92,9 @@ public class CoreImageRenderer implements Renderer {
         public void unload( final int page ) {
             if ( _tasks.get( page ) != null ) {
                 for ( final LoadBitmapTask task : _tasks.get( page ) ) {
-                    task.cancel();
+                    if ( task != null ) {
+                        task.cancel();
+                    }
                 }
 
                 _tasks.remove( page );
@@ -119,11 +129,55 @@ public class CoreImageRenderer implements Renderer {
         }
     };
 
+    private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
+        private void loadBitmap( final Intent intent ) {
+            int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
+            int level = intent.getIntExtra( DownloadService.EXTRA_LEVEL , -1 );
+            int px = intent.getIntExtra( DownloadService.EXTRA_PX , -1 );
+            int py = intent.getIntExtra( DownloadService.EXTRA_PY , -1 );
+
+            if ( _state != null &&
+                    Kernel.getLocalProvider().isImageExists( _state.id , page , level , px , py ) ) {
+
+                if ( _tasks.get( page ) == null ) {
+                    _tasks.put( page , Lists.< LoadBitmapTask > newArrayList() );
+                }
+
+                final LoadBitmapTask task =
+                    new LoadBitmapTask( _state , page , level , px , py , _tasks ,
+                            _bindQueue );
+
+                _tasks.get( page ).add( task );
+                _executor.execute( task );
+            } else {
+                Handler handler = new Handler();
+                handler.postDelayed( new Runnable() {
+                    @Override
+                    public void run() {
+                        loadBitmap( intent );
+                    }
+                }, 1000 );
+            }
+        }
+        
+        @Override
+        public void onReceive( final Context context , final Intent intent ) {
+            
+            if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED) ) {
+                loadBitmap( intent );
+            }
+        }
+    };
+
     public CoreImageRenderer( final Context context ) {
         _context = context;
         _state.setPageLoader( _loader );
         _state.setOnPageChangeListener( _pageChangeListener );
         _state.setOnPageChangedListener( _pageChangedListener );
+
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED );
+        context.registerReceiver( _remoteProviderReceiver , filter );
     }
 
     void beginInteraction() {
@@ -182,8 +236,12 @@ public class CoreImageRenderer implements Renderer {
             }
         }
 
-        _state.update();
-        _renderEngine.render( _state );
+        if ( _state != null ) {
+            _state.update();
+            if ( _renderEngine != null ) {
+                _renderEngine.render( _state );
+            }
+        }
 
         _fpsCounter++;
         _frameSum += SystemClock.elapsedRealtime() - t;

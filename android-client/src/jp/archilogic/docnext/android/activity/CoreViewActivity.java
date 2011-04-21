@@ -9,6 +9,7 @@ import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.coreview.NeedCleanup;
+import jp.archilogic.docnext.android.coreview.image.CoreImageView;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.provider.local.LocalPathManager;
@@ -26,9 +27,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -36,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 public class CoreViewActivity extends Activity implements CoreViewDelegate , CoreViewMenuDelegate {
     public static final String EXTRA_IDS =
@@ -159,10 +164,14 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
                     _isJustAfterScale = true;
                 }
             };
+            
+    private ProgressBar _bar;
 
     private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive( final Context context , final Intent intent ) {
+            
             if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_PROGRESS ) ) {
                 final int current = intent.getIntExtra( DownloadService.EXTRA_CURRENT , -1 );
                 final int total = intent.getIntExtra( DownloadService.EXTRA_TOTAL , -1 );
@@ -175,6 +184,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
             } else if ( intent.getAction().equals( HasPage.BROADCAST_PAGE_CHANGED ) ) {
                 _menu.onPageChanged();
                 setLastOpendPage();
+                toggleProgressBar();
             }
         }
 
@@ -273,6 +283,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
 
         return false;
     }
+    
+    private int dip( final float value ) {
+        return ( int ) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
+                (float) value , getResources().getDisplayMetrics());
+    }
 
     @Override
     public CoreView getCoreView() {
@@ -327,6 +342,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
+        
+        toggleProgressBar();
     }
 
     @Override
@@ -444,6 +461,36 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _view.onMenuVisibilityChange( willVisible );
     }
 
+    private void toggleProgressBar() {
+        if ( _bar != null ) {
+            _rootViewGroup.removeView( _bar );
+        }
+        
+        if ( _view == null || !( _view instanceof CoreImageView ) ) {
+            return;
+        }
+        
+        int page = ( ( HasPage) _view ).getPage();
+        DocInfo doc = Kernel.getLocalProvider().getDocInfo( _ids[ 0 ] );
+
+        if ( page <= doc.pages && 
+                !Kernel.getLocalProvider().isAllImageExists( _ids[ 0 ] , page ) ) {
+
+            _bar = new ProgressBar( _self );
+            _bar.setLayoutParams( new FrameLayout.LayoutParams(
+                    dip( 50 ) , dip( 50 ) , Gravity.CENTER ) );
+            _rootViewGroup.addView( _bar );
+
+            ( new Handler() ).postDelayed( new Runnable() {
+                @Override
+                public void run() {
+                    toggleProgressBar();
+                }
+            } , 2000 );
+        }
+        
+    }
+    
     private DocumentType validateCoreViewType( final long[] ids ) {
         DocumentType ret = null;
 
