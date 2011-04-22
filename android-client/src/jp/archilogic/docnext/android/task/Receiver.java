@@ -7,5 +7,4 @@ public interface Receiver< T > {
 
     void receive( T result );
 
-    void downloaded();
 }

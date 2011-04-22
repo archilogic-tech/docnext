@@ -10,11 +10,10 @@ import android.opengl.GLES11Ext;
 import android.os.SystemClock;
 
 public class CoreImageRenderEngine {
-    @SuppressWarnings("unused")
-    private static final String TAG = CoreImageRenderEngine.class.getName();
     private static final int TEXTURE_SIZE = 512;
 
     private TextureInfo _background;
+    private TextureInfo _blank;
     private PageInfo[] _pages;
 
     // to avoid GC
@@ -26,9 +25,6 @@ public class CoreImageRenderEngine {
     long _frameSum;
 
     void bindPageImage( final LoadBitmapTask task ) {
-        if ( task == null || task.bitmap == null ) {
-            return;
-        }
         final PageTextureInfo texture =
                 _pages[ task.page ].textures[ task.level ][ task.py ][ task.px ];
 
@@ -48,14 +44,13 @@ public class CoreImageRenderEngine {
         if ( isVisible ) {
             if ( statuses[ py ][ px ] == PageTextureStatus.BIND ) {
                 drawSingleImage( textures[ py ][ px ].id , x , y , w , h );
+            } else if ( level == 0 ) {
+                drawSingleImage( _blank.id , x , y , w , h );
             }
         }
     }
 
     void cleanup() {
-        if ( _pages == null ) {
-            return;
-        }
         for ( final PageInfo page : _pages ) {
             for ( final PageTextureInfo[][] textures : page.textures ) {
                 final int n = textures.length * textures[ 0 ].length;
@@ -155,6 +150,7 @@ public class CoreImageRenderEngine {
         _background =
                 TextureInfo.getTiledBitmapInstance( context.getResources() , R.drawable.background ,
                         surfaceSize );
+        _blank = TextureInfo.getBitmapInstance( context.getResources() , R.drawable.blank );
 
         _pages = new PageInfo[ pages ];
         for ( int page = 0 ; page < _pages.length ; page++ ) {

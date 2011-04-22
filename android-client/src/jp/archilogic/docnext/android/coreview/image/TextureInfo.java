@@ -84,9 +84,9 @@ public class TextureInfo {
         GLES10.glTexParameterf( GLES10.GL_TEXTURE_2D , GLES10.GL_TEXTURE_WRAP_T ,
                 GLES10.GL_CLAMP_TO_EDGE );
 
-        if ( bitmap != null ) {
-            GLUtils.texImage2D( GLES10.GL_TEXTURE_2D , 0 , bitmap , 0 );
-        }
+        GLUtils.texImage2D( GLES10.GL_TEXTURE_2D , 0 , bitmap , 0 );
+
+        GLUtils.texImage2D( GLES10.GL_TEXTURE_2D , 0 , bitmap , 0 );
 
         GLES11.glTexParameteriv( GLES10.GL_TEXTURE_2D , GLES11Ext.GL_TEXTURE_CROP_RECT_OES , //
                 new int[] { 0 , height , width , -height } , 0 );

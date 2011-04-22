@@ -1,21 +1,30 @@
 package jp.archilogic.docnext.android.coreview.image;
 
+
+import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.CoreViewDelegate;
 import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.coreview.NeedCleanup;
 import jp.archilogic.docnext.android.coreview.image.CoreImageState.OnScaleChangeListener;
-import jp.archilogic.docnext.android.util.AnimationUtils2;
+import jp.archilogic.docnext.android.info.DocInfo;
+import jp.archilogic.docnext.android.service.DownloadService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.ZoomButtonsController;
 import android.widget.ZoomButtonsController.OnZoomListener;
 
@@ -82,6 +91,23 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         }
     };
 
+    private ProgressBar _downloadIndicator;
+    
+    private BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive( final Context context , final Intent intent ) {
+            if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED) ) {
+                int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
+                
+                if ( page == getPage() ) {
+                    toggleDownloadIndicator();
+                }
+            } else if ( intent.getAction().equals( HasPage.BROADCAST_PAGE_CHANGED ) ) {
+                toggleDownloadIndicator();
+            }
+        }
+    };
+
     public CoreImageView( final Context context ) {
         super( context );
 
@@ -107,6 +133,11 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         _r2lButton.setOnClickListener( _r2lButtonClick );
         _t2bButton.setOnClickListener( _t2bButtonClick );
         _b2tButton.setOnClickListener( _b2tButtonClick );
+        
+        IntentFilter filter = new IntentFilter();
+        filter.addAction( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED );
+        filter.addAction( HasPage.BROADCAST_PAGE_CHANGED );
+        getContext().registerReceiver( _remoteProviderReceiver , filter );
     }
 
     private void assignWidget() {
@@ -128,6 +159,13 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         _b2tButton = null;
         _renderer.cleanup();
         _renderer = null;
+        
+        getContext().unregisterReceiver( _remoteProviderReceiver );
+    }
+
+    private int dip( final float value ) {
+        return ( int ) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
+                (float) value , getResources().getDisplayMetrics());
     }
 
     @Override
@@ -176,7 +214,7 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         final boolean willVisible = _menuView.getVisibility() == GONE;
 
         if ( isMenuVisible == willVisible ) {
-            AnimationUtils2.toggle( getContext() , _menuView );
+            //AnimationUtils2.toggle( getContext() , _menuView );
         }
     }
 
@@ -230,5 +268,25 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
     @Override
     public void setPage( final int page ) {
         _renderer.setPage( page );
+    }
+    
+    private void toggleDownloadIndicator() {
+        if ( _downloadIndicator != null ) {
+            removeView( _downloadIndicator );
+        }
+        
+        int page = getPage();
+
+        long id = _renderer.getId();
+        DocInfo doc = Kernel.getLocalProvider().getDocInfo( id );
+        
+        if ( page <= doc.pages && 
+                !Kernel.getLocalProvider().isAllImageExists( id , page ) ) {
+
+            _downloadIndicator = new ProgressBar( getContext() );
+            _downloadIndicator.setLayoutParams( new FrameLayout.LayoutParams(
+                    dip( 50 ) , dip( 50 ) , Gravity.CENTER ) );
+            addView( _downloadIndicator );
+        }
     }
 }

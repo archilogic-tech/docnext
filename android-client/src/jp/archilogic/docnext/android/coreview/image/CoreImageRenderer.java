@@ -27,7 +27,6 @@ import android.graphics.PointF;
 import android.opengl.GLES10;
 import android.opengl.GLES11;
 import android.opengl.GLSurfaceView.Renderer;
-import android.os.Handler;
 import android.os.SystemClock;
 
 import com.google.common.collect.Lists;
@@ -92,9 +91,7 @@ public class CoreImageRenderer implements Renderer {
         public void unload( final int page ) {
             if ( _tasks.get( page ) != null ) {
                 for ( final LoadBitmapTask task : _tasks.get( page ) ) {
-                    if ( task != null ) {
-                        task.cancel();
-                    }
+                    task.cancel();
                 }
 
                 _tasks.remove( page );
@@ -125,19 +122,19 @@ public class CoreImageRenderer implements Renderer {
     private final OnPageChangedListener _pageChangedListener = new OnPageChangedListener() {
         @Override
         public void onPageChanged( final int page ) {
-            _context.sendBroadcast( new Intent( HasPage.BROADCAST_PAGE_CHANGED ) );
+            _context.sendBroadcast( ( new Intent( HasPage.BROADCAST_PAGE_CHANGED ) )
+                    .putExtra( HasPage.BROADCAST_EXTRA_PAGE , page ) );
         }
     };
 
-    private final BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
-        private void loadBitmap( final Intent intent ) {
-            int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
-            int level = intent.getIntExtra( DownloadService.EXTRA_LEVEL , -1 );
-            int px = intent.getIntExtra( DownloadService.EXTRA_PX , -1 );
-            int py = intent.getIntExtra( DownloadService.EXTRA_PY , -1 );
-
-            if ( _state != null &&
-                    Kernel.getLocalProvider().isImageExists( _state.id , page , level , px , py ) ) {
+    private BroadcastReceiver _remoteProviderReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive( final Context context , final Intent intent ) {
+            if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED) ) {
+                int page = intent.getIntExtra( DownloadService.EXTRA_PAGE , -1 );
+                int level = intent.getIntExtra( DownloadService.EXTRA_LEVEL , -1 );
+                int px = intent.getIntExtra( DownloadService.EXTRA_PX , -1 );
+                int py = intent.getIntExtra( DownloadService.EXTRA_PY , -1 );
 
                 if ( _tasks.get( page ) == null ) {
                     _tasks.put( page , Lists.< LoadBitmapTask > newArrayList() );
@@ -149,22 +146,6 @@ public class CoreImageRenderer implements Renderer {
 
                 _tasks.get( page ).add( task );
                 _executor.execute( task );
-            } else {
-                Handler handler = new Handler();
-                handler.postDelayed( new Runnable() {
-                    @Override
-                    public void run() {
-                        loadBitmap( intent );
-                    }
-                }, 1000 );
-            }
-        }
-        
-        @Override
-        public void onReceive( final Context context , final Intent intent ) {
-            
-            if ( intent.getAction().equals( DownloadService.BROADCAST_DOWNLOAD_DOWNLOADED) ) {
-                loadBitmap( intent );
             }
         }
     };
@@ -187,10 +168,12 @@ public class CoreImageRenderer implements Renderer {
     void cleanup() {
         _renderEngine.cleanup();
         _executor.shutdownNow();
+        _context.unregisterReceiver( _remoteProviderReceiver );
 
         _context = null;
-        _state = null;
-        _renderEngine = null;
+        // these lines seemed to be cause of Null pointer exception
+        //_state = null;
+        //_renderEngine = null;
         _bindQueue.clear();
         _unbindQueue.clear();
         _imageLoadQueue.clear();
@@ -217,6 +200,10 @@ public class CoreImageRenderer implements Renderer {
     CoreImageDirection getDirection() {
         return _state.direction;
     }
+    
+    long getId() {
+        return _state.id;
+    }
 
     int getPage() {
         return _state.page;
@@ -226,8 +213,10 @@ public class CoreImageRenderer implements Renderer {
     public void onDrawFrame( final GL10 gl ) {
         final long t = SystemClock.elapsedRealtime();
 
-        while ( !_bindQueue.isEmpty() ) {
-            _renderEngine.bindPageImage( _bindQueue.poll() );
+        synchronized ( _bindQueue ) {
+            while ( !_bindQueue.isEmpty() ) {
+                _renderEngine.bindPageImage( _bindQueue.poll() );
+            }
         }
 
         synchronized ( _unbindQueue ) {
@@ -236,12 +225,8 @@ public class CoreImageRenderer implements Renderer {
             }
         }
 
-        if ( _state != null ) {
-            _state.update();
-            if ( _renderEngine != null ) {
-                _renderEngine.render( _state );
-            }
-        }
+        _state.update();
+        _renderEngine.render( _state );
 
         _fpsCounter++;
         _frameSum += SystemClock.elapsedRealtime() - t;
