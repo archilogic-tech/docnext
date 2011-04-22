@@ -233,9 +233,11 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _menu = new CoreViewMenu( _self , type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
         
-        _rootViewGroup.removeView( _statusBar );
-        _statusBar = new CoreViewStatusBar( _self , _ids[ 0 ] );
-        _rootViewGroup.addView( _statusBar );
+        if ( !Kernel.getLocalProvider().isCompleted( _ids[ 0 ] ) ) {
+            _rootViewGroup.removeView( _statusBar );
+            _statusBar = new CoreViewStatusBar( _self , _ids[ 0 ] );
+            _rootViewGroup.addView( _statusBar );
+        }
     }
     
     private void confirmRestorePage() {
@@ -334,8 +336,7 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _menu = new CoreViewMenu( _self , _type , _ids[ 0 ] , _self );
         _rootViewGroup.addView( _menu );
         
-        DocInfo doc = Kernel.getLocalProvider().getDocInfo( _ids[ 0 ] );
-        if ( !Kernel.getLocalProvider().isAllImageExists( _ids[ 0 ] , doc.pages - 1 ) ) {
+        if ( !Kernel.getLocalProvider().isCompleted( _ids[ 0 ] ) ) {
             _statusBar = new CoreViewStatusBar( _self , _ids[ 0 ] );
             _rootViewGroup.addView( _statusBar );
         }

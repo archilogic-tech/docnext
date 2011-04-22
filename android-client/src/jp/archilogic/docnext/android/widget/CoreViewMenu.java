@@ -233,7 +233,7 @@ public class CoreViewMenu extends LinearLayout {
         
         DocInfo doc = Kernel.getLocalProvider().getDocInfo( _id );
         String title = Kernel.getLocalProvider().getTOCText( _id , page ) 
-            + " ( " + page + " / " + doc.pages + " page )";
+            + " ( " + ( page + 1 ) + " / " + doc.pages + " page )";
         _titleView.setText( title );
     }
 }
