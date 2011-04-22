@@ -3,7 +3,7 @@ package jp.archilogic.docnext.android.service;
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
-import jp.archilogic.docnext.android.task.Receiver;
+import jp.archilogic.docnext.android.task.FileReceiver;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.app.Service;
 import android.content.Intent;
@@ -12,15 +12,15 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class DownloadService extends Service {
-    private class DownloadReceiver implements Receiver< Void > {
+    private class DownloadReceiver implements FileReceiver< Void > {
         @Override
         public void error( final TaskErrorType error ) {
             getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_FAILED ). //
                     putExtra( EXTRA_ERROR , error ) );
         }
 
-        public void downloaded() {
-            
+        @Override
+        public void downloadComplete() {
         }
 
         @Override
@@ -142,7 +142,7 @@ public class DownloadService extends Service {
                                 }
                                 
                                 @Override
-                                public void downloaded() {
+                                public void downloadComplete() {
                                     getApplicationContext().sendBroadcast( new Intent( BROADCAST_DOWNLOAD_DOWNLOADED). //
                                             putExtra( EXTRA_PAGE , page ).
                                             putExtra( EXTRA_LEVEL , level ).

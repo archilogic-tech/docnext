@@ -6,9 +6,6 @@ import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.R;
 import jp.archilogic.docnext.android.coreview.NavigationView;
 import jp.archilogic.docnext.android.info.TOCElement;
-import jp.archilogic.docnext.android.task.DownloadTask;
-import jp.archilogic.docnext.android.task.Receiver;
-import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.content.Context;
 import android.util.Log;
 import android.util.TypedValue;
@@ -21,25 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class TOCView extends NavigationView {
-    private class DownloadReceiver implements Receiver< Void > {
-        @Override
-        public void error( final TaskErrorType error ) {
-            Toast.makeText( getContext() , "There is no table of contents." , Toast.LENGTH_LONG )
-                    .show();
-        }
-
-        @Override
-        public void receive( final Void result ) {
-            initListView();
-        }
-
-        @Override
-        public void downloaded() {
-        }
-    }
 
     private final OnItemClickListener _itemClickListener = new OnItemClickListener() {
         @Override
@@ -54,18 +34,7 @@ public class TOCView extends NavigationView {
         super( context );
     }
 
-    private void ensureTOC() {
-        if ( Kernel.getLocalProvider().getTableOfContentsInfo( _id ) == null ) {
-            final Receiver< Void > receiver = new DownloadReceiver();
-            final DownloadTask task =
-                    Kernel.getRemoteProvider().getTableOfContentsInfo(
-                            getContext().getApplicationContext() , receiver , _id );
-            task.execute();
-        }
-    }
-    
     public void init() {
-        ensureTOC();
         initListView();
     }
 

@@ -2,7 +2,6 @@ package jp.archilogic.docnext.android.coreview.image;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.coreview.image.CoreImageRenderer.PageLoader;
 import jp.archilogic.docnext.android.info.SizeFInfo;
 import jp.archilogic.docnext.android.info.SizeInfo;
@@ -199,8 +198,7 @@ public class CoreImageState {
     }
 
     private boolean hasPrevPage() {
-        return page - 1 >= 0
-                && ( page - 2 < 0 || Kernel.getLocalProvider().isImageExists( id , page - 2 ) );
+        return page - 1 >= 0;
     }
 
     void initScale() {

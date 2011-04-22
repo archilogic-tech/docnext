@@ -18,6 +18,7 @@ import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
 import jp.archilogic.docnext.android.info.TOCElement;
 import jp.archilogic.docnext.android.info.TextInfo;
+import jp.archilogic.docnext.android.task.DownloadTask;
 import net.arnx.jsonic.JSON;
 import net.arnx.jsonic.JSONException;
 
@@ -50,26 +51,9 @@ public class LocalProviderImpl implements LocalProvider {
             }
             return null;
         }
-        List< TOCElement > toc = getTableOfContentsInfo( id );
-        TreeSet< TOCElement > set = new TreeSet< TOCElement >();
-        if ( toc != null ) {
-            set.addAll( toc );
-        }
-        TOCElement[] array = new TOCElement[ set.size() ];
-        set.toArray( array );
+
         for ( BookmarkInfo bookmark : bookmarks ) {
-            String text = "NO TITLE";
-            for ( int i = 0 ; i < array.length ; i++ ) {
-                if ( i == array.length - 1 ) {
-                    text = array[ i ].text;
-                    break;
-                }
-                if ( array[ i ].page <= bookmark.page && array[ i + 1 ].page > bookmark.page ) {
-                    text = array[ i ].text;
-                    break;
-                }
-            }
-            bookmark.text = text;
+            bookmark.text = getTOCText( id , bookmark.page );
         }
         return new LinkedList< BookmarkInfo >( Arrays.asList( bookmarks ) );
     }
@@ -144,6 +128,30 @@ public class LocalProviderImpl implements LocalProvider {
     }
 
     @Override
+    public String getTOCText( final long id , final int page ) {
+        List< TOCElement > toc = getTableOfContentsInfo( id );
+        TreeSet< TOCElement > set = new TreeSet< TOCElement >();
+        if ( toc != null ) {
+            set.addAll( toc );
+        }
+        TOCElement[] array = new TOCElement[ set.size() ];
+        set.toArray( array );
+
+        String text = "NO TITLE";
+        for ( int i = 0 ; i < array.length ; i++ ) {
+            if ( i == array.length - 1 ) {
+                text = array[ i ].text;
+                break;
+            }
+            if ( array[ i ].page <= page && array[ i + 1 ].page > page ) {
+                text = array[ i ].text;
+                break;
+            }
+        }
+        return text;
+    }
+
+    @Override
     public TextInfo getText( final long id , final int page ) {
         return getJsonInfo( _pathManager.getTextPath( id , page ) , TextInfo.class );
     }
@@ -197,7 +205,10 @@ public class LocalProviderImpl implements LocalProvider {
     }
     
     public boolean isImageExists( final long id , final int page , final int level , final int px , final int py ) {
-        return getImagePath( id , page , level , px , py ) != null;
+        String path = getImagePath( id , page , level , px , py );
+
+        return path != null && 
+            !( new File( path + DownloadTask.DOWNLOADING_POSTFIX ) ).exists();
     }
     
     @Override

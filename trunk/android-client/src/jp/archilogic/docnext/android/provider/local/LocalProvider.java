@@ -45,7 +45,9 @@ public interface LocalProvider {
     /**
      * @return null if not exists
      */
-	List <TOCElement> getTableOfContentsInfo(long _id);
+	List <TOCElement> getTableOfContentsInfo( long id );
+	
+	String getTOCText( long id , int page );
 	
     /**
      * @return null if not exists

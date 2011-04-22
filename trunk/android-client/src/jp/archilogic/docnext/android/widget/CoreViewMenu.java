@@ -9,6 +9,7 @@ import jp.archilogic.docnext.android.activity.CoreViewActivity;
 import jp.archilogic.docnext.android.coreview.CoreView;
 import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.info.BookmarkInfo;
+import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -36,7 +38,8 @@ public class CoreViewMenu extends LinearLayout {
     private final CoreViewMenuDelegate _delegate;
 
     private View _bookmarkMenuItem;
-
+    private TextView _titleView;
+    
     public CoreViewMenu( final Context context , final DocumentType type , final long id ,
             final CoreViewMenuDelegate delegate ) {
         super( context );
@@ -126,6 +129,16 @@ public class CoreViewMenu extends LinearLayout {
         return view;
     }
 
+    private void buildPageInfo() {
+        final LinearLayout holder = new LinearLayout( getContext() );
+
+        _titleView = new TextView( getContext() );
+        updateTitle();
+        
+        holder.addView( _titleView );
+        addView( holder );
+    }
+    
     private void buildPrimaryMenu( final DocumentType type ) {
         final FragmentType[] primary = type.getPrimarySwitchFragment();
 
@@ -137,7 +150,7 @@ public class CoreViewMenu extends LinearLayout {
 
         addView( holder );
     }
-
+    
     private void buildSecondaryMenu( final DocumentType type ) {
         final FragmentType[] secondary = type.getSecondarySwitchFragment();
         final FragmentType[] subSecondary = type.getSubSecondarySwitchFragment();
@@ -182,6 +195,8 @@ public class CoreViewMenu extends LinearLayout {
         setPadding( dp( 5 ) , dp( 10 ) , dp( 5 ) , dp( 10 ) );
         setVisibility( View.GONE );
 
+        buildPageInfo();
+        addView( buildSpacer( 0 , dp( 10 ) , 0 ) );
         buildPrimaryMenu( type );
         addView( buildSpacer( 0 , dp( 10 ) , 0 ) );
         buildSecondaryMenu( type );
@@ -189,6 +204,7 @@ public class CoreViewMenu extends LinearLayout {
 
     public void onPageChanged() {
         bindBookmarkMenuItemIcon();
+        updateTitle();
     }
 
     private void toggleBookmark() {
@@ -210,5 +226,14 @@ public class CoreViewMenu extends LinearLayout {
         Kernel.getLocalProvider().setBookmarkInfo( _id , Lists.newArrayList( bookmark ) );
 
         bindBookmarkMenuItemIcon();
+    }
+    
+    private void updateTitle() {
+        int page = ( ( HasPage ) _delegate.getCoreView() ).getPage();
+        
+        DocInfo doc = Kernel.getLocalProvider().getDocInfo( _id );
+        String title = Kernel.getLocalProvider().getTOCText( _id , page ) 
+            + " ( " + page + " / " + doc.pages + " page )";
+        _titleView.setText( title );
     }
 }
