@@ -13,6 +13,7 @@ import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
 import jp.archilogic.docnext.android.provider.local.LocalPathManager;
 import jp.archilogic.docnext.android.service.DownloadService;
+import jp.archilogic.docnext.android.setting.Setting;
 import jp.archilogic.docnext.android.util.AnimationUtils2;
 import jp.archilogic.docnext.android.widget.CoreViewMenu;
 import jp.archilogic.docnext.android.widget.CoreViewMenu.CoreViewMenuDelegate;
@@ -240,6 +241,20 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         }
     }
     
+    private void confirmFinish() {
+        final OnClickListener yesClick = new OnClickListener() {
+            @Override
+            public void onClick( final DialogInterface dialog , final int which ) {
+                finish();
+            }
+        };
+
+        new AlertDialog.Builder( _self ).setMessage( R.string.confirm_finish )
+                .setPositiveButton( R.string.yes , yesClick )
+                .setNegativeButton( R.string.no , null ).show();
+    }
+    
+
     private void confirmRestorePage() {
         final OnClickListener yesClick = new OnClickListener() {
             @Override
@@ -258,20 +273,6 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
                     .setPositiveButton( R.string.yes , yesClick )
                     .setNegativeButton( R.string.no , null ).show();
         }
-    }
-    
-
-    private void confirmFinish() {
-        final OnClickListener yesClick = new OnClickListener() {
-            @Override
-            public void onClick( final DialogInterface dialog , final int which ) {
-                finish();
-            }
-        };
-
-        new AlertDialog.Builder( _self ).setMessage( R.string.confirm_finish )
-                .setPositiveButton( R.string.yes , yesClick )
-                .setNegativeButton( R.string.no , null ).show();
     }
 
     private boolean contains( final DocumentType[] types , final DocumentType type ) {
@@ -344,6 +345,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         _gestureDetector = new GestureDetector( _self , _gestureListener );
         _gestureDetector.setOnDoubleTapListener( _doubleTapListener );
         _scaleGestureDetector = new ScaleGestureDetectorWrapper( _self , _scaleGestureListener );
+        
+        setPreferences();
     }
 
     @Override
@@ -415,6 +418,8 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
     protected void onResume() {
         super.onResume();
 
+        setPreferences();
+        
         _view.onResume();
     }
 
@@ -451,6 +456,10 @@ public class CoreViewActivity extends Activity implements CoreViewDelegate , Cor
         }
 
         return true;
+    }
+
+    private void setPreferences() {
+        Setting.setDisplayPreferences( this );
     }
 
     private void toggleMenu() {

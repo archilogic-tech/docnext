@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<RelativeLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:id="@+id/titleLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+    >
+    
+    <ImageView
+        android:id="@+id/settingImage" 
+        android:layout_width="70dip" 
+        android:layout_height="70dip" 
+        android:src="@drawable/setting" 
+    />
+
+	<TextView 
+       android:id="@+id/settingLabel" 
+       android:layout_width="wrap_content" 
+       android:layout_height="wrap_content" 
+	   android:text="Setting" 
+	   android:textSize="30sp"
+	   android:layout_centerVertical="true"
+	   android:gravity="center"
+	   android:paddingTop="20dip"
+    />
+    
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/separatorTop"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@drawable/separator"
+    />        
+        
+    <LinearLayout
+        android:id="@+id/fontLayout"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1.0"
+        android:layout_marginBottom="20dip"
+        >
+    
+    <RelativeLayout
+        android:id="@+id/fontLayoutLeft"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dip"
+        android:layout_weight="0.4"
+    >
+    
+    <LinearLayout
+        android:id="@+id/fontTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+    >
+    <ImageView 
+        android:id="@+id/fontSettingImage"
+        android:layout_below="@id/titleLayout"
+        android:layout_width="50dip" 
+        android:layout_height="50dip" 
+        android:src="@drawable/font"
+    />
+    <TextView
+        android:id="@+id/fontSettingLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Font Setting"
+        android:textSize="18sp"
+        android:paddingTop="10dip"
+    />
+    </LinearLayout>    
+    
+    <TextView 
+        android:id="@+id/fontSizeLabel"
+        android:text="Font Size" 
+        android:layout_below="@id/fontTitle"
+        android:layout_height="wrap_content" 
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+    />
+    <SeekBar 
+        android:id="@+id/fontSizeSeekBar"
+        android:layout_below="@id/fontSizeLabel" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:paddingBottom="10dip"
+    />
+    <TextView 
+        android:id="@+id/fontColorLabel" 
+        android:layout_below="@id/fontSizeSeekBar"
+        android:text="Font Color"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+    />
+    <SeekBar
+        android:id="@+id/fontColorSeekBar"
+        android:layout_below="@id/fontColorLabel"
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content" 
+        android:paddingBottom="10dip"
+    />
+    <TextView
+        android:id="@+id/bgColorLabel"
+        android:layout_below="@id/fontColorSeekBar"
+        android:text="BG Color"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_centerHorizontal="true"
+    />
+    <SeekBar
+        android:id="@+id/bgColorSeekBar"
+        android:layout_below="@id/bgColorLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:paddingBottom="10dip"
+    />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutOrientation"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:orientation="vertical"
+        android:padding="10dip"
+    >
+    <TextView
+        android:id="@+id/previewText"
+        android:layout_width="wrap_content"
+        android:layout_height="200dip"
+        android:padding="10dip"
+    />
+    <!-- 
+    <jp.tomorrowkey.android.vtextviewer.VTextView
+        android:id="@+id/previewText"
+        android:layout_width="wrap_content"
+        android:layout_height="200dip"
+        android:padding="10dip" 
+    />
+-->         
+    <TextView
+        android:id="@+id/previewLabel"
+        android:layout_below="@id/previewText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="preview"
+    />
+    
+    <LinearLayout
+        android:id="@+id/textOrientation"
+        android:layout_below="@id/previewLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        >
+    <RadioButton
+        android:id="@+id/horizontalRadioButton"
+        android:layout_toRightOf="@id/fontLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="横書き"
+        android:textSize="13sp"
+    />
+    <RadioButton 
+        android:id="@+id/verticalRadioButton"
+        android:layout_toRightOf="@id/horizontalRadioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="縦書き"
+        android:textSize="13sp"
+    />
+    </LinearLayout>
+    </RelativeLayout>
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:id="@+id/layoutBrightness"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fontLayout"
+        android:layout_margin="10dip"
+    >
+    <RelativeLayout
+        android:id="@+id/layoutBrightnessIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dip"
+        >
+	<ImageView
+        android:id="@+id/brightnessImage"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_centerHorizontal="true"
+		android:src="@drawable/brightness"
+    />
+    <TextView
+        android:id="@+id/brightnessLabel"
+        android:layout_below="@id/brightnessImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="brightness"
+    />
+    </RelativeLayout>
+	<SeekBar 
+	    android:id="@+id/brightnessSeekBar"
+        android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+        android:layout_toRightOf="@id/layoutBrightnessIcon"
+        android:padding="10dip"
+    />
+    </RelativeLayout>
+
+    
+    <RelativeLayout
+        android:id="@+id/layoutLock"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutBrightness"
+        android:layout_margin="10dip"
+    >
+    <RelativeLayout
+        android:id="@+id/layoutLockIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dip"
+    >
+    <ImageView
+        android:id="@+id/screenLockImage"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/screenlock"
+    />
+    <TextView 
+        android:id="@+id/unlockLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="screen lock"
+        android:layout_below="@id/screenLockImage"
+    />
+    </RelativeLayout>
+	<CheckBox 
+        android:id="@+id/unlockCheckBox"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/layoutLockIcon"
+        android:text="unlock"
+        android:layout_centerVertical="true"
+    />
+    </RelativeLayout>		
+
+    <ImageView
+        android:id="@+id/separatorBottom"
+        android:layout_below="@id/layoutLock"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@drawable/separator"
+    />        
+        
+
+    <RelativeLayout
+        android:id="@+id/resetLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutLock"
+        >
+    <TextView 
+        android:text="Reset all setting" 
+        android:id="@+id/resetLabel"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+     />
+	<CheckBox 
+	    android:id="@+id/resetCheckBox"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/resetLabel"
+        android:text="reset" 
+     />
+    </RelativeLayout>
+    
+</RelativeLayout>
+
+</ScrollView>
