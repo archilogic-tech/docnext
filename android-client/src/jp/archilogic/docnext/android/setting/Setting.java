@@ -314,6 +314,7 @@ public class Setting extends Activity {
         seekBar.setProgress( converter.PrefToProgress( prefValue ) );
     }
     private void initViews() {
+        
         initLockCheckBox();
         initFontSizeSeekBar();
         initFontColorSeekBar();
@@ -321,6 +322,7 @@ public class Setting extends Activity {
         initBrightnessSeekBar();
         initWritingModeCheckBox();
         initResetButton();
+        
     }
     
     private void initWritingModeCheckBox() {
@@ -377,6 +379,8 @@ public class Setting extends Activity {
         _editor = _prefs.edit();
         
         initViews();
+        
+        updatePreview();
         
         setDisplayPreferences();
     }
@@ -452,9 +456,9 @@ public class Setting extends Activity {
         
         if ( view instanceof TextView ) {
             TextView preview = ( TextView ) view;
-            preview.setTextSize( _prefs.getInt( PREF_FONT_SIZE , 0 ) );
-            preview.setTextColor( _prefs.getInt( PREF_FONT_COLOR , 0xffffffff ) );
-            preview.setBackgroundColor( _prefs.getInt( PREF_BACKGROUND_COLOR , 0xff000000 ) );
+            preview.setTextSize( _prefs.getInt( PREF_FONT_SIZE , DEFAULT_FONT_SIZE ) );
+            preview.setTextColor( _prefs.getInt( PREF_FONT_COLOR , DEFAULT_FONT_COLOR ) );
+            preview.setBackgroundColor( _prefs.getInt( PREF_BACKGROUND_COLOR , DEFAULT_BACKGROUND_COLOR ) );
             preview.setLineSpacing( 3 , 2 );
             preview.setPadding( 18 , 18 , 18 , 18 );
             if ( ( new File ( FONT_PATH ) ).exists() ) {
@@ -462,9 +466,9 @@ public class Setting extends Activity {
             }
         } else if ( view instanceof VTextView ) {
             VTextView preview = ( VTextView ) view;
-            preview.setTextSize( _prefs.getInt( PREF_FONT_SIZE , 0 ) );
-            preview.setTextColor( _prefs.getInt( PREF_FONT_COLOR , 0xffffffff ) );
-            preview.setBackgroundColor( _prefs.getInt( PREF_BACKGROUND_COLOR , 0xff000000 ) );
-        }
+            preview.setTextSize( _prefs.getInt( PREF_FONT_SIZE , DEFAULT_FONT_SIZE ) );
+            preview.setTextColor( _prefs.getInt( PREF_FONT_COLOR , DEFAULT_FONT_COLOR ) );
+            preview.setBackgroundColor( _prefs.getInt( PREF_BACKGROUND_COLOR , DEFAULT_BACKGROUND_COLOR ) );
+       }
     }
 }
