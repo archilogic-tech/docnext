@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -88,6 +89,7 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
             _callback.setConfig( _config );
         }
     };
+    private Context _context;
 
     public CoreTextView( final Context context ) {
         super( context );
@@ -102,7 +104,9 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
         _surfaceView.getHolder().addCallback( _callback = new CoreTextCallback( background ) );
 
-        _callback.setConfig( _config = new CoreTextConfig() );
+        _callback.setConfig( _config = new CoreTextConfig( context ) );
+        
+        _context = context;
 
         _toggleJustifyButton.setOnClickListener( _toggleJustifyButtonClick );
         _changeLineBreakRuleButton.setOnClickListener( _changeLineBreakRuleButtonClick );
@@ -162,10 +166,19 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void onPause() {
+        Log.d( "CoreTextView" , "onPause" );
     }
 
     @Override
     public void onResume() {
+        Log.d( "CoreTextView" , "onResume" );
+        _callback.setConfig( _config = new CoreTextConfig( _context ) );
+        
+        // just for redrawing
+        // there should be better way.
+        // maybe coretextcallback's thread have problem with redrawing
+//        PointF point = new PointF();
+//        _callback.drag( point );
     }
 
     @Override
@@ -178,6 +191,7 @@ public class CoreTextView extends FrameLayout implements CoreView , HasPage {
 
     @Override
     public void restoreState( final Bundle state ) {
+        Log.d( "CoreTextView" , "restoreState" );
     }
 
     @Override

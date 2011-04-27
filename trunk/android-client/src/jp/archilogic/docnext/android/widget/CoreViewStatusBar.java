@@ -30,6 +30,7 @@ public class CoreViewStatusBar extends LinearLayout {
                     _bar.setProgress( current );
                 } else {
                     _bar.setVisibility( INVISIBLE );
+                    getContext().unregisterReceiver( _remoteProviderReceiver );
                 }
             }
         }

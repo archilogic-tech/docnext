@@ -11,6 +11,7 @@ import jp.archilogic.docnext.android.coreview.HasPage;
 import jp.archilogic.docnext.android.info.BookmarkInfo;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.meta.DocumentType;
+import jp.archilogic.docnext.android.setting.Setting;
 import jp.archilogic.docnext.android.type.FragmentType;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +40,7 @@ public class CoreViewMenu extends LinearLayout {
 
     private View _bookmarkMenuItem;
     private TextView _titleView;
+    private Context _context;
     
     public CoreViewMenu( final Context context , final DocumentType type , final long id ,
             final CoreViewMenuDelegate delegate ) {
@@ -46,6 +48,7 @@ public class CoreViewMenu extends LinearLayout {
 
         _id = id;
         _delegate = delegate;
+        _context = context;
 
         initialize( type );
     }
@@ -104,6 +107,14 @@ public class CoreViewMenu extends LinearLayout {
                     @Override
                     public void onClick( final View v ) {
                         toggleBookmark();
+                    }
+                };
+            case SETTING:
+                return new OnClickListener() {
+                    @Override
+                    public void onClick( final View v ) {
+                        Intent intent = new Intent( _context , Setting.class );
+                        _context.startActivity( intent );
                     }
                 };
             }

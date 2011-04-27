@@ -11,6 +11,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.CoreViewActivity" />
+        
+        <activity android:name=".setting.Setting" />
 
         <service android:name=".service.DownloadService" />
     </application>
