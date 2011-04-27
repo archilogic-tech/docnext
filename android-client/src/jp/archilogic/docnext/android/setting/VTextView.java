@@ -42,11 +42,14 @@ public class VTextView extends View {
 
     public VTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mFace = Typeface.createFromFile(FONT_PATH);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setTextSize(FONT_SIZE);
         mPaint.setColor(Color.WHITE);
-        mPaint.setTypeface(mFace);
+        
+        if ( ( new File( FONT_PATH ) ).exists() ) {
+            mFace = Typeface.createFromFile(FONT_PATH);
+            mPaint.setTypeface(mFace);
+        }
     }
 
     public void setText(String text) {
