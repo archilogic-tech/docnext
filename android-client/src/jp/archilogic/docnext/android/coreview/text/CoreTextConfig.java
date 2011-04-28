@@ -50,7 +50,7 @@ public class CoreTextConfig {
         SharedPreferences prefs = context.getSharedPreferences( Setting.PREFERENCE_NAME , Context.MODE_PRIVATE );
         int point = prefs.getInt( Setting.PREF_FONT_SIZE , Setting.DEFAULT_FONT_SIZE );
         
-        int pixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP ,
+        int pixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PT ,
                 (float) point , _context.getResources().getDisplayMetrics());
         
         fontSize = pixel;

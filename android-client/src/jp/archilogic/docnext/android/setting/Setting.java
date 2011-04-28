@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
@@ -456,7 +457,7 @@ public class Setting extends Activity {
         
         if ( view instanceof TextView ) {
             TextView preview = ( TextView ) view;
-            preview.setTextSize( _prefs.getInt( PREF_FONT_SIZE , DEFAULT_FONT_SIZE ) );
+            preview.setTextSize( TypedValue.COMPLEX_UNIT_PT , _prefs.getInt( PREF_FONT_SIZE , DEFAULT_FONT_SIZE ) ); 
             preview.setTextColor( _prefs.getInt( PREF_FONT_COLOR , DEFAULT_FONT_COLOR ) );
             preview.setBackgroundColor( _prefs.getInt( PREF_BACKGROUND_COLOR , DEFAULT_BACKGROUND_COLOR ) );
             preview.setLineSpacing( 3 , 2 );

@@ -65,10 +65,10 @@ public class VTextView extends View {
     }
     
     public void setTextSize( int point ) {
-        int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
+        int pixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PT, 
                 (float) point , getResources().getDisplayMetrics());
         
-        mPaint.setTextSize(sp);
+        mPaint.setTextSize(pixel);
     }
     
     public void setTextColor( int color ) {
