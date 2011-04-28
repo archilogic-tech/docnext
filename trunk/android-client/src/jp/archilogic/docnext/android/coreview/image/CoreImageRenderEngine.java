@@ -11,6 +11,9 @@ import android.os.SystemClock;
 
 public class CoreImageRenderEngine {
     private static final int TEXTURE_SIZE = 512;
+    
+    private static final int PAGE_MARGIN_LEFT = 10;
+    private static final int PAGE_MARGIN_BOTTOM = 10;
 
     private TextureInfo _background;
     private TextureInfo _blank;
@@ -95,8 +98,9 @@ public class CoreImageRenderEngine {
 
                     float y =
                             state.surfaceSize.height
-                                    - ( matrix.y( TEXTURE_SIZE / factor ) + padding.height + matrix
-                                            .length( state.pageSize.height ) * delta * ySign );
+                                    - ( matrix.y( TEXTURE_SIZE / factor ) + padding.height +
+                                        matrix.length( state.pageSize.height ) * delta * ySign +
+                                        PAGE_MARGIN_BOTTOM * delta * ySign );
                     float height =
                             textures.length > 1 ? size : matrix.length( textures[ 0 ][ 0 ].height )
                                     / factor;
@@ -104,7 +108,8 @@ public class CoreImageRenderEngine {
                     for ( int py = 0 ; py < textures.length ; py++ ) {
                         float x =
                                 matrix.x( 0 ) + padding.width
-                                        + matrix.length( state.pageSize.width ) * delta * xSign;
+                                        + matrix.length( state.pageSize.width ) * delta * xSign
+                                        + matrix.length( PAGE_MARGIN_LEFT) * delta * xSign;
 
                         for ( int px = 0 ; px < textures[ py ].length ; px++ ) {
                             checkAndDrawSingleImage( level , textures , statuses , py , px , x , y ,
