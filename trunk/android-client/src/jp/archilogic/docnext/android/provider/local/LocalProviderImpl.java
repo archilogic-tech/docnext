@@ -76,7 +76,10 @@ public class LocalProviderImpl implements LocalProvider {
 
     @Override
     public ImageInfo getImageInfo( final long id ) {
-        return getJsonInfo( _pathManager.getImageInfoPath( id ) , ImageInfo.class );
+        ImageInfo imageInfo = getJsonInfo( _pathManager.getImageInfoPath( id ) , ImageInfo.class );
+        if ( imageInfo != null )
+            imageInfo.nLevel = 1;
+        return imageInfo;
     }
 
     @Override
@@ -115,6 +118,28 @@ public class LocalProviderImpl implements LocalProvider {
             return -1;
         }
     }
+    
+    @Override
+    public List< Integer > getSinglePages( final long id ) {
+        Integer[] array = getJsonInfo( _pathManager.getSinglePagesPath( id ) , Integer[].class ); 
+        return array == null ? new ArrayList< Integer >() : Arrays.asList( array );
+    }
+
+    @Override
+    public List< Integer > getSpreadFirstPages( long id ) {
+        DocInfo doc = getDocInfo( id );
+
+        List< Integer > singlePages = getSinglePages( id );
+        List< Integer > spreadFirstPages = new ArrayList< Integer >();
+        
+        for ( int page = 0 ; page < doc.pages ; page++ ) {
+            if ( !singlePages.contains( page ) && 
+                    ( page == 0 || !spreadFirstPages.contains( page - 1 ) ) ) {
+                spreadFirstPages.add( page );
+            }
+        }
+        return spreadFirstPages;
+    }
 
     @Override
     public List<TOCElement> getTableOfContentsInfo( final long id ) {
@@ -124,7 +149,22 @@ public class LocalProviderImpl implements LocalProvider {
         } catch ( Exception  e ) {
             tocs = new TOCElement[]{};
         }
-        return tocs == null ? null : Arrays.asList(tocs);
+        return tocs == null ? null : Arrays.asList( tocs );
+    }
+
+    @Override
+    public TextInfo getText( final long id , final int page ) {
+        return getJsonInfo( _pathManager.getTextPath( id , page ) , TextInfo.class );
+    }
+
+    @Override
+    public String getThumbnailPath( final long id , final int page ) {
+        String path = _pathManager.getThumbnailPath( id , page );
+        
+        if ( ( new File( path ) ).exists() ) {
+            return path;
+        }
+        return null;
     }
 
     @Override
@@ -150,22 +190,7 @@ public class LocalProviderImpl implements LocalProvider {
         }
         return text;
     }
-
-    @Override
-    public TextInfo getText( final long id , final int page ) {
-        return getJsonInfo( _pathManager.getTextPath( id , page ) , TextInfo.class );
-    }
-
-    @Override
-    public String getThumbnailPath( final long id , final int page ) {
-        String path = _pathManager.getThumbnailPath( id , page );
-        
-        if ( ( new File( path ) ).exists() ) {
-            return path;
-        }
-        return null;
-    }
-
+    
     public boolean isAllImageExists( final long id , final int page ) {
         final ImageInfo image = Kernel.getLocalProvider().getImageInfo( id );
 
@@ -182,7 +207,7 @@ public class LocalProviderImpl implements LocalProvider {
         }
         return true;
     }
-    
+
     @Override
     public boolean isCompleted( final long id ) {
         // Use database?
@@ -194,7 +219,7 @@ public class LocalProviderImpl implements LocalProvider {
 
         return Arrays.asList( completed ).contains( id );
     }
-
+    
     @Override
     public boolean isImageExists( final long id , final int page ) {
         if ( page + 1 < getDocInfo( id ).pages ) {
@@ -210,7 +235,7 @@ public class LocalProviderImpl implements LocalProvider {
         return path != null && 
             !( new File( path + DownloadTask.DOWNLOADING_POSTFIX ) ).exists();
     }
-    
+
     @Override
     public void setBookmarkInfo( final long id , final List< BookmarkInfo > bookmarks ) {
         if ( bookmarks == null ) {

@@ -43,9 +43,16 @@ public interface LocalProvider {
     int getLastOpenedPage( long id );
     
     /**
+     * @return empty list if not exists
+     */
+    List< Integer > getSinglePages( long id );
+    
+    List< Integer > getSpreadFirstPages( long id );
+    
+    /**
      * @return null if not exists
      */
-	List <TOCElement> getTableOfContentsInfo( long id );
+	List< TOCElement > getTableOfContentsInfo( long id );
 	
 	String getTOCText( long id , int page );
 	

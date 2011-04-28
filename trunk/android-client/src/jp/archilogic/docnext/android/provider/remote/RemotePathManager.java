@@ -20,6 +20,10 @@ public class RemotePathManager {
         return String.format( "%sviewer/smartGetPage/%d/%d/%d/%d/%d/%d" , Config.ENDPOINT , id ,
                 page , level , px , py , shortSide );
     }
+    
+    public String getSinglePagesPath( final long id ) {
+        return String.format( "%sviewer/getSinglePages/%d" , Config.ENDPOINT ,  id );
+    }
 
     public String getTableOfContentsPath( final long id ) {
         return String.format( "%sviewer/getTOC/%d" , Config.ENDPOINT , id );
