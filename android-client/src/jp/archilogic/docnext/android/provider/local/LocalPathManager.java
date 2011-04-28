@@ -100,6 +100,10 @@ public class LocalPathManager {
     public String getImagePath( final long id , final int page , final int level , final int px , final int py ) {
         return String.format( "%s%d_%d_%d_%d.jpg" , getImageDir( id ) , page , level , px , py );
     }
+    
+    public String getSinglePagesPath( final long id ) {
+        return getDocInfoDir() + id + ".singlePages.json";
+    }
 
     public String getTableOfContentsInfoPath( final long id ) {
         return getDocInfoDir() + id + ".toc.json";

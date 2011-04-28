@@ -44,6 +44,14 @@ public class RemoteProviderImpl implements RemoteProvider {
     }
 
     @Override
+    public DownloadTask getSinglePages( final Context context , final Receiver< Void > receiver , final long id ) {
+        _localPathManager.ensureDocInfoDir();
+
+       return new DownloadTask( context , receiver , _remotePathManager.getSinglePagesPath( id ) ,
+                _localPathManager.getSinglePagesPath( id ) );
+    }
+
+    @Override
     public DownloadTask getTableOfContentsInfo( final Context context , final Receiver< Void > receiver , final long id ) {
         _localPathManager.ensureDocInfoDir();
 

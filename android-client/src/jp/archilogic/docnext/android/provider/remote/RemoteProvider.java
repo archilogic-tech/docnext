@@ -17,6 +17,8 @@ public interface RemoteProvider {
             int py , int shortSide );
 
     DownloadTask getImageInfo( Context context , Receiver< Void > receiver , long id , int shortSide );
+    
+    DownloadTask getSinglePages( Context context , Receiver< Void > receiver , long id );
 
     DownloadTask getText( Context context , Receiver< Void > receiver , long id , int page );
 

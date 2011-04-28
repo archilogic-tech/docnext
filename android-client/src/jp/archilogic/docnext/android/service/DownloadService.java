@@ -3,6 +3,7 @@ package jp.archilogic.docnext.android.service;
 import jp.archilogic.docnext.android.Kernel;
 import jp.archilogic.docnext.android.info.DocInfo;
 import jp.archilogic.docnext.android.info.ImageInfo;
+import jp.archilogic.docnext.android.task.DownloadTask;
 import jp.archilogic.docnext.android.task.FileReceiver;
 import jp.archilogic.docnext.android.type.TaskErrorType;
 import android.app.Service;
@@ -71,6 +72,7 @@ public class DownloadService extends Service {
                 ensureImageInfo( index );
                 downloadThumbnail( _id , 0 );
                 downloadTOC( _id );
+                downloadSinglePages( _id );
                 break;
             case TEXT:
                 ensureFont( index );
@@ -212,6 +214,11 @@ public class DownloadService extends Service {
         } else {
             checkDockInfo( index + 1 );
         }
+    }
+    
+    private void downloadSinglePages( final long id ) {
+        DownloadTask task = Kernel.getRemoteProvider().getSinglePages( getApplicationContext() , new DownloadReceiver() {}, id );
+        task.execute();
     }
 
     private void downloadTOC( final long id ) {
