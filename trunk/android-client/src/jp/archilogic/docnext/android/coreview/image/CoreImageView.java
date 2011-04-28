@@ -151,6 +151,8 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
 
     @Override
     public void cleanup() {
+        getContext().unregisterReceiver( _remoteProviderReceiver );
+
         _glSurfaceView = null;
         _menuView = null;
         _l2rButton = null;
@@ -159,8 +161,6 @@ public class CoreImageView extends FrameLayout implements CoreView , HasPage , N
         _b2tButton = null;
         _renderer.cleanup();
         _renderer = null;
-        
-        getContext().unregisterReceiver( _remoteProviderReceiver );
     }
 
     private int dip( final float value ) {
