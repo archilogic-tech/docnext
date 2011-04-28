@@ -47,13 +47,13 @@ public class CoreTextConfig {
 
         rubyFontSizeFactor = 2;
         
-        SharedPreferences prefs = context.getSharedPreferences( "viewer" , Context.MODE_PRIVATE );
-        fontSize = prefs.getInt( Setting.PREF_FONT_SIZE , Setting.DEFAULT_FONT_SIZE );
+        SharedPreferences prefs = context.getSharedPreferences( Setting.PREFERENCE_NAME , Context.MODE_PRIVATE );
+        int point = prefs.getInt( Setting.PREF_FONT_SIZE , Setting.DEFAULT_FONT_SIZE );
         
-        int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
-                (float) fontSize , _context.getResources().getDisplayMetrics());
-
-        fontSize = sp;
+        int pixel = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP ,
+                (float) point , _context.getResources().getDisplayMetrics());
+        
+        fontSize = pixel;
         
         backgroundColor = prefs.getInt( Setting.PREF_BACKGROUND_COLOR , Setting.DEFAULT_BACKGROUND_COLOR );
         defaultTextColor = prefs.getInt( Setting.PREF_FONT_COLOR , Setting.DEFAULT_FONT_COLOR );
